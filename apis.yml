@@ -1,8 +1,8 @@
 aid: nylas
 name: Nylas
 description: >-
-  Nylas connects your application to every email inbox and calendar in the
-  world. Get started here. 
+  Nylas connects your application to every email inbox and calendar in the world.
+  Get started here.
 type: Index
 position: Consumer
 access: 3rd-Party
@@ -18,8 +18,8 @@ apis:
   - aid: nylas:nylas
     name: Nylas
     description: >-
-      Nylas connects your application to every email inbox and calendar in the
-      world. Get started here. 
+      Nylas connects your application to every email inbox and calendar in the world.
+      Get started here.
     humanURL: ' https://developer.nylas.com/'
     tags:
       - API
