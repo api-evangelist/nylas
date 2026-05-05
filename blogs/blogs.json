@@ -1,0 +1,13 @@
+{
+  "repo": "nylas",
+  "feeds": [
+    {
+      "source": "https://www.nylas.com/blog/",
+      "feed_url": "https://www.nylas.com/blog/feed/",
+      "saved": 10,
+      "title": "Blog | Nylas"
+    }
+  ],
+  "post_count": 10,
+  "fetched": "2026-05-03T23:32:52Z"
+}
