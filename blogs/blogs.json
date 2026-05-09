@@ -4,10 +4,10 @@
     {
       "source": "https://www.nylas.com/blog/",
       "feed_url": "https://www.nylas.com/blog/feed/",
-      "saved": 10,
-      "title": "Blog | Nylas"
+      "title": "Blog | Nylas",
+      "saved": 3
     }
   ],
-  "post_count": 10,
-  "fetched": "2026-05-03T23:32:52Z"
+  "post_count": 13,
+  "fetched": "2026-05-09T20:17:51Z"
 }
