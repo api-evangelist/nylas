@@ -69,6 +69,8 @@ apis:
         name: Java/Kotlin SDK
         url: https://github.com/nylas/nylas-java
 common:
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/nylas
   - type: Website
     url: https://www.nylas.com/
   - type: Documentation
