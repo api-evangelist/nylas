@@ -85,6 +85,8 @@ common:
     url: https://www.nylas.com/legal/privacy-policy/
   - type: StatusPage
     url: https://status.nylas.com/
+  - type: LLMsTxt
+    url: https://developer.nylas.com/llms.txt
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
