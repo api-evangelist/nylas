@@ -2,12 +2,20 @@
   "repo": "nylas",
   "feeds": [
     {
-      "source": "https://www.nylas.com/blog/",
+      "source": "https://www.nylas.com/blog/feed/",
       "feed_url": "https://www.nylas.com/blog/feed/",
-      "title": "Blog | Nylas",
-      "saved": 4
+      "title": "",
+      "saved": 0,
+      "method": "feed"
+    },
+    {
+      "source": "https://developer.nylas.com/",
+      "feed_url": "https://developer.nylas.com/atom.xml",
+      "title": "",
+      "saved": 0,
+      "method": "discovered"
     }
   ],
-  "post_count": 17,
-  "fetched": "2026-05-17T20:20:35Z"
+  "post_count": 18,
+  "fetched": "2026-06-01T23:35:02Z"
 }

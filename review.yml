@@ -1,0 +1,56 @@
+aid: nylas
+name: Nylas
+review:
+  date: '2026-05-29'
+  question: Does Nylas expose a documented public WebSocket API?
+  answer: No
+  summary: >-
+    Nylas v3 is a REST-only platform for synchronous request/response interaction
+    with email, calendar, contacts, scheduling, authentication, and administration
+    resources. Asynchronous change notification is delivered exclusively via
+    server-to-server push (webhooks), with optional alternate transports for the
+    same webhook payloads through Google Cloud Pub/Sub and Amazon SNS. No
+    WebSocket, WSS, Server-Sent Events (SSE), gRPC streaming, or long-poll
+    streaming endpoint is documented at developer.nylas.com.
+  findings:
+    - area: Synchronous API
+      transport: REST/HTTPS
+      base_url: https://api.us.nylas.com
+      notes: >-
+        Documented as REST with standard HTTP methods (GET, PUT, POST, DELETE)
+        and JSON payloads. No streaming variant noted.
+    - area: Asynchronous notifications
+      transport: Webhooks (HTTPS push)
+      notes: >-
+        Nylas describes webhooks as the recommended push notification mechanism,
+        contrasted explicitly with polling. Webhooks are HTTPS POST callbacks to
+        a subscriber-controlled URL, not a persistent connection from Nylas.
+    - area: Alternate notification transports
+      transport: Google Cloud Pub/Sub, Amazon SNS
+      notes: >-
+        Documented as alternatives to direct webhook HTTPS delivery for the same
+        notification events. Both are message-bus integrations on the
+        subscriber's cloud account, not Nylas-hosted streaming endpoints.
+    - area: WebSocket / WSS
+      transport: Not offered
+      notes: >-
+        No reference to ws://, wss://, WebSocket upgrade, socket, or persistent
+        bidirectional connection in the v3 developer documentation, API
+        reference, notifications section, or API references index.
+    - area: Server-Sent Events (SSE)
+      transport: Not offered
+      notes: No SSE endpoint or text/event-stream content type documented.
+    - area: gRPC / streaming RPC
+      transport: Not offered
+      notes: Nylas does not publish a gRPC or protobuf streaming interface.
+  sources_consulted:
+    - https://developer.nylas.com
+    - https://developer.nylas.com/docs/v3/notifications/
+    - https://developer.nylas.com/docs/v3/api-references/
+    - https://developer.nylas.com/docs/reference/api/
+  conclusion: >-
+    No AsyncAPI specification is warranted. Nylas does not expose a documented
+    public WebSocket, SSE, or streaming API. The existing REST OpenAPI at
+    openapi/nylas-openapi.yml plus webhook documentation linked from apis.yml
+    fully describe the published surface area. No changes to apis.yml are
+    required as a result of this review.
