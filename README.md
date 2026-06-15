@@ -2,7 +2,7 @@
 
 Nylas connects your application to every email inbox and calendar in the world. The Nylas v3 platform provides REST APIs for email, calendar, contacts, scheduling, authentication, and administration with official SDKs for Node.js, Python, Ruby, and Kotlin/Java.
 
-**URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/apis.yml)
+**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/apis.yml)
 
 ## Scope
 
@@ -30,8 +30,17 @@ Nylas connects your application to every email inbox and calendar in the world. 
 
 The Nylas v3 REST API provides programmatic access to email, calendar, contacts, scheduling, authentication, and administration features across every major email and calendar provider.
 
-- **Human URL:** https://developer.nylas.com/
-- **Base URL:** https://api.us.nylas.com
+- **Human URL:** [https://developer.nylas.com/](https://developer.nylas.com/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Calendar
+- Communication
+- Contacts
+- Email
+- Messaging
+- Scheduling
 
 #### Properties
 
@@ -44,21 +53,26 @@ The Nylas v3 REST API provides programmatic access to email, calendar, contacts,
 - [Pricing](https://www.nylas.com/pricing/)
 - [Sign Up](https://dashboard-v3.nylas.com/register)
 - [Status Page](https://status.nylas.com/)
-- [Node.js SDK](https://github.com/nylas/nylas-nodejs)
-- [Python SDK](https://github.com/nylas/nylas-python)
-- [Ruby SDK](https://github.com/nylas/nylas-ruby)
-- [Java/Kotlin SDK](https://github.com/nylas/nylas-java)
+- [SDK](https://github.com/nylas/nylas-nodejs)
+- [SDK](https://github.com/nylas/nylas-python)
+- [SDK](https://github.com/nylas/nylas-ruby)
+- [SDK](https://github.com/nylas/nylas-java)
+- [Postman Collection](collections/nylas.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
+- [Open Collection](collections/nylas.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
 
 ## Common Properties
 
+- [LinkedIn](https://www.linkedin.com/company/nylas)
 - [Website](https://www.nylas.com/)
 - [Documentation](https://developer.nylas.com/)
 - [Blog](https://www.nylas.com/blog/)
-- [GitHub Organization](https://github.com/nylas)
+- [Git Hub Org](https://github.com/nylas)
 - [Terms of Service](https://www.nylas.com/legal/terms/)
 - [Privacy Policy](https://www.nylas.com/legal/privacy-policy/)
 - [Status Page](https://status.nylas.com/)
+- [L L Ms Txt](https://developer.nylas.com/llms.txt)
 
 ## Maintainers
 
-- **Kin Lane** - kin@apievangelist.com
+**FN:** Kin Lane
+**Email:** kin@apievangelist.com
