@@ -48,24 +48,24 @@ apis:
         url: https://developer.nylas.com/docs/v3/auth/
       - type: RateLimits
         url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
-      - type: Errors
+      - type: ErrorCodes
         url: https://developer.nylas.com/docs/api/errors/
       - type: Pricing
         url: https://www.nylas.com/pricing/
-      - type: SignUp
+      - type: Signup
         url: https://dashboard-v3.nylas.com/register
       - type: StatusPage
         url: https://status.nylas.com/
-      - type: SDK
+      - type: SDKs
         name: Node.js SDK
         url: https://github.com/nylas/nylas-nodejs
-      - type: SDK
+      - type: SDKs
         name: Python SDK
         url: https://github.com/nylas/nylas-python
-      - type: SDK
+      - type: SDKs
         name: Ruby SDK
         url: https://github.com/nylas/nylas-ruby
-      - type: SDK
+      - type: SDKs
         name: Java/Kotlin SDK
         url: https://github.com/nylas/nylas-java
 common:
@@ -85,7 +85,7 @@ common:
     url: https://www.nylas.com/legal/privacy-policy/
   - type: StatusPage
     url: https://status.nylas.com/
-  - type: LLMsTxt
+  - type: LlmsText
     url: https://developer.nylas.com/llms.txt
 maintainers:
   - FN: Kin Lane
