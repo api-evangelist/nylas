@@ -1,0 +1,16 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/nylas-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  description: |-
+    Server-side requests use an API key issued in the Nylas dashboard
+    and presented as a Bearer token. User-level requests use an
+    access token obtained via the OAuth 2.0 flow.
+  sources:
+  - openapi/nylas-openapi.yml

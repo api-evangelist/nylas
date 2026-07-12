@@ -69,6 +69,14 @@ apis:
         name: Java/Kotlin SDK
         url: https://github.com/nylas/nylas-java
 common:
+  - type: TrustCenter
+    url: security/nylas-trust-center.yml
+  - type: VulnerabilityDisclosure
+    url: security/nylas-vulnerability-disclosure.yml
+  - type: DomainSecurity
+    url: security/nylas-domain-security.yml
+  - type: Authentication
+    url: authentication/nylas-authentication.yml
   - type: LinkedIn
     url: https://www.linkedin.com/company/nylas
   - type: Website
