@@ -69,6 +69,8 @@ apis:
         name: Java/Kotlin SDK
         url: https://github.com/nylas/nylas-java
 common:
+  - type: AgenticAccess
+    url: agentic-access/nylas-agentic-access.yml
   - type: TrustCenter
     url: security/nylas-trust-center.yml
   - type: VulnerabilityDisclosure
