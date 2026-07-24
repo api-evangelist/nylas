@@ -1,0 +1,64 @@
+openapi: 3.1.0
+info:
+  title: Nylas API (v3) Admin Scheduling API
+  description: 'Nylas provides unified APIs for email, calendar, contacts, and
+
+    scheduling across many underlying providers (Google, Microsoft, IMAP,
+
+    etc.). Resources are scoped to a grant that represents an end-user
+
+    connection. Endpoint scaffold below is derived from the public v3
+
+    developer documentation at https://developer.nylas.com/docs/.
+
+    '
+  version: '3.0'
+  contact:
+    name: Nylas Developers
+    url: https://developer.nylas.com
+servers:
+- url: https://api.us.nylas.com
+  description: United States region
+- url: https://api.eu.nylas.com
+  description: European Union region
+security:
+- BearerAuth: []
+tags:
+- name: Scheduling
+paths:
+  /v3/scheduling/configurations:
+    get:
+      tags:
+      - Scheduling
+      summary: List scheduling configurations
+      responses:
+        '200':
+          description: A list of scheduler configurations.
+  /v3/scheduling/bookings:
+    get:
+      tags:
+      - Scheduling
+      summary: List scheduler bookings
+      responses:
+        '200':
+          description: A list of bookings.
+  /v3/scheduling/availability:
+    post:
+      tags:
+      - Scheduling
+      summary: Query availability
+      responses:
+        '200':
+          description: Available slots for the requested participants.
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Server-side requests use an API key issued in the Nylas dashboard
+
+        and presented as a Bearer token. User-level requests use an
+
+        access token obtained via the OAuth 2.0 flow.
+
+        '
