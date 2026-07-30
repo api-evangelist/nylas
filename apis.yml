@@ -6,9 +6,22 @@ description: >-
   authentication, and administration with official SDKs for Node.js, Python, Ruby,
   and Kotlin/Java.
 type: Index
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 position: Consumer
 access: 3rd-Party
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/nylas.png
 tags:
   - Calendar
   - Communication
@@ -22,52 +35,151 @@ url: >-
   https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/apis.yml
 specificationVersion: '0.19'
 apis:
-  - aid: nylas:nylas-api
-    name: Nylas API
-    description: >-
-      The Nylas v3 REST API provides programmatic access to email, calendar,
-      contacts, scheduling, authentication, and administration features across
-      every major email and calendar provider.
-    humanURL: https://developer.nylas.com/
-    baseURL: https://api.us.nylas.com
-    tags:
-      - Calendar
-      - Communication
-      - Contacts
-      - Email
-      - Messaging
-      - Scheduling
-    properties:
-      - type: Documentation
-        url: https://developer.nylas.com/docs/
-      - type: APIReference
-        url: https://developer.nylas.com/docs/reference/api/
-      - type: GettingStarted
-        url: https://developer.nylas.com/docs/v3/getting-started/
-      - type: Authentication
-        url: https://developer.nylas.com/docs/v3/auth/
-      - type: RateLimits
-        url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
-      - type: ErrorCodes
-        url: https://developer.nylas.com/docs/api/errors/
-      - type: Pricing
-        url: https://www.nylas.com/pricing/
-      - type: Signup
-        url: https://dashboard-v3.nylas.com/register
-      - type: StatusPage
-        url: https://status.nylas.com/
-      - type: SDKs
-        name: Node.js SDK
-        url: https://github.com/nylas/nylas-nodejs
-      - type: SDKs
-        name: Python SDK
-        url: https://github.com/nylas/nylas-python
-      - type: SDKs
-        name: Ruby SDK
-        url: https://github.com/nylas/nylas-ruby
-      - type: SDKs
-        name: Java/Kotlin SDK
-        url: https://github.com/nylas/nylas-java
+- aid: nylas:nylas-api
+  name: Nylas API
+  description: >-
+    The Nylas v3 REST API provides programmatic access to email, calendar, contacts, scheduling, authentication,
+    and administration features across every major email and calendar provider.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Calendar
+  - Communication
+  - Contacts
+  - Email
+  - Messaging
+  - Scheduling
+  properties:
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    name: Node.js SDK
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    name: Python SDK
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    name: Ruby SDK
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    name: Java/Kotlin SDK
+    url: https://github.com/nylas/nylas-java
+- aid: nylas:nylas-admin-api
+  name: Nylas Admin API
+  description: The Admin API from Nylas — 3 operation(s) for admin.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Admin
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-admin-api-openapi.yml
+- aid: nylas:nylas-auth-api
+  name: Nylas Auth API
+  description: The Auth API from Nylas — 3 operation(s) for auth.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Auth
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-auth-api-openapi.yml
+- aid: nylas:nylas-calendars-api
+  name: Nylas Calendars API
+  description: The Calendars API from Nylas — 1 operation(s) for calendars.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Calendars
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-calendars-api-openapi.yml
+- aid: nylas:nylas-contacts-api
+  name: Nylas Contacts API
+  description: The Contacts API from Nylas — 1 operation(s) for contacts.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Contacts
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-contacts-api-openapi.yml
+- aid: nylas:nylas-drafts-api
+  name: Nylas Drafts API
+  description: The Drafts API from Nylas — 1 operation(s) for drafts.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Drafts
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-drafts-api-openapi.yml
+- aid: nylas:nylas-events-api
+  name: Nylas Events API
+  description: The Events API from Nylas — 1 operation(s) for events.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Events
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-events-api-openapi.yml
+- aid: nylas:nylas-grants-api
+  name: Nylas Grants API
+  description: The Grants API from Nylas — 2 operation(s) for grants.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Grants
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-grants-api-openapi.yml
+- aid: nylas:nylas-messages-api
+  name: Nylas Messages API
+  description: The Messages API from Nylas — 1 operation(s) for messages.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Messages
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-messages-api-openapi.yml
+- aid: nylas:nylas-scheduling-api
+  name: Nylas Scheduling API
+  description: The Scheduling API from Nylas — 3 operation(s) for scheduling.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Scheduling
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-scheduling-api-openapi.yml
+- aid: nylas:nylas-threads-api
+  name: Nylas Threads API
+  description: The Threads API from Nylas — 1 operation(s) for threads.
+  humanURL: https://developer.nylas.com/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Threads
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-threads-api-openapi.yml
 common:
   - type: AgenticAccess
     url: agentic-access/nylas-agentic-access.yml
