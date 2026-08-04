@@ -1,0 +1,32 @@
+{
+  "provider": "nylas",
+  "sources": [
+    "nylas-admin-api-openapi.yml",
+    "nylas-auth-api-openapi.yml",
+    "nylas-calendars-api-openapi.yml",
+    "nylas-contacts-api-openapi.yml",
+    "nylas-drafts-api-openapi.yml",
+    "nylas-events-api-openapi.yml",
+    "nylas-grants-api-openapi.yml",
+    "nylas-messages-api-openapi.yml",
+    "nylas-scheduling-api-openapi.yml",
+    "nylas-threads-api-openapi.yml"
+  ],
+  "outputs": [
+    "nylas-admin-api-openapi.yml",
+    "nylas-auth-api-openapi.yml",
+    "nylas-calendars-api-openapi.yml",
+    "nylas-contacts-api-openapi.yml",
+    "nylas-drafts-api-openapi.yml",
+    "nylas-events-api-openapi.yml",
+    "nylas-grants-api-openapi.yml",
+    "nylas-messages-api-openapi.yml",
+    "nylas-scheduling-api-openapi.yml",
+    "nylas-threads-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
