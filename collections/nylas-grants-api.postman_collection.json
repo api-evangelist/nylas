@@ -1,0 +1,278 @@
+{
+  "item": [
+    {
+      "id": "dcd79adf-9a7a-4dd8-9b82-3ef6bd302209",
+      "name": "Grants",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "75ee2d31-55f1-4639-911a-b638a555ac47",
+          "name": "List grants",
+          "request": {
+            "name": "List grants",
+            "description": {},
+            "url": {
+              "path": [
+                "v3",
+                "grants"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "4fdd04f8-ea09-4226-b655-67c0cc034397",
+              "name": "A list of grants associated with the application.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "grants"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "0afa03b2-fac6-4c09-8eda-21fff0e00429",
+          "name": "Retrieve a grant",
+          "request": {
+            "name": "Retrieve a grant",
+            "description": {},
+            "url": {
+              "path": [
+                "v3",
+                "grants",
+                ":grant_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "grant_id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "f3299e7e-faad-4af1-b7d9-8ca94a72078b",
+              "name": "The grant record.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "grants",
+                    ":grant_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "grant_id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "aae5189c-30fc-45a9-b0fd-6f504cc1fb50",
+          "name": "Delete a grant",
+          "request": {
+            "name": "Delete a grant",
+            "description": {},
+            "url": {
+              "path": [
+                "v3",
+                "grants",
+                ":grant_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "grant_id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "0003c792-5655-4458-a0f7-a872fc1556e4",
+              "name": "The grant was deleted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "grants",
+                    ":grant_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "grant_id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.us.nylas.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "24589c36-c6a1-453a-bf2c-61a31a709240",
+    "name": "Nylas API (v3) Admin Grants API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Nylas provides unified APIs for email, calendar, contacts, and\nscheduling across many underlying providers (Google, Microsoft, IMAP,\netc.). Resources are scoped to a grant that represents an end-user\nconnection. Endpoint scaffold below is derived from the public v3\ndeveloper documentation at https://developer.nylas.com/docs/.\n\n\nContact Support:\n Name: Nylas Developers",
+      "type": "text/plain"
+    }
+  }
+}

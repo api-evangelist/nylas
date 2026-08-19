@@ -1,0 +1,60 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Nylas API (v3) Admin Messages API",
+    "version": "3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Messages",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List messages",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.us.nylas.com/v3/grants/:grant_id/messages",
+            "params": [
+              {
+                "name": "grant_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List messages"
+        },
+        {
+          "info": {
+            "name": "Send a message",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.us.nylas.com/v3/grants/:grant_id/messages",
+            "params": [
+              {
+                "name": "grant_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Send a message"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

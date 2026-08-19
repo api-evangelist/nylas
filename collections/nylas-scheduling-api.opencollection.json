@@ -1,0 +1,57 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Nylas API (v3) Admin Scheduling API",
+    "version": "3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scheduling",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List scheduling configurations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.us.nylas.com/v3/scheduling/configurations"
+          },
+          "docs": "List scheduling configurations"
+        },
+        {
+          "info": {
+            "name": "List scheduler bookings",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.us.nylas.com/v3/scheduling/bookings"
+          },
+          "docs": "List scheduler bookings"
+        },
+        {
+          "info": {
+            "name": "Query availability",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.us.nylas.com/v3/scheduling/availability"
+          },
+          "docs": "Query availability"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,248 @@
+{
+  "item": [
+    {
+      "id": "7694f0aa-a92b-44b8-9a22-3d96939f93a8",
+      "name": "Auth",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "6bcf486d-ee47-4a83-bdcc-03b2905f84e6",
+          "name": "Create a custom authentication grant",
+          "request": {
+            "name": "Create a custom authentication grant",
+            "description": {},
+            "url": {
+              "path": [
+                "v3",
+                "connect",
+                "custom"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "850a6cf0-9988-4bef-9795-bef186c4d815",
+              "name": "A grant has been created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "connect",
+                    "custom"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1bcb518d-e6b6-4f1a-8a87-342d45a733a1",
+          "name": "Begin hosted OAuth authentication",
+          "request": {
+            "name": "Begin hosted OAuth authentication",
+            "description": {},
+            "url": {
+              "path": [
+                "v3",
+                "connect",
+                "auth"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "084fe17e-7492-4801-a8d4-d6d70c38af31",
+              "name": "Redirects to the configured authentication provider.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "connect",
+                    "auth"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Found",
+              "code": 302,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d83953a6-58db-46cd-b54e-9bd83786d424",
+          "name": "Exchange an authorization code for tokens",
+          "request": {
+            "name": "Exchange an authorization code for tokens",
+            "description": {},
+            "url": {
+              "path": [
+                "v3",
+                "connect",
+                "token"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ee16f75f-e702-40ab-a590-340902973af2",
+              "name": "Returns access and refresh tokens.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "connect",
+                    "token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.us.nylas.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "d3a809db-3170-47a1-bf93-c3a6c66cf919",
+    "name": "Nylas API (v3) Admin Auth API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Nylas provides unified APIs for email, calendar, contacts, and\nscheduling across many underlying providers (Google, Microsoft, IMAP,\netc.). Resources are scoped to a grant that represents an end-user\nconnection. Endpoint scaffold below is derived from the public v3\ndeveloper documentation at https://developer.nylas.com/docs/.\n\n\nContact Support:\n Name: Nylas Developers",
+      "type": "text/plain"
+    }
+  }
+}

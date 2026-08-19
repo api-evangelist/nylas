@@ -1,0 +1,530 @@
+# Nylas Developer Documentation
+
+> Nylas is an API platform for email, calendar, and contacts integration. This documentation covers the Nylas v3 APIs, SDKs, authentication, and provider-specific guides.
+
+Docs site: https://developer.nylas.com
+API base URL: https://api.us.nylas.com (US) / https://api.eu.nylas.com (EU)
+Full documentation (all pages, inlined): https://developer.nylas.com/llms-full.txt
+Sitemap (full URL index): https://developer.nylas.com/sitemap-index.xml
+
+## Instructions for LLM Agents
+
+Key facts about the Nylas platform that help you give accurate answers:
+
+- Always use the **Nylas v3 API**. The v2 API is deprecated and should not be referenced.
+- A **grant** represents an authenticated user account (Gmail, Outlook, etc.) connected through Nylas.
+- **API base URLs**: `https://api.us.nylas.com` (US region) and `https://api.eu.nylas.com` (EU region). All API paths are prefixed with `/v3/`.
+- **Authentication** requires a Nylas API key (as a Bearer token) and a grant ID in the URL path.
+- **SDKs** are available for Node.js, Python, Ruby, and Kotlin/Java.
+- Use `search_query_native` to pass provider-specific search syntax (e.g., Gmail search operators, Microsoft KQL).
+- For scheduling features, prefer the **Scheduler API** over building custom availability logic.
+- Every page on this site is available as clean markdown by requesting it with the `Accept: text/markdown` header.
+- The interactive API references are at `/docs/api/v3/ecc/` (Email/Calendar/Contacts/Notetaker), `/docs/api/v3/admin/` (Admin), and `/docs/api/v3/scheduler/` (Scheduler).
+
+## Getting Started
+
+Set up your Nylas application and connect your first account.
+
+- [What is Nylas](https://developer.nylas.com/docs/v3/getting-started/): Core concepts (applications, API keys, grants, connectors, providers) and setup paths
+- [Get Started: Dashboard](https://developer.nylas.com/docs/v3/getting-started/dashboard/): Set up a Nylas application using the Dashboard web UI
+- [Get Started: CLI](https://developer.nylas.com/docs/v3/getting-started/cli/): Set up a Nylas application using the Nylas CLI (nylas init)
+
+## Build with Nylas
+
+Quickstart guides for integrating Nylas APIs into your application using SDKs.
+
+- [Guide for AI Coding Agents](https://developer.nylas.com/docs/v3/getting-started/coding-agents/): For AI coding agents (Claude Code, Cursor, Copilot) building applications with Nylas SDKs and APIs
+- [Email API Quickstart](https://developer.nylas.com/docs/v3/getting-started/email/): Send and read email on behalf of users with the Nylas Email API
+- [Calendar & Events API Quickstart](https://developer.nylas.com/docs/v3/getting-started/calendar/): Schedule meetings, check availability, and RSVP to events
+- [Notetaker API Quickstart](https://developer.nylas.com/docs/v3/getting-started/notetaker/): Record meetings and get transcripts with the Notetaker API
+- [Scheduler Quickstart](https://developer.nylas.com/docs/v3/getting-started/scheduler/): Embed scheduling pages in your app
+- [Contacts API Quickstart](https://developer.nylas.com/docs/v3/getting-started/contacts/): List, search, and create contacts across providers
+- [Transactional Send Quickstart](https://developer.nylas.com/docs/v3/getting-started/transactional-send/): Send transactional emails from a verified domain (beta)
+- [Agent Accounts Quickstart](https://developer.nylas.com/docs/v3/getting-started/agent-accounts/): Create a fully functional, Nylas-hosted email and calendar mailbox programmatically
+- [Agent Accounts overview](https://developer.nylas.com/docs/v3/agent-accounts/): What Agent Accounts are, how they fit the Nylas platform, and when to use them
+- [Provisioning Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/provisioning/): Create Agent Accounts on a verified domain from the CLI, Dashboard, or API
+- [Set up domains for Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/dns-provider-setup/): Register a custom domain and add the TXT and MX records at Cloudflare, Route 53, GoDaddy, or Namecheap
+- [Supported endpoints for Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/supported-endpoints/): Full reference of endpoints and webhook triggers that work with Agent Account grants
+- [Mail client access for Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/mail-clients/): Connect Outlook, Apple Mail, and other clients to an Agent Account over IMAP and SMTP
+- [Email deliverability for Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/deliverability/): Authenticate the domain, set up DMARC in stages, warm up, and monitor bounces and complaints
+- [Agent Account workspaces](https://developer.nylas.com/docs/v3/agent-accounts/workspaces/): Group Agent Accounts by domain and carry the policy and rules that govern them
+- [Agent Account Policies, Rules, and Lists](https://developer.nylas.com/docs/v3/agent-accounts/policies-rules-lists/): Configure limits, spam detection, and inbound filtering for Agent Accounts
+- [Email Threading for Agents](https://developer.nylas.com/docs/v3/agent-accounts/email-threading/): How Message-ID, In-Reply-To, and References headers work, threading via the Threads API, and mapping threads to agent state
+- [Email search for Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/email-search/): Search messages and threads with Nylas full-text syntax, Boolean operators, phrases, filters, and relevance ranking
+- [Agent Account contacts](https://developer.nylas.com/docs/v3/agent-accounts/contacts/): Store, list, filter, create, and update contacts on an Agent Account and react to contact webhooks
+
+## Nylas for AI Agents
+
+Guides for autonomous AI agents that need direct access to email, calendar, and contacts.
+
+- [AI Agents Quickstart](https://developer.nylas.com/docs/v3/getting-started/cli-for-agents/): Install the CLI, connect an account, and start using email and calendar from the terminal
+- [Share Your Email with Your Agent](https://developer.nylas.com/docs/v3/getting-started/agent-email/): Give the agent CLI access to a connected Gmail, Outlook, or IMAP inbox
+- [Share Your Calendar with Your Agent](https://developer.nylas.com/docs/v3/getting-started/agent-calendar/): Give the agent CLI access to a connected Google, Outlook, or iCloud calendar
+- [Give Your Agent Its Own Email](https://developer.nylas.com/docs/v3/getting-started/agent-own-email/): Spin up a dedicated agent@yourdomain.com mailbox on a Nylas Agent Account
+- [Give Your Agent Its Own Calendar](https://developer.nylas.com/docs/v3/getting-started/agent-own-calendar/): Give the agent a dedicated calendar on a Nylas Agent Account
+- [Give Your Agent Call Recordings](https://developer.nylas.com/docs/v3/getting-started/agent-notetaker/): Record meetings and get transcripts via the Notetaker API
+- [Give Your Agent Contacts](https://developer.nylas.com/docs/v3/getting-started/agent-contacts/): Search, list, and create contacts via CLI commands
+- [Nylas MCP Server](https://developer.nylas.com/docs/dev-guide/mcp/): Connect AI agents to Nylas via Model Context Protocol (Claude Code, Cursor, Windsurf, VS Code)
+- [Security for AI Agents](https://developer.nylas.com/docs/v3/getting-started/agent-security/): Data isolation, prompt injection, permissions, and audit trails
+
+## Authentication
+
+Connect user accounts via OAuth, service accounts, or custom auth flows.
+
+- [Authentication Overview](https://developer.nylas.com/docs/v3/auth/): How Nylas authentication works (grants, OAuth, connectors)
+- [Hosted OAuth with API Key](https://developer.nylas.com/docs/v3/auth/hosted-oauth-apikey/): Authenticate users with Hosted OAuth using an API key
+- [Hosted OAuth with Access Token](https://developer.nylas.com/docs/v3/auth/hosted-oauth-accesstoken/): Authenticate users with Hosted OAuth using access tokens
+- [Nylas Connect Overview](https://developer.nylas.com/docs/v3/getting-started/nylas-connect/): Add email, calendar, and contacts to your app with minimal OAuth complexity
+- [Nylas Connect JS](https://developer.nylas.com/docs/v3/auth/nylas-connect/): JavaScript SDK for embedding authentication
+- [Nylas Connect React](https://developer.nylas.com/docs/v3/auth/nylas-connect-react/): React components for Nylas Connect
+- [Bring Your Own Authentication](https://developer.nylas.com/docs/v3/auth/bring-your-own-authentication/): Use your own OAuth tokens with Nylas
+- [IMAP Authentication](https://developer.nylas.com/docs/v3/auth/imap/): Authenticate IMAP accounts
+- [Bulk Authentication](https://developer.nylas.com/docs/v3/auth/bulk-auth-grants/): Authenticate multiple accounts at once
+- [Nylas Service Account Auth](https://developer.nylas.com/docs/v3/auth/nylas-service-account/): Authenticate with RSA-signed requests for admin APIs (beta)
+- [OAuth Scopes](https://developer.nylas.com/docs/dev-guide/scopes/): Available OAuth scopes for Nylas APIs
+
+## Email API
+
+Read, send, search, and manage email messages, threads, folders, and attachments.
+
+- [Email API Overview](https://developer.nylas.com/docs/v3/email/): Overview of all Nylas Email API capabilities
+- [Using the Messages API](https://developer.nylas.com/docs/v3/email/messages/): Read, search, update, and delete email messages
+- [Send Email](https://developer.nylas.com/docs/v3/email/send-email/): Send email messages through Nylas
+- [Idempotent Send Requests](https://developer.nylas.com/docs/v3/email/idempotent-send/): Use the Idempotency-Key header to safely retry send requests without sending duplicate emails
+- [Email Signatures](https://developer.nylas.com/docs/v3/email/signatures/): Store and manage HTML email signatures per grant
+- [Scheduled Send](https://developer.nylas.com/docs/v3/email/scheduled-send/): Schedule emails for future delivery
+- [Attachments](https://developer.nylas.com/docs/v3/email/attachments/): Handle file attachments on messages
+- [Send Large Attachments (Beta)](https://developer.nylas.com/docs/v3/email/send-large-attachments/): Upload and send attachments up to 150MB on Microsoft grants
+- [Threads](https://developer.nylas.com/docs/v3/email/threads/): Group related messages into conversations
+- [Folders and Labels](https://developer.nylas.com/docs/v3/email/folders/): Manage email folders and Gmail labels
+- [Contacts](https://developer.nylas.com/docs/v3/email/contacts/): Access and manage contacts
+- [Headers and MIME Data](https://developer.nylas.com/docs/v3/email/headers-mime-data/): Access raw email headers and MIME content
+- [Message Tracking](https://developer.nylas.com/docs/v3/email/message-tracking/): Track email opens and link clicks
+- [Manage Domains](https://developer.nylas.com/docs/v3/email/domains/): Manage sending domains
+- [Domain Warming](https://developer.nylas.com/docs/v3/agent-accounts/domain-warming/): Warm up a new sending domain to improve deliverability
+- [Sending Errors](https://developer.nylas.com/docs/v3/email/sending-errors/): Handle and troubleshoot email sending errors
+
+## Calendar API
+
+Manage calendars, events, availability, free/busy, and conferencing.
+
+- [Calendar Overview](https://developer.nylas.com/docs/v3/calendar/): Manage calendars, events, and availability
+- [Events API](https://developer.nylas.com/docs/v3/calendar/using-the-events-api/): Create, read, update, and delete calendar events
+- [Recurring Events](https://developer.nylas.com/docs/v3/calendar/recurring-events/): Work with recurring calendar events
+- [Virtual Calendars](https://developer.nylas.com/docs/v3/calendar/virtual-calendars/): Create and manage virtual calendars
+- [Availability](https://developer.nylas.com/docs/v3/calendar/calendar-availability/): Check calendar availability
+- [Free/Busy](https://developer.nylas.com/docs/v3/calendar/check-free-busy/): Check free/busy status
+- [Conferencing](https://developer.nylas.com/docs/v3/calendar/add-conferencing/): Add video conferencing to events
+- [Group Booking](https://developer.nylas.com/docs/v3/calendar/group-booking/): Group booking for calendar events
+
+## Scheduler
+
+Embeddable scheduling UI and API for booking meetings.
+
+- [Scheduler Overview](https://developer.nylas.com/docs/v3/scheduler/): Embeddable scheduling UI and API
+- [Hosted Scheduling Pages](https://developer.nylas.com/docs/v3/scheduler/hosted-scheduling-pages/): Use Nylas-hosted scheduling pages
+- [Scheduling Component](https://developer.nylas.com/docs/v3/scheduler/using-scheduling-component/): Embed the scheduling component
+- [Scheduler Editor](https://developer.nylas.com/docs/v3/scheduler/using-scheduler-editor-component/): Embed the configuration editor
+- [Meeting Types](https://developer.nylas.com/docs/v3/scheduler/meeting-types/): Configure meeting types and durations
+- [Availability](https://developer.nylas.com/docs/v3/scheduler/managing-availability/): Set scheduling availability rules
+- [Customize Scheduler](https://developer.nylas.com/docs/v3/scheduler/customize-scheduler/): Customize styling and behavior
+- [Booking Flows](https://developer.nylas.com/docs/v3/scheduler/customize-booking-flows/): Customize the booking experience
+- [Components Reference](https://developer.nylas.com/docs/reference/ui/): Pre-built Scheduler UI components
+
+## Notetaker
+
+AI meeting notetaker API for recording and transcription.
+
+- [Notetaker Overview](https://developer.nylas.com/docs/v3/notetaker/): AI meeting notetaker and transcription API
+- [Media Handling](https://developer.nylas.com/docs/v3/notetaker/media-handling/): Recording and media output
+- [Calendar Sync](https://developer.nylas.com/docs/v3/notetaker/calendar-sync/): Sync notetaker with calendar events
+
+## Notifications and Webhooks
+
+Real-time webhooks for account and data changes.
+
+- [Notifications Overview](https://developer.nylas.com/docs/v3/notifications/): Real-time webhooks for account changes
+- [Notification Schemas](https://developer.nylas.com/docs/reference/notifications/): Webhook payload schemas
+- [Pub/Sub Channel](https://developer.nylas.com/docs/v3/notifications/pubsub-channel/): Google Pub/Sub integration
+
+## Cookbook
+
+The Nylas Cookbook is an open collection of recipes, guides, and end-to-end tutorials, organized into Industries, Guides (long-form), and Recipes (single-task).
+
+- [Cookbook home](https://developer.nylas.com/docs/cookbook/): Tag-filterable index across all cookbook content
+
+### Cookbook — by industry
+
+Recipes grouped by the type of product you're building.
+
+- [CRM](https://developer.nylas.com/docs/cookbook/use-cases/industries/crm/): Sync calendar events, log meeting notes, automate sales activity
+- [Sales engagement](https://developer.nylas.com/docs/cookbook/use-cases/industries/sales-engagement/): Pipeline automation, meeting follow-ups, outreach sequences
+- [Recruiting & ATS](https://developer.nylas.com/docs/cookbook/use-cases/industries/recruiting/): Interview scheduling, candidate self-booking, automatic transcription
+- [Customer support](https://developer.nylas.com/docs/cookbook/use-cases/industries/customer-support/): Inbox monitoring, ticket routing, appointment reminders
+- [Scheduling & booking](https://developer.nylas.com/docs/cookbook/use-cases/industries/scheduling/): Booking pages, event reminders, scheduling pipelines
+- [E-commerce](https://developer.nylas.com/docs/cookbook/use-cases/industries/ecommerce/): Order email processing, transactional messaging, customer comms
+
+### Cookbook — Guides — Build with Nylas
+
+End-to-end walkthroughs that combine multiple Nylas products and span more than a single endpoint call.
+
+- [Connect user accounts with OAuth](https://developer.nylas.com/docs/cookbook/use-cases/build/connect-user-accounts-oauth/): Authenticate users and connect their email and calendar accounts with OAuth, covering scopes, token refresh, secure storage, and revoking access
+- [Get real-time updates with webhooks](https://developer.nylas.com/docs/cookbook/use-cases/build/realtime-webhooks/): Subscribe one endpoint to email and calendar triggers (new messages, opens, replies, events) instead of polling or per-provider push
+- [Handle grant expiry and re-authentication](https://developer.nylas.com/docs/cookbook/use-cases/build/handle-grant-expiry/): Detect expired grants via grant.expired webhook and 401s, then re-authenticate without losing sync state
+- [Bulk-authenticate user accounts](https://developer.nylas.com/docs/cookbook/use-cases/build/bulk-authenticate-accounts/): Connect whole organizations via Google service accounts or Microsoft admin consent, no per-user OAuth
+- [Create and revoke API keys](https://developer.nylas.com/docs/cookbook/use-cases/build/manage-api-keys/): Create, list, and revoke API keys via the admin API using a Nylas Service Account; rotate keys as code
+- [List and revoke connected grants](https://developer.nylas.com/docs/cookbook/use-cases/build/list-revoke-grants/): List connected accounts with filters and permanently disconnect a grant with DELETE (re-auth expired ones instead)
+- [Receive notifications with Pub/Sub](https://developer.nylas.com/docs/cookbook/use-cases/build/pubsub-notifications/): Deliver events to a Google Cloud Pub/Sub topic instead of an HTTPS webhook endpoint
+- [Receive notifications with Amazon SNS](https://developer.nylas.com/docs/cookbook/use-cases/build/sns-notifications/): Deliver events to an Amazon SNS topic (topic ARN + IAM role_arn) for AWS fan-out to SQS and Lambda
+- [Connect your own OAuth app](https://developer.nylas.com/docs/cookbook/use-cases/build/custom-oauth-connector/): Create a connector with your own Google/Microsoft client credentials for a branded consent screen
+- [Create a Scheduler booking config](https://developer.nylas.com/docs/cookbook/use-cases/build/scheduler-booking-config/): Define participants, availability, and the event to book once; returns a configuration_id for a booking page
+- [Create, reschedule, and cancel bookings](https://developer.nylas.com/docs/cookbook/use-cases/build/manage-bookings/): Drive bookings against a configuration and manage the lifecycle (create, reschedule, confirm, cancel)
+- [Record and transcribe meetings with Notetaker](https://developer.nylas.com/docs/cookbook/use-cases/build/record-transcribe-meetings/): Send a bot to any Google Meet, Teams, or Zoom call to record, transcribe, and summarize with one API call
+- [Detect and handle bounced email](https://developer.nylas.com/docs/cookbook/use-cases/build/handle-bounced-email/): Use the message.bounce_detected webhook to read bounce type/SMTP code/reason and suppress addresses that fail permanently
+- [OAuth scopes for email and calendar](https://developer.nylas.com/docs/cookbook/use-cases/build/oauth-scopes-email-calendar/): The scopes to read/send email, manage calendars, and read contacts on Google and Microsoft, with least-privilege sets
+- [Act on behalf of a user](https://developer.nylas.com/docs/cookbook/use-cases/build/act-on-behalf-of-user/): Make server-side calls with a grant ID and API key: read a user's calendar, send as them, keep credentials backend-only
+- [Troubleshoot OAuth errors](https://developer.nylas.com/docs/cookbook/use-cases/build/troubleshoot-oauth-errors/): Fix redirect URI mismatch, app-not-verified, insufficient scopes, and expired-grant errors on Google and Microsoft
+- [Send email without SMTP](https://developer.nylas.com/docs/cookbook/use-cases/build/send-email-without-smtp/): Send through a user's connected mailbox with no SMTP, XOAUTH2, or app passwords, plus reply-to, CC, and attachments
+- [Get and refresh OAuth tokens](https://developer.nylas.com/docs/cookbook/use-cases/build/get-refresh-tokens/): Access versus refresh tokens, exchanging the code for a grant, automatic refresh, and bringing your own tokens
+- [Get a webhook for new email](https://developer.nylas.com/docs/cookbook/use-cases/build/new-email-webhook/): A real-time message.created webhook for new mail on Gmail and Outlook: subscribe, verify the challenge, fetch the message
+- [Track email opens and replies](https://developer.nylas.com/docs/cookbook/use-cases/build/track-email-opens/): Track opens, clicks, and replies with send-time tracking and webhooks, with honest notes on pixel accuracy
+- [Verify webhook signatures](https://developer.nylas.com/docs/cookbook/use-cases/build/verify-webhook-signatures/): Verify the X-Nylas-Signature HMAC-SHA256 over the raw body with a constant-time compare, so only genuine events run
+- [Retry and debug failed webhooks](https://developer.nylas.com/docs/cookbook/use-cases/build/retry-failed-webhooks/): Respond fast and process async, dedupe at-least-once deliveries idempotently, and debug a webhook that isn't firing
+- [Automate a sales pipeline](https://developer.nylas.com/docs/cookbook/use-cases/automate/automate-sales-pipeline/): Track prospect comms, schedule meetings, log activity across email, calendar, and contacts
+- [Automate customer onboarding](https://developer.nylas.com/docs/cookbook/use-cases/automate/automate-customer-onboarding/): Welcome sequences, kickoff scheduling, engagement tracking, fully automated
+- [Build an interview scheduling pipeline](https://developer.nylas.com/docs/cookbook/use-cases/build/interview-scheduling-pipeline/): Multi-step hiring workflow with scheduling, calendar holds, and automatic transcription
+- [Add scheduling with automatic notetaking](https://developer.nylas.com/docs/cookbook/use-cases/build/scheduling-with-notetaking/): Booking experience that records and transcribes every meeting
+- [Automate meeting follow-ups](https://developer.nylas.com/docs/cookbook/use-cases/act/automate-meeting-follow-ups/): Personalized post-meeting summaries with notes and action items attached
+- [Schedule reminders from calendar events](https://developer.nylas.com/docs/cookbook/use-cases/act/schedule-event-reminders/): Email notifications before upcoming events
+- [Sync calendar events to a CRM](https://developer.nylas.com/docs/cookbook/use-cases/sync/sync-calendar-events-crm/): Mirror calendar events into CRM records in real time using webhooks
+- [Auto-log meeting notes to your CRM](https://developer.nylas.com/docs/cookbook/use-cases/sync/auto-log-meeting-notes-crm/): Push transcripts and summaries into CRM entries after every call
+- [Sync email contacts to a CRM](https://developer.nylas.com/docs/cookbook/use-cases/sync/sync-email-crm/): Pull new senders, enrich with signatures, push to Salesforce / HubSpot / Pipedrive
+- [Export email data to Salesforce](https://developer.nylas.com/docs/cookbook/use-cases/sync/export-to-salesforce/): Map senders to Salesforce Contact / Account / Task using Composite + Bulk API 2.0
+- [Connect Zendesk to email](https://developer.nylas.com/docs/cookbook/use-cases/sync/sync-zendesk-email/): Turn inbound mail into Zendesk support tickets and thread agent replies back to customers
+- [Sync contacts to Salesforce](https://developer.nylas.com/docs/cookbook/use-cases/sync/sync-contacts-salesforce/): Sync contacts from any provider into Salesforce Contact and Lead records, upserting by email with contact.updated webhooks
+- [Sync email to Microsoft Dynamics 365](https://developer.nylas.com/docs/cookbook/use-cases/sync/sync-dynamics-email/): Turn inbox messages into Dataverse email activity records via the Dynamics 365 Web API
+- [Connect Intercom to email](https://developer.nylas.com/docs/cookbook/use-cases/sync/sync-intercom-email/): Turn inbound email into Intercom conversations, enrich contacts, and reply from the shared mailbox
+- [Sync calendar events to Notion](https://developer.nylas.com/docs/cookbook/use-cases/sync/sync-calendar-notion/): Mirror Google, Outlook, and Exchange events into a Notion database with date properties in real time
+- [Sync email to Airtable](https://developer.nylas.com/docs/cookbook/use-cases/sync/sync-email-airtable/): Log incoming messages as Airtable records with field-to-column mapping and the 5 req/sec/base limit
+- [Sync contacts to Zoho CRM](https://developer.nylas.com/docs/cookbook/use-cases/sync/sync-contacts-zoho/): Upsert a user's contacts into Zoho CRM by email through the v6 records API, kept current with webhooks
+- [Export email data to HubSpot](https://developer.nylas.com/docs/cookbook/use-cases/sync/export-to-hubspot/): Lean on HubSpot's auto-company creation from email domains
+- [Export email data to Pipedrive](https://developer.nylas.com/docs/cookbook/use-cases/sync/export-to-pipedrive/): Map senders onto Pipedrive's deal-centric Organization → Person → Deal model
+- [Monitor an inbox for support tickets](https://developer.nylas.com/docs/cookbook/use-cases/ingest/monitor-inbox-support-tickets/): Real-time listener that detects support requests and creates tickets
+- [E2E email testing with Playwright](https://developer.nylas.com/docs/cookbook/use-cases/build/e2e-email-testing/): Per-test addresses on `*.nylas.email` for deterministic, parallel-safe email tests
+- [Connect a desktop app with OAuth](https://developer.nylas.com/docs/cookbook/use-cases/build/desktop-oauth/): Add OAuth to a desktop email app with PKCE, a loopback redirect, and OS keychain token storage
+- [Round-robin email routing to a team](https://developer.nylas.com/docs/cookbook/use-cases/automate/round-robin-email-routing/): Route incoming email to a team with round-robin assignment using the message.created webhook
+- [Authenticate from a headless server](https://developer.nylas.com/docs/cookbook/use-cases/build/headless-server-auth/): Authenticate email and calendar accounts from a headless server with no browser using Bring Your Own Auth
+- [Migrate from a CPaaS email stack](https://developer.nylas.com/docs/cookbook/use-cases/build/migrate-from-cpaas/): Move from a send-only CPaaS like SendGrid or SES to a two-way email and calendar API, with a cutover plan
+- [Two-way sync with Salesforce](https://developer.nylas.com/docs/cookbook/use-cases/sync/salesforce-two-way-sync/): Capture Gmail and Outlook activity into Salesforce and reflect Salesforce actions back, with conflict handling
+- [Migrate from Gmail API and Microsoft Graph](https://developer.nylas.com/docs/cookbook/use-cases/build/migrate-from-gmail-graph/): Consolidate the Gmail API and Microsoft Graph into one unified API: map concepts to one schema, plan the cutover
+- [Fix the need admin approval error](https://developer.nylas.com/docs/cookbook/use-cases/build/fix-admin-approval-error/): Fix the Microsoft need admin approval error (AADSTS65001) when users connect Outlook or Microsoft 365 accounts
+- [Microsoft OAuth scopes for email and calendar](https://developer.nylas.com/docs/cookbook/use-cases/build/microsoft-oauth-scopes/): The Microsoft Graph OAuth scopes Nylas requests per feature, with a scope-to-feature table
+- [Fix OAuth invalid_grant token errors](https://developer.nylas.com/docs/cookbook/use-cases/build/fix-invalid-grant-errors/): What triggers invalid_grant, the grant.expired webhook, and the re-authentication fix
+- [Fix Google access_denied OAuth errors](https://developer.nylas.com/docs/cookbook/use-cases/build/fix-google-access-denied/): Fix the Google access_denied error and app-not-verified warning when users connect Gmail or Workspace accounts
+- [Fix Microsoft AADSTS cross-tenant errors](https://developer.nylas.com/docs/cookbook/use-cases/build/fix-aadsts-cross-tenant/): Fix AADSTS90072 and AADSTS50020 cross-tenant errors; single-tenant vs multi-tenant app fixes
+- [Hosted vs custom OAuth](https://developer.nylas.com/docs/cookbook/use-cases/build/hosted-vs-custom-oauth/): A decision matrix covering branding, provider verification, control, setup effort, and rate-limit ownership
+- [Handle 429 rate limit errors](https://developer.nylas.com/docs/cookbook/use-cases/build/handle-rate-limit-errors/): Detect 429 errors, read Retry-After, and recover with exponential backoff and jitter across providers
+- [Handle duplicate webhook deliveries](https://developer.nylas.com/docs/cookbook/use-cases/build/handle-duplicate-webhooks/): Idempotent handlers that dedupe on the notification id so at-least-once delivery never double-processes an event
+- [Webhooks vs polling](https://developer.nylas.com/docs/cookbook/use-cases/build/webhooks-vs-polling/): Compare latency, rate-limit cost, and reliability trade-offs, plus a hybrid pattern that combines both
+- [Two-way calendar sync](https://developer.nylas.com/docs/cookbook/use-cases/sync/two-way-calendar-sync/): Bidirectional calendar sync: push app changes, pull calendar changes, and use an external-ID map to stop echo loops
+- [Connect multiple accounts per user](https://developer.nylas.com/docs/cookbook/use-cases/build/multi-account-per-user/): Let one user connect several of their own mailboxes: model many grants per user and act across every account
+- [CPaaS vs UCaaS vs CCaaS explained](https://developer.nylas.com/docs/cookbook/use-cases/build/what-is-cpaas/): Understand CPaaS vs UCaaS vs CCaaS as a developer, see how the three communications models compare in a table, and learn where an email and calendar API fits.
+- [Email API security & compliance](https://developer.nylas.com/docs/cookbook/use-cases/industries/email-api-compliance/): What a secure email API needs for enterprise compliance: scoped OAuth, revocable grants, signed webhooks, encryption in transit and at rest, and audit trails.
+- [Gmail API OAuth scopes reference](https://developer.nylas.com/docs/cookbook/use-cases/build/google-oauth-scopes/): The exact Gmail API OAuth scopes Nylas requests to read and send email plus manage Google calendars and contacts, with restricted-scope verification rules.
+- [Multi-tenant OAuth for SaaS apps](https://developer.nylas.com/docs/cookbook/use-cases/build/multi-tenant-oauth/): Build multi-tenant OAuth for your SaaS app with the Nylas Email API. One grant per account, tenant isolation, admin consent for enterprise, and token management at scale.
+- [OAuth 2.0 vs IMAP auth for email](https://developer.nylas.com/docs/cookbook/use-cases/build/oauth-vs-imap-auth/): Compare OAuth 2.0 with IMAP and basic auth for connecting email accounts, why Microsoft and Google deprecated basic auth, and which OAuth flow desktop apps should use.
+- [OAuth: Exchange Server vs Microsoft 365](https://developer.nylas.com/docs/cookbook/use-cases/build/oauth-exchange-vs-m365/): Compare OAuth for on-prem Exchange Server (EWS) versus Microsoft 365 (Graph). See the redirect-token flow, EWS credential auth, Basic Auth deprecation, and one unified API for both.
+- [One OAuth flow for Gmail and Outlook](https://developer.nylas.com/docs/cookbook/use-cases/build/oauth-gmail-and-outlook/): Implement one OAuth flow for Gmail and Outlook in the same app. Connect both providers through a single hosted flow that returns one grant per user, no separate Google Cloud and Azure projects.
+- [Store OAuth tokens securely](https://developer.nylas.com/docs/cookbook/use-cases/build/store-oauth-credentials/): Store OAuth tokens securely for email and calendar integrations. Use a grant ID instead of raw refresh tokens, encrypt at rest, and keep secrets in a vault.
+
+### Cookbook — Guides — Nylas for AI Agents
+
+Long-form AI agent workflows.
+
+- [Build an AI email triage agent](https://developer.nylas.com/docs/cookbook/agents/email-triage-agent/): Cron-driven triage into URGENT / ACTION / FYI / NOISE with auto-drafted replies
+- [Build an email support agent](https://developer.nylas.com/docs/cookbook/agents/email-support-agent/): KB-backed support drafts with confidence gates and risk tiering
+- [Reach inbox zero with an AI agent](https://developer.nylas.com/docs/cookbook/agents/inbox-zero/): Interactive 5-minute daily triage; agent sorts, drafts, archives, you approve
+- [Parse signatures for contact enrichment](https://developer.nylas.com/docs/cookbook/agents/signature-enrichment/): Regex extraction of titles, phones, LinkedIn URLs, cross-referenced for 91% accuracy
+- [Map communication patterns between orgs](https://developer.nylas.com/docs/cookbook/agents/communication-patterns/): Score every contact 0–100 across four signals; surface single-threaded accounts
+- [Sign up for a service (Agent Accounts)](https://developer.nylas.com/docs/cookbook/agent-accounts/sign-up-for-a-service/): Provision an Agent Account and catch verification email via webhook
+- [Ingest Gmail via forwarding](https://developer.nylas.com/docs/cookbook/agent-accounts/ingest-gmail-via-forwarding/): Receive incoming Gmail in an Agent Account via forwarding, then read it through the API
+- [Handle replies in an agent loop](https://developer.nylas.com/docs/cookbook/agent-accounts/handle-replies/): Webhook-driven detection of replies on an agent's inbox; route to handlers
+- [Multi-turn email conversations](https://developer.nylas.com/docs/cookbook/agent-accounts/multi-turn-conversations/): Send-receive-respond loop with persistent state spanning hours or days
+- [Prevent duplicate replies](https://developer.nylas.com/docs/cookbook/agent-accounts/prevent-duplicate-replies/): Idempotency patterns so an agent never replies twice to the same message
+- [Extract OTPs in an agent loop](https://developer.nylas.com/docs/cookbook/agent-accounts/extract-otp-code/): Receive an OTP, parse with regex or LLM fallback, return to caller
+- [Migrate from transactional email](https://developer.nylas.com/docs/cookbook/agent-accounts/migrate-from-transactional-email/): Move from SendGrid / Resend / Postmark to a two-way agent mailbox
+- [Import email signatures](https://developer.nylas.com/docs/cookbook/agent-accounts/import-email-signatures/): Pull signatures from inbound mail and reuse on outbound replies
+- [Scheduling agent with a dedicated identity](https://developer.nylas.com/docs/cookbook/use-cases/act/scheduling-agent-with-dedicated-identity/): Agent with its own mailbox that books meetings on your behalf
+- [Support agent over multi-day threads](https://developer.nylas.com/docs/cookbook/use-cases/act/support-agent-multi-day-threads/): Maintain conversation context across days of back-and-forth
+- [Connect an LLM to a user's inbox](https://developer.nylas.com/docs/cookbook/ai/connect-llm-to-inbox/): Fetch messages as model context and act through the mailbox over raw REST, no MCP or CLI
+- [Extract structured data from email with AI](https://developer.nylas.com/docs/cookbook/ai/extract-data-from-email/): Pull order numbers, invoice totals, dates, and addresses from bodies and attachments as typed JSON
+- [Summarize email threads with AI](https://developer.nylas.com/docs/cookbook/ai/summarize-email-threads/): Fetch a whole thread and condense it with an LLM, including map-reduce for long conversations
+- [Build an autonomous email agent](https://developer.nylas.com/docs/cookbook/agents/autonomous-email-agent/): Let an AI agent send and receive email unsupervised, made safe with rate caps, allowlists, and a kill switch
+- [Authenticate an AI agent to email](https://developer.nylas.com/docs/cookbook/agents/authenticate-ai-agent-email/): Authenticate an AI agent to email with OAuth grants. Compare delegated mailbox access against giving the agent its own account, with the security tradeoffs.
+- [Email API tools for AI function calling](https://developer.nylas.com/docs/cookbook/agents/email-api-function-calling/): Wrap the Nylas Email API as LLM tools for AI function calling. Map list, search, send, and reply tool schemas to real endpoints, and expose them through MCP.
+- [Feed email history into an LLM](https://developer.nylas.com/docs/cookbook/ai/email-context-for-llm/): Build LLM context from a user's mailbox with the Nylas Email API. Fetch a thread, clean the message bodies, chunk by tokens, and run retrieval over the inbox.
+- [Prevent prompt injection in email agents](https://developer.nylas.com/docs/cookbook/agents/prevent-prompt-injection/): Email is untrusted input. Defend an LLM email agent against prompt injection with data-only message bodies, scoped tools, recipient allowlists, and human approval gates.
+- [Restrict AI agent email recipients](https://developer.nylas.com/docs/cookbook/agents/restrict-agent-recipients/): Restrict an AI agent's email recipients with the Nylas Email API: allowlist recipient domains, cap send volume, and run a dry-run mode before any message leaves the mailbox.
+- [Set policies on an AI agent inbox](https://developer.nylas.com/docs/cookbook/agents/agent-email-policies/): Set policies on an AI agent inbox with the Nylas Email API: cap send volume, allowlist recipients, audit every send, and give each agent its own identity.
+- [Track email reply rates for AI agents](https://developer.nylas.com/docs/cookbook/agents/agent-track-reply-rates/): Give an AI email agent a feedback signal: measure reply rates per thread and campaign with the Nylas Email API by matching inbound replies to sent messages.
+
+### Cookbook — Recipes — Email
+
+Provider-specific tasks for working with email messages and threads.
+
+- [List Google messages](https://developer.nylas.com/docs/cookbook/email/messages/list-messages-google/): List emails from Gmail and Google Workspace
+- [List Microsoft messages](https://developer.nylas.com/docs/cookbook/email/messages/list-messages-microsoft/): List emails from Microsoft 365 and Outlook
+- [Microsoft Graph API alternative](https://developer.nylas.com/docs/cookbook/email/microsoft-graph-api-alternative/): Compare the Microsoft Graph API with a unified alternative for Outlook email and calendar: Azure setup, admin consent, throttling, and when to switch
+- [Search email messages](https://developer.nylas.com/docs/cookbook/email/search-messages/): Search email by subject, sender, recipient, or full text: Gmail, Microsoft, and IMAP native query operators and their limits
+- [How to forward an email](https://developer.nylas.com/docs/cookbook/email/forward-email/): Compose a new message that quotes the original body, re-attaches files, and prefixes the subject with Fwd
+- [Sync Gmail, Outlook, and Exchange email](https://developer.nylas.com/docs/cookbook/email/sync-multiple-providers/): Multi-provider sync with one grant per account, an initial backfill, and webhook-driven incremental updates
+- [EWS vs Microsoft Graph for email](https://developer.nylas.com/docs/cookbook/email/ews-vs-microsoft-graph/): On-prem vs Exchange Online, Basic Auth deprecation, the EWS retirement timeline, and how Nylas connects both
+- [IMAP vs the Email API](https://developer.nylas.com/docs/cookbook/email/imap-vs-email-api/): Raw IMAP FETCH/SEARCH plus separate SMTP versus one REST call for read, send, and webhooks across 6 providers
+- [Get unread email counts](https://developer.nylas.com/docs/cookbook/email/unread-message-counts/): Read each folder's unread_count in one call, or count unread messages with the unread filter and pagination
+- [List Yahoo messages](https://developer.nylas.com/docs/cookbook/email/messages/list-messages-yahoo/): List emails from Yahoo Mail
+- [List iCloud messages](https://developer.nylas.com/docs/cookbook/email/messages/list-messages-icloud/): List emails from iCloud Mail
+- [List IMAP messages](https://developer.nylas.com/docs/cookbook/email/messages/list-messages-imap/): List emails from any IMAP provider
+- [List Exchange messages](https://developer.nylas.com/docs/cookbook/email/messages/list-messages-ews/): List emails from Exchange on-premises (EWS)
+- [List Google threads](https://developer.nylas.com/docs/cookbook/email/threads/list-threads-google/): List email threads from Gmail and Google Workspace
+- [List Microsoft threads](https://developer.nylas.com/docs/cookbook/email/threads/list-threads-microsoft/): List email threads from Microsoft 365 and Outlook
+- [List Yahoo threads](https://developer.nylas.com/docs/cookbook/email/threads/list-threads-yahoo/): List email threads from Yahoo Mail
+- [List iCloud threads](https://developer.nylas.com/docs/cookbook/email/threads/list-threads-icloud/): List email threads from iCloud Mail
+- [List IMAP threads](https://developer.nylas.com/docs/cookbook/email/threads/list-threads-imap/): List email threads from any IMAP provider
+- [List Exchange threads](https://developer.nylas.com/docs/cookbook/email/threads/list-threads-ews/): List email threads from Exchange on-premises (EWS)
+- [Email threading in Gmail vs Outlook](https://developer.nylas.com/docs/cookbook/email/threads/gmail-vs-outlook-threading/): How Gmail and Outlook thread email differently, and how one thread_id normalizes both across providers
+- [Build a shared team inbox](https://developer.nylas.com/docs/cookbook/email/shared-team-inbox/): Build a shared team inbox on one mailbox worked by several agents: claim, collision avoidance, and read state
+- [Detect out-of-office and auto-replies](https://developer.nylas.com/docs/cookbook/email/detect-auto-replies/): Detect out-of-office and auto-reply messages via RFC 3834 headers and subject heuristics, so flows skip responders
+- [Send one-time passcode (OTP) emails](https://developer.nylas.com/docs/cookbook/email/send-otp-emails/): Send one-time passcode (OTP) emails via the transactional send route: generate a secure code, hash it, rate-limit
+- [Aurinko alternative for email sync](https://developer.nylas.com/docs/cookbook/email/aurinko-alternative/): Compare Aurinko with a unified email and calendar sync API. See how grants, one schema, and webhooks replace per-provider OAuth and polling, with honest tradeoffs.
+- [Build a unified inbox in React](https://developer.nylas.com/docs/cookbook/email/unified-inbox-react/): Build a unified inbox in React with the Nylas Email API: fetch messages across Gmail, Outlook, and more from one endpoint, render the list, and keep it live with webhooks.
+- [Email APIs with OAuth built in](https://developer.nylas.com/docs/cookbook/email/email-apis-with-oauth/): Compare raw provider OAuth with an email API that has OAuth built in. See how hosted OAuth covers Gmail, Outlook, and more without Google Cloud or Azure app setup.
+- [Email deliverability for developers](https://developer.nylas.com/docs/cookbook/email/email-deliverability/): Improve email deliverability for automated outreach with the Nylas Email API: authentication, real-mailbox sending, volume warmup, and bounce handling.
+- [Email threading explained](https://developer.nylas.com/docs/cookbook/email/email-threading-explained/): Understand email threading across Gmail, Outlook, and IMAP, how the Nylas threads endpoint normalizes conversations into one shape, and how to reply in-thread.
+- [EmailEngine alternative for IMAP](https://developer.nylas.com/docs/cookbook/email/emailengine-alternative/): Compare a self-hosted IMAP gateway like EmailEngine with a hosted unified email API for OAuth, webhooks, and scale across 6 providers, and learn when each one fits.
+- [Handle email sync failures](https://developer.nylas.com/docs/cookbook/email/email-sync-failures/): Detect and recover from email sync failures with the Nylas Email API: check grant status, re-authenticate, replay missed webhooks, and backfill the gap so no message is lost.
+- [How to choose an email API](https://developer.nylas.com/docs/cookbook/email/choosing-an-email-api/): How to choose an email API: compare send-only vs full mailbox access, provider coverage, OAuth, webhooks, deliverability, pricing, and compliance with a decision table.
+- [Kloudless & Unified.to alternative](https://developer.nylas.com/docs/cookbook/email/unified-api-alternative/): Compare Kloudless and Unified.to with a purpose-built email, calendar, and contacts API. See how a depth-first unified API handles Microsoft 365, Google, and iCloud.
+- [Parse an email body with an API](https://developer.nylas.com/docs/cookbook/email/parse-email-body/): Parse an email body in Python with an API. Retrieve a message, get clean HTML and plain text, and extract structured fields without writing a MIME parser.
+- [Parse email attachments with an API](https://developer.nylas.com/docs/cookbook/email/parse-email-attachments/): Download attachments from inbound email and extract structured data like invoices and receipts using the Nylas Email API, with size limits and webhook patterns.
+- [Push vs pull email sync](https://developer.nylas.com/docs/cookbook/email/push-vs-pull-sync/): Compare push (webhooks) and pull (polling, IMAP IDLE) email sync architectures. See latency, request cost, missed-change risk, and when polling is simpler with the Nylas Email API.
+- [SMTP vs REST email API explained](https://developer.nylas.com/docs/cookbook/email/smtp-vs-rest-api/): SMTP vs a REST email API explained: ports, OAuth, deliverability, and threading for both sending and reading mail. When plain SMTP is enough, and when an email API wins.
+- [SPF, DKIM & DMARC for email APIs](https://developer.nylas.com/docs/cookbook/email/spf-dkim-dmarc/): How SPF, DKIM, and DMARC affect email API deliverability, and why sending from the user mailbox inherits the provider's authentication and alignment automatically.
+- [Scale email sync to many mailboxes](https://developer.nylas.com/docs/cookbook/email/scale-email-sync/): Architecture for syncing thousands of mailboxes with the Nylas Email API: webhooks over polling, rate-limit handling, grant reconnects, and one-time backfill.
+- [Send OAuth email in PHP](https://developer.nylas.com/docs/cookbook/email/oauth-smtp-php/): Send authenticated OAuth email in PHP without wiring XOAUTH2 into PHPMailer. Make one REST call with curl or Guzzle and let token refresh happen for you.
+- [Send and parse email in one API](https://developer.nylas.com/docs/cookbook/email/send-and-parse-email-api/): Send, read, and parse email with one API. Extract clean message bodies, attachments, and thread context from inbound mail with the Nylas Email API instead of two services.
+- [Send email from Docker without SMTP](https://developer.nylas.com/docs/cookbook/email/send-email-from-docker/): Send email from a Docker container without SMTP, postfix, or sendmail. Make one HTTPS POST on port 443 to the Nylas Email API using an environment-variable API key.
+- [Send-MailMessage alternative in 2026](https://developer.nylas.com/docs/cookbook/email/send-mailmessage-alternative/): A Send-MailMessage alternative for PowerShell that sends email through a REST API with Invoke-RestMethod. Honest about when System.Net.Mail still works.
+- [SendGrid alternative for two-way email](https://developer.nylas.com/docs/cookbook/email/sendgrid-alternative/): A SendGrid alternative for two-way email: send, read, and reply in-thread from the user's real mailbox with one API. See the auth, endpoints, and when an ESP still wins.
+- [Trigger workflows from inbound email](https://developer.nylas.com/docs/cookbook/email/email-to-workflow/): Build an inbound email automation that parses incoming messages and triggers actions, using the Nylas message.created webhook and message retrieval endpoint.
+- [Unipile alternative for email & calendar](https://developer.nylas.com/docs/cookbook/email/unipile-alternative/): Compare Unipile with a unified email and calendar API for Gmail, Outlook, and more. See coverage, OAuth, contacts, and webhook differences, and when each tool fits your stack.
+- [What is an email API?](https://developer.nylas.com/docs/cookbook/email/what-is-an-email-api/): What is an email API? A clear definition of how an email API sends, reads, parses, and syncs mail over HTTPS, how it differs from SMTP and IMAP, and the unified model.
+- [What is an email parser?](https://developer.nylas.com/docs/cookbook/email/what-is-an-email-parser/): An email parser reads raw email and turns it into structured data your code can use. See how email parsing fits an AI agent pipeline, and how to read, clean, and extract.
+- [Why SMTP ports 25 & 587 are blocked](https://developer.nylas.com/docs/cookbook/email/smtp-ports-blocked/): SMTP ports 25 and 587 are blocked by cloud providers to stop spam. Learn why, and send email over HTTPS with the Nylas Email API without any SMTP ports.
+
+### Cookbook — Recipes — Calendar
+
+- [How to book a room for a meeting](https://developer.nylas.com/docs/cookbook/calendar/book-room-resources/): List room and equipment resources, then add the resource email to an event across Google and Microsoft
+- [CalDAV vs the Nylas Calendar API](https://developer.nylas.com/docs/cookbook/calendar/caldav-vs-calendar-api/): RFC 4791 XML over HTTP used by iCloud and Fastmail versus a unified REST API for auth, data model, sync, and recurrence
+
+Provider-specific tasks for working with calendar events.
+
+- [List Microsoft events](https://developer.nylas.com/docs/cookbook/calendar/events/list-events-microsoft/): Timezone normalization, Teams conferencing, admin consent
+- [List Google events](https://developer.nylas.com/docs/cookbook/calendar/events/list-events-google/): Event types, Meet conferencing, OAuth scopes
+- [List iCloud events](https://developer.nylas.com/docs/cookbook/calendar/events/list-events-icloud/): App-specific passwords, CalDAV limits
+- [List Exchange events](https://developer.nylas.com/docs/cookbook/calendar/events/list-events-ews/): On-prem networking, recurring event restrictions
+- [Create Microsoft events](https://developer.nylas.com/docs/cookbook/calendar/events/create-events-microsoft/): Write scopes, Teams, attendee notifications
+- [Create Google events](https://developer.nylas.com/docs/cookbook/calendar/events/create-events-google/): Restricted scopes, Meet auto-create
+- [Create iCloud events](https://developer.nylas.com/docs/cookbook/calendar/events/create-events-icloud/): App-specific passwords, simpler event model
+- [Create Exchange events](https://developer.nylas.com/docs/cookbook/calendar/events/create-events-ews/): Write scopes, recurring restrictions, on-prem networking
+- [Find open meeting times across calendars](https://developer.nylas.com/docs/cookbook/calendar/find-meeting-times/): Availability API for cross-provider free slots, plus Free/Busy for a single calendar
+- [RSVP to calendar event invitations](https://developer.nylas.com/docs/cookbook/calendar/rsvp-to-events/): Send yes/no/maybe responses through the user's provider, with the per-provider quirks called out
+- [Update and delete calendar events](https://developer.nylas.com/docs/cookbook/calendar/update-delete-events/): Edit event details or remove an event across providers, with calendar_id required and participant notifications handled
+- [Create and list calendars](https://developer.nylas.com/docs/cookbook/calendar/manage-calendars/): List calendars to get IDs, create calendars on Google/Microsoft, and read is_primary/read_only flags
+- [Add conferencing to calendar events](https://developer.nylas.com/docs/cookbook/calendar/add-conferencing/): Auto-create a Google Meet, Zoom, or Teams link on an event, or attach your own conferencing details
+- [Schedule rooms with virtual calendars](https://developer.nylas.com/docs/cookbook/calendar/virtual-calendars/): Host calendars for rooms, equipment, and resources with no email account, booked via the Events API
+- [Import calendar events into your app](https://developer.nylas.com/docs/cookbook/calendar/import-events/): Bulk-import events for a date range via the read-only events/import endpoint, built for storage not browsing
+- [Check calendar availability](https://developer.nylas.com/docs/cookbook/calendar/check-availability/): Return open meeting slots with the availability API: working hours, time zones, methods, buffers, rounding
+- [Create recurring events](https://developer.nylas.com/docs/cookbook/calendar/create-recurring-events/): Create repeating events with RRULE: time-zone handling, and editing one instance versus the whole series
+- [Google Calendar recurring events](https://developer.nylas.com/docs/cookbook/calendar/google-calendar-recurring-events/): Create, expand, update, and cancel Google Calendar recurring events with recurrence rules and instance IDs
+- [Google Calendar OAuth](https://developer.nylas.com/docs/cookbook/calendar/google-calendar-oauth/): Connect users to Google Calendar with hosted OAuth, least-privilege scopes, grant IDs, and token refresh
+- [Fix DTSTART and RRULE recurring event errors](https://developer.nylas.com/docs/cookbook/calendar/fix-dtstart-rrule-errors/): Fix the DTSTART not synchronized with RRULE error and undefined recurrence sets by aligning the first occurrence with the rule
+- [Sync calendar events with webhooks](https://developer.nylas.com/docs/cookbook/calendar/calendar-webhooks/): Sync Google and Outlook calendar changes in real time with one unified event/calendar webhook
+- [Google Calendar webhooks](https://developer.nylas.com/docs/cookbook/calendar/google-calendar-webhooks/): Replace Google watch-channel plumbing with one webhook for created, updated, and deleted events
+- [Check free/busy status](https://developer.nylas.com/docs/cookbook/calendar/check-free-busy/): Query busy blocks for one or more people, and see how Free/Busy differs from the availability endpoint
+- [Google Calendar API pagination and sync](https://developer.nylas.com/docs/cookbook/calendar/google-calendar-api-pagination/): nextPageToken and syncToken explained, 410 Gone recovery, recurring expansion, and the unified cursor
+- [Apple Calendar API: read and create events](https://developer.nylas.com/docs/cookbook/calendar/apple-calendar-api/): Apple has no public calendar REST API, only CalDAV. Read and create iCloud events with JSON via Nylas
+- [Microsoft Graph Calendar API alternative](https://developer.nylas.com/docs/cookbook/calendar/microsoft-graph-calendar-api/): Read and sync Outlook calendar events through one Nylas Calendar API instead of owning Graph auth, subscriptions, and time-zone mapping
+
+- [Create and send email drafts](https://developer.nylas.com/docs/cookbook/email/manage-drafts/): Create, update, send, and delete drafts that save to the user's real Drafts folder
+- [Schedule an email to send later](https://developer.nylas.com/docs/cookbook/email/schedule-send/): Set send_at to queue a message, list scheduled sends, and cancel before delivery
+- [Organize email with folders and labels](https://developer.nylas.com/docs/cookbook/email/organize-folders/): One Folders API for Gmail labels and Outlook folders, with system-folder attribute mapping
+- [Draft emails with Smart Compose](https://developer.nylas.com/docs/cookbook/email/smart-compose/): Generate a message or contextual reply from a prompt; returns a suggestion you review before sending
+- [Clean message HTML and quoted text](https://developer.nylas.com/docs/cookbook/email/clean-messages/): Strip signatures, quoted replies, and tracking junk; return plain text or markdown for display or an LLM
+- [Mark messages read, unread, or starred](https://developer.nylas.com/docs/cookbook/email/update-messages/): One PUT request to set read/unread and star state, mapped to Gmail stars, Outlook flags, and IMAP \Flagged
+- [Send large email attachments](https://developer.nylas.com/docs/cookbook/email/send-large-attachments/): Upload files up to 150 MB and reference by ID on Microsoft accounts via Graph; 25 MB standard elsewhere
+- [Send transactional email from a domain](https://developer.nylas.com/docs/cookbook/email/transactional-send/): Domain route for password resets and notifications, no user grant, with deliverability webhooks
+- [Send email with reusable templates](https://developer.nylas.com/docs/cookbook/email/email-templates/): Store Mustache templates with {{variables}}, render per recipient, then send through the user's account
+- [Read a single message or thread](https://developer.nylas.com/docs/cookbook/email/get-message-thread/): Fetch the full body, headers, and attachment metadata of one message or thread by ID
+- [Read and parse incoming email](https://developer.nylas.com/docs/cookbook/email/read-parse-incoming-email/): Get parsed from, subject, body, and attachment fields from any provider with one GET, no MIME parsing
+- [IMAP vs REST email API](https://developer.nylas.com/docs/cookbook/email/imap-vs-rest-email-api/): How IMAP and a REST email API differ for reading mail: connections, providers, parsing, webhooks, and when to use each
+- [SMTP vs REST email API](https://developer.nylas.com/docs/cookbook/email/smtp-vs-rest-email-api/): How SMTP and a REST email API differ for sending: auth, deliverability, threading, tracking, and when to use each
+- [Send Outlook email](https://developer.nylas.com/docs/cookbook/email/send-outlook-email/): Send Outlook/Microsoft 365 mail with attachments in one call, the Graph sendMail alternative, no Azure app
+- [Build a unified inbox](https://developer.nylas.com/docs/cookbook/email/unified-inbox/): Merge Gmail, Outlook, and more into one inbox with a shared schema: list per account, merge, sort, paginate
+- [Gmail API pagination and sync explained](https://developer.nylas.com/docs/cookbook/email/gmail-api-pagination-sync/): nextPageToken and historyId explained, the 404 fallback, quota math, and the unified cursor alternative
+- [Gmail labels API: create and manage labels](https://developer.nylas.com/docs/cookbook/email/gmail-labels-api/): users.labels explained: system vs user labels, batchModify, the 5,000-label cap, and the folders mapping
+- [Gmail SMTP settings](https://developer.nylas.com/docs/cookbook/email/gmail-smtp-settings/): smtp.gmail.com ports 587/465, app passwords, sending limits, error codes, and sending over HTTPS instead
+- [Outlook SMTP settings](https://developer.nylas.com/docs/cookbook/email/outlook-smtp-settings/): smtp.office365.com port 587, XOAUTH2 Modern Auth, per-mailbox SMTP AUTH, sending limits, and error fixes
+- [Gmail API quotas and limits in 2026](https://developer.nylas.com/docs/cookbook/email/gmail-api-quotas/): May 2026 per-minute limits, per-method unit costs, the billing threshold, and quota-free agent mailboxes
+- [Build a ChatGPT email plugin](https://developer.nylas.com/docs/cookbook/agents/chatgpt-email-plugin/): Expose list/get/send endpoints as LLM tools, API key server-side, confirm-before-send guardrails
+- [Build an email analytics dashboard](https://developer.nylas.com/docs/cookbook/email/email-analytics-dashboard/): Track opens, clicks, replies, send volume, and bounces with webhooks, then aggregate per campaign
+- [Build an email template builder in React](https://developer.nylas.com/docs/cookbook/email/react-template-builder/): A React UI on the Templates API with a create/edit form, live preview, and variable insertion
+- [Connect Exchange (EWS) accounts](https://developer.nylas.com/docs/cookbook/email/connect-exchange-ews/): Connect on-premises Microsoft Exchange accounts with the EWS connector, auth, and autodiscovery
+- [Send email reliably at scale](https://developer.nylas.com/docs/cookbook/email/send-email-at-scale/): Design a high-throughput send pipeline: per-user provider caps, a queue and worker pattern, and backoff
+- [Backfill historical email](https://developer.nylas.com/docs/cookbook/email/backfill-historical-email/): Import a user's full mailbox history after connecting an account: page through every message and throttle
+- [Add attachments to a calendar event](https://developer.nylas.com/docs/cookbook/calendar/event-attachments/): How to attach files and links to a calendar event with the Nylas Calendar API. See what events support across providers, plus the description-link and conferencing approach.
+- [Cronofy alternative for calendar APIs](https://developer.nylas.com/docs/cookbook/calendar/cronofy-alternative/): Compare Cronofy with a unified calendar API alternative for Google, Microsoft, and iCloud. See Free/Busy, availability, and OAuth tradeoffs, and when Cronofy still fits.
+- [Group availability across calendars](https://developer.nylas.com/docs/cookbook/calendar/group-availability/): Compute shared free time for a team with the Nylas Calendar API. Intersect multiple participants' calendars across Google, Microsoft, and iCloud in one request.
+- [Outlook Calendar API vs Graph](https://developer.nylas.com/docs/cookbook/calendar/outlook-vs-graph-calendar/): Clarify the Outlook Calendar API versus Microsoft Graph, read Outlook events through one unified endpoint, and avoid Graph throttling on Microsoft 365 calendars.
+- [Scheduling API vs calendar API](https://developer.nylas.com/docs/cookbook/calendar/scheduling-vs-calendar-api/): Compare a scheduling API with a calendar API: when to use raw event CRUD versus availability and booking flows. See real Nylas endpoints and how to pick.
+- [Sync calendars across providers](https://developer.nylas.com/docs/cookbook/calendar/cross-provider-calendar-sync/): Sync calendar events across Google, Outlook, and iCloud through one Nylas API schema and webhooks, and handle provider differences in event IDs and recurrence.
+
+### Cookbook — Recipes — Notetaker
+
+Send a bot to a meeting to record, transcribe, and summarize it.
+
+- [Meeting notetaker API guide](https://developer.nylas.com/docs/cookbook/notetaker/notetaker-api-guide/): Overview of the Notetaker API across Zoom, Google Meet, and Teams, with a recipe for every step
+- [Transcribe a Zoom meeting](https://developer.nylas.com/docs/cookbook/notetaker/transcribe-zoom-meeting/): Send a bot to a Zoom call, pull the transcript and recording, with join-link and waiting-room notes
+- [Transcribe a Google Meet meeting](https://developer.nylas.com/docs/cookbook/notetaker/transcribe-google-meet/): Send a bot to a Meet call, pull the transcript and recording, with Workspace admission notes
+- [Transcribe a Microsoft Teams meeting](https://developer.nylas.com/docs/cookbook/notetaker/transcribe-teams-meeting/): Send a bot to a Teams call, pull the transcript and recording, with lobby and tenant-policy notes
+- [Get a meeting transcript and recording](https://developer.nylas.com/docs/cookbook/notetaker/get-transcript-and-recording/): Download the transcript, recording, summary, and action items before the one-hour links expire
+- [Get notified when a transcript is ready](https://developer.nylas.com/docs/cookbook/notetaker/notetaker-webhooks/): Subscribe to notetaker.media and notetaker.meeting_state so your app reacts when media is ready
+- [Email a meeting summary after a call](https://developer.nylas.com/docs/cookbook/notetaker/email-meeting-summary/): React to notetaker.media, fetch the summary and transcript, and send a recap through a mailbox
+- [Extract meeting action items with AI](https://developer.nylas.com/docs/cookbook/notetaker/extract-action-items-ai/): Turn a meeting transcript into typed action items with assignee, task, and due date using your own LLM
+- [Best meeting transcription APIs (2026)](https://developer.nylas.com/docs/cookbook/notetaker/meeting-transcription-apis-compared/): Compare meeting transcription APIs in 2026: Recall.ai, AssemblyAI, Fireflies, Deepgram, and the Nylas Notetaker API on bot-based recording, calendar join, and webhooks.
+- [Meeting recorder vs transcription API](https://developer.nylas.com/docs/cookbook/notetaker/recorder-vs-transcription/): Recorder vs transcription vs notetaker API: a recorder captures audio and video, transcription turns speech into text, and the Nylas Notetaker API does both plus summaries.
+- [Recall.ai alternative: meeting bots](https://developer.nylas.com/docs/cookbook/notetaker/recall-ai-alternative/): Compare Recall.ai with the Nylas Notetaker API for recording and transcribing Zoom, Teams, and Meet calls. See the bot setup, transcript retrieval, webhooks, and signed URLs.
+- [Record Zoom, Teams & Meet with one API](https://developer.nylas.com/docs/cookbook/notetaker/record-zoom-teams-meet/): Add Zoom, Microsoft Teams, and Google Meet recording to your app with one meeting bot API. Send a Notetaker bot to any join URL and get back a transcript and recording.
+- [Secure meeting recordings with URLs](https://developer.nylas.com/docs/cookbook/notetaker/secure-recordings-signed-urls/): Deliver meeting recordings and transcripts through expiring signed URLs with the Nylas Notetaker API. Fetch the bytes, store them in your own bucket, and serve playback safely.
+- [What is a notetaker API?](https://developer.nylas.com/docs/cookbook/notetaker/what-is-a-notetaker-api/): A notetaker API sends a bot into Zoom, Teams, and Meet calls to record, transcribe, and return media through a webhook. See how the Nylas Notetaker API works.
+
+### Cookbook — Recipes — Scheduler
+
+Add a booking page to your app and customize the flow.
+
+- [Embed a scheduling page](https://developer.nylas.com/docs/cookbook/scheduler/embed-scheduling-page/): Add a Calendly-style booking page: create a configuration, embed the component, capture bookings
+- [Customize the booking flow](https://developer.nylas.com/docs/cookbook/scheduler/customize-booking-flow/): Add booking-form fields, set confirmation and redirect, enable reschedule and cancel, and theme the page
+- [Prevent double-booking](https://developer.nylas.com/docs/cookbook/scheduler/prevent-double-booking/): Prevent double-booking with the managed Scheduler path or a DIY Calendar API path plus an app-side lock
+- [Calendly API alternative for scheduling](https://developer.nylas.com/docs/cookbook/scheduler/calendly-api-alternative/): Compare embedding Calendly with building your own scheduling on the Nylas Scheduler API and availability endpoint. See the tradeoffs, real endpoints, and when Calendly is enough.
+- [Employee shift scheduling via API](https://developer.nylas.com/docs/cookbook/scheduler/shift-scheduling-api/): Build employee shift scheduling with an API: check team availability, create shifts as calendar events, push them to worker calendars, and send shift reminders.
+- [Healthcare appointment booking API](https://developer.nylas.com/docs/cookbook/scheduler/healthcare-appointment-booking/): Build patient appointment booking with the Nylas scheduling API: real-time provider availability, double-booking prevention, reminders, and HIPAA-aware compliance notes.
+- [Round-robin scheduling with an API](https://developer.nylas.com/docs/cookbook/scheduler/round-robin-scheduling/): Build round-robin scheduling with the Nylas Calendar API: check availability across a team's calendars, then assign each booking to the next free member fairly.
+- [Scheduling API alternatives compared](https://developer.nylas.com/docs/cookbook/scheduler/scheduling-api-alternatives/): Compare scheduling APIs on availability computation, double-booking prevention, multi-provider calendar reach, and conferencing links. See where Nylas, Cronofy, Cal.com, and OnSched differ.
+- [What is a scheduling API?](https://developer.nylas.com/docs/cookbook/scheduler/what-is-a-scheduling-api/): What is a scheduling API? It computes availability, renders booking pages, prevents double-booking, and adds conferencing. See how the Nylas Scheduler API works.
+
+### Cookbook — Recipes — Contacts
+
+Tasks for reading and syncing contacts across providers.
+
+- [Nylas Contacts API guide](https://developer.nylas.com/docs/cookbook/contacts/contacts-api-guide/): Overview of the Contacts API across Google and Microsoft, with the unified schema and a recipe per task
+- [List Google contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-google/): Fetch Gmail/Workspace contacts (the People API alternative), with groups, photos, and rate limits
+- [List Microsoft contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-microsoft/): Fetch Outlook/Microsoft 365 contacts (the Graph alternative), with contact folders and throttling notes
+- [List iCloud contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-icloud/): Fetch iCloud contacts in one call: CardDAV, app-specific passwords, the source filter, and sync behavior
+- [List Yahoo contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-yahoo/): Fetch Yahoo contacts: OAuth and app-password auth, the source filter, the 90-day cache, and IMAP sync
+- [List IMAP contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-imap/): Fetch IMAP contacts: app-password auth, the source field, compound source filters, and grant limits
+- [List Exchange contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-ews/): Fetch on-premises Exchange (EWS) contacts: the EWS connector, the source parameter, and enterprise gotchas
+- [List directory contacts](https://developer.nylas.com/docs/cookbook/contacts/list-directory-contacts/): Fetch organization directory contacts via the source parameter (address_book, domain, inbox) and required scopes
+- [Create and update contacts](https://developer.nylas.com/docs/cookbook/contacts/create-and-update-contacts/): Create, update, and delete contacts, with writable fields/sources per provider and required scopes
+- [Search contacts](https://developer.nylas.com/docs/cookbook/contacts/search-contacts/): Filter by exact email, phone, group, or source, and match names client-side for fuzzy search
+- [Build recipient autocomplete](https://developer.nylas.com/docs/cookbook/contacts/recipient-autocomplete/): Gmail-style To-field suggestions: fetch and cache contacts, filter on the client, include unsaved senders
+- [List and sync contacts from Google and Outlook](https://developer.nylas.com/docs/cookbook/contacts/list-and-sync-contacts/): One Contacts API call across providers, inbox-source autocomplete, contact.updated/deleted webhooks
+- [Organize contacts with groups](https://developer.nylas.com/docs/cookbook/contacts/contact-groups/): List Gmail groups / Outlook categories and filter contacts by group (not supported on EWS)
+- [Sync Google Contacts to a CRM](https://developer.nylas.com/docs/cookbook/contacts/sync-google-contacts-crm/): Push a user's Google Contacts into Salesforce or HubSpot with the Contacts API, then keep both sides in sync
+- [Google Contacts API JavaScript example](https://developer.nylas.com/docs/cookbook/contacts/google-contacts-api-javascript/): Display Google Contacts in a JavaScript app with a server route that keeps your API key private
+- [Google Contacts API PHP example](https://developer.nylas.com/docs/cookbook/contacts/google-contacts-api-php/): Fetch and display Google Contacts from PHP using REST requests, cursor pagination, and source filters
+- [Extract contacts from email threads](https://developer.nylas.com/docs/cookbook/contacts/extract-contacts-from-email/): Use the Nylas API to extract contact information from email threads, parse names, addresses, and signatures across Gmail and Outlook, then write clean records to your CRM.
+- [Parse email addresses to enrich contacts](https://developer.nylas.com/docs/cookbook/contacts/parse-email-addresses/): Parse email addresses from messages in Python and enrich a contact database. Pull senders and recipients with the Nylas Email API and upsert them as contacts.
+
+### Cookbook — Recipes — CLI
+
+Cross-provider tasks driven by the Nylas CLI.
+
+- [Extract OTP / 2FA codes](https://developer.nylas.com/docs/cookbook/cli/extract-otp-codes/): Single-shot capture and watch mode for CI flows
+- [Record Zoom / Meet / Teams](https://developer.nylas.com/docs/cookbook/cli/record-meetings/): Send a Notetaker bot to any meeting URL
+- [CLI mail merge](https://developer.nylas.com/docs/cookbook/cli/mail-merge/): CSV-driven personalized sends with timezone-aware scheduling
+- [Build an LLM agent with email tools](https://developer.nylas.com/docs/cookbook/cli/llm-agent-with-tools/): Wrap the CLI as subprocess tools for OpenAI / Anthropic agent loops
+- [Connect voice agents](https://developer.nylas.com/docs/cookbook/cli/connect-voice-agents/): LiveKit / Vapi / Retell email + calendar via subprocess tools
+- [Build a Manus skill for Nylas](https://developer.nylas.com/docs/cookbook/cli/manus-skill/): Package the CLI as a Manus skill: SKILL.md + install script
+- [Send email from bash or cron](https://developer.nylas.com/docs/cookbook/cli/send-email-bash-cron/): Send email from a bash script or scheduled cron job: cron syntax, exit codes, logging, idempotency
+- [Send email from PowerShell](https://developer.nylas.com/docs/cookbook/cli/send-email-powershell/): Send email from a Windows PowerShell script with Invoke-RestMethod, secure key storage, Task Scheduler
+- [Send email from CI/CD pipelines](https://developer.nylas.com/docs/cookbook/cli/email-in-cicd/): Send build and deploy notifications from GitHub Actions and GitLab CI with curl and a verified domain
+
+### Cookbook — Recipes — MCP integrations
+
+How to connect specific MCP-compatible AI assistants to Nylas.
+
+- [Use Nylas MCP with Claude Code](https://developer.nylas.com/docs/cookbook/ai/mcp/claude-code/): Connect Anthropic Claude Code to Nylas for email, calendar, and contacts access
+- [Use Nylas MCP with Codex CLI](https://developer.nylas.com/docs/cookbook/ai/mcp/codex-cli/): Connect OpenAI Codex CLI to Nylas for email, calendar, and contacts access
+- [Install OpenClaw plugin](https://developer.nylas.com/docs/cookbook/ai/openclaw/install-plugin/): Give OpenClaw agents access to Nylas APIs
+
+## API References
+
+Interactive API references powered by Scalar, plus Postman collections for quick testing.
+
+- [API Reference](https://developer.nylas.com/docs/reference/api/): Unified interactive API reference — Email, Calendar, Contacts, Notetaker, Scheduler, and Administration endpoints
+- [Error Codes](https://developer.nylas.com/docs/api/errors/): HTTP error codes and Nylas-specific error responses
+
+## SDKs
+
+Official Nylas SDKs for server-side integration.
+
+- [Node.js SDK](https://developer.nylas.com/docs/v3/sdks/node/): Official Nylas Node.js/TypeScript SDK
+- [Python SDK](https://developer.nylas.com/docs/v3/sdks/python/): Official Nylas Python SDK
+- [Ruby SDK](https://developer.nylas.com/docs/v3/sdks/ruby/): Official Nylas Ruby SDK
+- [Kotlin/Java SDK](https://developer.nylas.com/docs/v3/sdks/kotlin-java/): Official Nylas Kotlin/Java SDK
+
+## Best Practices
+
+Recommendations for building reliable integrations with Nylas.
+
+- [Error Handling](https://developer.nylas.com/docs/dev-guide/best-practices/error-handling/): Handle API errors gracefully
+- [Rate Limits](https://developer.nylas.com/docs/dev-guide/best-practices/rate-limits/): Understand and work within rate limits
+- [Webhook Best Practices](https://developer.nylas.com/docs/dev-guide/best-practices/webhook-best-practices/): Reliable webhook consumption
+- [Managing Grants](https://developer.nylas.com/docs/dev-guide/best-practices/manage-grants/): Grant lifecycle management
+- [Search](https://developer.nylas.com/docs/dev-guide/best-practices/search/): Search across providers with search_query_native
+- [Email Deliverability](https://developer.nylas.com/docs/dev-guide/best-practices/improving-email-delivery/): Improve email delivery rates
+
+## Platform
+
+Nylas platform features, infrastructure, and integrations.
+
+- [Platform Overview](https://developer.nylas.com/docs/dev-guide/platform/): Nylas platform features and infrastructure
+- [Data Residency](https://developer.nylas.com/docs/dev-guide/platform/data-residency/): US and EU data residency options
+- [Deleting resources and data](https://developer.nylas.com/docs/dev-guide/platform/deleting-resources/): What happens to grants and data when you delete a connector, credential, workspace, or application
+- [Nylas MCP Server](https://developer.nylas.com/docs/dev-guide/mcp/): Connect AI agents to Nylas via Model Context Protocol
+- [AI Prompts for Building with Nylas](https://developer.nylas.com/docs/v3/getting-started/ai-prompts/): System prompts and context files for Claude Code, Cursor, Copilot, and other AI coding tools
+
+## Optional
+
+The following sections provide supplementary context. LLM agents with limited context windows can skip these.
+
+### Provider Setup Guides
+
+Step-by-step setup guides for connecting each email provider to Nylas.
+
+- [Google Provider Guide](https://developer.nylas.com/docs/provider-guides/google/): Google OAuth setup, scopes, and verification
+- [Shared GCP App](https://developer.nylas.com/docs/provider-guides/google/shared-gcp-app/): Skip Google's OAuth verification by using the Nylas Shared GCP project
+- [Microsoft Provider Guide](https://developer.nylas.com/docs/provider-guides/microsoft/): Azure AD app setup and admin consent
+- [Yahoo Authentication](https://developer.nylas.com/docs/provider-guides/yahoo-authentication/): Yahoo OAuth and IMAP setup
+- [iCloud Provider Guide](https://developer.nylas.com/docs/provider-guides/icloud/): iCloud app-specific passwords and setup
+- [IMAP Provider Guide](https://developer.nylas.com/docs/provider-guides/imap/): Generic IMAP configuration
+- [Exchange On-Premises](https://developer.nylas.com/docs/provider-guides/exchange-on-prem/): Exchange EWS setup
+- [App Passwords](https://developer.nylas.com/docs/provider-guides/app-passwords/): Provider-specific app password instructions
+
+### Support and Troubleshooting
+
+- [Support](https://developer.nylas.com/docs/support/): Troubleshooting, billing, and GDPR
+- [Expert Professional Services](https://developer.nylas.com/docs/support/professional-services/): Hands-on engineer sessions for OAuth setup, provider verification, architecture reviews, and webhook scaling
+
+### Changelogs
+
+- [Changelogs](https://developer.nylas.com/docs/changelogs/): Product, SDK, CLI, and API updates

@@ -1,0 +1,128 @@
+{
+  "item": [
+    {
+      "id": "9b9a5405-adcf-41e0-9e60-0d3fcdfab083",
+      "name": "Threads",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "4933a50d-2cee-4434-a8ab-f4777d07328a",
+          "name": "List threads",
+          "request": {
+            "name": "List threads",
+            "description": {},
+            "url": {
+              "path": [
+                "v3",
+                "grants",
+                ":grant_id",
+                "threads"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "grant_id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6bdb6f7f-36b0-4d7b-9748-a0452f41d3a1",
+              "name": "A list of threads.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v3",
+                    "grants",
+                    ":grant_id",
+                    "threads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "grant_id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.us.nylas.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "21000e7b-5573-4a1d-8054-9a5f2545ec7e",
+    "name": "Nylas API (v3) Admin Threads API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Nylas provides unified APIs for email, calendar, contacts, and\nscheduling across many underlying providers (Google, Microsoft, IMAP,\netc.). Resources are scoped to a grant that represents an end-user\nconnection. Endpoint scaffold below is derived from the public v3\ndeveloper documentation at https://developer.nylas.com/docs/.\n\n\nContact Support:\n Name: Nylas Developers",
+      "type": "text/plain"
+    }
+  }
+}

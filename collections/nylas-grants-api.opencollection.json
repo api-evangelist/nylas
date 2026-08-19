@@ -1,0 +1,71 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Nylas API (v3) Admin Grants API",
+    "version": "3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Grants",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List grants",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.us.nylas.com/v3/grants"
+          },
+          "docs": "List grants"
+        },
+        {
+          "info": {
+            "name": "Retrieve a grant",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.us.nylas.com/v3/grants/:grant_id",
+            "params": [
+              {
+                "name": "grant_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Retrieve a grant"
+        },
+        {
+          "info": {
+            "name": "Delete a grant",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.us.nylas.com/v3/grants/:grant_id",
+            "params": [
+              {
+                "name": "grant_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a grant"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

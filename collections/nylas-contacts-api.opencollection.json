@@ -1,0 +1,42 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Nylas API (v3) Admin Contacts API",
+    "version": "3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Contacts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List contacts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.us.nylas.com/v3/grants/:grant_id/contacts",
+            "params": [
+              {
+                "name": "grant_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List contacts"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

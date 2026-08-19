@@ -1,0 +1,57 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Nylas API (v3) Admin Auth API",
+    "version": "3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Auth",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a custom authentication grant",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.us.nylas.com/v3/connect/custom"
+          },
+          "docs": "Create a custom authentication grant"
+        },
+        {
+          "info": {
+            "name": "Begin hosted OAuth authentication",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.us.nylas.com/v3/connect/auth"
+          },
+          "docs": "Begin hosted OAuth authentication"
+        },
+        {
+          "info": {
+            "name": "Exchange an authorization code for tokens",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.us.nylas.com/v3/connect/token"
+          },
+          "docs": "Exchange an authorization code for tokens"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
