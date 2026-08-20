@@ -24,6 +24,13 @@ access: 3rd-Party
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/nylas.png
 tags:
   - Calendar
+  - Communications
+  - Contacts
+  - Email
+  - Messaging
+  - Scheduling
+tags_raw:
+  - Calendar
   - Communication
   - Contacts
   - Email
@@ -43,6 +50,13 @@ apis:
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
+  - Calendar
+  - Communications
+  - Contacts
+  - Email
+  - Messaging
+  - Scheduling
+  tags_raw:
   - Calendar
   - Communication
   - Contacts
@@ -96,6 +110,8 @@ apis:
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
+  - Authentication
+  tags_raw:
   - Auth
   properties:
   - type: OpenAPI
@@ -136,6 +152,8 @@ apis:
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
+  - Event
+  tags_raw:
   - Events
   properties:
   - type: OpenAPI
@@ -156,6 +174,8 @@ apis:
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
+  - Message
+  tags_raw:
   - Messages
   properties:
   - type: OpenAPI
