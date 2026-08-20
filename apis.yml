@@ -64,6 +64,8 @@ apis:
   - Messaging
   - Scheduling
   properties:
+  - type: OpenAPI
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
   - type: Documentation
     url: https://developer.nylas.com/docs/
   - type: APIReference
@@ -103,7 +105,7 @@ apis:
   - Admin
   properties:
   - type: OpenAPI
-    url: openapi/nylas-admin-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-admin.yaml
 - aid: nylas:nylas-auth-api
   name: Nylas Auth API
   description: The Auth API from Nylas — 3 operation(s) for auth.
@@ -115,7 +117,7 @@ apis:
   - Auth
   properties:
   - type: OpenAPI
-    url: openapi/nylas-auth-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-admin.yaml
 - aid: nylas:nylas-calendars-api
   name: Nylas Calendars API
   description: The Calendars API from Nylas — 1 operation(s) for calendars.
@@ -125,7 +127,7 @@ apis:
   - Calendars
   properties:
   - type: OpenAPI
-    url: openapi/nylas-calendars-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
 - aid: nylas:nylas-contacts-api
   name: Nylas Contacts API
   description: The Contacts API from Nylas — 1 operation(s) for contacts.
@@ -135,7 +137,7 @@ apis:
   - Contacts
   properties:
   - type: OpenAPI
-    url: openapi/nylas-contacts-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
 - aid: nylas:nylas-drafts-api
   name: Nylas Drafts API
   description: The Drafts API from Nylas — 1 operation(s) for drafts.
@@ -145,7 +147,7 @@ apis:
   - Drafts
   properties:
   - type: OpenAPI
-    url: openapi/nylas-drafts-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
 - aid: nylas:nylas-events-api
   name: Nylas Events API
   description: The Events API from Nylas — 1 operation(s) for events.
@@ -157,7 +159,7 @@ apis:
   - Events
   properties:
   - type: OpenAPI
-    url: openapi/nylas-events-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
 - aid: nylas:nylas-grants-api
   name: Nylas Grants API
   description: The Grants API from Nylas — 2 operation(s) for grants.
@@ -167,7 +169,7 @@ apis:
   - Grants
   properties:
   - type: OpenAPI
-    url: openapi/nylas-grants-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-admin.yaml
 - aid: nylas:nylas-messages-api
   name: Nylas Messages API
   description: The Messages API from Nylas — 1 operation(s) for messages.
@@ -179,7 +181,7 @@ apis:
   - Messages
   properties:
   - type: OpenAPI
-    url: openapi/nylas-messages-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
 - aid: nylas:nylas-scheduling-api
   name: Nylas Scheduling API
   description: The Scheduling API from Nylas — 3 operation(s) for scheduling.
@@ -189,7 +191,7 @@ apis:
   - Scheduling
   properties:
   - type: OpenAPI
-    url: openapi/nylas-scheduling-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-scheduler.yaml
 - aid: nylas:nylas-threads-api
   name: Nylas Threads API
   description: The Threads API from Nylas — 1 operation(s) for threads.
@@ -199,7 +201,7 @@ apis:
   - Threads
   properties:
   - type: OpenAPI
-    url: openapi/nylas-threads-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
 common:
   - type: AgenticAccess
     url: agentic-access/nylas-agentic-access.yml
@@ -229,6 +231,62 @@ common:
     url: https://status.nylas.com/
   - type: LlmsText
     url: https://developer.nylas.com/llms.txt
+  - type: DeveloperPortal
+    url: https://developer.nylas.com/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: SDKs
+    name: Node.js SDK
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    name: Python SDK
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    name: Ruby SDK
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    name: Java/Kotlin SDK
+    url: https://github.com/nylas/nylas-java
+  - type: CLI
+    url: https://cli.nylas.com/
+  - type: Postman
+    url: https://developer.nylas.com/docs/v3/api-references/postman/
+  - type: AgentSkills
+    url: https://developer.nylas.com/.well-known/agent-skills/index.json
+  - type: Support
+    url: https://developer.nylas.com/docs/support/
+  - type: ChangeLog
+    url: https://developer.nylas.com/docs/changelogs/
+  - type: DeprecationPolicy
+    url: https://developer.nylas.com/docs/support/product-lifecycle/
+  - type: Security
+    url: https://www.nylas.com/security/
+  - type: Compliance
+    url: https://trust.nylas.com/
+  - type: Webhooks
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: Idempotency
+    url: https://developer.nylas.com/docs/v3/email/idempotent-send/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: MCPServer
+    name: Nylas MCP Server
+    url: https://mcp.us.nylas.com
+  - type: MCPServer
+    name: Nylas MCP Server manifest
+    url: mcp/nylas-mcp.yml
+  - type: APICatalog
+    url: https://developer.nylas.com/.well-known/api-catalog
+  - type: WellKnown
+    url: well-known/nylas-well-known.yml
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

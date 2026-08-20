@@ -1,0 +1,104 @@
+generated: '2026-08-20'
+method: provider-published
+authored_by: Nylas
+description: >-
+  Results of probing the /.well-known/ discovery surface for the Nylas developer
+  host and for every base host in apis.yml (baseURL) and the OpenAPI servers[]
+  (https://api.us.nylas.com, https://api.eu.nylas.com), plus the MCP host.
+  Status is the HTTP code observed at fetch time. The discovery surface is served
+  from the developer host (developer.nylas.com), not from the API hosts: the API
+  hosts are the callable surface and answer 404 for discovery paths by design.
+  developer.nylas.com additionally advertises every document below from an
+  RFC 8288 Link header on every page.
+link_header:
+  host: https://developer.nylas.com
+  relations:
+    - rel: api-catalog
+      href: /.well-known/api-catalog
+    - rel: mcp-server-card
+      href: /.well-known/mcp/server-card.json
+      type: application/json
+    - rel: agent-skills
+      href: /.well-known/agent-skills/index.json
+      type: application/json
+    - rel: service-desc
+      href: /_spec-files/nylas-api.yaml
+      type: application/yaml
+    - rel: service-doc
+      href: /docs/reference/api/
+    - rel: describedby
+      href: /llms.txt
+      type: text/plain
+    - rel: alternate
+      href: /llms-full.txt
+      type: text/markdown
+hosts:
+  - host: https://developer.nylas.com
+    documents:
+      - path: /.well-known/api-catalog
+        status: 200
+        type: application/linkset+json
+        note: >-
+          RFC 9727 linkset. Carries service-desc, service-doc and status links
+          for both the US and EU API base URLs.
+      - path: /.well-known/mcp/server-card.json
+        status: 200
+        type: application/json
+        note: MCP server card for the hosted Nylas MCP server. See mcp/nylas-mcp.yml.
+      - path: /.well-known/agent-skills/index.json
+        status: 200
+        type: application/json
+        note: >-
+          Agent Skills discovery index (schemas.agentskills.io 0.2.0) pointing at
+          two provider-authored skills in github.com/nylas/skills.
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+  - host: https://api.us.nylas.com
+    documents:
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+  - host: https://api.eu.nylas.com
+    documents:
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+  - host: https://mcp.us.nylas.com
+    documents:
+      - path: /.well-known/oauth-protected-resource
+        status: 401
+        type: application/json
+        note: >-
+          Every path on the MCP host answers 401 without a Bearer token,
+          including /.well-known/*. Auth is a Nylas API key, not OAuth, so there
+          is no RFC 9728 protected-resource document to serve.
+robots:
+  host: https://developer.nylas.com
+  content_signal: search=yes, ai-input=yes, ai-train=yes
+  note: >-
+    robots.txt carries a Content-Signal declaration and explicit Allow rules for
+    GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, Claude-Web, anthropic-ai and
+    Google-Extended.
+checked: '2026-08-20'
