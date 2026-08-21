@@ -21,6 +21,9 @@ link_header:
     - rel: agent-skills
       href: /.well-known/agent-skills/index.json
       type: application/json
+    - rel: agent-card
+      href: /.well-known/agent-card.json
+      type: application/json
     - rel: service-desc
       href: /_spec-files/nylas-api.yaml
       type: application/yaml
@@ -52,9 +55,17 @@ hosts:
           Agent Skills discovery index (schemas.agentskills.io 0.2.0) pointing at
           two provider-authored skills in github.com/nylas/skills.
       - path: /.well-known/security.txt
-        status: 404
+        status: 200
+        type: text/plain
+        note: >-
+          RFC 9116. Contact security@nylas.com, policy at
+          https://www.nylas.com/security/, Expires 2027-08-01.
       - path: /.well-known/agent-card.json
-        status: 404
+        status: 200
+        type: application/json
+        note: >-
+          Agent card declaring the MCP and REST interfaces and ten skills. See
+          a2a/nylas-a2a.yml. Deliberately declares no A2A protocolVersion.
       - path: /.well-known/openid-configuration
         status: 404
       - path: /.well-known/oauth-authorization-server

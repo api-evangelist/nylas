@@ -1,0 +1,127 @@
+{
+  "name": "Nylas",
+  "description": "Agent-callable access to email, calendar and contacts across Gmail, Outlook, Exchange, iCloud, Yahoo and any IMAP provider. A grant represents one authenticated mailbox and calendar; Agent Accounts provision a Nylas-hosted mailbox and calendar for an autonomous agent without an OAuth flow.",
+  "version": "1.0.0",
+  "url": "https://mcp.us.nylas.com",
+  "preferredTransport": "STREAMABLE_HTTP",
+  "provider": {
+    "organization": "Nylas, Inc.",
+    "url": "https://www.nylas.com/"
+  },
+  "documentationUrl": "https://developer.nylas.com/docs/dev-guide/mcp/",
+  "iconUrl": "https://developer.nylas.com/android-chrome-192x192.png",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "defaultInputModes": ["application/json"],
+  "defaultOutputModes": ["application/json"],
+  "securitySchemes": {
+    "nylasApiKey": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "NYLAS_API_KEY",
+      "description": "A Nylas API key presented as a Bearer token. The same key used for direct REST calls. Generate one at https://dashboard-v3.nylas.com/."
+    }
+  },
+  "security": [{ "nylasApiKey": [] }],
+  "additionalInterfaces": [
+    {
+      "url": "https://mcp.us.nylas.com",
+      "transport": "STREAMABLE_HTTP",
+      "description": "Model Context Protocol server, US region."
+    },
+    {
+      "url": "https://mcp.eu.nylas.com",
+      "transport": "STREAMABLE_HTTP",
+      "description": "Model Context Protocol server, EU region."
+    },
+    {
+      "url": "https://api.us.nylas.com",
+      "transport": "HTTP+JSON",
+      "description": "Nylas v3 REST API, US region. Described by the OpenAPI contract below."
+    },
+    {
+      "url": "https://api.eu.nylas.com",
+      "transport": "HTTP+JSON",
+      "description": "Nylas v3 REST API, EU region. Described by the OpenAPI contract below."
+    }
+  ],
+  "skills": [
+    {
+      "id": "email",
+      "name": "Email",
+      "description": "List, search, read and send email messages and threads. Create, edit and send drafts. Sending requires a preceding confirmation call over MCP.",
+      "tags": ["mcp", "rest", "email"],
+      "examples": [
+        "Find the most recent email from the finance team and summarise it.",
+        "Draft a reply to the last message in this thread, but do not send it."
+      ]
+    },
+    {
+      "id": "calendar",
+      "name": "Calendar",
+      "description": "List calendars, list events, and create or update events on a connected calendar.",
+      "tags": ["mcp", "rest", "calendar"],
+      "examples": ["Put a 30 minute review on my calendar tomorrow afternoon."]
+    },
+    {
+      "id": "availability",
+      "name": "Availability",
+      "description": "Check free and busy availability across one or more participants before proposing a time.",
+      "tags": ["mcp", "rest", "calendar"]
+    },
+    {
+      "id": "contacts",
+      "name": "Contacts",
+      "description": "Read and manage contacts and contact groups for a grant.",
+      "tags": ["rest", "contacts"]
+    },
+    {
+      "id": "notetaker",
+      "name": "Notetaker",
+      "description": "Send a notetaker to a meeting and retrieve recordings, transcripts and summaries.",
+      "tags": ["rest", "notetaker"]
+    },
+    {
+      "id": "scheduling",
+      "name": "Scheduling",
+      "description": "Create and manage scheduling configurations, sessions and bookings.",
+      "tags": ["rest", "scheduler"]
+    },
+    {
+      "id": "notifications",
+      "name": "Webhook notifications",
+      "description": "Subscribe to change notifications for messages, events and grants, delivered by HTTPS webhook or through Google Pub/Sub or Amazon SNS.",
+      "tags": ["rest", "webhooks"]
+    },
+    {
+      "id": "api-contract",
+      "name": "OpenAPI contract",
+      "description": "OpenAPI 3.1 description of the full Nylas v3 REST surface: 118 paths, 208 operations, 174 component schemas.",
+      "tags": ["contract", "openapi"],
+      "endpoint": "https://developer.nylas.com/_spec-files/nylas-api.yaml"
+    },
+    {
+      "id": "documentation",
+      "name": "Markdown documentation",
+      "description": "Every documentation page is available as markdown, either by requesting the page with an Accept: text/markdown header or by appending .md to its path. Responses carry an x-markdown-tokens header.",
+      "tags": ["documentation", "markdown"],
+      "endpoint": "https://developer.nylas.com/llms.txt"
+    },
+    {
+      "id": "agent-skills",
+      "name": "Agent Skills",
+      "description": "Provider-authored operating instructions for using the Nylas API and the Nylas CLI correctly.",
+      "tags": ["skills"],
+      "endpoint": "https://developer.nylas.com/.well-known/agent-skills/index.json"
+    }
+  ],
+  "x-nylas": {
+    "note": "The interfaces above are Model Context Protocol and REST. Nylas does not currently operate an A2A JSON-RPC endpoint, so no A2A protocolVersion is declared. This card is published at the A2A well-known path as a machine-readable front door for agent discovery.",
+    "apiCatalog": "https://developer.nylas.com/.well-known/api-catalog",
+    "mcpServerCard": "https://developer.nylas.com/.well-known/mcp/server-card.json",
+    "regions": ["us", "eu"]
+  }
+}
