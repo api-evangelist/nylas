@@ -1,0 +1,92 @@
+generated: '2026-08-20'
+method: provider-published
+authored_by: Nylas
+source: https://developer.nylas.com/.well-known/agent-card.json
+description: >-
+  Agent card served at /.well-known/agent-card.json on developer.nylas.com,
+  advertised from an RFC 8288 Link header (rel="agent-card") on every page.
+  Grade is measured against the A2A 1.0.0 AgentCard object using the same
+  definitions applied elsewhere in this catalog: 'conformant' passes every
+  structural check, 'near-conformant' is correctly shaped but omits optional
+  fields, 'flavored' fails a hard check and is an agent card in spirit rather
+  than in schema. This card is deliberately 'flavored'. Nylas does not operate an
+  A2A JSON-RPC endpoint, so it declares no A2A protocolVersion and does not
+  claim A2A protocol support. It is published at the A2A well-known path as a
+  machine-readable discovery document for the interfaces Nylas does operate,
+  which are Model Context Protocol and REST.
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: developer.nylas.com
+  link_header_rel: agent-card
+conformance:
+  spec: A2A 1.0.0
+  grade: flavored
+  protocol_version: null
+  preferred_transport: STREAMABLE_HTTP
+  deviations:
+  - no-protocolVersion
+  - non-a2a-transport
+  - url-is-mcp-endpoint-not-a2a-service
+  deviation_notes: >-
+    no-protocolVersion: omitted on purpose rather than by oversight; declaring
+    one would assert A2A protocol support that does not exist.
+    non-a2a-transport: preferredTransport is STREAMABLE_HTTP, the MCP transport,
+    not one of the A2A transports (JSONRPC, GRPC, HTTP+JSON). The REST
+    interfaces are declared as HTTP+JSON.
+    url-is-mcp-endpoint-not-a2a-service: url points at the hosted MCP server,
+    following the same convention as the other agent cards in this catalog,
+    rather than at an A2A service endpoint.
+card:
+  name: Nylas
+  description: >-
+    Agent-callable access to email, calendar and contacts across Gmail, Outlook,
+    Exchange, iCloud, Yahoo and any IMAP provider.
+  url: https://mcp.us.nylas.com
+  version: 1.0.0
+  documentation_url: https://developer.nylas.com/docs/dev-guide/mcp/
+  provider: Nylas, Inc.
+  skills: 10
+  interfaces: 4
+  regions:
+  - us
+  - eu
+  security: bearer API key
+  capabilities:
+    streaming: false
+    push_notifications: false
+    state_transition_history: false
+  file: nylas-agent-card.json
+skills:
+- id: email
+  interfaces: [mcp, rest]
+- id: calendar
+  interfaces: [mcp, rest]
+- id: availability
+  interfaces: [mcp, rest]
+- id: contacts
+  interfaces: [rest]
+- id: notetaker
+  interfaces: [rest]
+- id: scheduling
+  interfaces: [rest]
+- id: notifications
+  interfaces: [rest]
+- id: api-contract
+  interfaces: [contract]
+- id: documentation
+  interfaces: [markdown]
+- id: agent-skills
+  interfaces: [skills]
+related:
+  mcp: mcp/nylas-mcp.yml
+  well_known: well-known/nylas-well-known.yml
+  api_catalog: https://developer.nylas.com/.well-known/api-catalog
+  agent_skills: https://developer.nylas.com/.well-known/agent-skills/index.json
+x-evidence:
+  url: https://developer.nylas.com/.well-known/agent-card.json
+  content_type: application/json
+  note: >-
+    Verbatim body saved alongside this manifest as nylas-agent-card.json. No
+    field inferred. Every endpoint and skill endpoint declared in the card
+    resolves.

@@ -4,10 +4,11 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Nylas
 providerId: nylas
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
+method: provider-published
+authored_by: Nylas
+modified: '2026-08-20'
+source: https://www.nylas.com/pricing/
+transcribed: '2026-08-20'
 tags:
   - Calendar
   - Communication
@@ -15,138 +16,351 @@ tags:
   - Email
   - Messaging
   - Scheduling
-description: Machine-readable plans and pricing scaffold for this API provider. Conforms to the API Commons
-  Plans schema. Tier limits and prices are scaffold defaults; replace with provider-published values.
+description: >-
+  Published Nylas plans and pricing, transcribed from the plan cards and the
+  plan comparison table at https://www.nylas.com/pricing/ on 2026-08-20. This
+  replaces a generated scaffold that described a three-tier Free / Professional /
+  Enterprise structure metered by monthly API request quotas. None of that
+  existed. Nylas sells five plans and does not meter by API request. The billing
+  unit is the connected account, alongside separate allowances for Agent
+  Accounts, storage, bandwidth, outgoing email and Notetaker minutes. Rate limits
+  are not tied to a plan; see rate-limits/nylas-rate-limits.yml. Where the
+  comparison table publishes no allowance for a plan on a given dimension it is
+  omitted here rather than inferred: the Activity Drivers table carries columns
+  only for Free, Full Platform and Enterprise.
+billing_units:
+  - connected account
+  - Agent Account
+  - GB storage
+  - GB bandwidth
+  - outgoing email message
+  - Notetaker minute
+notes: >-
+  There is no per-API-request quota on any plan. The Free plan runs in the Nylas
+  Developer Sandbox, which carries the full platform feature set (bi-directional
+  email and calendar sync, Notetaker, Scheduler, Agent Accounts) and ships with
+  pre-configured provider connectors, so a developer can authenticate a test
+  account and exercise the API without first registering their own OAuth
+  application with Google or Microsoft. Sandbox applications use those supplied
+  connectors as-is: you cannot add your own connector or change requested scopes
+  on one.
 plans:
   - id: nylas-free
     name: Free
     type: freemium
-    description: Free entry tier for the Nylas API surface. Intended for evaluation, prototyping, and
-      low-volume integrations. Real limits and pricing must be reconciled with the provider's published
-      plan documentation.
+    description: >-
+      Free indefinitely. Runs in the Nylas Developer Sandbox with the full
+      feature set and pre-configured provider connectors, so no OAuth
+      application setup is needed to start making calls.
     entries:
-      - label: API Requests
-        description: Monthly API request quota across all included endpoints
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 1000
+      - label: Monthly Base Fee
+        name: base_fee
+        type: recurring
+        metric: months
+        limit: 1
         timeFrame: month
-        geo: global
-        domains:
-          - https://api.us.nylas.com
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the free tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 10
-        timeFrame: minute
-        geo: global
-        domains:
-          - https://api.us.nylas.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-    elements:
-      - name: Public Documentation
-      - name: Community Support
-      - name: Sandbox Access
-      - name: Nylas API
-  - id: nylas-pro
-    name: Professional
-    type: paid
-    description: Production tier for Nylas. Provides higher quotas, priority support, and access to the
-      broader API portfolio. Pricing placeholder; align with the provider's pricing page.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota
-        name: api_requests
+      - label: Connected Accounts
+        description: Included connected accounts, in the Developer Sandbox
+        name: connected_accounts
         type: quota
-        metric: requests
-        limit: 100000
+        metric: connected_accounts
+        limit: 5
         timeFrame: month
-        geo: global
-        domains:
-          - https://api.us.nylas.com
-        unit: 1
-        price: TBD
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the professional tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 100
-        timeFrame: minute
-        geo: global
-        domains:
-          - https://api.us.nylas.com
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Overage
-        description: Per-request price after monthly quota is exceeded
-        name: overage
-        type: metered
-        metric: requests
+      - label: Agent Accounts
+        name: agent_accounts
+        type: quota
+        metric: agent_accounts
+        limit: 3
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Storage
+        name: storage
+        type: quota
+        metric: gigabytes
+        limit: 3
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Bandwidth
+        name: bandwidth
+        type: quota
+        metric: gigabytes
+        limit: 3
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Inbound email
+        name: inbound_email
+        type: quota
+        metric: messages
         limit: -1
         timeFrame: month
-        geo: global
-        domains:
-          - https://api.us.nylas.com
-        unit: 1000
-        price: TBD
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Outgoing email
+        name: outgoing_email
+        type: quota
+        metric: messages
+        limit: 100
+        timeFrame: day
+        unit: 1
+        price: '0.00'
         userMultiplied: false
     elements:
-      - name: All Production Endpoints
-      - name: Email Support
-      - name: SLA Targets
-      - name: Webhook Subscriptions
-      - name: Nylas API
+      - name: Access to Developer Sandbox
+      - name: Bi-directional email and calendar sync
+      - name: Nylas Notetaker
+      - name: Nylas Scheduler
+      - name: Agent Accounts
+  - id: nylas-notetaker
+    name: Notetaker
+    type: paid
+    description: >-
+      Meeting notetaker plan. 300 minutes included per month, then billed by the
+      hour.
+    entries:
+      - label: Monthly Base Fee
+        name: base_fee
+        type: recurring
+        metric: months
+        limit: 1
+        timeFrame: month
+        unit: 1
+        price: '5.00'
+        userMultiplied: false
+      - label: Notetaker minutes included
+        name: notetaker_minutes
+        type: quota
+        metric: minutes
+        limit: 300
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Notetaker overage
+        description: Per additional hour beyond the included 300 minutes
+        name: notetaker_overage
+        type: metered
+        metric: hours
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.70'
+        userMultiplied: false
+    elements:
+      - name: Record Google Meet, Teams and Zoom
+      - name: Scheduled or ad-hoc Notetakers
+      - name: AI summaries and action items
+      - name: Translation in 80+ languages
+      - name: Export structured data for CRM updates
+  - id: nylas-calendar
+    name: Calendar
+    type: paid
+    description: Calendar-only plan, billed per connected account beyond the included five.
+    entries:
+      - label: Monthly Base Fee
+        name: base_fee
+        type: recurring
+        metric: months
+        limit: 1
+        timeFrame: month
+        unit: 1
+        price: '10.00'
+        userMultiplied: false
+      - label: Connected Accounts
+        name: connected_accounts
+        type: quota
+        metric: connected_accounts
+        limit: 5
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Connected Account overage
+        name: connected_account_overage
+        type: metered
+        metric: connected_accounts
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '1.50'
+        userMultiplied: false
+    elements:
+      - name: Bi-directional Calendar Sync
+      - name: Recurring events
+      - name: Hosted Nylas Scheduler
+      - name: React scheduler components
+      - name: Round robin scheduling
+      - name: Calendar and Event webhooks
+  - id: nylas-full-platform
+    name: Full Platform
+    type: paid
+    description: >-
+      Email, calendar, contacts, Scheduler and Agent Accounts. Everything in the
+      Calendar plan plus the email surface.
+    entries:
+      - label: Monthly Base Fee
+        name: base_fee
+        type: recurring
+        metric: months
+        limit: 1
+        timeFrame: month
+        unit: 1
+        price: '15.00'
+        userMultiplied: false
+      - label: Connected Accounts
+        name: connected_accounts
+        type: quota
+        metric: connected_accounts
+        limit: 5
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Connected Account overage
+        name: connected_account_overage
+        type: metered
+        metric: connected_accounts
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '2.00'
+        userMultiplied: false
+      - label: Agent Accounts
+        name: agent_accounts
+        type: quota
+        metric: agent_accounts
+        limit: 20
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Agent Account overage
+        name: agent_account_overage
+        type: metered
+        metric: agent_accounts
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.20'
+        userMultiplied: false
+      - label: Storage
+        name: storage
+        type: quota
+        metric: gigabytes
+        limit: 10
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Storage overage
+        name: storage_overage
+        type: metered
+        metric: gigabytes
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.20'
+        userMultiplied: false
+      - label: Bandwidth
+        name: bandwidth
+        type: quota
+        metric: gigabytes
+        limit: 10
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Bandwidth overage
+        name: bandwidth_overage
+        type: metered
+        metric: gigabytes
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.50'
+        userMultiplied: false
+      - label: Inbound email
+        name: inbound_email
+        type: quota
+        metric: messages
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Outgoing email
+        name: outgoing_email
+        type: quota
+        metric: messages
+        limit: 10000
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Outgoing email overage
+        description: Per 1,000 outgoing messages beyond the included 10,000 per month
+        name: outgoing_email_overage
+        type: metered
+        metric: messages
+        limit: -1
+        timeFrame: month
+        unit: 1000
+        price: '0.80'
+        userMultiplied: false
+    elements:
+      - name: Everything in the Calendar plan
+      - name: Email sync
+      - name: Instant and scheduled send
+      - name: Email bounce detection
+      - name: Link and open message tracking
+      - name: Agent Accounts
   - id: nylas-enterprise
     name: Enterprise
     type: enterprise
-    description: Custom-negotiated tier for Nylas. Includes dedicated capacity, contractual SLAs, security
-      review, data residency options, and named technical account management.
+    description: >-
+      Custom-negotiated plan. Every dimension is priced at a negotiated volume
+      rate.
     entries:
-      - label: API Requests
-        description: Negotiated request volume; -1 indicates uncapped subject to fair use
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: -1
+      - label: Monthly Base Fee
+        name: base_fee
+        type: recurring
+        metric: months
+        limit: 1
         timeFrame: month
-        geo: configurable
-        domains:
-          - https://api.us.nylas.com
         unit: 1
         price: custom
         userMultiplied: false
-      - label: Rate Limit
-        description: Negotiated burst and steady-state rate
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 1000
-        timeFrame: minute
-        geo: configurable
-        domains:
-          - https://api.us.nylas.com
+      - label: All metered dimensions
+        description: >-
+          Connected accounts, Agent Accounts, storage, bandwidth and outgoing
+          email are all charged at a negotiated volume rate.
+        name: volume_rate
+        type: metered
+        metric: mixed
+        limit: -1
+        timeFrame: month
         unit: 1
         price: custom
         userMultiplied: false
     elements:
-      - name: Unlimited / Negotiated Volume
-      - name: 24/7 Dedicated Support
-      - name: Contractual SLA
-      - name: Security & Compliance Review
-      - name: Dedicated Account Manager
-      - name: Custom Data Residency
-      - name: Nylas API
+      - name: Volume-based discounts
+      - name: Customizable branding
+      - name: Dedicated support
+      - name: Professional services access
+      - name: Uptime guarantees
+      - name: Signed BAA
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

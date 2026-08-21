@@ -2,9 +2,12 @@ aid: nylas
 name: Nylas
 description: >-
   Nylas connects your application to every email inbox and calendar in the world.
-  The Nylas v3 platform provides REST APIs for email, calendar, contacts, scheduling,
-  authentication, and administration with official SDKs for Node.js, Python, Ruby,
-  and Kotlin/Java.
+  The Nylas v3 platform provides REST APIs for email, calendar, contacts,
+  scheduling, meeting notetaking, authentication, and administration across
+  Google, Microsoft, Exchange, iCloud, Yahoo and any IMAP provider. Official SDKs
+  cover Node.js, Python, Ruby and Kotlin/Java, alongside a CLI, a hosted MCP
+  server, and Agent Accounts that provision a Nylas-hosted mailbox and calendar
+  for autonomous agents without requiring an OAuth flow.
 type: Index
 accessModel:
   pricing: freemium
@@ -45,8 +48,10 @@ apis:
 - aid: nylas:nylas-api
   name: Nylas API
   description: >-
-    The Nylas v3 REST API provides programmatic access to email, calendar, contacts, scheduling, authentication,
-    and administration features across every major email and calendar provider.
+    The Nylas v3 REST API provides programmatic access to email, calendar, contacts, meeting
+    notetaking, scheduling, authentication and administration across Google, Microsoft, Exchange,
+    iCloud, Yahoo and any IMAP provider. Resources are scoped to a grant, which represents one
+    authenticated mailbox and calendar. The entries below are facets of this single contract.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -64,6 +69,8 @@ apis:
   - Messaging
   - Scheduling
   properties:
+  - type: OpenAPI
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
   - type: Documentation
     url: https://developer.nylas.com/docs/
   - type: APIReference
@@ -96,18 +103,22 @@ apis:
     url: https://github.com/nylas/nylas-java
 - aid: nylas:nylas-admin-api
   name: Nylas Admin API
-  description: The Admin API from Nylas — 3 operation(s) for admin.
-  humanURL: https://developer.nylas.com/
+  description: >-
+    Application-level administration: Nylas applications, API keys, custom domains, connectors and
+    connector credentials, workspaces, and the rules, policies and lists that govern them.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
   baseURL: https://api.us.nylas.com
   tags:
   - Admin
   properties:
   - type: OpenAPI
-    url: openapi/nylas-admin-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-auth-api
   name: Nylas Auth API
-  description: The Auth API from Nylas — 3 operation(s) for auth.
-  humanURL: https://developer.nylas.com/
+  description: >-
+    Authentication. Hosted OAuth 2.1 authorization and token exchange, custom (non-OAuth) grant
+    creation for Agent Accounts, token refresh and revocation, and ID token validation.
+  humanURL: https://developer.nylas.com/docs/reference/api/authentication-apis/
   baseURL: https://api.us.nylas.com
   tags:
   - Authentication
@@ -115,41 +126,47 @@ apis:
   - Auth
   properties:
   - type: OpenAPI
-    url: openapi/nylas-auth-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-calendars-api
   name: Nylas Calendars API
-  description: The Calendars API from Nylas — 1 operation(s) for calendars.
-  humanURL: https://developer.nylas.com/
+  description: >-
+    Calendars. List and manage a grant's calendars, query free/busy availability across
+    participants, and read room and resource calendars.
+  humanURL: https://developer.nylas.com/docs/reference/api/calendar/
   baseURL: https://api.us.nylas.com
   tags:
   - Calendars
   properties:
   - type: OpenAPI
-    url: openapi/nylas-calendars-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-contacts-api
   name: Nylas Contacts API
-  description: The Contacts API from Nylas — 1 operation(s) for contacts.
-  humanURL: https://developer.nylas.com/
+  description: Contacts. Read, create, update and delete a grant's contacts and contact groups.
+  humanURL: https://developer.nylas.com/docs/reference/api/contacts/
   baseURL: https://api.us.nylas.com
   tags:
   - Contacts
   properties:
   - type: OpenAPI
-    url: openapi/nylas-contacts-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-drafts-api
   name: Nylas Drafts API
-  description: The Drafts API from Nylas — 1 operation(s) for drafts.
-  humanURL: https://developer.nylas.com/
+  description: >-
+    Drafts. Compose, update, send and delete drafts, manage attachments, and generate draft bodies
+    and replies with Smart Compose.
+  humanURL: https://developer.nylas.com/docs/reference/api/drafts/
   baseURL: https://api.us.nylas.com
   tags:
   - Drafts
   properties:
   - type: OpenAPI
-    url: openapi/nylas-drafts-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-events-api
   name: Nylas Events API
-  description: The Events API from Nylas — 1 operation(s) for events.
-  humanURL: https://developer.nylas.com/
+  description: >-
+    Events. Create, update, delete and list calendar events, including recurring events, group
+    events and RSVP handling.
+  humanURL: https://developer.nylas.com/docs/reference/api/events/
   baseURL: https://api.us.nylas.com
   tags:
   - Event
@@ -157,21 +174,25 @@ apis:
   - Events
   properties:
   - type: OpenAPI
-    url: openapi/nylas-events-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-grants-api
   name: Nylas Grants API
-  description: The Grants API from Nylas — 2 operation(s) for grants.
-  humanURL: https://developer.nylas.com/
+  description: >-
+    Grants. A grant represents one authenticated mailbox and calendar. List, retrieve and delete
+    grants, and inspect grant state and scopes.
+  humanURL: https://developer.nylas.com/docs/reference/api/manage-grants/
   baseURL: https://api.us.nylas.com
   tags:
   - Grants
   properties:
   - type: OpenAPI
-    url: openapi/nylas-grants-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-messages-api
   name: Nylas Messages API
-  description: The Messages API from Nylas — 1 operation(s) for messages.
-  humanURL: https://developer.nylas.com/
+  description: >-
+    Messages. List, search, read, update and delete email messages. Send immediately, schedule a
+    send and cancel a scheduled send, with folders, signatures and attachments alongside.
+  humanURL: https://developer.nylas.com/docs/reference/api/messages/
   baseURL: https://api.us.nylas.com
   tags:
   - Message
@@ -179,27 +200,89 @@ apis:
   - Messages
   properties:
   - type: OpenAPI
-    url: openapi/nylas-messages-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-scheduling-api
   name: Nylas Scheduling API
-  description: The Scheduling API from Nylas — 3 operation(s) for scheduling.
-  humanURL: https://developer.nylas.com/
+  description: >-
+    Scheduler. Booking configurations, scheduling sessions, availability lookups and booking
+    lifecycle management for hosted and component-based booking flows.
+  humanURL: https://developer.nylas.com/docs/reference/api/configurations/
   baseURL: https://api.us.nylas.com
   tags:
   - Scheduling
   properties:
   - type: OpenAPI
-    url: openapi/nylas-scheduling-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-threads-api
   name: Nylas Threads API
-  description: The Threads API from Nylas — 1 operation(s) for threads.
-  humanURL: https://developer.nylas.com/
+  description: Threads. List, search, read and update email threads, and manage thread-level folders and state.
+  humanURL: https://developer.nylas.com/docs/reference/api/threads/
   baseURL: https://api.us.nylas.com
   tags:
   - Threads
   properties:
   - type: OpenAPI
-    url: openapi/nylas-threads-api-openapi.yml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+- aid: nylas:nylas-notifications-api
+  name: Nylas Notifications API
+  description: >-
+    Change notifications. Nylas pushes events for messages, threads, calendars, events, grants and
+    Notetaker over three interchangeable transports carrying the same payloads: HTTPS webhooks,
+    Google Cloud Pub/Sub, and Amazon SNS. Covers subscription CRUD, delivery testing, mock payloads
+    and the source IP ranges to allowlist. There is no polling requirement, and no WebSocket or SSE
+    surface.
+  humanURL: https://developer.nylas.com/docs/reference/notifications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Webhooks
+  - Notifications
+  - Event
+  tags_raw:
+  - Webhooks
+  - Notifications
+  - Events
+  properties:
+  - type: OpenAPI
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+- aid: nylas:nylas-notetaker-api
+  name: Nylas Notetaker API
+  description: >-
+    Meeting notetaker. Send a notetaker to a Google Meet, Microsoft Teams or Zoom call, then
+    retrieve the recording, transcript, summary and action items. Available grant-scoped, or
+    standalone with no connected mailbox required.
+  humanURL: https://developer.nylas.com/docs/reference/api/notetaker/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Notetaker
+  - Transcription
+  - Meetings
+  properties:
+  - type: OpenAPI
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/notetaker/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notetaker/
+- aid: nylas:nylas-templates-workflows-api
+  name: Nylas Templates and Workflows API
+  description: >-
+    Reusable email templates and automation workflows, at both application and grant scope. Define a
+    template once and send against it, or trigger a workflow on an inbound event.
+  humanURL: https://developer.nylas.com/docs/reference/api/application-level-templates/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Templates
+  - Workflows
+  - Automation
+  properties:
+  - type: OpenAPI
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
 common:
   - type: AgenticAccess
     url: agentic-access/nylas-agentic-access.yml
@@ -229,6 +312,80 @@ common:
     url: https://status.nylas.com/
   - type: LlmsText
     url: https://developer.nylas.com/llms.txt
+  - type: DeveloperPortal
+    url: https://developer.nylas.com/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: APIReference
+    name: Notifications reference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: APIReference
+    name: UI components reference
+    url: https://developer.nylas.com/docs/reference/ui/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: SDKs
+    name: Node.js SDK
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    name: Python SDK
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    name: Ruby SDK
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    name: Java/Kotlin SDK
+    url: https://github.com/nylas/nylas-java
+  - type: CLI
+    url: https://cli.nylas.com/
+  - type: Postman
+    url: https://developer.nylas.com/docs/v3/api-references/postman/
+  - type: PostmanWorkspace
+    url: https://www.postman.com/trynylas/workspace/nylas-api/overview
+  - type: AgentSkills
+    url: https://developer.nylas.com/.well-known/agent-skills/index.json
+  - type: Support
+    url: https://developer.nylas.com/docs/support/
+  - type: ChangeLog
+    url: https://developer.nylas.com/docs/changelogs/
+  - type: DeprecationPolicy
+    url: https://developer.nylas.com/docs/support/product-lifecycle/
+  - type: Security
+    url: https://www.nylas.com/security/
+  - type: Compliance
+    url: https://trust.nylas.com/public
+  - type: Webhooks
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: Idempotency
+    url: https://developer.nylas.com/docs/v3/email/idempotent-send/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: MCPServer
+    name: Nylas MCP Server
+    url: https://mcp.us.nylas.com
+  - type: MCPServer
+    name: Nylas MCP Server manifest
+    url: mcp/nylas-mcp.yml
+  - type: Vocabulary
+    url: vocabulary/nylas-vocabulary.yml
+  - type: Conformance
+    url: conformance/nylas-conformance.yml
+  - type: AgentCard
+    url: a2a/nylas-a2a.yml
+  - type: SecurityTxt
+    url: https://developer.nylas.com/.well-known/security.txt
+  - type: ContentSignal
+    url: https://developer.nylas.com/robots.txt
+  - type: APICatalog
+    url: https://developer.nylas.com/.well-known/api-catalog
+  - type: WellKnown
+    url: well-known/nylas-well-known.yml
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

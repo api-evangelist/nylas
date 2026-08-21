@@ -1,16 +1,54 @@
-generated: '2026-07-11'
-method: derived
-source: openapi/nylas-openapi.yml
+generated: '2026-08-20'
+method: provider-published
+authored_by: Nylas
+source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+docs: https://developer.nylas.com/docs/v3/auth/
 summary:
   types:
   - http
 schemes:
-- name: BearerAuth
+- name: NYLAS_API_KEY
   type: http
   scheme: bearer
-  description: |-
-    Server-side requests use an API key issued in the Nylas dashboard
-    and presented as a Bearer token. User-level requests use an
-    access token obtained via the OAuth 2.0 flow.
+  bearerFormat: NYLAS_API_KEY
+  description: >-
+    Application-level credential covering the application's own resources and
+    all of its grants. Generated in the Nylas Dashboard and presented as a
+    Bearer token. This is the credential used for server-side and
+    machine-to-machine calls, including Agent Accounts, where no browser is
+    available to complete an OAuth flow.
+  scope: application
   sources:
-  - openapi/nylas-openapi.yml
+  - https://developer.nylas.com/_spec-files/nylas-api.yaml
+- name: ACCESS_TOKEN
+  type: http
+  scheme: bearer
+  bearerFormat: NYLAS_ACCESS_TOKEN
+  description: >-
+    Grant-scoped access token issued by the OAuth 2.1 authorization code
+    exchange at POST /v3/connect/token. Used when acting on a single connected
+    end-user mailbox or calendar rather than on the application as a whole.
+  scope: grant
+  sources:
+  - https://developer.nylas.com/_spec-files/nylas-api.yaml
+- name: SCHEDULER_SESSION_TOKEN
+  type: http
+  scheme: bearer
+  bearerFormat: Session ID
+  description: >-
+    Short-lived Scheduler session ID used by the Scheduler UI Components to
+    authorize booking-flow requests on behalf of an end user without exposing an
+    API key to the browser.
+  scope: session
+  sources:
+  - https://developer.nylas.com/_spec-files/nylas-api.yaml
+default_security:
+- ACCESS_TOKEN
+- NYLAS_API_KEY
+notes: >-
+  All three schemes are HTTP Bearer. Security is declared globally in the
+  contract and overridden per operation on 205 of 208 operations. Nylas does not
+  accept credentials in query strings. The previous version of this artifact
+  described a single generic "BearerAuth" scheme derived from a summary
+  scaffold; the three schemes above are the ones actually declared in the
+  published OpenAPI contract.

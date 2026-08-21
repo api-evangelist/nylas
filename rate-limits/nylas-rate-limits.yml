@@ -4,10 +4,11 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Nylas
 providerId: nylas
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
+method: provider-published
+authored_by: Nylas
+modified: '2026-08-20'
+source: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+best_practices: https://developer.nylas.com/docs/dev-guide/best-practices/rate-limits/
 tags:
   - Calendar
   - Communication
@@ -18,76 +19,147 @@ tags:
   - Rate Limiting
   - Quotas
   - Throttling
-description: Machine-readable rate limit definitions for the Nylas API surface. Captures per-tier quotas,
-  burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to be replaced
-  with published provider limits.
+description: >-
+  Published Nylas v3 rate limits, transcribed from
+  developer.nylas.com/docs/dev-guide/platform/rate-limits/. Limits are per
+  second and are scoped either per application or per grant, depending on the
+  endpoint group. Nylas does not operate tier-based rate limits and does not
+  apply a monthly request quota, so limits do not vary by plan. Nylas requests
+  are additionally subject to the upstream provider's own limits, recorded under
+  provider_limits below. This replaces a generated scaffold whose per-minute,
+  per-tier values and monthly quotas did not correspond to any published Nylas
+  limit.
 headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
   retryAfter: Retry-After
-  policy: RateLimit-Policy
+  providerRequestCount: Nylas-Provider-Request-Count
+  gmailQuotaUsage: Nylas-Gmail-Quota-Usage
+headerNotes: >-
+  Nylas does not currently emit X-RateLimit-Limit, X-RateLimit-Remaining,
+  X-RateLimit-Reset or RateLimit-Policy. Retry-After is returned when an
+  upstream provider (Microsoft, EWS) throttles a request.
+  Nylas-Provider-Request-Count reports how many upstream provider calls a single
+  Nylas request consumed. Nylas-Gmail-Quota-Usage reports Google API quota
+  consumed, on the Drafts, Messages, Threads, Folders and Attachments endpoints.
 responseCodes:
   throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
 limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
+  - name: Applications
+    scope: application
+    metric: requests_per_second
+    limit: 50
+    timeFrame: second
+    applies:
+      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/applications/
+  - name: Authentication
+    scope: application
+    metric: requests_per_second
+    limit: 50
+    timeFrame: second
+    applies:
+      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/authentication-apis/
+  - name: Connectors
+    scope: application
+    metric: requests_per_second
+    limit: 50
+    timeFrame: second
+    applies:
+      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/connectors-integrations/
+  - name: Grants
+    scope: application
+    metric: requests_per_second
+    limit: 50
+    timeFrame: second
+    applies:
+      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/manage-grants/
+  - name: Webhooks
+    scope: application
+    metric: requests_per_second
+    limit: 50
+    timeFrame: second
+    applies:
+      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/webhook-notifications/
+  - name: Calendar
+    scope: grant
+    metric: requests_per_second
+    limit: 200
+    timeFrame: second
+    applies:
+      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/calendar/
+  - name: Contacts
+    scope: grant
+    metric: requests_per_second
+    limit: 200
+    timeFrame: second
+    applies:
+      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/contacts/
+  - name: Messages
+    scope: grant
+    metric: requests_per_second
+    limit: 200
+    timeFrame: second
+    applies:
+      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/messages/
+  - name: Send (application/json)
+    scope: grant
+    metric: requests_per_second
+    limit: 200
+    timeFrame: second
+    contentType: application/json
+    applies:
+      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/messages/send-message/
+  - name: Send (multipart/form-data)
+    scope: grant
+    metric: requests_per_second
     limit: 10
-    burst: 20
-    timeFrame: minute
+    timeFrame: second
+    contentType: multipart/form-data
     applies:
       - Nylas API
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Nylas API
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Nylas API
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Nylas API
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Nylas API
+    reference: https://developer.nylas.com/docs/reference/api/messages/send-message/
+provider_limits:
+  - provider: Google
+    notes: >-
+      10,000 requests per minute per application and 600 per minute per user,
+      calculated over a one-minute sliding window. Sending is capped at 2,000
+      messages per day. Gmail API projects created on or after 2026-05-01 carry a
+      per-project limit of 1,200,000 quota units per minute and a per-user limit
+      of 6,000 quota units per minute.
+  - provider: Microsoft
+    notes: >-
+      10,000 requests per 10-minute period, a maximum of 4 concurrent requests,
+      and a maximum of 150 MB uploaded per 5-minute period. Sending is capped at
+      30 messages per minute.
+  - provider: EWS
+    notes: >-
+      Configured by the customer's own Exchange administrator, so Nylas cannot
+      know the server's limits. Nylas returns Retry-After when the server
+      throttles a request.
+  - provider: iCloud
+    notes: Apple caps sending at 1,000 messages per day.
 policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+  - name: Per-request provider fan-out
+    description: >-
+      A single Nylas request can make several calls to the upstream provider.
+      Monitor Nylas-Provider-Request-Count, and Nylas-Gmail-Quota-Usage on
+      Google, and space requests accordingly.
+  - name: Threads endpoint cost
+    description: >-
+      Get all Threads makes a significant number of upstream provider calls per
+      request. Use query parameters and a lower limit to reduce the number of
+      results, which reduces the chance of hitting a provider limit.
+  - name: Backoff strategy
+    description: >-
+      Retry with exponential backoff and jitter, honoring Retry-After when
+      present. See the avoiding-rate-limits best practices guide.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

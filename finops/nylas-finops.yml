@@ -11,72 +11,76 @@ providerId: nylas
 publisherName: Nylas
 serviceCategory: API
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
+method: provider-published
+modified: '2026-08-20'
 tags:
-  - Calendar
-  - Communication
-  - Contacts
-  - Email
-  - Messaging
-  - Scheduling
-  - FinOps
-  - Cost Management
-  - FOCUS
-description: FinOps framework definition for the Nylas API surface. Provides a FOCUS-aligned mapping for
-  cost allocation, usage measurement, and unit-economics reporting across the provider's APIs.
+- Calendar
+- Communication
+- Contacts
+- Email
+- Messaging
+- Scheduling
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps framework mapping for the Nylas v3 platform, aligned to FOCUS. Corrects a generated scaffold
+  that modelled Nylas as a per-API-request platform with a "request" pricing unit and meters for billable
+  API requests and compute-seconds. Nylas does not meter API requests and does not bill compute time.
+  Billing is a monthly plan fee plus usage overage on connected accounts, Agent Accounts, storage,
+  bandwidth, outgoing email and Notetaker minutes. See plans/nylas-plans-pricing.yml.
 principles:
-  - name: Visibility
-    description: Make API consumption costs visible to engineering, product, and finance teams in near
-      real-time.
-  - name: Allocation
-    description: Tag every chargeable API call with the consuming team, environment, application, and
-      feature so cost can be allocated.
-  - name: Optimization
-    description: Continuously evaluate request patterns, caching, batching, and tier selection to reduce
-      cost per useful unit of work.
-  - name: Accountability
-    description: Establish budget owners and chargeback or showback flows for each consuming team.
+- name: Visibility
+  description: >-
+    Make API consumption costs visible to engineering, product, and finance teams in near real-time.
+- name: Allocation
+  description: >-
+    Tag every chargeable API call with the consuming team, environment, application, and feature so
+    cost can be allocated.
+- name: Optimization
+  description: >-
+    Continuously evaluate request patterns, caching, batching, and tier selection to reduce cost per
+    useful unit of work.
+- name: Accountability
+  description: Establish budget owners and chargeback or showback flows for each consuming team.
 domains:
-  - name: Understand Usage and Cost
-    capabilities:
-      - Data Ingestion
-      - Allocation
-      - Reporting and Analytics
-      - Anomaly Management
-  - name: Quantify Business Value
-    capabilities:
-      - Planning and Estimating
-      - Forecasting
-      - Budgeting
-      - Benchmarking
-      - Unit Economics
-  - name: Optimize Usage and Cost
-    capabilities:
-      - Architecting for Cloud
-      - Rate Optimization
-      - Workload Optimization
-      - Cloud Sustainability
-      - Licensing and SaaS
-  - name: Manage the FinOps Practice
-    capabilities:
-      - FinOps Practice Operations
-      - FinOps Education and Enablement
-      - Invoicing and Chargeback
-      - Onboarding Workloads
-      - Intersecting Disciplines
+- name: Understand Usage and Cost
+  capabilities:
+  - Data Ingestion
+  - Allocation
+  - Reporting and Analytics
+  - Anomaly Management
+- name: Quantify Business Value
+  capabilities:
+  - Planning and Estimating
+  - Forecasting
+  - Budgeting
+  - Benchmarking
+  - Unit Economics
+- name: Optimize Usage and Cost
+  capabilities:
+  - Architecting for Cloud
+  - Rate Optimization
+  - Workload Optimization
+  - Cloud Sustainability
+  - Licensing and SaaS
+- name: Manage the FinOps Practice
+  capabilities:
+  - FinOps Practice Operations
+  - FinOps Education and Enablement
+  - Invoicing and Chargeback
+  - Onboarding Workloads
+  - Intersecting Disciplines
 billingModel:
-  pricingCategory: Usage-Based
+  pricingCategory: Subscription plus usage overage
   billingFrequency: Monthly
   billingCurrency: USD
   chargeCategories:
-    - Usage
-    - Purchase
-    - Tax
-    - Credit
-    - Adjustment
+  - Usage
+  - Purchase
+  - Tax
+  - Credit
+  - Adjustment
   chargeFrequency: Recurring
 focusColumns:
   ServiceName: Nylas
@@ -84,56 +88,92 @@ focusColumns:
   ProviderName: Nylas
   PublisherName: Nylas
   InvoiceIssuerName: Nylas
-  PricingCategory: Usage-Based
-  PricingUnit: request
+  PricingCategory: Subscription plus usage overage
+  PricingUnit: connected account, Agent Account, GB, outgoing email, Notetaker minute
   BillingCurrency: USD
   ChargeCategory: Usage
 meters:
-  - name: api_requests
-    description: Count of billable API requests
-    unit: request
-    aggregation: sum
-    dimensions:
-      - api
-      - endpoint
-      - tier
-      - region
-      - consumer
-  - name: data_egress
-    description: Bytes returned over the network in API responses
-    unit: GB
-    aggregation: sum
-    dimensions:
-      - api
-      - region
-      - consumer
-  - name: compute_seconds
-    description: Server-side compute consumed by the request, where applicable
-    unit: second
-    aggregation: sum
-    dimensions:
-      - api
-      - endpoint
-      - tier
+- name: connected_accounts
+  description: Connected mailboxes and calendars beyond the plan allowance
+  unit: connected account
+  aggregation: max
+  dimensions:
+  - plan
+  - region
+  - grant
+- name: agent_accounts
+  description: Nylas-hosted Agent Account mailboxes beyond the plan allowance
+  unit: agent account
+  aggregation: max
+  dimensions:
+  - plan
+  - region
+- name: storage
+  description: Stored data beyond the plan allowance
+  unit: GB
+  aggregation: max
+  dimensions:
+  - plan
+  - region
+- name: bandwidth
+  description: Data transferred beyond the plan allowance
+  unit: GB
+  aggregation: sum
+  dimensions:
+  - plan
+  - region
+- name: outgoing_email
+  description: Outgoing messages sent beyond the plan allowance
+  unit: message
+  aggregation: sum
+  dimensions:
+  - plan
+  - grant
+- name: notetaker_minutes
+  description: Meeting notetaker time beyond the plan allowance
+  unit: minute
+  aggregation: sum
+  dimensions:
+  - plan
+  - grant
 apis:
-  - name: Nylas API
-    baseURL: https://api.us.nylas.com
-    tags:
-      - Calendar
-      - Communication
-      - Contacts
-      - Email
-      - Messaging
-      - Scheduling
-    serviceName: Nylas API
-    serviceCategory: API
+- name: Nylas API
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Calendar
+  - Communication
+  - Contacts
+  - Email
+  - Messaging
+  - Scheduling
+  serviceName: Nylas API
+  serviceCategory: API
 unitEconomics:
-  - name: Cost per 1K Requests
-    metric: billed_cost / (api_requests / 1000)
-    target: TBD
-  - name: Cost per Active Consumer
-    metric: billed_cost / active_consumers
-    target: TBD
+- name: Cost per connected account
+  metric: billed_cost / connected_accounts
+  target: TBD
+- name: Cost per Agent Account
+  metric: billed_cost / agent_accounts
+  target: TBD
+- name: Cost per Notetaker hour
+  metric: billed_cost / (notetaker_minutes / 60)
+  target: TBD
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com
+authored_by: Nylas
+source: https://www.nylas.com/pricing/
+notes: >-
+  There is no per-API-request charge and no compute-time charge on any plan. Rate limits exist but
+  are not a billing dimension and do not vary by plan; see rate-limits/nylas-rate-limits.yml. This
+  artifact describes how Nylas bills, for cost-allocation purposes. It is not an API description,
+  and Nylas publishes no programmatic surface for reading usage or cost. See programmaticAccess above.
+programmaticAccess:
+  usageApi: false
+  billingApi: false
+  invoiceApi: false
+  evidence: >-
+    The Nylas v3 contract exposes no usage, billing, invoice, cost or subscription operation: 0 of
+    208. The meters below describe what Nylas bills on, not endpoints that return meter data. Cost
+    and usage figures are read from the Nylas Dashboard and from invoices, not through the API.
+  docs: https://developer.nylas.com/docs/support/billing/
