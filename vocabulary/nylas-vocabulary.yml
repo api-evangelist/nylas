@@ -1,0 +1,297 @@
+name: Nylas
+description: >-
+  Vocabulary of the terms and objects used across the Nylas v3 platform: authentication and grants,
+  email, calendar, contacts, scheduling, notetaking and notifications. Transcribed from the glossary
+  Nylas maintains in the developer.nylas.com repository, which is the same source that drives automatic
+  term linking throughout the published documentation.
+version: '1.0'
+created: '2026-08-20'
+modified: '2026-08-20'
+method: provider-published
+authored_by: Nylas
+source: https://developer.nylas.com/docs/dev-guide/glossary/
+tags:
+- Calendar
+- Communication
+- Contacts
+- Email
+- Messaging
+- Scheduling
+- Notetaker
+terms:
+- term: Access token
+  definition: >-
+    A short-lived token associated with a specific grant or connected account. An application uses
+    an access token to authenticate with the service provider and make data requests on your behalf.
+    In OAuth 2.0 and later, access tokens expire after one hour and can be refreshed.
+  category: Authentication
+- term: Agent Account
+  definition: >-
+    A fully Nylas-hosted email and calendar mailbox that you create and control entirely through the
+    Nylas API — no OAuth flow required. An Agent Account is exposed through a standard grant and works
+    with every grant-scoped endpoint, but the underlying mailbox lives on Nylas infrastructure rather
+    than on an external provider like Google or Microsoft. Created via POST /v3/connect/custom with
+    "provider": "nylas".
+  category: Core Object
+- term: API key
+  definition: >-
+    A unique identifier that an application uses to authenticate with the Nylas API. You can find
+    your API key in the Nylas Dashboard.
+  category: Authentication
+- term: Application
+  definition: >-
+    Refers to one of three concepts in the Nylas docs: the "provider auth application" used to connect
+    to your authentication provider, the Nylas application which contains connections to your project
+    and your connectors, and sometimes "your application" which refers to your actual code project
+    for the application you're working on. For clarity, we may call it "your project" instead.
+  category: Core Object
+- term: Authentication
+  definition: >-
+    The process of proving who you are, and that you have the right to make decisions about an account
+    and its data. This is different from the _authorization_ header that you use in API requests to
+    pass a token or other credential. The token is like a backstage pass: it _authorizes_ you to make
+    requests. Different types of API authorization headers are known as "authentication" types. Both
+    of these are sometimes shortened to "auth".
+  category: Authentication
+- term: Authentication token
+  definition: >-
+    A short-lived token that the user receives from the authentication system (the OAuth provider
+    or IDP) which proves that they successfully authenticated (provided account credentials and passed
+    any confirmation steps). The application uses this to retrieve an access token. Unlike an access
+    token, you _cannot_ use authentication tokens to make requests on a user's behalf, or access data.
+  category: Authentication
+- term: Authorization
+  definition: >-
+    The process of deciding whether you have the right to do something. This is different from "authentication",
+    which is the process of proving who you are, and that you have the right to make decisions about
+    an account and its data. When you make API requests, you use an authorization header to to pass
+    a token or other credential. The token is like a backstage pass: it _authorizes_ you to make requests.
+    Different types of API authorization headers are known as "authentication" types. Both of these
+    are sometimes shortened to "auth".
+  category: Authentication
+- term: Bounced message
+  definition: >-
+    An automated notification that the email provider sends to let you know that a message you sent
+    wasn't delivered. A message might not be delivered for many reasons, including an incorrect recipient
+    email address.
+  category: Email
+- term: Bring Your Own (BYO) Authentication
+  definition: >-
+    An authentication flow that we previously called "Custom Authentication". You provide the OAuth
+    refresh token for the user, and Nylas uses it to create a grant and request access tokens as needed
+    to access the user's data.
+  category: Authentication
+- term: CalDav
+  definition: >-
+    A protocol for working with calendar and schedule information on a remote server. It uses the
+    iCalendar data format, and is used by iCloud and Google Calendar.
+  category: Protocol or Format
+- term: Callback URI
+  definition: >-
+    The URI that the OAuth provider sends a user back to after they authenticate using Hosted OAuth.
+    You must define this in your Nylas application's settings. This is _similar_ to the Nylas auth
+    "redirect URI", which you specify in your provider auth app.
+  category: Authentication
+- term: Client-side
+  definition: >-
+    Any code that runs in the user's browser or device, as opposed to server-side code which runs
+    on a server. Client-side code is often written in JavaScript, and is used to create interactive
+    web pages. Client-side applications require special security considerations for secrets management,
+    such as PKCE verification.
+  category: Platform
+- term: Client ID
+  definition: >-
+    A unique identifier for your Nylas application, used to identify your application when it connects
+    to the Nylas API. You can find your client ID in the Nylas Dashboard.
+  category: Authentication
+- term: Connector
+  definition: >-
+    A data structure that stores information about how your Nylas application connects to a third-party
+    service provider, such as an email provider, calendar provider, or other data source. Connectors
+    are sometimes called "integrations" or "channels", and might include another term that describes
+    what the connector does (for example, an "auth connector" or a "notification connector").
+  category: Authentication
+- term: CRUD
+  definition: >-
+    An acronym for "Create, Read, Update, Delete". These are the four basic operations that you can
+    perform on data.
+  category: Protocol or Format
+- term: Data center
+  definition: >-
+    Nylas offers two data center options — U.S. and E.U. — to accommodate customers around the world.
+    See the Data residency documentation for more details.
+  category: Platform
+- term: GCP
+  definition: >-
+    An acronym for "Google Cloud Platform". This is the portal where you create a provider auth app
+    to allow your project to connect to Google resources.
+  category: Platform
+- term: GDPR
+  definition: >-
+    "General Data Protection Regulation". Regulation set by the European Union, designed to harmonize
+    data privacy laws across Europe. See What is the GDPR?.
+  category: Compliance
+- term: Grant
+  definition: >-
+    A record of permissions ("scopes") that a user "granted" to your application to access their data.
+    Nylas creates a grant when a user successfully authenticates, and generates an access token.
+  category: Core Object
+- term: ICS
+  definition: >-
+    "Internet Calendar Scheduling". This is the file format behind iCalendar and CalDav, used by Apple
+    and Google. Each ICS file represents an individual event on a calendar.
+  category: Protocol or Format
+- term: IMAP
+  definition: >-
+    "Internet Message Access Protocol". This is a protocol for receiving email that allows users to
+    access their messages from different devices.
+  category: Protocol or Format
+- term: Integration
+  definition: >-
+    An external service connected to your Nylas application. This could be an authentication provider,
+    data source, or another tool like Zoom Meetings. In most cases, these are now called "connectors".
+  category: Provider
+- term: LLM
+  definition: >-
+    "Large Language Model". A model of artificial intelligence that can complete natural language
+    processing tasks. Nylas uses LLMs to power various features, including the Clean Message endpoint.
+  category: Platform
+- term: MIME
+  definition: >-
+    "Multipurpose Internet Mail Extensions". An internet standard that allows messages to support
+    attachments and non-ASCII text.
+  category: Protocol or Format
+- term: Nylas Service Account
+  definition: >-
+    An organization-level authentication mechanism that uses RSA cryptographic request signing to
+    access Nylas admin APIs, such as the Manage Domains API and the Manage API Keys API. This is different
+    from Google or Microsoft "Service Accounts", which are used for bulk authentication grants.
+  category: Core Object
+- term: OAuth
+  definition: >-
+    An authentication protocol that allows you to approve one application interacting with another
+    on your behalf, without providing your password. See the OAuth specification website for more
+    information.
+  category: Authentication
+- term: Owner
+  definition: The person who creates and schedules a specific calendar event.
+  category: Scheduling
+- term: Participant
+  definition: >-
+    A person who is invited to a calendar event. Each event might have more than one participant.
+  category: Scheduling
+- term: PKCE
+  definition: >-
+    "Proof Key for Code Exchange". A shared secret used in OAuth 2.0 as an additional layer of validation
+    to ensure that the authorization code exchange is secure. This is especially important for client-side
+    applications.
+  category: Authentication
+- term: Provider
+  definition: See service provider.
+  category: Provider
+- term: Provider application
+  definition: See provider auth application.
+  category: Core Object
+- term: Provider auth application
+  definition: >-
+    Sometimes called a "provider integration application" or "provider application". An application
+    that connects the service provider's infrastructure and your Nylas application.
+  category: Core Object
+- term: Provider integration application
+  definition: See provider auth application.
+  category: Core Object
+- term: Redirect URI
+  definition: >-
+    The URL that the OAuth provider directs a user to after they authenticate. This URI needs to be
+    registered with the OAuth provider through your provider auth app, and must match the URI that
+    the user is directed to after they authenticate. These are _similar_ to the "callback URI" that
+    you specify in your Nylas application.
+  category: Authentication
+- term: Refresh token
+  definition: >-
+    A long-lived token that you can use to request new access tokens when they expire. Used to keep
+    users authenticated without requiring them to log in again.
+  category: Authentication
+- term: Scopes
+  definition: >-
+    Permissions which determine what data your application can access on a specific provider. Your
+    users approve your requested scopes when they authenticate with your application. Scopes must
+    be included in either the connector for the provider, or in the OAuth request.
+  category: Authentication
+- term: Server-side
+  definition: >-
+    Any code that runs on a server and handles requests from client-side code. Often written in languages
+    like Python, Ruby, or Node.js.
+  category: Platform
+- term: Service provider
+  definition: >-
+    The company that maintains the email systems, and sometimes the calendaring and contacts tools,
+    which you connect to using Nylas. Sometimes called an "email service provider" or "ESP", or just
+    "provider".
+  category: Provider
+- term: SLA
+  definition: >-
+    "Service level agreement". An agreement between a provider and their customers, outlining the
+    services that the provider delivers, and the responsiveness the provider adheres to (for example,
+    promising 99% uptime).
+  category: Platform
+- term: SMTP
+  definition: >-
+    "Simple Mail Transfer Protocol". The underlying protocol used by IMAP providers to _send_ messages
+    from email clients to servers, and back. Technically, all IMAP providers are also SMTP providers.
+  category: Protocol or Format
+- term: SSE
+  definition: >-
+    "Server-sent events". A push technology that allows your project to receive automatic updates
+    from Nylas. Used in the Smart Compose endpoints to provide AI responses without requiring your
+    application to constantly poll for new information.
+  category: Notifications
+- term: Time slots
+  definition: >-
+    Periods of time returned by the Calendar API's Availability endpoint, when Nylas has determined
+    that a user is available to meet. These can include additional constraints such as buffer time,
+    a time interval, and other options that you might have specified.
+  category: Scheduling
+- term: Unix epoch
+  definition: >-
+    The Unix epoch (also known as "epoch time") refers to the specific point in time when the Unix
+    operating system's timekeeping began. This point in time is 00:00:00 UTC on January 1, 1970.
+  category: Protocol or Format
+- term: Unix timestamp
+  definition: >-
+    The number of seconds that have elapsed since the Unix epoch. Nylas expects time values as Unix
+    timestamps.
+  category: Protocol or Format
+- term: Useragent
+  definition: >-
+    A string that identifies the application (browser) that the user is using to access the web. This
+    can be useful along with their IP address for identifying traffic from the same person. Nylas
+    doesn't maintain a list of useragents, but you can find a list of common useragents online.
+  category: Protocol or Format
+- term: Webhook challenge
+  definition: >-
+    When you create or activate a webhook endpoint, Nylas verifies that the endpoint is working by
+    making a GET request to it with a challenge query parameter. Your application must return the
+    _exact value_ of the challenge in the response body within 10 seconds.
+  category: Notifications
+- term: Webhook endpoint
+  definition: >-
+    The URL that Nylas sends webhook payloads to when an event occurs on the provider. Sometimes called
+    a "webhook receiver" or "webhook URL".
+  category: Notifications
+- term: Webhook payload
+  definition: >-
+    The data or message that Nylas sends to your webhook endpoint when an event occurs on the provider.
+  category: Notifications
+- term: Webhook signature
+  definition: >-
+    Included in webhook payloads sent from Nylas. These allow you to verify that the webhook data
+    really did originate from Nylas.
+  category: Notifications
+- term: Whitelabeling
+  definition: >-
+    The process of customizing the appearance of the Nylas authentication screen and authentication
+    domains to use your company's domain and logo or branding. Basic logo customization is available
+    for all Nylas applications, regardless of plan tier. Additional whitelabeling features are available
+    as an add on to paid plans.
+  category: Authentication

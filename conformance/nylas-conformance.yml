@@ -1,0 +1,166 @@
+generated: '2026-08-20'
+method: provider-published
+authored_by: Nylas
+source: >-
+  Derived from the published contract at
+  https://developer.nylas.com/_spec-files/nylas-api.yaml (securitySchemes,
+  parameters, response schemas) and from live probes of the developer and API
+  hosts. Every claim below is checkable against one of those two.
+description: >-
+  Standards conformance for the Nylas v3 platform. Recorded as measured, not as
+  aspired to: several entries below are deliberately false and are listed so the
+  gaps are legible rather than absent. Where a capability exists but is not yet
+  declared across the whole contract, the entry says so and gives the count.
+standards:
+  - id: oauth2
+    conforms: true
+    evidence: >-
+      Hosted authorization at GET /v3/connect/auth and code exchange at
+      POST /v3/connect/token. The ACCESS_TOKEN scheme carries grant-scoped
+      tokens issued by that exchange.
+  - id: oauth2.1
+    conforms: true
+    evidence: >-
+      The contract describes the authorization code flow with PKCE and no
+      implicit or resource-owner-password grant. Deprecated grant types are
+      absent from the contract.
+  - id: pkce
+    conforms: true
+    evidence: PKCE code challenge is documented on the hosted authorization flow.
+  - id: http-bearer-auth
+    conforms: true
+    evidence: >-
+      All three securitySchemes are HTTP Bearer: NYLAS_API_KEY (application
+      scope), ACCESS_TOKEN (grant scope), SCHEDULER_SESSION_TOKEN (session
+      scope).
+  - id: oauth-scopes
+    conforms: true
+    evidence: >-
+      Provider scopes are enumerated per operation via x-scopes on 90
+      operations, and documented at
+      https://developer.nylas.com/docs/dev-guide/scopes/.
+  - id: credentials-not-in-query
+    conforms: true
+    evidence: >-
+      No securityScheme is of type apiKey in a query string. Credentials are
+      carried in the Authorization header only.
+  - id: openapi-3.1
+    conforms: true
+    evidence: >-
+      The published contract is OpenAPI 3.1.0: 118 paths, 208 operations, 174
+      component schemas, 100% of operations carrying a summary, description,
+      tag and unique operationId.
+  - id: cursor-pagination
+    conforms: true
+    evidence: >-
+      List endpoints paginate by opaque cursor via page_token, documented at
+      https://developer.nylas.com/docs/dev-guide/best-practices/.
+  - id: idempotency
+    conforms: partial
+    evidence: >-
+      Idempotent send is implemented and documented at
+      https://developer.nylas.com/docs/v3/email/idempotent-send/, but the
+      Idempotency-Key header is declared on only 2 of 95 mutating operations in
+      the contract (/v3/grants/{grant_id}/messages/send and
+      /v3/domains/{domain_name}/messages/send). Declaring it across the
+      remaining mutating operations is open work, not a capability gap.
+  - id: webhook-signing
+    conforms: true
+    evidence: >-
+      Webhook payloads are signed and verification is documented at
+      https://developer.nylas.com/docs/cookbook/use-cases/build/verify-webhook-signatures/.
+      Secret rotation is exposed at /v3/webhooks/rotate-secret/{id}.
+  - id: webhook-transports
+    conforms: true
+    evidence: >-
+      The same notification payloads are deliverable over HTTPS webhooks,
+      Google Cloud Pub/Sub and Amazon SNS. See
+      https://developer.nylas.com/docs/reference/notifications/.
+  - id: rfc9116-security-txt
+    conforms: true
+    evidence: >-
+      https://developer.nylas.com/.well-known/security.txt returns 200
+      text/plain with Contact, Expires, Policy, Preferred-Languages and
+      Canonical.
+  - id: rfc9727-api-catalog
+    conforms: true
+    evidence: >-
+      https://developer.nylas.com/.well-known/api-catalog returns 200
+      application/linkset+json, carrying service-desc, service-doc and status
+      links for both the US and EU base URLs.
+  - id: rfc8288-web-linking
+    conforms: true
+    evidence: >-
+      developer.nylas.com serves Link headers on every page with rel values
+      api-catalog, mcp-server-card, agent-skills, agent-card, service-desc,
+      service-doc, describedby and alternate.
+  - id: model-context-protocol
+    conforms: true
+    evidence: >-
+      Hosted MCP servers at https://mcp.us.nylas.com and
+      https://mcp.eu.nylas.com over streamable HTTP, with a server card at
+      /.well-known/mcp/server-card.json. See mcp/nylas-mcp.yml.
+  - id: agent-skills
+    conforms: true
+    evidence: >-
+      Provider-authored skills discoverable at
+      https://developer.nylas.com/.well-known/agent-skills/index.json
+      (schemas.agentskills.io discovery 0.2.0), with sha256 digests that match
+      the published SKILL.md files.
+  - id: content-signal
+    conforms: true
+    evidence: >-
+      robots.txt declares "Content-Signal: search=yes, ai-input=yes,
+      ai-train=yes" with explicit Allow rules for the major AI crawlers.
+  - id: a2a
+    conforms: false
+    evidence: >-
+      An agent card is served at /.well-known/agent-card.json, but Nylas does
+      not operate an A2A JSON-RPC endpoint and the card declares no A2A
+      protocolVersion. See a2a/nylas-a2a.yml, graded flavored for that reason.
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      Errors do not use application/problem+json. Error responses reference
+      per-status schemas rather than one shared envelope, and only 49 of 208
+      operations document a 4xx response schema at all. Error codes are
+      catalogued at https://developer.nylas.com/docs/api/errors/.
+  - id: rate-limit-headers
+    conforms: false
+    evidence: >-
+      Nylas does not emit X-RateLimit-* or RateLimit-Policy response headers.
+      Limits are published at
+      https://developer.nylas.com/docs/dev-guide/platform/rate-limits/ and
+      Retry-After is returned on upstream provider throttling. See
+      rate-limits/nylas-rate-limits.yml.
+  - id: oidc-discovery
+    conforms: false
+    evidence: >-
+      No /.well-known/openid-configuration on the developer host or either API
+      host. ID token validation is documented, but there is no OIDC discovery
+      document.
+  - id: asyncapi
+    conforms: false
+    evidence: >-
+      No AsyncAPI document is published, and none is warranted: the platform is
+      REST plus server-to-server push, with no WebSocket, SSE or streaming
+      surface. The OpenAPI contract also does not yet carry a top-level
+      webhooks object, so the event surface is described in prose and in the
+      notifications reference rather than in the contract.
+  - id: dry-run
+    conforms: false
+    evidence: >-
+      No destructive operation exposes a dry_run, simulate, preview or
+      validate_only parameter.
+  - id: fapi
+    conforms: false
+  - id: fhir-r4
+    conforms: false
+  - id: scim
+    conforms: false
+  - id: odata
+    conforms: false
+  - id: json-api
+    conforms: false
+  - id: graphql
+    conforms: false

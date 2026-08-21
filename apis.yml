@@ -372,6 +372,10 @@ common:
   - type: MCPServer
     name: Nylas MCP Server manifest
     url: mcp/nylas-mcp.yml
+  - type: Vocabulary
+    url: vocabulary/nylas-vocabulary.yml
+  - type: Conformance
+    url: conformance/nylas-conformance.yml
   - type: AgentCard
     url: a2a/nylas-a2a.yml
   - type: SecurityTxt
