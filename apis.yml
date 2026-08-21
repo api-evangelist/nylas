@@ -112,7 +112,7 @@ apis:
   - Admin
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-admin-api-openapi.yml
 - aid: nylas:nylas-auth-api
   name: Nylas Auth API
   description: >-
@@ -126,7 +126,7 @@ apis:
   - Auth
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-auth-api-openapi.yml
 - aid: nylas:nylas-calendars-api
   name: Nylas Calendars API
   description: >-
@@ -138,7 +138,7 @@ apis:
   - Calendars
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-calendars-api-openapi.yml
 - aid: nylas:nylas-contacts-api
   name: Nylas Contacts API
   description: Contacts. Read, create, update and delete a grant's contacts and contact groups.
@@ -148,7 +148,7 @@ apis:
   - Contacts
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-contacts-api-openapi.yml
 - aid: nylas:nylas-drafts-api
   name: Nylas Drafts API
   description: >-
@@ -160,7 +160,7 @@ apis:
   - Drafts
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-drafts-api-openapi.yml
 - aid: nylas:nylas-events-api
   name: Nylas Events API
   description: >-
@@ -174,7 +174,7 @@ apis:
   - Events
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-events-api-openapi.yml
 - aid: nylas:nylas-grants-api
   name: Nylas Grants API
   description: >-
@@ -186,7 +186,7 @@ apis:
   - Grants
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-grants-api-openapi.yml
 - aid: nylas:nylas-messages-api
   name: Nylas Messages API
   description: >-
@@ -200,7 +200,7 @@ apis:
   - Messages
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-messages-api-openapi.yml
 - aid: nylas:nylas-scheduling-api
   name: Nylas Scheduling API
   description: >-
@@ -212,7 +212,7 @@ apis:
   - Scheduling
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-scheduling-api-openapi.yml
 - aid: nylas:nylas-threads-api
   name: Nylas Threads API
   description: Threads. List, search, read and update email threads, and manage thread-level folders and state.
@@ -222,7 +222,7 @@ apis:
   - Threads
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-threads-api-openapi.yml
 - aid: nylas:nylas-notifications-api
   name: Nylas Notifications API
   description: >-
@@ -243,7 +243,7 @@ apis:
   - Events
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-notifications-api-openapi.yml
   - type: APIReference
     url: https://developer.nylas.com/docs/reference/notifications/
   - type: Documentation
@@ -262,7 +262,7 @@ apis:
   - Meetings
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-notetaker-api-openapi.yml
   - type: APIReference
     url: https://developer.nylas.com/docs/reference/api/notetaker/
   - type: Documentation
@@ -280,7 +280,7 @@ apis:
   - Automation
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    url: openapi/nylas-templates-workflows-api-openapi.yml
   - type: APIReference
     url: https://developer.nylas.com/docs/reference/api/application-level-templates/
 common:
@@ -386,6 +386,53 @@ common:
     url: https://developer.nylas.com/.well-known/api-catalog
   - type: WellKnown
     url: well-known/nylas-well-known.yml
+x-provenance:
+  provider_published: true
+  summary: >-
+    The artifacts in this repository were authored by Nylas and submitted as
+    api-evangelist/nylas#1, then verified by API Evangelist against live URLs
+    before merge. The contract registered below is Nylas' own published
+    document, harvested verbatim.
+  submitted_by:
+    name: Nick Barraclough
+    role: Developer documentation, Nylas
+    pull_request: https://github.com/api-evangelist/nylas/pull/1
+  api_evangelist_changes:
+    - >-
+      Harvested the published contract from
+      https://developer.nylas.com/_spec-files/nylas-api.yaml to
+      openapi/_original/nylas-api-openapi.yml (sha256
+      7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35) and split
+      it into the 13 domain specs the provider's own entries name. The PR pointed
+      all fourteen entries at the remote URL, which would have left every local
+      spec unregistered and deleted on the next rebuild, and left a 1.67 MB
+      contract to be read through a 32 KB embedded-source cap.
+    - >-
+      Quarantined eleven API Evangelist scaffolds to openapi/_scaffold/ and
+      stamped each one. They were derived from reading developer.nylas.com/docs/
+      and said so in their own info.description, but carried no provenance
+      marker, so the rubric had been crediting 22 modelled operations at full
+      first-party weight while the provider's real 208-operation contract went
+      uncounted. The provider identified this from the outside.
+    - >-
+      Hoisted `servers:` above `info:` in every emitted document. Semantically
+      inert -- a YAML mapping is unordered -- but Nylas' info.description is a
+      single ~20 KB line carrying an embedded Postman payload, which pushed the
+      servers block past the 24 KB head window the provenance indexer reads. All
+      thirteen splits registered as no_servers until this.
+  verified:
+    date: '2026-08-21'
+    contract: >-
+      OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of
+      operations carrying summary, description, tag and a unique operationId,
+      x-code-samples on 208 of 208. Counted from the harvested document, not
+      from the submission.
+    also_confirmed: >-
+      All five .well-known paths, both MCP endpoints (401, live and auth-gated),
+      all published rate limits, and the trust-center compliance list. The
+      provider's disclosed negatives were confirmed as negatives: no A2A
+      protocolVersion on the agent card, no webhooks object, and Idempotency-Key
+      on exactly 2 of 95 mutating operations.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

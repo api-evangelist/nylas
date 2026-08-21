@@ -1,54 +1,1259 @@
 openapi: 3.1.0
-info:
-  title: Nylas API (v3) Admin Threads API
-  description: 'Nylas provides unified APIs for email, calendar, contacts, and
-
-    scheduling across many underlying providers (Google, Microsoft, IMAP,
-
-    etc.). Resources are scoped to a grant that represents an end-user
-
-    connection. Endpoint scaffold below is derived from the public v3
-
-    developer documentation at https://developer.nylas.com/docs/.
-
-    '
-  version: '3.0'
-  contact:
-    name: Nylas Developers
-    url: https://developer.nylas.com
 servers:
 - url: https://api.us.nylas.com
-  description: United States region
+  description: U.S.
 - url: https://api.eu.nylas.com
-  description: European Union region
+  description: E.U.
+info:
+  title: Nylas Threads API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: "The Nylas API is designed using the [REST](https://en.wikipedia.org/wiki/Representational_State_Transfer) ideology to provide simple and predictable URIs to access and modify objects. Requests support [standard HTTP methods](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html) like `GET`, `PUT`, `POST`, and `DELETE`, and [standard status codes](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). Response bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n\nYou can use the [Nylas Postman collection](https://www.postman.com/trynylas/workspace/nylas-api/overview) to quickly start using the Nylas APIs. For more information, check out the [Nylas Postman collection documentation](/docs/v3/api-references/postman/).\n\n[<img src=\"https://run.pstmn.io/button.svg\" alt=\"Run In Postman\" style=\"width: 128px; height: 32px;\">](https://god.gw.postman.com/run-collection/21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a%26entityType%3Dcollection%26workspaceId%3De36cf1fc-a749-494d-9c8c-f3c28f18c342#?env%5Bv3%20Environment%5D=W3sia2V5IjoiYmFzZVVybCIsInZhbHVlIjoiaHR0cHM6Ly9hcGkudXMubnlsYXMuY29tIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik55bGFzIEFQSSBiYXNlIFVSTC4gVXNlIGh0dHBzOi8vYXBpLmV1Lm55bGFzLmNvbSBmb3IgdGhlIEVVIHJlZ2lvbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImJlYXJlclRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIEFQSSBrZXkgZnJvbSB0aGUgRGFzaGJvYXJkIChodHRwczovL2Rhc2hib2FyZC12My5ueWxhcy5jb20pLiBVc2VkIGZvciBhbGwgYXV0aGVudGljYXRlZCByZXF1ZXN0cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImdyYW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiVGhlIGdyYW50IElEIHJlcHJlc2VudGluZyBhbiBlbmQgdXNlcidzIGNvbm5lY3RlZCBhY2NvdW50LiBSZXF1aXJlZCBmb3IgRUNDICYgU2NoZWR1bGVyIGNvbGxlY3Rpb25zLiBGaW5kIHRoaXMgaW4gdGhlIERhc2hib2FyZCB1bmRlciBHcmFudHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhY2Nlc3NfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJzZWNyZXQiLCJkZXNjcmlwdGlvbiI6IkEgdXNlci1sZXZlbCBhY2Nlc3MgdG9rZW4gcmV0dXJuZWQgZnJvbSB0aGUgT0F1dGggZmxvdy4gQWx0ZXJuYXRpdmUgdG8gdXNpbmcgQVBJIGtleSArIGdyYW50X2lkIGZvciBwZXItdXNlciBhdXRoLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBwbGljYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIGFwcGxpY2F0aW9uIElELiBBdXRvLXNldCBieSB0aGUgJ1ZlcmlmeSBBUEkga2V5JyByZXF1ZXN0IGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoicHJvdmlkZXIiLCJ2YWx1ZSI6Imdvb2dsZSIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRoIHByb3ZpZGVyIGZvciBjb25uZWN0b3Igb3BlcmF0aW9uczogZ29vZ2xlLCBtaWNyb3NvZnQsIGltYXAsIG9yIHZpcnR1YWwtY2FsZW5kYXIuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJjYWxsYmFja19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlJlZGlyZWN0IFVSSSBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgY2FsbGJhY2sgVVJJIGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY3JlZGVudGlhbF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbm5lY3RvciBjcmVkZW50aWFsIElEIGZvciBzZXJ2aWNlIGFjY291bnRzIG9yIGFwcCBwYXNzd29yZHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3ZWJob29rX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiV2ViaG9vayBkZXN0aW5hdGlvbiBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgd2ViaG9vay4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNoYW5uZWxfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQdWIvU3ViIGNoYW5uZWwgSUQuIFNldCBhZnRlciBjcmVhdGluZyBhIGNoYW5uZWwuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3Jrc3BhY2VfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJXb3Jrc3BhY2UgSUQgZm9yIGdyYW50IGdyb3VwaW5nICYgb3JnYW5pemF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBpX2tleV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkFQSSBrZXkgcmVzb3VyY2UgSUQgKG5vdCB0aGUga2V5IGl0c2VsZikuIFVzZWQgZm9yIG1hbmFnaW5nIEFQSSBrZXlzIHZpYSB0aGUgQWRtaW4gQVBJLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBJRC4gVXNlZCBpbiBob3N0ZWQgT0F1dGggYXV0aG9yaXphdGlvbiBVUkxzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X3NlY3JldCIsInZhbHVlIjoiIiwidHlwZSI6InNlY3JldCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBzZWNyZXQuIFVzZWQgaW4gdGhlIE9BdXRoIHRva2VuIGV4Y2hhbmdlIHN0ZXAuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZWRpcmVjdF91cmkiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJPQXV0aCBjYWxsYmFjayBVUkwgcmVnaXN0ZXJlZCB3aXRoIHlvdXIgTnlsYXMgYXBwbGljYXRpb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZXNwb25zZV90eXBlIiwidmFsdWUiOiJjb2RlIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik9BdXRoIHJlc3BvbnNlIHR5cGUuIFVzZSAnY29kZScgZm9yIHNlcnZlci1zaWRlIGF1dGggKHJlY29tbWVuZGVkKSBvciAndG9rZW4nIGZvciBjbGllbnQtc2lkZS4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvZGUiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRob3JpemF0aW9uIGNvZGUgcmV0dXJuZWQgZnJvbSBob3N0ZWQgT0F1dGguIFVzZWQgdG8gZXhjaGFuZ2UgZm9yIGFuIGFjY2VzcyB0b2tlbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImlkX3Rva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiSUQgdG9rZW4gZm9yIGN1c3RvbSBhdXRoZW50aWNhdGlvbiBmbG93cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImVtYWlsIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRW1haWwgYWRkcmVzcyB1c2VkIGFzIGxvZ2luX2hpbnQgaW4gT0F1dGggZmxvd3MuIFByZS1maWxscyB0aGUgcHJvdmlkZXIgc2lnbi1pbiBwYWdlLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ29vZ2xlX2NsaWVudF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IllvdXIgR29vZ2xlIE9BdXRoIGNsaWVudCBJRC4gVXNlZCB3aGVuIGNyZWF0aW5nIGEgR29vZ2xlIGNvbm5lY3Rvci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6Imdvb2dsZV9jbGllbnRfc2VjcmV0IiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIEdvb2dsZSBPQXV0aCBjbGllbnQgc2VjcmV0LiBVc2VkIHdoZW4gY3JlYXRpbmcgYSBHb29nbGUgY29ubmVjdG9yLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY2FsZW5kYXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJDYWxlbmRhciBJRC4gQ2FuIGJlIHRoZSBncmFudCdzIGVtYWlsIGFkZHJlc3Mgb3IgJ3ByaW1hcnknIGZvciB0aGUgZGVmYXVsdCBjYWxlbmRhci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImV2ZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRXZlbnQgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGNyZWF0aW5nIG9yIGxpc3RpbmcgZXZlbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibWVzc2FnZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik1lc3NhZ2UgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3Igc2VuZGluZyBtZXNzYWdlcy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InRocmVhZF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlRocmVhZCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyB0aHJlYWRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZHJhZnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJEcmFmdCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgZHJhZnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZm9sZGVyX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRm9sZGVyIG9yIGxhYmVsIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBsaXN0aW5nIGZvbGRlcnMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhdHRhY2htZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQXR0YWNobWVudCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyBtZXNzYWdlIGF0dGFjaG1lbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY29udGFjdF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbnRhY3QgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3IgY3JlYXRpbmcgY29udGFjdHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJub3RldGFrZXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJOb3RldGFrZXIgSUQuIFNldCBhZnRlciBpbnZpdGluZyBhIG5vdGV0YWtlciBib3QgdG8gYSBtZWV0aW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoidGVtcGxhdGVfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJNZXNzYWdlIHRlbXBsYXRlIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB0ZW1wbGF0ZXMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3JrZmxvd19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IldvcmtmbG93IElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB3b3JrZmxvd3MuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJzY2hlZHVsZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlIElEIGZvciBFeHRyYWN0QUkgb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImRvbWFpbl9uYW1lIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRG9tYWluIG5hbWUgZm9yIGN1c3RvbSBkb21haW4gb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvbmZpZ3VyYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJTY2hlZHVsZXIgY29uZmlndXJhdGlvbiBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBjb25maWd1cmF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2Vzc2lvbl9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlciBzZXNzaW9uIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyBhIHNlc3Npb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJib29raW5nX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQm9va2luZyBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBib29raW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ3JvdXBfZXZlbnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJHcm91cCBldmVudCBJRCBmb3IgY29sbGFib3JhdGl2ZSBzY2hlZHVsaW5nIHdpdGggbXVsdGlwbGUgcGFydGljaXBhbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2NoZWR1bGVyU2Vzc2lvblRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJTaG9ydC1saXZlZCBzZXNzaW9uIHRva2VuIGZvciBwdWJsaWMtZmFjaW5nIFNjaGVkdWxlciBlbmRwb2ludHMgKEF2YWlsYWJpbGl0eSwgQm9va2luZ3MpLiBDcmVhdGVkIHZpYSB0aGUgU2Vzc2lvbnMgZW5kcG9pbnQuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ2Ml9zY2hlZHVsZXJfc2x1ZyIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNsdWcgZnJvbSBhIHYyIFNjaGVkdWxlciBwYWdlLiBVc2VkIGZvciBtaWdyYXRpbmcgdjIgc2NoZWR1bGluZyBwYWdlcyB0byB2MyBjb25maWd1cmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InBhZ2VfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQYWdpbmF0aW9uIGN1cnNvci4gUGFzcyB0aGUgbmV4dF9jdXJzb3IgdmFsdWUgZnJvbSBhIGxpc3QgcmVzcG9uc2UgdG8gZ2V0IHRoZSBuZXh0IHBhZ2Ugb2YgcmVzdWx0cy4iLCJlbmFibGVkIjp0cnVlfV0=)\n\n## Enable compression to optimize performance\n\nThe Email, Calendar, Contacts, and Scheduler APIs return gzip-compressed responses when your request includes the [`Accept-Encoding: gzip`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding) header. Most HTTP libraries negotiate and decompress gzip responses automatically. With curl, use `--compressed`. Nylas skips compression for responses under about 200 bytes.\n\nCompression pairs well with [query parameters](#query-parameters) that limit the number of objects returned and [field selection](#reduce-response-size-with-field-selection) that limits which fields come back in each object. For the full walkthrough, including webhook, Pub/Sub, and SNS compression, see [Reducing payload size with compression](/docs/dev-guide/best-practices/compression/).\n\n## Query parameters\n\nNylas allows you to include query parameters in `GET` requests that return a list of results. Query parameters let you narrow the results Nylas returns, meaning fewer requests to the provider and less data for your application to sift through. For more information, see [Rate limits in Nylas](/docs/dev-guide/platform/rate-limits/).\n\nThe table below shows the query parameters you can use for the `GET` requests in the Email, Calendar, Contacts, and Notetaker APIs.\n\n| Endpoint                                                                                          | Query parameters                                                                                                                                                                                                                                                                               |\n| :------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/calendars`](/docs/reference/api/calendar/get-all-calendars/)    | `limit`, `page_token`, `metadata_pair`, `select`                                                                                                                                                                                                                                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/events`](/docs/reference/api/events/get-all-events/)            | `calendar_id` (required), `limit`, `page_token`, `show_cancelled`, `title`, `description`, `ical_uid`, `location`, `start`, `end`, `master_event_id`, `metadata_pair`, `busy`, `updated_before`, `updated_after`, `attendees`, `event_type`, `expand_recurring`, `tentative_as_busy`, `select` |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/drafts`](/docs/reference/api/drafts/get-drafts/)                | `limit`, `page_token`, `subject`, `any_email`, `to`, `cc`, `bcc`, `starred`, `thread_id`, `has_attachment`, `query_imap`, `select`                                                                                                                                                             |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/messages`](/docs/reference/api/messages/get-messages/)          | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `thread_id`, `received_before`, `received_after`, `has_attachment`, `fields`, `search_query_native`, `metadata_pair`, `query_imap`, `shared_from`, `select`                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/threads`](/docs/reference/api/threads/get-threads/)             | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `latest_message_before`, `latest_message_after`, `has_attachment`, `search_query_native`, `earliest_message_date`, `shared_folder_id`, `shared_from`, `select`                            |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/folders`](/docs/reference/api/folders/get-folder/)              | `limit`, `page_token`, `parent_id`, `include_hidden_folders`, `shared_from`, `single_level`, `select`                                                                                                                                                                                          |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/contacts`](/docs/reference/api/contacts/list-contact/)          | `limit`, `page_token`, `email`, `phone_number`, `source`, `group`, `recurse`, `select`                                                                                                                                                                                                         |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/notetakers`](/docs/reference/api/notetaker/get-all-notetakers/) | `limit`, `page_token`, `prev_page_token`, `join_time_start`, `join_time_end`, `state`, `order_by`, `order_direction`                                                                                                                                                                           |\n\nYou can use the `limit` parameter to set the maximum number of results Nylas returns for your request. Nylas recommends setting a lower `limit` if you encounter rate limits on the provider. For more information, see [Avoiding rate limits in Nylas](/docs/dev-guide/best-practices/rate-limits/).\n\nNylas supports case-insensitive partial matches for some query parameters:\n\n- `description`, `location`, and `title` in [Get all Events requests](/docs/reference/api/events/get-all-events/).\n- `subject` in [Get all Messages](/docs/reference/api/messages/get-messages/), [Get all Drafts](/docs/reference/api/drafts/get-drafts/), and [Get all Threads](/docs/reference/api/threads/get-threads/) requests.\n\nIf the specified field contains the query term, Nylas matches it regardless of the case. For example, if you set the `subject` query parameter to `march` in a Get all Messages request, Nylas might return the following messages:\n\n- \"Company **March** Meeting\"\n- \"Today in history: Mussolini's **march** on Rome\"\n- \"Your coupon code: **mARch**\"\n\nSince Nylas matches keywords, it won't return the following messages:\n\n- \"Confirmation code: abc**March**123\"\n- \"**M**cDonald's golden **arch**es\"\n\n## Pagination\n\nNylas might return multiple pages of data when you make a \"Get all\" request (for example, [Get all Events](/docs/reference/api/events/get-all-events/)). When this happens, Nylas includes the `next_cursor` field in its response. You can pass the value of `next_cursor` as the `page_token` query parameter in your next request to get the next page of results.\n\nYou can use the `limit` parameter to specify the maximum number of results you want in one page of data. If you see rate limits from the provider, try using a smaller `limit` value.\n\n| Query Parameter | Type    | Description                                                                                                                       |\n| :-------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------- |\n| `limit`         | integer | The number of objects to return, up to a maximum of `200` (defaults to `50`).                                                     |\n| `page_token`    | string  | An identifier that specifies which page of data to return. This value should be taken from the `next_cursor` response body field. |\n\n## Updating objects\n\n`PUT` and `PATCH` requests behave similarly in Nylas: when you make a request, Nylas replaces all data in the nested object with the information you define. Because of this, your request might fail if you don't include all mandatory fields.\n\nNylas doesn't erase the data from fields that you don't include in your request, so you can define only the mandatory fields and any that you want to update.\n\n## Grant ID patterns\n\nNylas supports multiple patterns for identifying grants in API calls. This flexibility allows you to reference grants using the identifier that's most convenient for your application, whether that's the Nylas grant ID, the user's email address, an external ID from your system, or a special shorthand syntax.\n\nAll endpoint paths that include `{grant_id}` support these patterns. For example, you can use any of these patterns with endpoints like `/v3/grants/{grant_id}/messages`, `/v3/grants/{grant_id}/events`, `/v3/grants/{grant_id}/contacts`, and others.\n\n| Pattern                  | Description                                                                                                                                                                                                             | Authorization           |\n| :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------- |\n| `<grant_id>`             | The Nylas grant ID (for example, `GET /v3/grants/e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This is the standard format.                                                                                          | API key or access token |\n| `grant:<grant_id>`       | Explicitly prefixed Nylas grant ID (for example, `GET /v3/grants/grant:e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This format is useful for clarity when working with multiple identifier types.                  | API key or access token |\n| `<email_address>`        | The email address associated with the grant (for example, `GET /v3/grants/user@example.com/messages`). Nylas looks up the grant associated with this email address.                                                     | API key or access token |\n| `email:<email_address>`  | Explicitly prefixed email address (for example, `GET /v3/grants/email:user@example.com/messages`). This format is useful for clarity when the email address might be ambiguous.                                         | API key or access token |\n| `external:<external_id>` | An external ID from your system (for example, `GET /v3/grants/external:user-12345/messages`). This allows you to reference grants using your own identifiers. For more information, see the External IDs documentation. | API key or access token |\n| `me`                     | A special shorthand syntax (for example, `GET /v3/grants/me/messages`). Nylas looks up the grant associated with the request's access token.                                                                            | Access token only       |\n\nThe `me` syntax is particularly useful for client-side applications where you authenticate end users with access tokens. You can't use this syntax with API key authorization, because there is no grant associated with an API key.\n\n## Metadata\n\nYou can use the `metadata` object to add a list of key-value pairs to Calendar, Event, Message, and Draft objects so you can store custom data with them. Both keys and values can be any string. If you want to filter on metadata, however, you must write values to one of the five [Nylas-specific keys](#metadata-keys-and-filtering).\n\nFor more information, see the [Metadata documentation](/docs/dev-guide/metadata/).\n\n### Metadata keys and filtering\n\nNylas reserves five metadata keys (`key1`, `key2`, `key3`, `key4`, `key5`) and indexes their contents. Nylas uses `key5` to identify events that count towards the `max-fairness` round-robin calculation for event availability. For more information, see [Group availability and booking best practices](/docs/v3/calendar/group-booking/#round-robin-max-fairness-groups).\n\nYou can add values to each of these reserved keys, and reference them in a query to filter the objects that Nylas returns. You can also add these filters as query parameters, as in the following examples:\n\n- `https://api.us.nylas.com/calendar?metadata_pair=key1:on-site`\n- `https://api.us.nylas.com/events?calendar_id=<CALENDAR_ID>&metadata_pair=key1:on-site`\n\nYou can't create a query that includes both a provider and metadata filter, other than `calendar_id`. For example, `https://api.us.nylas.com/calendar?metadata_pair=key1:plan-party&title=Birthday` returns an error.\n\n## Reduce response size with field selection\n\nField selection allows you to use the `select` query parameter to specify which fields you want Nylas to include in the response.\n\nYou can use field selection for all Nylas API endpoints, _except_ the following:\n\n- All `DELETE` endpoints.\n- All Attachments endpoints.\n- All Smart Compose endpoints.\n- The Send Message endpoint.\n- The Create a Draft endpoint.\n\nField selection helps to reduce the size of the response, improves latency, and helps you avoid rate limiting issues. You can also use it in cases where you want to avoid working with information from your users that you think might be sensitive.\n\nField selection can evaluate top-level object fields only. You cannot use it to return only nested fields.\n\n<div id=\"admonition-info\">\U0001F4DD <b>Note</b>: Nylas strongly suggests you always use field selection, so you only get the data that you need.</div>\n\nFor example, the following request specifies Nylas should return only the `id` and `name` fields of the Calendar object.\n\n```bash\ncurl --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/me/calendars?select=id,name'\n```\n\nThe response payload includes only the `id` and `name` fields in the `data` object, as in the example below.\n\n```json\n{\n  \"request_id\": \"5fa64c92-e840-4357-86b9-2aa364d35b88\",\n  \"data\": [\n    {\n      \"id\": \"5d3qmne77v32r8l4phyuksl2x\",\n      \"name\": \"My Calendar\"\n    },\n    {\n      \"id\": \"5d3qmne77v32r23aphyuksl2x\",\n      \"name\": \"My Calendar 2\"\n    }\n  ]\n}\n```\n\n## Nylas encoding\n\nResponse bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n"
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
 security:
-- BearerAuth: []
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
 tags:
 - name: Threads
 paths:
   /v3/grants/{grant_id}/threads:
     parameters:
-    - in: path
-      name: grant_id
-      required: true
-      schema:
+    - schema:
         type: string
+      name: grant_id
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use
+
+        `/me/` to refer to the grant associated with an access token.'
+      example: nyla@example.com
     get:
+      summary: Return all threads
       tags:
       - Threads
-      summary: List threads
+      operationId: get-threads
+      description: 'Returns all threads.
+
+
+        For Microsoft, IMAP, iCloud, Yahoo, and EWS, threads are ordered reverse chronologically by the latest message received.
+
+
+        For Google, thread ordering is not guaranteed to be reverse chronological due to a Gmail API limitation.
+
+        However, setting the `in` query parameter improves the likelihood of reverse chronological ordering significantly (approximately 40%).
+
+        While reverse chronological ordering remains unguaranteed even with the `in` parameter, we recommend using it to increase the chance of this ordering pattern.
+
+
+        <div id="admonition-warning">
+
+        ⚠️ <b>Your users might receive a large number of threaded messages</b>. If you encounter
+
+        <a href="/docs/api/errors/400-response/"><code>429</code> errors</a> or provider
+
+        <a href="/docs/dev-guide/platform/rate-limits/">rate limits</a> when listing all threads, Nylas
+
+        recommends you set the <code>limit</code> parameter to 20 and add
+
+        <a href="#query-parameters">query parameters</a> to your request to
+
+        limit the results.</div>'
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.readonly
+          others: https://www.googleapis.com/auth/gmail.modify
+        microsoft:
+          min: https://graph.microsoft.com/Mail.Read
+          others:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.Read.Shared
+          - https://graph.microsoft.com/Mail.ReadWrite.Shared
+        yahoo:
+          min: email, mail-r
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - name: any_email
+        schema:
+          type: string
+        in: query
+        description: 'Filter for threads that contain messages sent to or received from the email addresses in the
+
+          comma-separated list. You may specify a maximum of 25 email addresses per query.'
+        example: mail1@example.com,mail2@example.com
+      - name: bcc
+        schema:
+          type: string
+        in: query
+        description: 'Filter for threads that contain messages BCC''d to the specified email address. Because most
+
+          SMTP gateways remove BCC information from sent messages, any messages that Nylas returns are
+
+          likely sent from the parent account.
+
+
+          For Microsoft grants, Nylas sometimes doesn''t return messages that satisfy the conditions of
+
+          this query parameter. This is because of a limitation on the provider. Instead, you can use
+
+          the `thread_id` to retrieve a specific conversation.'
+      - name: cc
+        schema:
+          type: string
+        in: query
+        description: 'Filter for threads that contain messages CC''d to the specified email address.
+
+
+          For Microsoft grants, Nylas sometimes doesn''t return messages that satisfy the conditions of
+
+          this query parameter. This is because of a limitation on the provider. Instead, you can use
+
+          the `thread_id` to retrieve a specific conversation.'
+      - name: from
+        schema:
+          type: string
+        in: query
+        description: 'Filter for threads that include messages sent from the specified email address. If you want
+
+          to filter for threads that include messages sent from the current grant, use the `in` query
+
+          parameter and specify the Sent folder instead.
+
+
+          For Microsoft grants, Nylas sometimes doesn''t return messages that satisfy the conditions of
+
+          this query parameter. This is because of a limitation on the provider. Instead, you can use
+
+          the `thread_id` to retrieve a specific conversation.'
+      - name: has_attachment
+        schema:
+          type: boolean
+          default: false
+        in: query
+        description: When `true`, filters for threads that include attachments.
+      - name: in
+        schema:
+          type: string
+        in: query
+        description: 'Return messages in the specified folder or label, by folder ID.
+
+          Required when using `shared_from`.'
+      - name: earliest_message_date
+        schema:
+          type: integer
+        in: query
+        description: "Returns the date when the earliest or first message in the thread was sent or received, in Unix \ntimestamp format."
+      - name: latest_message_after
+        schema:
+          type: integer
+        in: query
+        description: 'Filter for threads whose most recent message was received after the specified time, in Unix
+
+          timestamp format.'
+      - name: latest_message_before
+        schema:
+          type: integer
+        in: query
+        description: 'Filter for threads whose most recent message was received before the specified time, in Unix
+
+          timestamp format.'
+      - name: limit
+        schema:
+          type: integer
+          default: 20
+          maximum: 50
+        in: query
+        description: 'The maximum number of objects to return. See [pagination](/docs/reference/api/#pagination)
+
+          for more information.'
+        required: false
+      - $ref: '#/components/parameters/page_token'
+      - name: search_query_native
+        schema:
+          type: string
+        in: query
+        description: 'Specify a URL-encoded search query. Connected providers use their provider-specific syntax,
+
+          while Nylas Agent Accounts use Nylas full-text search syntax. The query parameters that you can
+
+          use alongside `search_query_native` depend on the provider:
+
+
+          - **Google**: `in`, `limit`, and `page_token`
+
+          - **Microsoft**: `in`, `limit`, and `page_token`
+
+          - **IMAP/Yahoo/iCloud**: Any parameter
+
+          - **EWS**: Any parameter _except_ `thread_id`
+
+          - **Nylas Agent Accounts**: Any other parameter supported for Agent Accounts by this endpoint
+
+
+          For an overview of searching messages and threads with `search_query_native` across providers,
+
+          see [Searching with Nylas](/docs/dev-guide/best-practices/search/#search-messages-and-threads-using-search_query_native).
+
+          If you''re using a Nylas Agent Account, see
+
+          [Email search for Agent Accounts](/docs/v3/agent-accounts/email-search/) for the complete Nylas
+
+          search syntax, examples, and limits.'
+        examples:
+          Agent Account:
+            description: Nylas full-text query for threads that contain "charger" or "station".
+            value: charger%20OR%20station
+          Google:
+            description: Google query string for threads with subject "foo" or "bar".
+            value: subject%3Afoo%20OR%20subject%3Abar
+          Microsoft:
+            description: Microsoft Graph query for threads using the `$filter` syntax.
+            value: '%24filter%3Dfrom%2FemailAddress%2Faddress%20eq%20%27someuser%40example.com%27'
+      - $ref: '#/components/parameters/field_selection'
+      - $ref: '#/components/parameters/shared_folder_id'
+      - $ref: '#/components/parameters/shared_from'
+      - name: starred
+        schema:
+          type: boolean
+        in: query
+        description: Filter for threads that contain one or more starred messages.
+      - name: subject
+        schema:
+          type: string
+        in: query
+        description: 'Return threads that contain messages with a matching subject. This filter is case-sensitive
+
+          and returns partial matches.'
+      - name: to
+        schema:
+          type: string
+        in: query
+        description: 'Filter for threads that contain messages sent to the specified email address.
+
+
+          For Microsoft grants, Nylas sometimes doesn''t return messages that satisfy the conditions of
+
+          this query parameter. This is because of a limitation on the provider. Instead, you can use
+
+          the `thread_id` to retrieve a specific conversation.'
+      - name: unread
+        schema:
+          type: boolean
+        in: query
+        description: Filter for threads that contain one or more unread messages.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/threads?limit=5\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function fetchRecentThreads() {\n  try {\n    const identifier = \"<NYLAS_GRANT_ID>\";\n    const threads = await nylas.threads.list({\n      identifier: identifier,\n      queryParams: {\n        limit: 5,\n      },\n    });\n\n    console.log(\"Recent Threads:\", threads);\n  } catch (error) {\n    console.error(\"Error fetching threads:\", error);\n  }\n}\n\nfetchRecentThreads();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\n\nthreads = nylas.threads.list(\n  grant_id,\n  query_params={\n    \"limit\": 5\n  }\n)\n\nprint(threads)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(api_key: \"<NYLAS_API_KEY>\")\nquery_params = { limit: 5 }\nthreads, _ = nylas.threads.list(identifier: \"<NYLAS_GRANT_ID>\", query_params: query_params)\n\nthreads.map.with_index { |thread, i|\n  puts(\"Thread #{i}\")\n  participants = thread[:participants]\n\n  participants.each{ |participant|\n    puts(\n      \"Subject: #{thread[:subject]} | \"\\\n      \"Participant: #{participant[:name]} | \"\\\n      \"Email: #{participant[:email]}\"\n    )\n  }\n}"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport com.nylas.models.Thread;\nimport java.util.List;\n\npublic class ReadThreadParameters {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    ListThreadsQueryParams queryParams = new ListThreadsQueryParams.Builder().limit(5).build();\n    ListResponse<Thread> threads = nylas.threads().list(\"<NYLAS_GRANT_ID>\", queryParams);\n    int index = 0;\n\n    for(Thread thread : threads.getData()){\n      System.out.printf(\"%s \", index);\n\n      List<EmailName> participants = thread.getParticipants();\n      assert participants != null;\n\n      for(EmailName participant : participants){\n        System.out.printf(\"  Subject: %s | Participant: %s | Email: %s%n\",\n            thread.getSubject(),\n            participant.getName(),\n            participant.getEmail());\n      }\n      \n      index++;\n    }\n  }\n}"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.*\nimport java.util.*\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val queryParams = ListThreadsQueryParams(limit = 5)\n  val threads : List<Thread> = nylas.threads().list(\"<CALENDAR_ID>\", queryParams).data\n\n  for(i in threads.indices){\n    print(\"$i \")\n\n    val participants = threads[i].participants\n\n    if (participants != null) {\n      for(participant in participants){\n        println(\" Subject: ${threads[i].subject} + \" +\n            \"Name: ${participant.name} + \" +\n            \"Email: ${participant.email}\")\n      }\n    }\n  }\n}"
       responses:
         '200':
-          description: A list of threads.
+          $ref: '#/components/responses/threads'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+  /v3/grants/{grant_id}/threads/{thread_id}:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    - schema:
+        type: string
+      name: thread_id
+      in: path
+      required: true
+      description: 'ID of the thread to access. Nylas recommends you URL-encode this field, or you might receive a
+
+        [`404` error](/docs/api/errors/400-response/) if the ID contains special characters (for
+
+        example, `#`).'
+    get:
+      summary: Return a thread
+      tags:
+      - Threads
+      responses:
+        '200':
+          $ref: '#/components/responses/thread'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: get-threads-id
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/field_selection'
+      - $ref: '#/components/parameters/shared_folder_id'
+      - $ref: '#/components/parameters/shared_from'
+      description: Returns the specified thread.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/threads/<THREAD_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function fetchThreadById() {\n  try {\n    const thread = await nylas.threads.find({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      threadId: \"<THREAD_ID>\",\n    });\n\n    console.log(\"Thread:\", thread);\n  } catch (error) {\n    console.error(\"Error fetching thread:\", error);\n  }\n}\n\nfetchThreadById();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\nthread_id = \"<THREAD_ID>\"\n\nthread = nylas.threads.find(\n  grant_id,\n  thread_id,\n)\n\nprint(thread)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\t\n\nnylas = Nylas::Client.new(\n\tapi_key: \"<NYLAS_API_KEY>\"\n)\n\nthread, _ = nylas.threads.find(identifier: \"<NYLAS_GRANT_ID>\", \n                               thread_id: \"<THREAD_ID>\")\n\nparticipants = thread[:participants]\n\nparticipants.each{ |participant|\n    puts(\"Id: #{thread[:id]} | \"\\\n            \"Subject: #{thread[:subject]} | \"\\\n            \"Participant: #{participant[:name]} | \"\\\n            \"Email: #{participant[:email]}\"\n    )\n}\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport com.nylas.models.Thread;\n\npublic class ReturnThread {\n    public static void main(String[] args) throws\n            NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        Response<Thread> thread = nylas.threads().find(\"<NYLAS_GRANT_ID>\",\n        \"<THREAD_ID>\");\n        System.out.println(thread);\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val thread = nylas.threads().find(\"<NYLAS_GRANT_ID>\", \"<THREAD_ID>\").data\n  \n  print(thread)\n}\n"
+    put:
+      summary: Update a thread
+      tags:
+      - Threads
+      responses:
+        '200':
+          $ref: '#/components/responses/thread'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: put-threads-id
+      description: 'Updates the specified thread.
+
+
+        When you make a `PUT` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        [Updating objects](/docs/reference/api/#updating-objects).'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/field_selection'
+      - $ref: '#/components/parameters/shared_folder_id'
+      - $ref: '#/components/parameters/shared_from'
+      requestBody:
+        $ref: '#/components/requestBodies/thread_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request PUT \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/threads/<THREAD_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"unread\": true,\n    \"starred\": false,\n    \"folders\": [\"<FOLDER_ID>\"]\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function updateThread() {\n  try {\n    const calendar = await nylas.threads.update({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      threadId: \"<THREAD_ID>\",\n      requestBody: {\n        starred: true,\n      },\n    });\n\n    console.log(\"Updated Thread:\", calendar);\n  } catch (error) {\n    console.error(\"Error to update thread:\", error);\n  }\n}\n\nupdateThread();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\n\nthread = nylas.threads.update(\n  grant_id,\n  thread_id=\"<THREAD_ID>\",\n  request_body={\n    \"starred\": True\n  }\n)\n\nprint(thread)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\t\n\nnylas = Nylas::Client.new(\n\tapi_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  unread: true,\n  starred: true\n}\n\nthread, _ = nylas.threads.update(identifier: \"<NYLAS_GRANT_ID>\", \n                                 thread_id: \"<THREAD_ID>\",\n                                 request_body: request_body)\n\nputs thread\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport com.nylas.models.Thread;\n\npublic class UpdateThread {\n\tpublic static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n\t\tNylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n\t\tUpdateThreadRequest requestBody =\n\t\t\t\tnew UpdateThreadRequest.\n\t\t\t\tBuilder().\n\t\t\t\tunread(true).\n\t\t\t\tstarred(true).\n\t\t\t\tbuild();\n\n\t\tResponse<Thread> draft = nylas.threads().update(\"<NYLAS_GRANT_ID>\", \"<THREAD_ID>\", requestBody);\n\t\t\n\t\tSystem.out.printf(\"%s%s%s%n\",\n\t\t\tdraft.getData().getId(),\n\t\t\tdraft.getData().getUnread(),\n\t\t\tdraft.getData().getStarred()\n\t\t);\n\t}\n}"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.UpdateThreadRequest\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val requestBody: UpdateThreadRequest =\n      UpdateThreadRequest.\n      Builder().\n      unread(true).\n      starred(true).\n      build()\n\n  val thread = nylas.threads().update(\"<NYLAS_GRANT_ID>\", \"<THREAD_ID>\", requestBody)\n  \n  print(\"${thread.data.id} ${thread.data.unread} ${thread.data.starred} \")\n}"
+    delete:
+      summary: Delete a thread
+      tags:
+      - Threads
+      responses:
+        '200':
+          $ref: '#/components/responses/200-delete'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: delete-threads-id
+      description: Moves the specified thread to the Trash, including all messages in the thread.
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/shared_folder_id'
+      - $ref: '#/components/parameters/shared_from'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/threads/<THREAD_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\nconst identifier = \"<NYLAS_GRANT_ID>\";\nconst threadId = \"<THREAD_ID>\";\n\nconst deleteThread = async () => {\n  try {\n    await nylas.threads.destroy({ identifier, threadId });\n    console.log(`Thread with ID ${threadId} deleted successfully.`);\n  } catch (error) {\n    console.error(`Error deleting thread with ID ${threadId}:`, error);\n  }\n};\n\ndeleteThread();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\nthread_id = \"<THREAD_ID>\"\n\nrequest = nylas.threads.destroy(\n  grant_id,\n  thread_id,\n)\n\nprint(request)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\t\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n\tapi_key: \"<NYLAS_API_KEY>\"\n)\n\nthread, _ = nylas.threads.destroy(identifier: \"<NYLAS_GRANT_ID>\", \n                                  thread_id: \"<THREAD_ID>\")\n\nputs thread\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport com.nylas.models.Thread;\n\npublic class ReturnThread {\n    public static void main(String[] args) throws\n            NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        DeleteResponse thread = nylas.threads().destroy(\"<NYLAS_GRANT_ID>\",\n        \"<THREAD_ID>\");\n        System.out.println(thread);\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val thread = nylas.threads().destroy(\"<NYLAS_GRANT_ID>\", \"<THREAD_ID>\")\n\n  print(thread)\n}"
 components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      description: 'Server-side requests use an API key issued in the Nylas dashboard
+  schemas:
+    attachment:
+      description: A file attached to an email message.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: The ID of the attachment.
+          readOnly: true
+          example: 4kj2jrcoj9ve5j9yxqz5cuv98
+        content_type:
+          type: string
+          minLength: 1
+          description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don''t provide a type, Nylas infers it from the file name.
 
-        and presented as a Bearer token. User-level requests use an
+            The value of this field is exactly the same as the email attachment''s `Content-Type` header.
 
-        access token obtained via the OAuth 2.0 flow.
+            The provider might set additional parameters, such as `name` and `charset`.
 
-        '
+
+            Nylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can''t detect its content type.'
+          example: image/png; name="pic.png"
+        filename:
+          type: string
+          minLength: 1
+          description: The file name of the attachment.
+          example: pic.png
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        content_id:
+          type: string
+          description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s HTML. For
+
+            example, you might see something like `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in
+
+            the message body.
+
+
+            Sometimes, the `content_id` value is contained in angle brackets (for example,
+
+            `<ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>`).'
+          example: 1234567890
+        content_disposition:
+          type: string
+          description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
+          example: inline
+        is_inline:
+          type: boolean
+          description: If `true`, indicates that the attachment is an inline file.
+          example: true
+        size:
+          type: integer
+          description: The size of the attachment, in bytes.
+          example: 13068
+    id:
+      title: ID
+      type: string
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    message:
+      title: Message
+      type: object
+      properties:
+        attachments:
+          type: array
+          description: 'An array of Attachment objects. For Google, linked Google Drive files are not included. For
+
+            Microsoft, linked OneDrive files are not included.'
+          items:
+            $ref: '#/components/schemas/attachment'
+          uniqueItems: true
+          minItems: 0
+          example:
+          - content_disposition: attachment
+            content_type: text/calendar
+            filename: null
+            content_id: 4kj2jrcoj9ve5j9yxqz5cuv98
+            size: 1708
+          - content_disposition: attachment
+            content_type: application/ics
+            filename: invite.ics
+            content_id: 70jcsv367jaiavt4njeu4xswg
+            size: 1708
+        bcc:
+          type: array
+          description: 'An array of name/email address pairs that the message was BCC''d to. For received messages, this
+
+            is nearly always empty.'
+          items:
+            $ref: '#/components/schemas/message-participant'
+        body:
+          type: string
+          description: 'The body of the message as either plain-text or HTML content. If the message has both plain-text
+
+            and HTML, Nylas returns the HTML version.'
+          example: Hello, I just sent a message using Nylas!
+        cc:
+          type: array
+          description: An array of name/email address pairs that the message was CC'd to.
+          items:
+            $ref: '#/components/schemas/message-participant'
+        date:
+          type: integer
+          description: 'Unix timestamp in seconds that represents when _the mail server_ received the message. This might be
+
+            different from the unified `Date` header in a raw Message object.'
+          example: 1635355739
+        folders:
+          type: array
+          description: 'The IDs of the folders that the message appears in. Microsoft messages can be in a single folder
+
+            only. Google allows a single message to appear in multiple folders.'
+          items:
+            type: string
+          uniqueItems: true
+          example:
+          - 8l6c4d11y1p4dm4fxj52whyr9
+          - d9zkcr2tljpu3m4qpj7l2hbr0
+        from:
+          type: array
+          description: 'A list of name/email address pairs that the message was sent from. This is usually one pair only,
+
+            but can be many.'
+          items:
+            $ref: '#/components/schemas/message-participant-response'
+          uniqueItems: true
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        headers:
+          type: array
+          description: "An array of key-value pairs that contain the message headers. Nylas returns this field when you\nset the `fields` query parameter to either `include_headers` or `include_basic_headers`.\n\n- `fields=include_headers`: Returns the full set of headers on the message.\n- `fields=include_basic_headers`: Returns only the three RFC threading headers (`Message-ID`,\n  `In-Reply-To`, `References`). Use this option when you only need to track message identity and\n  thread relationships — payload size is significantly smaller than `include_headers`.\n\nA single message can sometimes have multiple headers with the same key name. Nylas adds all of\nthe headers to the `headers` array without merging or de-duplicating the data. When the headers\ncontain encoded data, Nylas adds it to the `headers` array without decoding it. If you need the\ndecoded data, you need to build decoding logic into your project.\n\nSome headers might contain raw MIME information (for example,\n`=?Windows-1252?Q?Re:_Candidature_de_Mme_Leyah_Miller?=`)."
+          items:
+            $ref: '#/components/schemas/message-header'
+        id:
+          $ref: '#/components/schemas/id'
+        in_reply_to:
+          type: string
+          description: '(EWS only) The ID of the message that this message replies to. This ID is the same as the
+
+            `In-Reply-To` header.'
+          example: <b0582d2c-816d-42a4-9ff8-46073170d827@me.com>
+        metadata:
+          $ref: '#/components/schemas/metadata'
+        object:
+          type: string
+          description: The object type of the response (in this case, `message`).
+          example: message
+        raw_mime:
+          type: string
+          description: 'A Base64url-encoded string containing the message data (including the body content).
+
+
+            To get the raw MIME content for a message, set the `fields` query parameter to `raw_mime` in
+
+            your request. When you request raw MIME data, Nylas returns the `grant_id`, `object`, `id`,
+
+            and `raw_mime` fields only.'
+        reply_to:
+          type: array
+          items:
+            $ref: '#/components/schemas/message-participant'
+          uniqueItems: true
+          description: An array of name/email address pairs that should receive replies to the message.
+        snippet:
+          type: string
+          minLength: 1
+          description: 'A short snippet (the first 100 characters, with HTML tags removed) of the message body. This is
+
+            useful for displaying a preview of the message.'
+          example: 'You have been invited to the following event. Welcome! WhenThu Oct 28, 2021
+
+            7am - 8am Eastern Time - Toronto Joining info'
+        starred:
+          type: boolean
+          description: 'If `true`, shows that the message has been starred by the user. For EWS, this is only supported
+
+            on Microsoft Exchange 2010 or later.'
+          example: false
+        subject:
+          type: string
+          description: The subject of the message.
+          example: Nylas Send v3 Email
+        thread_id:
+          type: string
+          minLength: 1
+          description: 'A reference to the parent Thread object. Every message is associated with a thread, whether that
+
+            thread contains one message or many. If the message is new, Nylas assigns a `thread_id` to it.'
+          example: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+        to:
+          type: array
+          description: An array of name/email address pairs that the message was sent to.
+          items:
+            $ref: '#/components/schemas/message-participant'
+          uniqueItems: true
+        tracking_options:
+          type: object
+          description: Tracking options for the message.
+          properties:
+            opens:
+              type: boolean
+              description: When `true`, shows that message open tracking is enabled.
+              example: true
+            thread_replies:
+              type: boolean
+              description: When `true`, shows that thread replied tracking is enabled.
+              example: true
+            links:
+              type: boolean
+              description: When `true`, shows that link clicked tracking is enabled.
+              example: true
+            label:
+              type: string
+              description: A label describing the message tracking purpose.
+              maxLength: 2048
+              example: Tracking test
+        unread:
+          type: boolean
+          description: If `true`, shows that the message has not been read by the user.
+          example: true
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    thread:
+      title: Thread
+      type: object
+      properties:
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        id:
+          $ref: '#/components/schemas/id'
+        object:
+          type: string
+          description: The type of object (in this case, `thread`).
+        latest_draft_or_message:
+          type: object
+          description: The latest message or draft in the thread.
+          $ref: '#/components/schemas/message'
+        has_attachments:
+          type: boolean
+          description: When `true`, indicates that the message has attachments.
+          example: false
+        has_drafts:
+          type: boolean
+          description: When `true`, indicates that the message is a draft.
+          example: false
+        earliest_message_date:
+          type: integer
+          description: 'The date when the earliest or first message in the thread was sent or received, in seconds using the Unix timestamp
+
+            format.'
+        latest_message_received_date:
+          type: integer
+          description: 'The date when the most recent incoming message in the thread was received, in seconds using the Unix timestamp
+
+            format.'
+        latest_message_sent_date:
+          type: integer
+          description: The date when the most recent outgoing message in the thread was sent, in seconds using the Unix timestamp format.
+        participants:
+          type: array
+          description: A sub-object that contains the names and email addresses of all participants in the thread.
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+              name:
+                type: string
+        snippet:
+          type: string
+          minLength: 1
+          description: 'A short snippet (the first 100 characters, with HTML tags removed) of the body of the last
+
+            received message. This is useful for displaying a preview of a message.'
+          example: jnlnnn --Sent with Nylas
+        starred:
+          type: boolean
+          description: 'When `true`, indicates that the thread is starred. For EWS, this is only supported for Microsoft
+
+            Exchange 2010 or later.'
+          example: false
+        subject:
+          type: string
+          description: The subject line of the thread.
+          example: Nylas Send v3 Thread
+        unread:
+          type: boolean
+          description: When `false`, indicates that all messages in the thread have been read.
+        message_ids:
+          type: array
+          description: An array of IDs for all messages in the thread.
+          items:
+            type: string
+        draft_ids:
+          type: array
+          description: An array of IDs for all drafts in the thread.
+          items:
+            type: string
+        folders:
+          type: array
+          description: 'An array of folder IDs for all folders that the messages in the thread appear in.
+
+
+            Microsoft messages can only be in one folder at a time. Google messages can be in multiple
+
+            folders.'
+          items:
+            type: string
+          uniqueItems: true
+          example:
+          - 8l6c4d11y1p4dm4fxj52whyr9
+          - d9zkcr2tljpu3m4qpj7l2hbr0
+    message-participant-response:
+      title: Message participant response
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+    message-participant:
+      title: Message participant
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+      required:
+      - email
+    metadata:
+      title: Metadata
+      type: object
+      description: 'The metadata associated with the object. For more information, see
+
+        [Metadata](/docs/reference/api/#metadata).'
+      additionalProperties:
+        type: string
+        description: A key-value pair.
+        maxLength: 500
+      maxProperties: 50
+    message-header:
+      title: Message header
+      type: object
+      description: A message header key-value pair.
+      properties:
+        name:
+          type: string
+          example: Date
+        value:
+          type: string
+          example: Thu, 15 Aug 2024 00:59:58 +0000 (UTC)
+      required:
+      - name
+      - value
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+  requestBodies:
+    thread_update:
+      content:
+        application/json:
+          schema:
+            title: Update thread payload
+            type: object
+            properties:
+              starred:
+                type: boolean
+                description: When `true`, indicates that the thread is starred.
+                example: true
+              unread:
+                type: boolean
+                description: When `false`, indicates that all messages in the thread have been read.
+                example: true
+              folders:
+                type: array
+                items:
+                  type: string
+                description: 'The IDs of the folders to apply to the thread. This overwrites all previously assigned
+
+                  folders for all messages in the thread.'
+                example:
+                - folder-1
+                - folder-2
+  responses:
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    thread:
+      description: Thread response
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/thread'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              grant_id: ca8f1733-6063-40cc-a2e3-ec7274abef11
+              id: 7ml84jdmfnw20sq59f30hirhe
+              object: thread
+              has_attachments: false
+              has_drafts: false
+              earliest_message_date: 1634149514
+              latest_message_received_date: 1634832749
+              latest_message_sent_date: 1635174399
+              participants:
+              - email: daenerys.t@example.com
+                name: Daenerys Targaryen
+              - email: dr.crumpler@example.com
+                name: Rebecca Lee Crumpler
+              snippet: jnlnnn --Sent with Nylas
+              starred: false
+              subject: Dinner Wednesday?
+              unread: false
+              message_ids:
+              - njeb79kFFzli09
+              - 998abue3mGH4sk
+              draft_ids:
+              - a809kmmoW90Dx
+              folders:
+              - 8l6c4d11y1p4dm4fxj52whyr9
+              - d9zkcr2tljpu3m4qpj7l2hbr0
+              latest_draft_or_message:
+                body: Hello, I just sent a message using Nylas!
+                cc:
+                - name: Arya Stark
+                  email: arya.stark@example.com
+                date: 1635355739
+                attachments:
+                - filename: YXR0YWNoDQoNCi0tLS0tLS0tLS0gRm9yd2FyZGVkIG1lc3NhZ2UgL=
+                  content_type: text/calendar
+                  content_id: 4kj2jrcoj9ve5j9yxqz5cuv98
+                  size: 1708
+                - content_type: application/ics
+                  filename: invite.ics
+                  content_id: 70jcsv367jaiavt4njeu4xswg
+                  size: 1708
+                folders:
+                - 8l6c4d11y1p4dm4fxj52whyr9
+                - d9zkcr2tljpu3m4qpj7l2hbr0
+                from:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+                id: njeb79kFFzli09
+                object: message
+                reply_to:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                snippet: Hello, I just sent a message using Nylas!
+                starred: true
+                subject: Hello from Nylas!
+                thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+                to:
+                - name: Jon Snow
+                  email: j.snow@example.com
+                unread: true
+            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    threads:
+      description: Threads response
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    threads:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/thread'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              threads:
+              - grant_id: ca8f1733-6063-40cc-a2e3-ec7274abef11
+                id: 7ml84jdmfnw20sq59f30hirhe
+                object: thread
+                has_attachments: false
+                has_drafts: false
+                earliest_message_date: 1634149514
+                latest_message_received_date: 1634832749
+                latest_message_sent_date: 1635174399
+                participants:
+                - email: daenerys.t@example.com
+                  name: Daenerys Targaryen
+                - email: dr.crumpler@example.com
+                  name: Rebecca Lee Crumpler
+                snippet: jnlnnn --Sent with Nylas
+                starred: false
+                subject: Dinner Wednesday?
+                unread: false
+                message_ids:
+                - njeb79kFFzli09
+                - 998abue3mGH4sk
+                draft_ids:
+                - a809kmmoW90Dx
+                folders:
+                - 8l6c4d11y1p4dm4fxj52whyr9
+                - d9zkcr2tljpu3m4qpj7l2hbr0
+                latest_draft_or_message:
+                  body: Hello, I just sent a message using Nylas!
+                  cc:
+                  - name: Arya Stark
+                    email: arya.stark@example.com
+                  date: 1635355739
+                  attachments:
+                  - content_id: YXR0YWNoDQoNCi0tLS0tLS0tLS0gRm9yd2FyZGVkIG1lc3NhZ2UgL=
+                    content_type: text/calendar
+                    id: 4kj2jrcoj9ve5j9yxqz5cuv98
+                    size: 1708
+                  - content_type: application/ics
+                    filename: invite.ics
+                    id: 70jcsv367jaiavt4njeu4xswg
+                    size: 1708
+                  folders:
+                  - 8l6c4d11y1p4dm4fxj52whyr9
+                  - d9zkcr2tljpu3m4qpj7l2hbr0
+                  from:
+                  - name: Daenerys Targaryen
+                    email: daenerys.t@example.com
+                  grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+                  id: njeb79kFFzli09
+                  object: message
+                  reply_to:
+                  - name: Daenerys Targaryen
+                    email: daenerys.t@example.com
+                  snippet: Hello, I just sent a message using Nylas!
+                  starred: true
+                  subject: Hello from Nylas!
+                  thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+                  to:
+                  - name: Jon Snow
+                    email: j.snow@example.com
+                  unread: true
+            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+  parameters:
+    shared_from:
+      name: shared_from
+      in: query
+      schema:
+        type: string
+      description: '(Microsoft only) When provided, Nylas returns items that were shared from the specified email address.
+
+        It also accepts grant ID.
+
+        This parameter only accepts single email address or grant ID.
+
+        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    shared_folder_id:
+      name: shared_folder_id
+      in: query
+      schema:
+        type: string
+      description: '(Microsoft only) When provided, Nylas returns items from the specified shared folder ID.
+
+        Required when using `shared_from`.
+
+        This parameter only accepts a single folder ID.
+
+        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'

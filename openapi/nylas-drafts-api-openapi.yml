@@ -1,61 +1,1976 @@
 openapi: 3.1.0
-info:
-  title: Nylas API (v3) Admin Drafts API
-  description: 'Nylas provides unified APIs for email, calendar, contacts, and
-
-    scheduling across many underlying providers (Google, Microsoft, IMAP,
-
-    etc.). Resources are scoped to a grant that represents an end-user
-
-    connection. Endpoint scaffold below is derived from the public v3
-
-    developer documentation at https://developer.nylas.com/docs/.
-
-    '
-  version: '3.0'
-  contact:
-    name: Nylas Developers
-    url: https://developer.nylas.com
 servers:
 - url: https://api.us.nylas.com
-  description: United States region
+  description: U.S.
 - url: https://api.eu.nylas.com
-  description: European Union region
+  description: E.U.
+info:
+  title: Nylas Drafts API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: "The Nylas API is designed using the [REST](https://en.wikipedia.org/wiki/Representational_State_Transfer) ideology to provide simple and predictable URIs to access and modify objects. Requests support [standard HTTP methods](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html) like `GET`, `PUT`, `POST`, and `DELETE`, and [standard status codes](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). Response bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n\nYou can use the [Nylas Postman collection](https://www.postman.com/trynylas/workspace/nylas-api/overview) to quickly start using the Nylas APIs. For more information, check out the [Nylas Postman collection documentation](/docs/v3/api-references/postman/).\n\n[<img src=\"https://run.pstmn.io/button.svg\" alt=\"Run In Postman\" style=\"width: 128px; height: 32px;\">](https://god.gw.postman.com/run-collection/21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a%26entityType%3Dcollection%26workspaceId%3De36cf1fc-a749-494d-9c8c-f3c28f18c342#?env%5Bv3%20Environment%5D=W3sia2V5IjoiYmFzZVVybCIsInZhbHVlIjoiaHR0cHM6Ly9hcGkudXMubnlsYXMuY29tIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik55bGFzIEFQSSBiYXNlIFVSTC4gVXNlIGh0dHBzOi8vYXBpLmV1Lm55bGFzLmNvbSBmb3IgdGhlIEVVIHJlZ2lvbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImJlYXJlclRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIEFQSSBrZXkgZnJvbSB0aGUgRGFzaGJvYXJkIChodHRwczovL2Rhc2hib2FyZC12My5ueWxhcy5jb20pLiBVc2VkIGZvciBhbGwgYXV0aGVudGljYXRlZCByZXF1ZXN0cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImdyYW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiVGhlIGdyYW50IElEIHJlcHJlc2VudGluZyBhbiBlbmQgdXNlcidzIGNvbm5lY3RlZCBhY2NvdW50LiBSZXF1aXJlZCBmb3IgRUNDICYgU2NoZWR1bGVyIGNvbGxlY3Rpb25zLiBGaW5kIHRoaXMgaW4gdGhlIERhc2hib2FyZCB1bmRlciBHcmFudHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhY2Nlc3NfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJzZWNyZXQiLCJkZXNjcmlwdGlvbiI6IkEgdXNlci1sZXZlbCBhY2Nlc3MgdG9rZW4gcmV0dXJuZWQgZnJvbSB0aGUgT0F1dGggZmxvdy4gQWx0ZXJuYXRpdmUgdG8gdXNpbmcgQVBJIGtleSArIGdyYW50X2lkIGZvciBwZXItdXNlciBhdXRoLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBwbGljYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIGFwcGxpY2F0aW9uIElELiBBdXRvLXNldCBieSB0aGUgJ1ZlcmlmeSBBUEkga2V5JyByZXF1ZXN0IGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoicHJvdmlkZXIiLCJ2YWx1ZSI6Imdvb2dsZSIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRoIHByb3ZpZGVyIGZvciBjb25uZWN0b3Igb3BlcmF0aW9uczogZ29vZ2xlLCBtaWNyb3NvZnQsIGltYXAsIG9yIHZpcnR1YWwtY2FsZW5kYXIuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJjYWxsYmFja19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlJlZGlyZWN0IFVSSSBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgY2FsbGJhY2sgVVJJIGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY3JlZGVudGlhbF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbm5lY3RvciBjcmVkZW50aWFsIElEIGZvciBzZXJ2aWNlIGFjY291bnRzIG9yIGFwcCBwYXNzd29yZHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3ZWJob29rX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiV2ViaG9vayBkZXN0aW5hdGlvbiBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgd2ViaG9vay4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNoYW5uZWxfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQdWIvU3ViIGNoYW5uZWwgSUQuIFNldCBhZnRlciBjcmVhdGluZyBhIGNoYW5uZWwuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3Jrc3BhY2VfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJXb3Jrc3BhY2UgSUQgZm9yIGdyYW50IGdyb3VwaW5nICYgb3JnYW5pemF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBpX2tleV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkFQSSBrZXkgcmVzb3VyY2UgSUQgKG5vdCB0aGUga2V5IGl0c2VsZikuIFVzZWQgZm9yIG1hbmFnaW5nIEFQSSBrZXlzIHZpYSB0aGUgQWRtaW4gQVBJLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBJRC4gVXNlZCBpbiBob3N0ZWQgT0F1dGggYXV0aG9yaXphdGlvbiBVUkxzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X3NlY3JldCIsInZhbHVlIjoiIiwidHlwZSI6InNlY3JldCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBzZWNyZXQuIFVzZWQgaW4gdGhlIE9BdXRoIHRva2VuIGV4Y2hhbmdlIHN0ZXAuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZWRpcmVjdF91cmkiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJPQXV0aCBjYWxsYmFjayBVUkwgcmVnaXN0ZXJlZCB3aXRoIHlvdXIgTnlsYXMgYXBwbGljYXRpb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZXNwb25zZV90eXBlIiwidmFsdWUiOiJjb2RlIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik9BdXRoIHJlc3BvbnNlIHR5cGUuIFVzZSAnY29kZScgZm9yIHNlcnZlci1zaWRlIGF1dGggKHJlY29tbWVuZGVkKSBvciAndG9rZW4nIGZvciBjbGllbnQtc2lkZS4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvZGUiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRob3JpemF0aW9uIGNvZGUgcmV0dXJuZWQgZnJvbSBob3N0ZWQgT0F1dGguIFVzZWQgdG8gZXhjaGFuZ2UgZm9yIGFuIGFjY2VzcyB0b2tlbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImlkX3Rva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiSUQgdG9rZW4gZm9yIGN1c3RvbSBhdXRoZW50aWNhdGlvbiBmbG93cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImVtYWlsIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRW1haWwgYWRkcmVzcyB1c2VkIGFzIGxvZ2luX2hpbnQgaW4gT0F1dGggZmxvd3MuIFByZS1maWxscyB0aGUgcHJvdmlkZXIgc2lnbi1pbiBwYWdlLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ29vZ2xlX2NsaWVudF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IllvdXIgR29vZ2xlIE9BdXRoIGNsaWVudCBJRC4gVXNlZCB3aGVuIGNyZWF0aW5nIGEgR29vZ2xlIGNvbm5lY3Rvci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6Imdvb2dsZV9jbGllbnRfc2VjcmV0IiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIEdvb2dsZSBPQXV0aCBjbGllbnQgc2VjcmV0LiBVc2VkIHdoZW4gY3JlYXRpbmcgYSBHb29nbGUgY29ubmVjdG9yLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY2FsZW5kYXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJDYWxlbmRhciBJRC4gQ2FuIGJlIHRoZSBncmFudCdzIGVtYWlsIGFkZHJlc3Mgb3IgJ3ByaW1hcnknIGZvciB0aGUgZGVmYXVsdCBjYWxlbmRhci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImV2ZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRXZlbnQgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGNyZWF0aW5nIG9yIGxpc3RpbmcgZXZlbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibWVzc2FnZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik1lc3NhZ2UgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3Igc2VuZGluZyBtZXNzYWdlcy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InRocmVhZF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlRocmVhZCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyB0aHJlYWRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZHJhZnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJEcmFmdCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgZHJhZnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZm9sZGVyX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRm9sZGVyIG9yIGxhYmVsIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBsaXN0aW5nIGZvbGRlcnMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhdHRhY2htZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQXR0YWNobWVudCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyBtZXNzYWdlIGF0dGFjaG1lbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY29udGFjdF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbnRhY3QgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3IgY3JlYXRpbmcgY29udGFjdHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJub3RldGFrZXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJOb3RldGFrZXIgSUQuIFNldCBhZnRlciBpbnZpdGluZyBhIG5vdGV0YWtlciBib3QgdG8gYSBtZWV0aW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoidGVtcGxhdGVfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJNZXNzYWdlIHRlbXBsYXRlIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB0ZW1wbGF0ZXMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3JrZmxvd19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IldvcmtmbG93IElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB3b3JrZmxvd3MuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJzY2hlZHVsZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlIElEIGZvciBFeHRyYWN0QUkgb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImRvbWFpbl9uYW1lIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRG9tYWluIG5hbWUgZm9yIGN1c3RvbSBkb21haW4gb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvbmZpZ3VyYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJTY2hlZHVsZXIgY29uZmlndXJhdGlvbiBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBjb25maWd1cmF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2Vzc2lvbl9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlciBzZXNzaW9uIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyBhIHNlc3Npb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJib29raW5nX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQm9va2luZyBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBib29raW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ3JvdXBfZXZlbnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJHcm91cCBldmVudCBJRCBmb3IgY29sbGFib3JhdGl2ZSBzY2hlZHVsaW5nIHdpdGggbXVsdGlwbGUgcGFydGljaXBhbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2NoZWR1bGVyU2Vzc2lvblRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJTaG9ydC1saXZlZCBzZXNzaW9uIHRva2VuIGZvciBwdWJsaWMtZmFjaW5nIFNjaGVkdWxlciBlbmRwb2ludHMgKEF2YWlsYWJpbGl0eSwgQm9va2luZ3MpLiBDcmVhdGVkIHZpYSB0aGUgU2Vzc2lvbnMgZW5kcG9pbnQuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ2Ml9zY2hlZHVsZXJfc2x1ZyIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNsdWcgZnJvbSBhIHYyIFNjaGVkdWxlciBwYWdlLiBVc2VkIGZvciBtaWdyYXRpbmcgdjIgc2NoZWR1bGluZyBwYWdlcyB0byB2MyBjb25maWd1cmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InBhZ2VfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQYWdpbmF0aW9uIGN1cnNvci4gUGFzcyB0aGUgbmV4dF9jdXJzb3IgdmFsdWUgZnJvbSBhIGxpc3QgcmVzcG9uc2UgdG8gZ2V0IHRoZSBuZXh0IHBhZ2Ugb2YgcmVzdWx0cy4iLCJlbmFibGVkIjp0cnVlfV0=)\n\n## Enable compression to optimize performance\n\nThe Email, Calendar, Contacts, and Scheduler APIs return gzip-compressed responses when your request includes the [`Accept-Encoding: gzip`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding) header. Most HTTP libraries negotiate and decompress gzip responses automatically. With curl, use `--compressed`. Nylas skips compression for responses under about 200 bytes.\n\nCompression pairs well with [query parameters](#query-parameters) that limit the number of objects returned and [field selection](#reduce-response-size-with-field-selection) that limits which fields come back in each object. For the full walkthrough, including webhook, Pub/Sub, and SNS compression, see [Reducing payload size with compression](/docs/dev-guide/best-practices/compression/).\n\n## Query parameters\n\nNylas allows you to include query parameters in `GET` requests that return a list of results. Query parameters let you narrow the results Nylas returns, meaning fewer requests to the provider and less data for your application to sift through. For more information, see [Rate limits in Nylas](/docs/dev-guide/platform/rate-limits/).\n\nThe table below shows the query parameters you can use for the `GET` requests in the Email, Calendar, Contacts, and Notetaker APIs.\n\n| Endpoint                                                                                          | Query parameters                                                                                                                                                                                                                                                                               |\n| :------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/calendars`](/docs/reference/api/calendar/get-all-calendars/)    | `limit`, `page_token`, `metadata_pair`, `select`                                                                                                                                                                                                                                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/events`](/docs/reference/api/events/get-all-events/)            | `calendar_id` (required), `limit`, `page_token`, `show_cancelled`, `title`, `description`, `ical_uid`, `location`, `start`, `end`, `master_event_id`, `metadata_pair`, `busy`, `updated_before`, `updated_after`, `attendees`, `event_type`, `expand_recurring`, `tentative_as_busy`, `select` |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/drafts`](/docs/reference/api/drafts/get-drafts/)                | `limit`, `page_token`, `subject`, `any_email`, `to`, `cc`, `bcc`, `starred`, `thread_id`, `has_attachment`, `query_imap`, `select`                                                                                                                                                             |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/messages`](/docs/reference/api/messages/get-messages/)          | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `thread_id`, `received_before`, `received_after`, `has_attachment`, `fields`, `search_query_native`, `metadata_pair`, `query_imap`, `shared_from`, `select`                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/threads`](/docs/reference/api/threads/get-threads/)             | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `latest_message_before`, `latest_message_after`, `has_attachment`, `search_query_native`, `earliest_message_date`, `shared_folder_id`, `shared_from`, `select`                            |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/folders`](/docs/reference/api/folders/get-folder/)              | `limit`, `page_token`, `parent_id`, `include_hidden_folders`, `shared_from`, `single_level`, `select`                                                                                                                                                                                          |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/contacts`](/docs/reference/api/contacts/list-contact/)          | `limit`, `page_token`, `email`, `phone_number`, `source`, `group`, `recurse`, `select`                                                                                                                                                                                                         |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/notetakers`](/docs/reference/api/notetaker/get-all-notetakers/) | `limit`, `page_token`, `prev_page_token`, `join_time_start`, `join_time_end`, `state`, `order_by`, `order_direction`                                                                                                                                                                           |\n\nYou can use the `limit` parameter to set the maximum number of results Nylas returns for your request. Nylas recommends setting a lower `limit` if you encounter rate limits on the provider. For more information, see [Avoiding rate limits in Nylas](/docs/dev-guide/best-practices/rate-limits/).\n\nNylas supports case-insensitive partial matches for some query parameters:\n\n- `description`, `location`, and `title` in [Get all Events requests](/docs/reference/api/events/get-all-events/).\n- `subject` in [Get all Messages](/docs/reference/api/messages/get-messages/), [Get all Drafts](/docs/reference/api/drafts/get-drafts/), and [Get all Threads](/docs/reference/api/threads/get-threads/) requests.\n\nIf the specified field contains the query term, Nylas matches it regardless of the case. For example, if you set the `subject` query parameter to `march` in a Get all Messages request, Nylas might return the following messages:\n\n- \"Company **March** Meeting\"\n- \"Today in history: Mussolini's **march** on Rome\"\n- \"Your coupon code: **mARch**\"\n\nSince Nylas matches keywords, it won't return the following messages:\n\n- \"Confirmation code: abc**March**123\"\n- \"**M**cDonald's golden **arch**es\"\n\n## Pagination\n\nNylas might return multiple pages of data when you make a \"Get all\" request (for example, [Get all Events](/docs/reference/api/events/get-all-events/)). When this happens, Nylas includes the `next_cursor` field in its response. You can pass the value of `next_cursor` as the `page_token` query parameter in your next request to get the next page of results.\n\nYou can use the `limit` parameter to specify the maximum number of results you want in one page of data. If you see rate limits from the provider, try using a smaller `limit` value.\n\n| Query Parameter | Type    | Description                                                                                                                       |\n| :-------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------- |\n| `limit`         | integer | The number of objects to return, up to a maximum of `200` (defaults to `50`).                                                     |\n| `page_token`    | string  | An identifier that specifies which page of data to return. This value should be taken from the `next_cursor` response body field. |\n\n## Updating objects\n\n`PUT` and `PATCH` requests behave similarly in Nylas: when you make a request, Nylas replaces all data in the nested object with the information you define. Because of this, your request might fail if you don't include all mandatory fields.\n\nNylas doesn't erase the data from fields that you don't include in your request, so you can define only the mandatory fields and any that you want to update.\n\n## Grant ID patterns\n\nNylas supports multiple patterns for identifying grants in API calls. This flexibility allows you to reference grants using the identifier that's most convenient for your application, whether that's the Nylas grant ID, the user's email address, an external ID from your system, or a special shorthand syntax.\n\nAll endpoint paths that include `{grant_id}` support these patterns. For example, you can use any of these patterns with endpoints like `/v3/grants/{grant_id}/messages`, `/v3/grants/{grant_id}/events`, `/v3/grants/{grant_id}/contacts`, and others.\n\n| Pattern                  | Description                                                                                                                                                                                                             | Authorization           |\n| :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------- |\n| `<grant_id>`             | The Nylas grant ID (for example, `GET /v3/grants/e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This is the standard format.                                                                                          | API key or access token |\n| `grant:<grant_id>`       | Explicitly prefixed Nylas grant ID (for example, `GET /v3/grants/grant:e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This format is useful for clarity when working with multiple identifier types.                  | API key or access token |\n| `<email_address>`        | The email address associated with the grant (for example, `GET /v3/grants/user@example.com/messages`). Nylas looks up the grant associated with this email address.                                                     | API key or access token |\n| `email:<email_address>`  | Explicitly prefixed email address (for example, `GET /v3/grants/email:user@example.com/messages`). This format is useful for clarity when the email address might be ambiguous.                                         | API key or access token |\n| `external:<external_id>` | An external ID from your system (for example, `GET /v3/grants/external:user-12345/messages`). This allows you to reference grants using your own identifiers. For more information, see the External IDs documentation. | API key or access token |\n| `me`                     | A special shorthand syntax (for example, `GET /v3/grants/me/messages`). Nylas looks up the grant associated with the request's access token.                                                                            | Access token only       |\n\nThe `me` syntax is particularly useful for client-side applications where you authenticate end users with access tokens. You can't use this syntax with API key authorization, because there is no grant associated with an API key.\n\n## Metadata\n\nYou can use the `metadata` object to add a list of key-value pairs to Calendar, Event, Message, and Draft objects so you can store custom data with them. Both keys and values can be any string. If you want to filter on metadata, however, you must write values to one of the five [Nylas-specific keys](#metadata-keys-and-filtering).\n\nFor more information, see the [Metadata documentation](/docs/dev-guide/metadata/).\n\n### Metadata keys and filtering\n\nNylas reserves five metadata keys (`key1`, `key2`, `key3`, `key4`, `key5`) and indexes their contents. Nylas uses `key5` to identify events that count towards the `max-fairness` round-robin calculation for event availability. For more information, see [Group availability and booking best practices](/docs/v3/calendar/group-booking/#round-robin-max-fairness-groups).\n\nYou can add values to each of these reserved keys, and reference them in a query to filter the objects that Nylas returns. You can also add these filters as query parameters, as in the following examples:\n\n- `https://api.us.nylas.com/calendar?metadata_pair=key1:on-site`\n- `https://api.us.nylas.com/events?calendar_id=<CALENDAR_ID>&metadata_pair=key1:on-site`\n\nYou can't create a query that includes both a provider and metadata filter, other than `calendar_id`. For example, `https://api.us.nylas.com/calendar?metadata_pair=key1:plan-party&title=Birthday` returns an error.\n\n## Reduce response size with field selection\n\nField selection allows you to use the `select` query parameter to specify which fields you want Nylas to include in the response.\n\nYou can use field selection for all Nylas API endpoints, _except_ the following:\n\n- All `DELETE` endpoints.\n- All Attachments endpoints.\n- All Smart Compose endpoints.\n- The Send Message endpoint.\n- The Create a Draft endpoint.\n\nField selection helps to reduce the size of the response, improves latency, and helps you avoid rate limiting issues. You can also use it in cases where you want to avoid working with information from your users that you think might be sensitive.\n\nField selection can evaluate top-level object fields only. You cannot use it to return only nested fields.\n\n<div id=\"admonition-info\">\U0001F4DD <b>Note</b>: Nylas strongly suggests you always use field selection, so you only get the data that you need.</div>\n\nFor example, the following request specifies Nylas should return only the `id` and `name` fields of the Calendar object.\n\n```bash\ncurl --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/me/calendars?select=id,name'\n```\n\nThe response payload includes only the `id` and `name` fields in the `data` object, as in the example below.\n\n```json\n{\n  \"request_id\": \"5fa64c92-e840-4357-86b9-2aa364d35b88\",\n  \"data\": [\n    {\n      \"id\": \"5d3qmne77v32r8l4phyuksl2x\",\n      \"name\": \"My Calendar\"\n    },\n    {\n      \"id\": \"5d3qmne77v32r23aphyuksl2x\",\n      \"name\": \"My Calendar 2\"\n    }\n  ]\n}\n```\n\n## Nylas encoding\n\nResponse bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n"
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
 security:
-- BearerAuth: []
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
 tags:
 - name: Drafts
 paths:
   /v3/grants/{grant_id}/drafts:
     parameters:
-    - in: path
+    - schema:
+        type: string
       name: grant_id
+      in: path
       required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    get:
+      summary: Return all Drafts
+      operationId: get-drafts
+      description: Return all drafts in the user's Drafts folder.
+      tags:
+      - Drafts
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.readonly
+          others: https://www.googleapis.com/auth/gmail.compose
+        microsoft:
+          min: https://graph.microsoft.com/Mail.Read
+          others:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.Read.Shared
+          - https://graph.microsoft.com/Mail.ReadWrite.Shared
+        yahoo:
+          min: email, mail-r
+      responses:
+        '200':
+          $ref: '#/components/responses/drafts'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page_token'
+      - $ref: '#/components/parameters/metadata_pair'
+      - $ref: '#/components/parameters/field_selection'
+      - name: subject
+        in: query
+        schema:
+          type: string
+        description: Return items with a matching subject. The filter is case insensitive and will match partial subjects.
+      - name: any_email
+        in: query
+        description: 'Return messages that have been sent or received from this comma-separated list of email
+
+          addresses (for example, `mail1@example.com,mail2@example.com`). You can specify a maximum of
+
+          25 email addresses.'
+        schema:
+          type: string
+      - name: to
+        in: query
+        description: Return items containing messages sent to this email address.
+        schema:
+          type: string
+      - name: cc
+        in: query
+        description: Return items containing messages that were CC'd to this email address.
+        schema:
+          type: string
+      - name: bcc
+        in: query
+        description: Return items containing messages that were BCC'd to this email address, likely sent from the parent account. (Most SMTP gateways remove BCC information, so this appears only if the user sent the email message, or received it because they were on the BCC list.)
+        schema:
+          type: string
+      - name: starred
+        in: query
+        description: 'Return items with one or more starred messages. For EWS, this is only supported for Microsoft
+
+          Exchange 2010 or later.'
+        schema:
+          type: boolean
+      - name: thread_id
+        in: query
+        description: Return items with a matching `thread_id`.
+        schema:
+          type: string
+      - name: has_attachment
+        in: query
+        description: Return items with attachments.
+        schema:
+          type: boolean
+      - $ref: '#/components/parameters/query_imap_list'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/drafts' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function fetchDrafts() {\n  try {\n    const identifier = \"<NYLAS_GRANT_ID>\";\n    const threads = await nylas.drafts.list({\n      identifier,\n    });\n\n    console.log(\"Recent Drafts:\", threads);\n  } catch (error) {\n    console.error(\"Error fetching drafts:\", error);\n  }\n}\n\nfetchDrafts();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\n\ndrafts = nylas.drafts.list(\n  grant_id,\n)\n\nprint(drafts)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n\tapi_key: \"<NYLAS_API_KEY>\"\n)\n\ndrafts, _ = nylas.drafts.list(identifier: \"<NYLAS_GRANT_ID>\")\ndrafts.each {|draft|\n\tputs \"[#{Time.at(draft[:date]).strftime(\"%d/%m/%Y at %H:%M:%S\")}] | \\\n#{draft[:id]} | \\\n#{draft[:subject]} | \\\n#{draft[:folders]}\"\n}\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport java.text.SimpleDateFormat;\n\npublic class ListDraft {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        ListResponse<Draft> drafts = nylas.drafts().list(\"<NYLAS_GRANT_ID>\");\n\n        for (Draft draft : drafts.getData()){\n            String date = new SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\").\n                    format(new java.util.Date((draft.getDate() * 1000L)));\n            System.out.printf(\"[ %s] | %s | %s | %s\",\n                    date, draft.getId(), draft.getSubject(), draft.getFolders());\n        }\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.*\nimport java.text.SimpleDateFormat\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val simpleDateFormat = SimpleDateFormat(\"dd MMMM yyyy, HH:mm:ss\")\n\n    val drafts = nylas.drafts().list(\"<NYLAS_GRANT_ID>\")\n\n    for(draft in drafts.data){\n        println(\"[${simpleDateFormat.format(draft.date * 1000L)}] | \" +\n                 \"${draft.id} | ${draft.subject} | ${draft.folders}\")\n    }\n}\n"
+    post:
+      summary: Create a Draft
+      tags:
+      - Drafts
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.compose
+          others: ''
+        microsoft:
+          min: https://graph.microsoft.com/Mail.ReadWrite
+          others: https://graph.microsoft.com/Mail.ReadWrite.Shared
+        yahoo:
+          min: email, mail-r, mail-w
+      responses:
+        '200':
+          $ref: '#/components/responses/draft'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: post-draft
+      description: 'Creates a draft.
+
+
+        If you provide `tracking_options.domain_name`, Nylas validates the custom hostname and stores its
+
+        canonical value with the draft''s link click and message open tracking settings. If you omit the
+
+        field, Nylas uses its regional tracking hostname when it creates tracking URLs.'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/draft_create'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/drafts' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"subject\": \"With Love, From Nylas\",\n    \"to\": [{\n      \"email\": \"leyah@example.com\",\n      \"name\": \"Leyah Miller\"\n    }],\n    \"cc\": [{\n      \"email\": \"nyla@example.com\",\n      \"name\": \"Nyla\"\n    }],\n    \"bcc\": [{\n      \"email\": \"nylas-devrel@example.com\",\n      \"name\": \"Nylas DevRel\"\n    }],\n    \"reply_to\": [{\n      \"email\": \"nylas@example.com\",\n      \"name\": \"Nylas\"\n    }],\n    \"body\": \"This email was sent using the Nylas Email API. Visit https://nylas.com for details.\",\n    \"tracking_options\": {\n      \"opens\": true,\n      \"links\": true,\n      \"thread_replies\": true,\n      \"label\": \"Just testing\"\n    }\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\nconst identifier = \"<NYLAS_GRANT_ID>\";\n\nconst createDraft = async () => {\n  try {\n    const draft = {\n      subject: \"Your Subject Here\",\n      to: [{ name: \"Recipient Name\", email: \"recipient@example.com\" }],\n      body: \"Your email body here.\",\n    };\n\n    const createdDraft = await nylas.drafts.create({\n      identifier,\n      requestBody: draft,\n    });\n\n    console.log(\"Draft created:\", createdDraft);\n  } catch (error) {\n    console.error(\"Error creating draft:\", error);\n  }\n};\n\ncreateDraft();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas import utils\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\nemail = \"<EMAIL>\"\n\nattachment = utils.file_utils.attach_file_request_builder(\"Nylas_Logo.png\")\n\ndraft = nylas.drafts.create(\n  grant_id,\n  request_body={\n    \"to\": [{ \"name\": \"Name\", \"email\": email }],\n    \"reply_to\": [{ \"name\": \"Name\", \"email\": email }],\n    \"subject\": \"Your Subject Here\",\n    \"body\": \"Your email body here.\",\n    \"attachments\": [attachment]\n  }\n)\n\nprint(draft)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\t\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n\tapi_key: \"<NYLAS_API_KEY>\"\n)\n\nfile = Nylas::FileUtils.attach_file_request_builder(\"Nylas_Logo.png\")\n\nrequest_body = {\n    subject: \"From Nylas\",\n    body: 'This email was sent using the ' +\n              'Nylas email API. ' + \n              'Visit https://nylas.com for details.',\n    to: [{ name: \"Dorothy Vaughan\", \n            email: \"dorothy@example.com\"}],\n    cc: [{ name: \"George Washington Carver\", \n            email: \"carver@example.com\"}],\n    bcc: [{ name: \"Albert Einstein\", \n            email: \"al@example.com\"}],\n    reply_to: [{ name: \"Stephanie Kwolek\", \n            email: \"skwolek@example.com\"}],\n   tracking_options: {label: \"hey just testing\", \n        opens: true, \n        links: true,\n        thread_replies: true},\n   attachments: [file]        \n}\n\ndraft, _ = nylas.drafts.create(identifier: \"<NYLAS_GRANT_ID>\", request_body: request_body)\nputs \"Draft \\\"#{draft[:subject]}\\\" was created with ID: #{draft[:id]}\"\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport com.nylas.util.FileUtils;\nimport java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\npublic class CreateDraft {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    CreateAttachmentRequest attachment = FileUtils.attachFileRequestBuilder(\"src/main/java/Nylas_Logo.png\");\n    List<CreateAttachmentRequest> request = new ArrayList<>();\n    request.add(attachment);\n\n    CreateDraftRequest requestBody = new CreateDraftRequest.Builder().\n        to(Collections.singletonList(new EmailName(\"swag@example.com\", \"Nylas\"))).\n        cc(Collections.singletonList(new EmailName(\"dorothy@example.com\", \"Dorothy Vaughan\"))).\n        bcc(Collections.singletonList(new EmailName(\"Lamarr@example.com\", \"Hedy Lamarr\"))).\n        subject(\"With Love, from Nylas\").\n        body(\"This email was sent using the Nylas email API. Visit https://nylas.com for details.\").\n        attachments(request).\n        build();\n\n    Response<Draft> drafts = nylas.drafts().create(\"<NYLAS_GRANT_ID>\", requestBody);\n\n    System.out.println(\"Draft \" + drafts.getData().getSubject() + \n        \" was created with ID \" + drafts.getData().getId());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.*\nimport com.nylas.util.FileUtils\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n  \n  val attachment: CreateAttachmentRequest = FileUtils.attachFileRequestBuilder(\"src/main/kotlin/Nylas_Logo.png\")\n\n  val requestBody = CreateDraftRequest(\n      to = listOf(EmailName(\"swag@example.com\", \"Nylas\")),\n      cc = listOf(EmailName(\"dorothy@example.com\", \"Dorothy Vaughan\")),\n      bcc = listOf(EmailName(\"Lamarr@example.com\", \"Hedy Lamarr\")),\n      subject = \"With Love, from Nylas\",\n      body = \"This email was sent using the Nylas Email API. Visit https://nylas.com for details.\",\n      attachments = listOf(attachment)\n  )\n\n  val draft = nylas.drafts().create(\"<NYLAS_GRANT_ID>\", requestBody).data\n  \n  print(\"Draft \" + draft.subject + \" was created with ID: \" + draft.id)\n}\n"
+  /v3/grants/{grant_id}/drafts/{draft_id}:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    - schema:
+        type: string
+      name: draft_id
+      in: path
+      required: true
+      description: 'ID of the draft to access. Nylas recommends you URL-encode this field, or you might receive a
+
+        [`404` error](/docs/api/errors/400-response/) if the ID contains special characters (for
+
+        example, `#`).'
+    get:
+      summary: Return a Draft
+      tags:
+      - Drafts
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.readonly
+          others: https://www.googleapis.com/auth/gmail.compose
+        microsoft:
+          min: https://graph.microsoft.com/Mail.Read
+          others:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.Read.Shared
+          - https://graph.microsoft.com/Mail.ReadWrite.Shared
+        yahoo:
+          min: email, mail-r
+      responses:
+        '200':
+          $ref: '#/components/responses/draft'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: get-draft-id
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/field_selection'
+      - $ref: '#/components/parameters/query_imap_get_by_id'
+      description: Return a draft by ID.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/drafts/<DRAFT_ID>' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function fetchDraftById() {\n  try {\n    const events = await nylas.drafts.find({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      draftId: \"<DRAFT_ID>\",\n    });\n\n    console.log(\"Events:\", events);\n  } catch (error) {\n    console.error(\"Error fetching calendars:\", error);\n  }\n}\n\nfetchDraftById();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\ndraft_id = \"<DRAFT_ID>\"\n\ndraft = nylas.drafts.find(\n  grant_id,\n  draft_id,\n)\n\nprint(draft)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "# Load gems\nrequire 'nylas'\t\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n\tapi_key: \"<NYLAS_API_KEY>\"\n)\n\ndraft, _ = nylas.drafts.find(identifier: \"<NYLAS_GRANT_ID>\", draft_id: \"<DRAFT_ID>\")\n\nputs draft"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class ListDraft {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n    Response<Draft> draft = nylas.drafts().find(\"<NYLAS_GRANT_ID>\", \"<DRAFT_ID>\");\n\n    assert draft.getData().getTo() != null;\n\n    System.out.printf(\" %s | %s | %s\",\n        draft.getData().getId(),\n        draft.getData().getTo().get(0).getEmail(),\n        draft.getData().getSubject());\n  }\n}"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.*\n\nfun main(args: Array<String>) {\n\tval nylas: NylasClient = NylasClient(\n\t\t\tapiKey = \"<NYLAS_API_KEY>\"\n\t)\n\n\tval draft = nylas.drafts().find(\"<NYLAS_GRANT_ID>\", \"<DRAFT_ID>\")\n\n\tprintln(\"${draft.data.id} | \" +\n\t\t\t\"${draft.data.to?.get(0)?.email} | \" +\n\t\t\t\"${draft.data.subject}\")\n}"
+    put:
+      summary: Update a draft
+      tags:
+      - Drafts
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.compose
+          others: ''
+        microsoft:
+          min: https://graph.microsoft.com/Mail.ReadWrite
+          others: https://graph.microsoft.com/Mail.ReadWrite.Shared
+        yahoo:
+          min: email, mail-r, mail-w
+      responses:
+        '200':
+          $ref: '#/components/responses/draft'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: put-drafts-id
+      description: 'Updates the specified draft.
+
+
+        When you make a `PUT` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        [Updating objects](/docs/reference/api/#updating-objects).
+
+
+        For tracking settings, an explicit `tracking_options.domain_name` replaces the draft''s previous
+
+        custom tracking hostname after validation. If you omit `domain_name` while updating other tracking
+
+        options, the draft inherits its existing custom hostname. Disabling both `links` and `opens` clears
+
+        the stored hostname. If you enable either option again without a hostname, Nylas uses its regional
+
+        tracking hostname.'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/field_selection'
+      requestBody:
+        $ref: '#/components/requestBodies/draft_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/drafts/<DRAFT_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"starred\": true\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function updateDraft() {\n  try {\n    const calendar = await nylas.drafts.update({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      draftId: \"<DRAFT_ID>\",\n      requestBody: {\n        starred: true,\n      },\n    });\n\n    console.log(\"Updated Draft:\", calendar);\n  } catch (error) {\n    console.error(\"Error to update draft:\", error);\n  }\n}\n\nupdateDraft();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.utils.file_utils import attach_file_request_builder\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\nattachment = attach_file_request_builder(\"Nylas_Logo.png\")\n\ndraft = nylas.drafts.update(\n  \"<NYLAS_GRANT_ID>\",\n  draft_id=\"<DRAFT_ID>\",\n  request_body={\n    \"subject\": \"Updated Subject\",\n    \"attachments\": [attachment]\n  }\n)\n\nprint(draft)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n\tapi_key: \"<NYLAS_API_KEY>\"\n)\n\nfile = Nylas::FileUtils.attach_file_request_builder(\"Nylas_Logo.png\")\n\nrequest_body = {\n    starred: true,\n    attachments: [file]\n}\n\ndraft, _ = nylas.drafts.update(identifier: \"<NYLAS_GRANT_ID>\",\n                               draft_id: \"<DRAFT_ID>\",\n                               request_body: request_body)\n\nputs draft\n\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class UpdateDraft {\n    public static void main(String[] args) throws\n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        UpdateDraftRequest requestBody =\n                new UpdateDraftRequest.\n                        Builder().\n                        starred(true).\n                        build();\n\n        Response<Draft> draft = nylas.drafts().update(\"<NYLAS_GRANT_ID>\",\n                \"<DRAFT_ID>\", requestBody);\n        System.out.printf(\"%s%s%s%n\",\n                draft.getData().getId(),\n                draft.getData().getStarred());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.*\nimport com.nylas.util.FileUtils\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val attachment: CreateAttachmentRequest = FileUtils.attachFileRequestBuilder(\"src/main/kotlin/Nylas_Logo.png\")\n\n    val requestBody = UpdateDraftRequest(\n        attachments = listOf(attachment)\n    )\n\n    val draft = nylas.drafts().update(identifier = \"<NYLAS_GRANT_ID>\", draftId = \"<NYLAS_DRAFT_ID>\", requestBody = requestBody)\n\n    println(draft)\n}\n"
+    delete:
+      summary: Delete a Draft
+      tags:
+      - Drafts
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.compose
+          others: ''
+        microsoft:
+          min: https://graph.microsoft.com/Mail.ReadWrite
+          others: https://graph.microsoft.com/Mail.ReadWrite.Shared
+        yahoo:
+          min: email, mail-r, mail-w
+      responses:
+        '200':
+          $ref: '#/components/responses/200-delete'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: delete-drafts-id
+      description: Permanently deletes the specified draft.
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/drafts/<DRAFT_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\nconst identifier = \"<NYLAS_GRANT_ID>\";\nconst draftId = \"<DRAFT_ID>\";\n\nconst deleteDraft = async () => {\n  try {\n    await nylas.drafts.destroy({ identifier, draftId });\n    console.log(`Draft with ID ${draftId} deleted successfully.`);\n  } catch (error) {\n    console.error(`Error deleting contact with ID ${draftId}:`, error);\n  }\n};\n\ndeleteDraft();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    api_key = \"<NYLAS_API_KEY>\"\n)\n\ndrafts = nylas.drafts.destroy(\"<NYLAS_GRANT_ID>\", \"<DRAFT_ID>\")\nprint(drafts)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas' \n\nnylas = Nylas::Client.new(\n      api_key: \"<NYLAS_API_KEY>\"\n)\n\nstatus, _ =  nylas.drafts.destroy(identifier: \"<NYLAS_GRANT_ID>\", draft_id: \"<DRAFT_ID>\")\n\nif status\n  puts \"Draft successfully deleted\"\nend\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class SendDraft {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        DeleteResponse draft = \n        nylas.drafts().destroy(\"<NYLAS_GRANT_ID>\", \"<DRAFT_ID>\");\n        System.out.println(draft.getRequestId());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val draft = nylas.drafts().destroy(\"<NYLAS_GRANT_ID>\", \"<DRAFT_ID>\")\n    print(draft.requestId)\n}\n"
+    post:
+      summary: Send a Draft
+      tags:
+      - Drafts
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.compose
+          others: https://www.googleapis.com/auth/gmail.modify
+        microsoft:
+          min:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.Send
+          others: https://graph.microsoft.com/Mail.ReadWrite.Shared
+        yahoo:
+          min: email, mail-r, mail-w
+      responses:
+        '200':
+          $ref: '#/components/responses/draft'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+      operationId: send-draft-id
+      description: 'Sends the specified draft as a message. You can optionally include a `signature_id` to append a
+
+        [signature](/docs/v3/email/signatures/) to the message body at send time.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                signature_id:
+                  type: string
+                  description: 'The ID of a [signature](/docs/v3/email/signatures/) to append to the message body when
+
+                    sending. Nylas inserts the signature after a line break at the end of the body, including
+
+                    after any quoted text. Only use this if the draft was created without a signature, or if
+
+                    you want to add one at send time.'
+                  example: sig_abc123
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/field_selection'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/drafts/<DRAFT_ID>'  \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\nconst identifier = \"<NYLAS_GRANT_ID>\";\nconst draftId = \"<DRAFT_ID>\";\n\nconst sendDraft = async () => {\n  try {\n    const sentMessage = await nylas.drafts.send({ identifier, draftId });\n    console.log(\"Draft sent:\", sentMessage);\n  } catch (error) {\n    console.error(\"Error sending draft:\", error);\n  }\n};\n\nsendDraft();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\ndraft_id = \"<DRAFT_ID>\"\n\ndraft = nylas.drafts.send(\n  grant_id,\n  draft_id\n)\n\nprint(draft)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\t\n\nnylas = Nylas::Client.new(\n\tapi_key: \"<NYLAS_API_KEY>\"\n)\n\ndraft, _ = nylas.drafts.send(identifier: \"<NYLAS_GRANT_ID>\", draft_id: \"<DRAFT_ID>\")"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class SendDraft {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        Response<Message> draft = \n        nylas.drafts().send(\"<NYLAS_GRANT_ID>\", \"<DRAFT_ID>\");\n        System.out.println(draft.getData());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val draft = nylas.drafts().send(\"<NYLAS_GRANT_ID>\", \"<DRAFT_ID>\")\n    print(draft.data)\n}\n"
+  /v3/grants/{grant_id}/messages/smart-compose:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    post:
+      summary: Compose a message
+      tags:
+      - Drafts
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.readonly
+          others: https://www.googleapis.com/auth/gmail.modify
+        microsoft:
+          min: https://graph.microsoft.com/Mail.Read
+          others:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.ReadWrite.Shared
+          - https://graph.microsoft.com/Mail.Read.Shared
+        yahoo:
+          min: email, mail-r, mail-w
+      responses:
+        '200':
+          $ref: '#/components/responses/smart_compose_200'
+        '400':
+          $ref: '#/components/responses/smart_compose_400'
+        '401':
+          $ref: '#/components/responses/401'
+        '422':
+          $ref: '#/components/responses/smart_compose_422'
+        '500':
+          $ref: '#/components/responses/smart_compose_500'
+      operationId: post-smart-compose
+      description: Generates a message based on a prompt.
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/smart_compose'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/messages/smart-compose' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function composeEmail() {\n  try {\n    const message = await nylas.messages.smartCompose.composeMessage({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      requestBody: {\n        prompt: \"Tell my colleague how we can use Nylas APIs\",\n      },\n    });\n\n    console.log(\"Message created:\", message);\n  } catch (error) {\n    console.error(\"Error creating message:\", error);\n  }\n}\n\ncomposeEmail();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\nemail = \"<EMAIL>\"\n\nmessage = nylas.messages.smart_compose.compose_message(\n  grant_id,\n  request_body={\n    \"prompt\": \"Tell my colleague how we can use Nylas APIs\",\n  }\n)\n\nprint(message)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  prompt: \"Let's talk about Nylas\"\n}\n\nmessage, _ = nylas.messages.smart_compose.compose_message(\n  identifier: \"<NYLAS_GRANT_ID>\",\n  request_body: request_body\n)\n\nputs message[:suggestion]\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class SmartCompose {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n    ComposeMessageRequest requestBody = new ComposeMessageRequest(\"Let's talk about Nylas\");\n    Response<ComposeMessageResponse> message = nylas.messages().smartCompose().composeMessage(\"<NYLAS_GRANT_ID>\", requestBody);\n    \n    System.out.println(message.getData().getSuggestion());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.ComposeMessageRequest\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val requestBody : ComposeMessageRequest = ComposeMessageRequest(\"Let's talk about Nylas\")\n  val message = nylas.messages().smartCompose().composeMessage(\"<NYLAS_GRANT_ID>\", requestBody)\n  \n  print(message.data.suggestion)\n}\n"
+  /v3/grants/{grant_id}/messages/{message_id}/smart-compose:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    - schema:
+        type: string
+      name: message_id
+      in: path
+      required: true
+      description: 'ID of the message to access. Nylas recommends you URL-encode this field, or you might receive
+
+        a [`404` error](/docs/api/errors/400-response/) if the ID contains special characters (for
+
+        example, `#`).'
+    post:
+      summary: Compose a reply
+      tags:
+      - Drafts
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.readonly
+          others: https://www.googleapis.com/auth/gmail.modify
+        microsoft:
+          min: https://graph.microsoft.com/Mail.Read
+          others:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.ReadWrite.Shared
+          - https://graph.microsoft.com/Mail.Read.Shared
+        yahoo:
+          min: email, mail-r, mail-w
+      responses:
+        '200':
+          $ref: '#/components/responses/smart_compose_200'
+        '400':
+          $ref: '#/components/responses/smart_compose_400'
+        '401':
+          $ref: '#/components/responses/401'
+        '422':
+          $ref: '#/components/responses/smart_compose_422'
+        '500':
+          $ref: '#/components/responses/smart_compose_500'
+      operationId: post-smart-compose-reply
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/smart_compose'
+      description: Generates a reply to the specified message based on a prompt.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/messages/<MESSAGE_ID>/smart-compose' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function composeEmailReply() {\n  try {\n    const message = await nylas.messages.smartCompose.composeMessageReply({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      messageId: \"<MESSAGE_ID>\",\n      requestBody: {\n        prompt: \"Respond to the email\",\n      },\n    });\n\n    console.log(\"Message created:\", message);\n  } catch (error) {\n    console.error(\"Error creating message:\", error);\n  }\n}\n\ncomposeEmailReply();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\nmessage_id = \"<MESSAGE_ID>\"\n\nmessage = nylas.messages.smart_compose.compose_message_reply(\n  grant_id,\n  message_id,\n  request_body={\n    \"prompt\": \"Respond to the email\",\n  }\n)\n\nprint(message)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  prompt: 'reply'\n}\n\nmessage, _ = nylas.messages.smart_compose.compose_message_reply(\n  identifier: \"<NYLAS_GRANT_ID>\",\n  message_id: \"<MESSAGE_ID>\",\n  request_body: request_body\n)\n\nputs message[:suggestion]\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class SmartCompose {\n    public static void main(String[] args) throws\n            NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        ComposeMessageRequest requestBody = new ComposeMessageRequest(\"Reply\");\n\n        Response<ComposeMessageResponse> message = \n        nylas.messages().smartCompose().composeMessageReply(\"<NYLAS_GRANT_ID>\", \n        \"<MESSAGE_ID>\", requestBody);\n        System.out.println(message.getData().getSuggestion());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.ComposeMessageRequest\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val requestBody : ComposeMessageRequest = \n    ComposeMessageRequest(\"Reply\")\n    val message = nylas.messages().smartCompose().composeMessageReply(\"<NYLAS_GRANT_ID>\", \n    \"<MESSAGE_ID>\", requestBody)\n    print(message.data.suggestion)\n\n}\n"
+components:
+  schemas:
+    attachment:
+      description: A file attached to an email message.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: The ID of the attachment.
+          readOnly: true
+          example: 4kj2jrcoj9ve5j9yxqz5cuv98
+        content_type:
+          type: string
+          minLength: 1
+          description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don''t provide a type, Nylas infers it from the file name.
+
+            The value of this field is exactly the same as the email attachment''s `Content-Type` header.
+
+            The provider might set additional parameters, such as `name` and `charset`.
+
+
+            Nylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can''t detect its content type.'
+          example: image/png; name="pic.png"
+        filename:
+          type: string
+          minLength: 1
+          description: The file name of the attachment.
+          example: pic.png
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        content_id:
+          type: string
+          description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s HTML. For
+
+            example, you might see something like `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in
+
+            the message body.
+
+
+            Sometimes, the `content_id` value is contained in angle brackets (for example,
+
+            `<ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>`).'
+          example: 1234567890
+        content_disposition:
+          type: string
+          description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
+          example: inline
+        is_inline:
+          type: boolean
+          description: If `true`, indicates that the attachment is an inline file.
+          example: true
+        size:
+          type: integer
+          description: The size of the attachment, in bytes.
+          example: 13068
+    id:
+      title: ID
+      type: string
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    draft:
+      title: Drafts
+      type: object
+      description: A draft of a message. You can edit a draft until you send it as a message.
+      properties:
+        bcc:
+          type: array
+          description: The name/email address pairs of the recipients to be BCC'd.
+          items:
+            $ref: '#/components/schemas/message-participant'
+        body:
+          type: string
+          description: 'The body of the draft as either plain-text or HTML content. If the draft has both plain-text and
+
+            HTML, Nylas returns the HTML version.'
+          example: Hi, Welcome to Nylas!
+        cc:
+          type: array
+          description: The name/email address pairs of the recipients to be CC'd.
+          items:
+            $ref: '#/components/schemas/message-participant'
+        attachments:
+          type: array
+          description: An array of Attachment objects. For Google, linked Google Drive files are not included. For Microsoft, linked One Drive files are not included.
+          items:
+            $ref: '#/components/schemas/attachment'
+          example:
+          - content_disposition: attachment
+            content_type: text/calendar
+            filename: null
+            id: 4kj2jrcoj9ve5j9yxqz5cuv98
+            size: 1708
+          - content_disposition: attachment
+            content_type: application/ics
+            filename: invite.ics
+            id: 70jcsv367jaiavt4njeu4xswg
+            size: 1708
+        folders:
+          type: array
+          description: A list of folder IDs. For Microsoft, only a single folder is supported. For Google, multiple folders may exist.
+          items:
+            type: string
+          uniqueItems: true
+          example:
+          - display_name: IMPORTANT
+            id: 8l6c4d11y1p4dm4fxj52whyr9
+            name: important
+          - display_name: INBOX
+            id: d9zkcr2tljpu3m4qpj7l2hbr0
+            name: inbox
+        from:
+          type: array
+          description: An array containing a single name/email address pair, to set as the `From` header.
+          items:
+            $ref: '#/components/schemas/message-participant-response'
+          uniqueItems: true
+          example:
+          - email: healthcare.demo@example.com
+            name: ''
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        id:
+          $ref: '#/components/schemas/id'
+        metadata:
+          $ref: '#/components/schemas/metadata'
+        object:
+          type: string
+          description: The object type of the response. In this case, `draft`.
+          example: draft
+        reply_to:
+          type: array
+          description: An array of name/email address pairs that should receive replies to the message.
+          items:
+            $ref: '#/components/schemas/message-participant'
+          uniqueItems: true
+          example:
+          - email: healthcare.demo@example.com
+            name: ''
+        snippet:
+          type: string
+          minLength: 1
+          description: 'A short snippet of the message body (the first 100 characters, with any HTML tags removed). This
+
+            is useful for displaying a preview of a draft message.'
+          example: 'You have been invited to the following event. Welcome! WhenThu Oct 28, 2021 7am - 8am Eastern
+
+            Time - Toronto Joining info'
+        starred:
+          type: boolean
+          description: 'When `true`, shows that the Draft has been starred by the user. For EWS, this is only supported
+
+            for Microsoft Exchange 2010 or later.'
+          example: false
+        subject:
+          type: string
+          description: The subject line of the draft.
+          example: 'Invitation: Welcome! @ Thu Oct 28, 2021 7am - 8am (EDT) - Toronto'
+        thread_id:
+          type: string
+          description: A reference to the parent Thread object. If this is a new draft, the thread is empty.
+          example: 1t8tv3890q4vgmwq6pmdwm8qg
+        to:
+          type: array
+          description: The name/email address pairs of the recipients.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/message-participant'
+          uniqueItems: true
+          example:
+          - email: demo@example.com
+            name: ''
+          - email: realestate.demo@example.com
+            name: ''
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    message-participant-response:
+      title: Message participant response
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+    message-participant:
+      title: Message participant
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+      required:
+      - email
+    metadata:
+      title: Metadata
+      type: object
+      description: 'The metadata associated with the object. For more information, see
+
+        [Metadata](/docs/reference/api/#metadata).'
+      additionalProperties:
+        type: string
+        description: A key-value pair.
+        maxLength: 500
+      maxProperties: 50
+    tracking_domain_name:
+      type: string
+      minLength: 1
+      maxLength: 253
+      example: tracking.example.com
+      description: 'The custom hostname to use for link click and message open tracking. The hostname must be
+
+        registered to the authenticated organization in the
+
+        [Nylas Dashboard](https://dashboard-v3.nylas.com/organization/domains?tab=hosted-auth) and have an
+
+        active certificate.
+
+
+        Custom tracking hostnames are available on select plans. Contact your Nylas account representative
+
+        or the [Nylas Sales team](https://www.nylas.com/contact-sales/) to enable this feature for your
+
+        organization.
+
+
+        Nylas trims surrounding whitespace, removes one trailing dot, and converts ASCII letters to
+
+        lowercase before looking up the hostname. Provide an ASCII fully qualified hostname without a URL
+
+        scheme, path, port, or wildcard.
+
+
+        You must enable `links`, `opens`, or both when you provide this field. A custom tracking hostname
+
+        does not support `thread_replies` by itself. If you omit this field, Nylas uses its regional
+
+        tracking hostname. Invalid, inactive, blocked, deleted, and unowned hostnames return the same
+
+        generic `400` response. If Nylas cannot complete the explicit ownership and certificate lookup, it
+
+        returns a `5xx` response without falling back to a Nylas hostname.'
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    smart_compose_suggestion:
+      title: PromptSuggestion
+      required:
+      - suggestion
+      type: object
+      properties:
+        suggestion:
+          title: Suggestion
+          type: string
+  responses:
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    drafts:
+      description: Drafts
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/draft'
+          example:
+            Draft response example:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+              - body: Hello, I just sent a message using Nylas!
+                cc:
+                - email: arya.stark@example.com
+                attachments:
+                - content_type: text/calendar
+                  id: 4kj2jrcoj9ve5j9yxqz5cuv98
+                  size: 1708
+                - content_type: application/ics
+                  filename: invite.ics
+                  id: 70jcsv367jaiavt4njeu4xswg
+                  size: 1708
+                folders:
+                - 8l6c4d11y1p4dm4fxj52whyr9
+                - d9zkcr2tljpu3m4qpj7l2hbr0
+                from:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+                id: 5d3qmne77v32r8l4phyuksl2x
+                object: message
+                reply_to:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                snippet: Hello, I just sent a message using Nylas!
+                starred: true
+                subject: Hello from Nylas!
+                thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+                to:
+                - name: Jon Snow
+                  email: j.snow@example.com
+              next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    draft:
+      description: Draft
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/draft'
+          example:
+            Draft response example:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+                body: Hello, I just sent a message using Nylas!
+                cc:
+                - email: arya.stark@example.com
+                attachments:
+                - content_type: text/calendar
+                  id: 4kj2jrcoj9ve5j9yxqz5cuv98
+                  size: 1708
+                - content_type: application/ics
+                  filename: invite.ics
+                  id: 70jcsv367jaiavt4njeu4xswg
+                  size: 1708
+                folders:
+                - 8l6c4d11y1p4dm4fxj52whyr9
+                - d9zkcr2tljpu3m4qpj7l2hbr0
+                from:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+                id: 5d3qmne77v32r8l4phyuksl2x
+                object: draft
+                reply_to:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                snippet: Hello, I just sent a message using Nylas!
+                starred: true
+                subject: Hello from Nylas!
+                thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+                to:
+                - name: Jon Snow
+                  email: j.snow@example.com
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    smart_compose_500:
+      description: Unexpected Error
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request
+              error:
+                type: object
+                description: Response error object.
+                properties:
+                  type:
+                    type: string
+                    description: Error Type
+                  message:
+                    type: string
+                    description: Error Message
+          examples:
+            Unexpected Error:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unexpected_error
+                  message: an unexepcted error has occurred
+    smart_compose_200:
+      description: Returns a suggestion for a message
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/smart_compose_suggestion'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              suggestion: 'Dear John,
+
+
+                I hope this email finds you well. I wanted to reach out and inform you about an exciting upcoming project that we will be working on together. This project has the potential to be a game-changer for our company, and I believe your expertise and skills will be invaluable to its success. I look forward to discussing the project with you further and hearing your input and ideas. Let''s make this project a resounding success!
+
+
+                Best regards,
+
+                [Your Name]'
+        text/event-stream:
+          schema:
+            type: object
+            format: event-stream
+            properties:
+              suggestion:
+                type: string
+    smart_compose_422:
+      description: Validation Error
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request
+              error:
+                type: object
+                description: Response error object.
+                properties:
+                  type:
+                    type: string
+                    description: Error Type
+                  message:
+                    type: string
+                    description: Error Message
+                  details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        loc:
+                          title: Location
+                          type: array
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                        msg:
+                          title: Message
+                          type: string
+                        type:
+                          title: Error Type
+                          type: string
+          examples:
+            Validation Error:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: validation_error
+                  message: validation error
+                  details:
+                  - loc:
+                    - path
+                    - item_id
+                    msg: value is not a valid integer
+                    type: type_error.integer
+    smart_compose_400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request
+              error:
+                type: object
+                description: Response error object.
+                properties:
+                  type:
+                    type: string
+                    description: Error Type
+                  message:
+                    type: string
+                    description: Error Message
+          examples:
+            Invalid Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: invalid request
+            Prompt Required:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: prompt_required_error
+                  message: prompt is required
+            Prompt Not Allowed:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: prompt_not_allowed_error
+                  message: prompt is not allowed
+            Message ID Required:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: message_id_required_error
+                  message: message ID is required
+            Grant ID Required:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: grant_id_required_error
+                  message: grant ID is required
+            Unknown Message Sender Error:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unknown_message_sender_error
+                  message: could not determine message sender
+  parameters:
+    metadata_pair:
+      name: metadata_pair
+      in: query
+      required: false
       schema:
         type: string
-    get:
-      tags:
-      - Drafts
-      summary: List drafts
-      responses:
-        '200':
-          description: A list of drafts.
-    post:
-      tags:
-      - Drafts
-      summary: Create a draft
-      responses:
-        '200':
-          description: The created draft.
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      description: 'Server-side requests use an API key issued in the Nylas dashboard
+      description: 'Pass a metadata key/value pair (for example, `?metadata_pair=key1:value`) to search for metadata
 
-        and presented as a Bearer token. User-level requests use an
+        associated with objects. See [Metadata](/docs/reference/api/#metadata) for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
 
-        access token obtained via the OAuth 2.0 flow.
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
 
-        '
+        information.'
+    query_imap_get_by_id:
+      name: query_imap
+      schema:
+        type: boolean
+        default: false
+      in: query
+      required: false
+      description: '(IMAP, iCloud, and Yahoo only) When `true`, Nylas queries from the IMAP server directly instead of
+
+        the Nylas database.'
+    query_imap_list:
+      name: query_imap
+      schema:
+        type: boolean
+        default: false
+      in: query
+      required: false
+      description: '(IMAP, Yahoo, and iCloud only) When `true`, Nylas queries the IMAP server directly instead of the
+
+        Nylas database. You also need to set the `in` query parameter in your request so Nylas knows which
+
+        folder to query.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+  requestBodies:
+    draft_create:
+      content:
+        application/json:
+          schema:
+            title: Drafts
+            type: object
+            description: A draft of a message. You can edit a draft until you send it as a message.
+            properties:
+              bcc:
+                type: array
+                uniqueItems: true
+                description: The name/email address pairs of the recipients to be BCC'd.
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: brandon.carson@example.com
+                  name: ''
+              body:
+                type: string
+                description: The body of the draft, in HTML format.
+                example: Hi, Welcome to Nylas!
+              cc:
+                type: array
+                uniqueItems: true
+                description: The name/email address pairs of the recipients to be CC'd.
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: clivescounters@example.com
+                  name: ''
+              tracking_options:
+                type: object
+                properties:
+                  opens:
+                    type: boolean
+                  thread_replies:
+                    type: boolean
+                  links:
+                    type: boolean
+                  label:
+                    type: string
+                    maxLength: 2048
+                  domain_name:
+                    $ref: '#/components/schemas/tracking_domain_name'
+              attachments:
+                description: 'An array of file attachments to include in the draft. You can use either the
+
+                  `application/json` or `multipart/form-data` schema, depending on the size of the
+
+                  attachment.
+
+
+                  The `application/json` schema is limited to 3MB, including the message body. The `content`
+
+                  must be Base64-encoded.
+
+
+                  The `multipart/form-data` schema is limited by the provider to 25MB. See the
+
+                  [Attachments references](/docs/reference/api/attachments/) for more information.'
+                type: array
+                uniqueItems: true
+                items:
+                  type: object
+                  properties:
+                    filename:
+                      type: string
+                    content:
+                      description: 'Must be Base64-encoded if using the `application/json` schema. Use binary format if
+
+                        using `multipart/form-data`.'
+                      type: string
+                    content_type:
+                      type: string
+                      description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types)
+
+                        of the attachment, used by the email client to determine how to display the
+
+                        attachment. If you don''t provide a type, Nylas infers it from the file name.'
+                    content_id:
+                      type: string
+                      description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the email''s
+
+                        HTML. For example, you might see something like
+
+                        `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in the message body.'
+                    content_disposition:
+                      type: string
+                      description: '(Not supported for Microsoft and EWS) The content disposition of the attachment.
+
+                        Usually, this is `inline` or `attachment` followed by the file name.'
+                      example: inline; filename="some-image.jpeg"
+              from:
+                type: array
+                description: 'An array that contains a single name and email address pair that Nylas sets as the
+
+                  `from` header. By default, Nylas uses the email address associated with the `grant_id`.
+
+
+                  Nylas supports multiple `from` addresses for email aliases only.'
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: leyah@example.com
+                  name: Leyah Miller
+              is_plaintext:
+                type: boolean
+                description: When `true`, the message body is sent as plain text and the MIME data doesn't include the HTML version of the message. When `false`, the message body is sent as HTML.
+                default: false
+              reply_to:
+                type: array
+                uniqueItems: true
+                description: 'An array of name/email address pairs that should receive replies to the message. This is
+
+                  used to set an alternative `Reply-To` header in the sent message. Not all providers support
+
+                  setting this in a draft.'
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: healthcare.demo@example.com
+                  name: ''
+              reply_to_message_id:
+                type: string
+                description: The unique identifier of the message to which you want to draft a reply.
+                example: 1t8tv3890q4vgmwq6pmdwm8qg
+              starred:
+                type: boolean
+                description: If `true`, the draft is starred.
+                example: false
+              subject:
+                type: string
+                description: The subject line of the draft.
+                example: 'Invitation: Welcome! @ Thu Oct 28, 2021 7am - 8am (EDT) - Toronto'
+              to:
+                type: array
+                uniqueItems: true
+                description: The name/email address pairs of the recipients.
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: demo@example.com
+                  name: ''
+                - email: realestate.demo@example.com
+                  name: ''
+              custom_headers:
+                type: array
+                description: An array of custom headers to add to the message.
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    value:
+                      type: string
+              metadata:
+                $ref: '#/components/schemas/metadata'
+              template:
+                type: object
+                description: The [template](/docs/reference/api/application-level-templates/) to use for the message. Can be overriden by the `body` and `subject` fields.
+                properties:
+                  id:
+                    type: string
+                    description: The template ID.
+                    example: b79c82b2-a51b-4c54-8469-28006a43551a
+                  strict:
+                    type: boolean
+                    description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
+
+                      defined in the `variables` object.'
+                    default: true
+                    example: true
+                  variables:
+                    type: object
+                    description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                      template.'
+                    additionalProperties:
+                      type: string
+                    example:
+                      user:
+                        name: Leyah
+                        surname: Miller
+              signature_id:
+                type: string
+                description: 'The ID of a [signature](/docs/v3/email/signatures/) to append to the draft body. Nylas
+
+                  inserts the signature after a line break at the end of the body. Only one signature can be
+
+                  used per draft.'
+                example: sig_abc123
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              draft:
+                type: object
+                description: A draft of a message. You can edit a draft until you send it as a message.
+                properties:
+                  bcc:
+                    type: array
+                    uniqueItems: true
+                    description: The name/email address pairs of the recipients to be BCC'd.
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    example:
+                    - email: brandon.carson@example.com
+                      name: ''
+                  body:
+                    type: string
+                    description: The body of the draft, in HTML format.
+                    example: Hi, Welcome to Nylas!
+                  cc:
+                    type: array
+                    uniqueItems: true
+                    description: The name/email address pairs of the recipients to be CC'd.
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    example:
+                    - email: clivescounters@example.com
+                      name: ''
+                  tracking_options:
+                    type: object
+                    properties:
+                      opens:
+                        type: boolean
+                      thread_replies:
+                        type: boolean
+                      links:
+                        type: boolean
+                      label:
+                        type: string
+                        maxLength: 2048
+                      domain_name:
+                        $ref: '#/components/schemas/tracking_domain_name'
+                  reply_to:
+                    type: array
+                    uniqueItems: true
+                    description: 'An array of name/email address pairs that should receive replies to the message. This
+
+                      is used to set an alternative `Reply-To` header in the sent message. Not all providers
+
+                      support setting this in a draft.'
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    example:
+                    - email: healthcare.demo@example.com
+                      name: ''
+                  starred:
+                    type: boolean
+                    description: If `true`, the draft is starred.
+                    example: false
+                  subject:
+                    type: string
+                    description: The subject line of the draft.
+                    example: 'Invitation: Welcome! @ Thu Oct 28, 2021 7am - 8am (EDT) - Toronto'
+                  thread_id:
+                    type: string
+                    description: A reference to the parent Thread object. If you're creating a new draft, leave this empty.
+                    example: 1t8tv3890q4vgmwq6pmdwm8qg
+                  to:
+                    type: array
+                    uniqueItems: true
+                    description: The name/email address pairs of the recipients.
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    examples:
+                    - email: demo@example.com
+                      name: ''
+                    - email: realestate.demo@example.com
+                      name: ''
+                  custom_headers:
+                    type: array
+                    description: An array of custom headers to add to the message.
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: string
+                  metadata:
+                    $ref: '#/components/schemas/metadata'
+                  template:
+                    type: object
+                    description: The [template](/docs/reference/api/application-level-templates/) to use for the message. Can be overriden by the `body` and `subject` fields.
+                    properties:
+                      id:
+                        type: string
+                        description: The template ID.
+                        example: b79c82b2-a51b-4c54-8469-28006a43551a
+                      strict:
+                        type: boolean
+                        description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
+
+                          defined in the `variables` object.'
+                        default: true
+                        example: true
+                      variables:
+                        type: object
+                        description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                          template.'
+                        additionalProperties:
+                          type: string
+                        example:
+                          user:
+                            name: Leyah
+                            surname: Miller
+                  signature_id:
+                    type: string
+                    description: 'The ID of a [signature](/docs/v3/email/signatures/) to append to the draft body. Nylas
+
+                      inserts the signature after a line break at the end of the body. Only one signature can
+
+                      be used per draft.'
+                    example: sig_abc123
+              attachment:
+                type: string
+                description: The content of the attachment, in binary format.
+                format: binary
+                example: binary data
+    draft_update:
+      content:
+        application/json:
+          schema:
+            title: Drafts
+            type: object
+            description: A draft of a message. You can edit a draft until you send it as a message.
+            properties:
+              bcc:
+                type: array
+                uniqueItems: true
+                description: The name/email address pairs of the recipients to be BCC'd.
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: brandon.carson@example.com
+                  name: ''
+              body:
+                type: string
+                description: The body of the draft, in HTML format.
+                example: Hi, Welcome to Nylas!
+              cc:
+                type: array
+                uniqueItems: true
+                description: The name/email address pairs of the recipients to be CC'd.
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: clivescounters@example.com
+                  name: ''
+              tracking_options:
+                type: object
+                properties:
+                  opens:
+                    type: boolean
+                  thread_replies:
+                    type: boolean
+                  links:
+                    type: boolean
+                  label:
+                    type: string
+                    maxLength: 2048
+                  domain_name:
+                    $ref: '#/components/schemas/tracking_domain_name'
+              attachments:
+                type: array
+                uniqueItems: true
+                description: An array of file attachments to include in the draft. You can use either the `application/json` or `multipart/form-data` schema, depending on attachment size. The `application/json` format is limited to 3MB including the message body, and the `content` must be Base64 encoded. The `multipart/form-data` format size is limited by the provider to 25MB.  See [Attachments](/#tag--Attachments) for more information.
+                items:
+                  type: object
+                  properties:
+                    filename:
+                      type: string
+                    content:
+                      description: Must be Base64-encoded if using the `application/json` schema. Use binary format if using `multipart/form-data`.
+                      type: string
+                    content_type:
+                      type: string
+                      description: The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don't provide a type, Nylas infers it from the file name.
+                    content_id:
+                      type: string
+                      description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s
+
+                        HTML. For example, you might see something like
+
+                        `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in the message body. Only
+
+                        include a value for the `content_id` field if the attachment is inline.'
+                    content_disposition:
+                      type: string
+                      description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
+                      example: inline; filename="some-image.jpeg"
+              reply_to:
+                type: array
+                uniqueItems: true
+                description: 'An array of name/email address pairs that should receive replies to the message. This is
+
+                  used to set an alternative `Reply-To` header in the sent message. Not all providers support
+
+                  setting this in a draft.'
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: healthcare.demo@example.com
+                  name: ''
+              starred:
+                type: boolean
+                description: If `true`, the draft is starred.
+                example: false
+              subject:
+                type: string
+                description: The subject line of the draft.
+                example: 'Invitation: Welcome! @ Thu Oct 28, 2021 7am - 8am (EDT) - Toronto'
+              to:
+                type: array
+                uniqueItems: true
+                description: The name/email address pairs of the recipients.
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: demo@example.com
+                  name: ''
+                - email: realestate.demo@example.com
+                  name: ''
+              metadata:
+                $ref: '#/components/schemas/metadata'
+              template:
+                type: object
+                description: The [template](/docs/reference/api/application-level-templates/) to use for the message. Can be overriden by the `body` and `subject` fields.
+                properties:
+                  id:
+                    type: string
+                    description: The template ID.
+                    example: b79c82b2-a51b-4c54-8469-28006a43551a
+                  strict:
+                    type: boolean
+                    description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
+
+                      defined in the `variables` object.'
+                    default: true
+                    example: true
+                  variables:
+                    type: object
+                    description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                      template.'
+                    additionalProperties:
+                      type: string
+                    example:
+                      user:
+                        name: Leyah
+                        surname: Miller
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              draft:
+                type: object
+                description: A draft of a message. You can edit a draft until you send it as a message.
+                properties:
+                  bcc:
+                    type: array
+                    uniqueItems: true
+                    description: The name/email address pairs of the recipients to be BCC'd.
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    example:
+                    - email: brandon.carson@example.com
+                      name: ''
+                  body:
+                    type: string
+                    description: The body of the draft, in HTML format.
+                    example: Hi, Welcome to Nylas!
+                  cc:
+                    type: array
+                    uniqueItems: true
+                    description: The name/email address pairs of the recipients to be CC'd.
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    example:
+                    - email: clivescounters@example.com
+                      name: ''
+                  tracking_options:
+                    type: object
+                    properties:
+                      opens:
+                        type: boolean
+                      thread_replies:
+                        type: boolean
+                      links:
+                        type: boolean
+                      label:
+                        type: string
+                        maxLength: 2048
+                      domain_name:
+                        $ref: '#/components/schemas/tracking_domain_name'
+                  reply_to:
+                    type: array
+                    uniqueItems: true
+                    description: 'An array of name/email address pairs that should receive replies to the message. This
+
+                      is used to set an alternative `Reply-To` header in the sent message. Not all providers
+
+                      support setting this in a draft.'
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    example:
+                    - email: healthcare.demo@example.com
+                      name: ''
+                  starred:
+                    type: boolean
+                    description: If `true`, the draft is starred.
+                    example: false
+                  subject:
+                    type: string
+                    description: The subject line of the draft.
+                    example: 'Invitation: Welcome! @ Thu Oct 28, 2021 7am - 8am (EDT) - Toronto'
+                  thread_id:
+                    type: string
+                    description: A reference to the parent Thread object.
+                    example: 1t8tv3890q4vgmwq6pmdwm8qg
+                  to:
+                    type: array
+                    uniqueItems: true
+                    description: The name/email address pairs of the recipients.
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    examples:
+                    - email: demo@example.com
+                      name: ''
+                    - email: realestate.demo@example.com
+                      name: ''
+                  metadata:
+                    $ref: '#/components/schemas/metadata'
+                  template:
+                    type: object
+                    description: The [template](/docs/reference/api/application-level-templates/) to use for the message. Can be overriden by the `body` and `subject` fields.
+                    properties:
+                      id:
+                        type: string
+                        description: The template ID.
+                        example: b79c82b2-a51b-4c54-8469-28006a43551a
+                      strict:
+                        type: boolean
+                        description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
+
+                          defined in the `variables` object.'
+                        default: true
+                        example: true
+                      variables:
+                        type: object
+                        description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                          template.'
+                        additionalProperties:
+                          type: string
+                        example:
+                          user:
+                            name: Leyah
+                            surname: Miller
+              attachment:
+                type: string
+                description: The content of the attachment, in binary format.
+                format: binary
+                example: binary data
+    smart_compose:
+      content:
+        application/json:
+          schema:
+            title: Smart Compose
+            type: object
+            description: A Smart Compose request.
+            properties:
+              prompt:
+                title: Prompt
+                description: The prompt that Smart Compose uses to generate a message suggestion.
+                maxLength: 1000
+                type: string
+                example: Reply to John Doe about the upcoming project.
