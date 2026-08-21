@@ -165,4 +165,15 @@ authored_by: Nylas
 source: https://www.nylas.com/pricing/
 notes: >-
   There is no per-API-request charge and no compute-time charge on any plan. Rate limits exist but
-  are not a billing dimension and do not vary by plan; see rate-limits/nylas-rate-limits.yml.
+  are not a billing dimension and do not vary by plan; see rate-limits/nylas-rate-limits.yml. This
+  artifact describes how Nylas bills, for cost-allocation purposes. It is not an API description,
+  and Nylas publishes no programmatic surface for reading usage or cost. See programmaticAccess above.
+programmaticAccess:
+  usageApi: false
+  billingApi: false
+  invoiceApi: false
+  evidence: >-
+    The Nylas v3 contract exposes no usage, billing, invoice, cost or subscription operation: 0 of
+    208. The meters below describe what Nylas bills on, not endpoints that return meter data. Cost
+    and usage figures are read from the Nylas Dashboard and from invoices, not through the API.
+  docs: https://developer.nylas.com/docs/support/billing/
