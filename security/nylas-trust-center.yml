@@ -1,23 +1,63 @@
-generated: '2026-07-11'
-method: searched
-probe: true
-source: https://www.nylas.com/security
-url: https://www.nylas.com/security
+generated: '2026-08-20'
+method: provider-published
+authored_by: Nylas
+url: https://trust.nylas.com/public
+source: https://www.nylas.com/security/
+sources:
+- https://www.nylas.com/security/
+- https://trust.nylas.com/public
+description: >-
+  Compliance posture as published on the Nylas security page and the Nylas Trust
+  Center. Corrects a previous keyword-derived list that recorded "PCI DSS"
+  without qualification and omitted ISO 27701, CCPA, CPRA, the Data Privacy
+  Framework and the GLBA Privacy Rule. Nylas holds PCI-DSS SAQ A, a
+  self-assessment questionnaire, not a PCI DSS certification, and the CSA STAR
+  entry is Level 1.
 certifications:
-- SOC 2
-- ISO 27001
-- PCI DSS
-- HIPAA
-- GDPR
-- CSA STAR
-evidence:
-- source: https://www.nylas.com/security
-  keywords:
-  - soc 2
-  - soc2
-  - iso 27001
-  - pci dss
-  - pci-dss
-  - hipaa
-  - trust center
-  - compliance certification
+- name: SOC 2 Type II
+  status: report available
+  access: under NDA via the Trust Center
+- name: ISO 27001
+  status: certified
+  access: certificate available on request via the Trust Center
+- name: ISO 27701
+  status: certified
+  access: certificate available on request via the Trust Center
+- name: HIPAA
+  status: compliant
+- name: GDPR
+  status: compliant
+- name: CCPA
+  status: compliant
+- name: CPRA
+  status: compliant
+- name: CSA STAR Level 1
+  status: listed
+- name: PCI-DSS SAQ A
+  status: self-assessment questionnaire
+  note: >-
+    A SAQ A self-assessment, not a PCI DSS Level 1 Service Provider
+    certification.
+- name: Data Privacy Framework
+  status: participant
+- name: GLBA Privacy Rule
+  status: compliant
+- name: ADA Tier 2 CASA Verified
+  status: verified
+questionnaires:
+- CAIQ
+- SIG Lite
+- SIG Core
+- VSA
+assurance:
+- type: External penetration test
+  cadence: annual
+  reports_available: true
+  access: via the Trust Center
+controls:
+  encryption_at_rest: AES-256 or equivalent
+  encryption_in_transit: TLS 1.2+
+  access_control: fine-grained access controls with SSO and multi-factor authentication
+  notes: >-
+    Application security is integrated through the development lifecycle, with
+    infrastructure monitoring in place.

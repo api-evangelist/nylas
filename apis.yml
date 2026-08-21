@@ -2,9 +2,12 @@ aid: nylas
 name: Nylas
 description: >-
   Nylas connects your application to every email inbox and calendar in the world.
-  The Nylas v3 platform provides REST APIs for email, calendar, contacts, scheduling,
-  authentication, and administration with official SDKs for Node.js, Python, Ruby,
-  and Kotlin/Java.
+  The Nylas v3 platform provides REST APIs for email, calendar, contacts,
+  scheduling, meeting notetaking, authentication, and administration across
+  Google, Microsoft, Exchange, iCloud, Yahoo and any IMAP provider. Official SDKs
+  cover Node.js, Python, Ruby and Kotlin/Java, alongside a CLI, a hosted MCP
+  server, and Agent Accounts that provision a Nylas-hosted mailbox and calendar
+  for autonomous agents without requiring an OAuth flow.
 type: Index
 accessModel:
   pricing: freemium
@@ -264,7 +267,7 @@ common:
   - type: Security
     url: https://www.nylas.com/security/
   - type: Compliance
-    url: https://trust.nylas.com/
+    url: https://trust.nylas.com/public
   - type: Webhooks
     url: https://developer.nylas.com/docs/v3/notifications/
   - type: ErrorCodes
@@ -283,6 +286,8 @@ common:
   - type: MCPServer
     name: Nylas MCP Server manifest
     url: mcp/nylas-mcp.yml
+  - type: ContentSignal
+    url: https://developer.nylas.com/robots.txt
   - type: APICatalog
     url: https://developer.nylas.com/.well-known/api-catalog
   - type: WellKnown
