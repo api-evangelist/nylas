@@ -19,11 +19,15 @@ standards:
       POST /v3/connect/token. The ACCESS_TOKEN scheme carries grant-scoped
       tokens issued by that exchange.
   - id: oauth2.1
-    conforms: true
+    conforms: partial
     evidence: >-
-      The contract describes the authorization code flow with PKCE and no
-      implicit or resource-owner-password grant. Deprecated grant types are
-      absent from the contract.
+      The authorization code flow with PKCE is implemented and documented, and
+      no implicit or resource-owner-password grant is offered. But the contract
+      declares no oauth2 securityScheme and therefore no flows object: all three
+      securitySchemes are type http. The OAuth surface is described by its
+      endpoints and by prose rather than declared in a form an agent can
+      negotiate from the contract. Saying deprecated grant types are "absent"
+      would be true only because no grant types are declared at all.
   - id: pkce
     conforms: true
     evidence: PKCE code challenge is documented on the hosted authorization flow.
@@ -128,10 +132,14 @@ standards:
   - id: rate-limit-headers
     conforms: false
     evidence: >-
-      Nylas does not emit X-RateLimit-* or RateLimit-Policy response headers.
-      Limits are published at
-      https://developer.nylas.com/docs/dev-guide/platform/rate-limits/ and
-      Retry-After is returned on upstream provider throttling. See
+      No X-RateLimit-* or RateLimit-Policy header is documented in the contract
+      or anywhere in the published documentation, and none was observed on the
+      responses reachable without credentials. Limits are published as
+      documentation at
+      https://developer.nylas.com/docs/dev-guide/platform/rate-limits/ rather
+      than surfaced as response headers. Retry-After is returned when an upstream
+      provider throttles a request, and Nylas-Provider-Request-Count and
+      Nylas-Gmail-Quota-Usage report upstream consumption. See
       rate-limits/nylas-rate-limits.yml.
   - id: oidc-discovery
     conforms: false
