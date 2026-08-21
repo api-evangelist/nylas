@@ -108,7 +108,7 @@ apis:
   - Admin
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-admin.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-auth-api
   name: Nylas Auth API
   description: The Auth API from Nylas — 3 operation(s) for auth.
@@ -120,7 +120,7 @@ apis:
   - Auth
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-admin.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-calendars-api
   name: Nylas Calendars API
   description: The Calendars API from Nylas — 1 operation(s) for calendars.
@@ -130,7 +130,7 @@ apis:
   - Calendars
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-contacts-api
   name: Nylas Contacts API
   description: The Contacts API from Nylas — 1 operation(s) for contacts.
@@ -140,7 +140,7 @@ apis:
   - Contacts
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-drafts-api
   name: Nylas Drafts API
   description: The Drafts API from Nylas — 1 operation(s) for drafts.
@@ -150,7 +150,7 @@ apis:
   - Drafts
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-events-api
   name: Nylas Events API
   description: The Events API from Nylas — 1 operation(s) for events.
@@ -162,7 +162,7 @@ apis:
   - Events
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-grants-api
   name: Nylas Grants API
   description: The Grants API from Nylas — 2 operation(s) for grants.
@@ -172,7 +172,7 @@ apis:
   - Grants
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-admin.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-messages-api
   name: Nylas Messages API
   description: The Messages API from Nylas — 1 operation(s) for messages.
@@ -184,7 +184,7 @@ apis:
   - Messages
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-scheduling-api
   name: Nylas Scheduling API
   description: The Scheduling API from Nylas — 3 operation(s) for scheduling.
@@ -194,7 +194,7 @@ apis:
   - Scheduling
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-scheduler.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-threads-api
   name: Nylas Threads API
   description: The Threads API from Nylas — 1 operation(s) for threads.
@@ -204,7 +204,7 @@ apis:
   - Threads
   properties:
   - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/v3-ecc.yaml
+    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 common:
   - type: AgenticAccess
     url: agentic-access/nylas-agentic-access.yml
