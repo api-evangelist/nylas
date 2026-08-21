@@ -1,0 +1,2087 @@
+openapi: 3.1.0
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+info:
+  title: Nylas Notifications API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: "The Nylas API is designed using the [REST](https://en.wikipedia.org/wiki/Representational_State_Transfer) ideology to provide simple and predictable URIs to access and modify objects. Requests support [standard HTTP methods](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html) like `GET`, `PUT`, `POST`, and `DELETE`, and [standard status codes](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). Response bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n\nYou can use the [Nylas Postman collection](https://www.postman.com/trynylas/workspace/nylas-api/overview) to quickly start using the Nylas APIs. For more information, check out the [Nylas Postman collection documentation](/docs/v3/api-references/postman/).\n\n[<img src=\"https://run.pstmn.io/button.svg\" alt=\"Run In Postman\" style=\"width: 128px; height: 32px;\">](https://god.gw.postman.com/run-collection/21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a%26entityType%3Dcollection%26workspaceId%3De36cf1fc-a749-494d-9c8c-f3c28f18c342#?env%5Bv3%20Environment%5D=W3sia2V5IjoiYmFzZVVybCIsInZhbHVlIjoiaHR0cHM6Ly9hcGkudXMubnlsYXMuY29tIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik55bGFzIEFQSSBiYXNlIFVSTC4gVXNlIGh0dHBzOi8vYXBpLmV1Lm55bGFzLmNvbSBmb3IgdGhlIEVVIHJlZ2lvbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImJlYXJlclRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIEFQSSBrZXkgZnJvbSB0aGUgRGFzaGJvYXJkIChodHRwczovL2Rhc2hib2FyZC12My5ueWxhcy5jb20pLiBVc2VkIGZvciBhbGwgYXV0aGVudGljYXRlZCByZXF1ZXN0cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImdyYW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiVGhlIGdyYW50IElEIHJlcHJlc2VudGluZyBhbiBlbmQgdXNlcidzIGNvbm5lY3RlZCBhY2NvdW50LiBSZXF1aXJlZCBmb3IgRUNDICYgU2NoZWR1bGVyIGNvbGxlY3Rpb25zLiBGaW5kIHRoaXMgaW4gdGhlIERhc2hib2FyZCB1bmRlciBHcmFudHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhY2Nlc3NfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJzZWNyZXQiLCJkZXNjcmlwdGlvbiI6IkEgdXNlci1sZXZlbCBhY2Nlc3MgdG9rZW4gcmV0dXJuZWQgZnJvbSB0aGUgT0F1dGggZmxvdy4gQWx0ZXJuYXRpdmUgdG8gdXNpbmcgQVBJIGtleSArIGdyYW50X2lkIGZvciBwZXItdXNlciBhdXRoLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBwbGljYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIGFwcGxpY2F0aW9uIElELiBBdXRvLXNldCBieSB0aGUgJ1ZlcmlmeSBBUEkga2V5JyByZXF1ZXN0IGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoicHJvdmlkZXIiLCJ2YWx1ZSI6Imdvb2dsZSIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRoIHByb3ZpZGVyIGZvciBjb25uZWN0b3Igb3BlcmF0aW9uczogZ29vZ2xlLCBtaWNyb3NvZnQsIGltYXAsIG9yIHZpcnR1YWwtY2FsZW5kYXIuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJjYWxsYmFja19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlJlZGlyZWN0IFVSSSBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgY2FsbGJhY2sgVVJJIGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY3JlZGVudGlhbF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbm5lY3RvciBjcmVkZW50aWFsIElEIGZvciBzZXJ2aWNlIGFjY291bnRzIG9yIGFwcCBwYXNzd29yZHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3ZWJob29rX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiV2ViaG9vayBkZXN0aW5hdGlvbiBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgd2ViaG9vay4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNoYW5uZWxfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQdWIvU3ViIGNoYW5uZWwgSUQuIFNldCBhZnRlciBjcmVhdGluZyBhIGNoYW5uZWwuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3Jrc3BhY2VfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJXb3Jrc3BhY2UgSUQgZm9yIGdyYW50IGdyb3VwaW5nICYgb3JnYW5pemF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBpX2tleV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkFQSSBrZXkgcmVzb3VyY2UgSUQgKG5vdCB0aGUga2V5IGl0c2VsZikuIFVzZWQgZm9yIG1hbmFnaW5nIEFQSSBrZXlzIHZpYSB0aGUgQWRtaW4gQVBJLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBJRC4gVXNlZCBpbiBob3N0ZWQgT0F1dGggYXV0aG9yaXphdGlvbiBVUkxzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X3NlY3JldCIsInZhbHVlIjoiIiwidHlwZSI6InNlY3JldCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBzZWNyZXQuIFVzZWQgaW4gdGhlIE9BdXRoIHRva2VuIGV4Y2hhbmdlIHN0ZXAuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZWRpcmVjdF91cmkiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJPQXV0aCBjYWxsYmFjayBVUkwgcmVnaXN0ZXJlZCB3aXRoIHlvdXIgTnlsYXMgYXBwbGljYXRpb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZXNwb25zZV90eXBlIiwidmFsdWUiOiJjb2RlIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik9BdXRoIHJlc3BvbnNlIHR5cGUuIFVzZSAnY29kZScgZm9yIHNlcnZlci1zaWRlIGF1dGggKHJlY29tbWVuZGVkKSBvciAndG9rZW4nIGZvciBjbGllbnQtc2lkZS4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvZGUiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRob3JpemF0aW9uIGNvZGUgcmV0dXJuZWQgZnJvbSBob3N0ZWQgT0F1dGguIFVzZWQgdG8gZXhjaGFuZ2UgZm9yIGFuIGFjY2VzcyB0b2tlbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImlkX3Rva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiSUQgdG9rZW4gZm9yIGN1c3RvbSBhdXRoZW50aWNhdGlvbiBmbG93cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImVtYWlsIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRW1haWwgYWRkcmVzcyB1c2VkIGFzIGxvZ2luX2hpbnQgaW4gT0F1dGggZmxvd3MuIFByZS1maWxscyB0aGUgcHJvdmlkZXIgc2lnbi1pbiBwYWdlLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ29vZ2xlX2NsaWVudF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IllvdXIgR29vZ2xlIE9BdXRoIGNsaWVudCBJRC4gVXNlZCB3aGVuIGNyZWF0aW5nIGEgR29vZ2xlIGNvbm5lY3Rvci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6Imdvb2dsZV9jbGllbnRfc2VjcmV0IiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIEdvb2dsZSBPQXV0aCBjbGllbnQgc2VjcmV0LiBVc2VkIHdoZW4gY3JlYXRpbmcgYSBHb29nbGUgY29ubmVjdG9yLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY2FsZW5kYXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJDYWxlbmRhciBJRC4gQ2FuIGJlIHRoZSBncmFudCdzIGVtYWlsIGFkZHJlc3Mgb3IgJ3ByaW1hcnknIGZvciB0aGUgZGVmYXVsdCBjYWxlbmRhci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImV2ZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRXZlbnQgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGNyZWF0aW5nIG9yIGxpc3RpbmcgZXZlbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibWVzc2FnZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik1lc3NhZ2UgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3Igc2VuZGluZyBtZXNzYWdlcy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InRocmVhZF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlRocmVhZCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyB0aHJlYWRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZHJhZnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJEcmFmdCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgZHJhZnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZm9sZGVyX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRm9sZGVyIG9yIGxhYmVsIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBsaXN0aW5nIGZvbGRlcnMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhdHRhY2htZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQXR0YWNobWVudCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyBtZXNzYWdlIGF0dGFjaG1lbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY29udGFjdF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbnRhY3QgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3IgY3JlYXRpbmcgY29udGFjdHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJub3RldGFrZXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJOb3RldGFrZXIgSUQuIFNldCBhZnRlciBpbnZpdGluZyBhIG5vdGV0YWtlciBib3QgdG8gYSBtZWV0aW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoidGVtcGxhdGVfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJNZXNzYWdlIHRlbXBsYXRlIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB0ZW1wbGF0ZXMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3JrZmxvd19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IldvcmtmbG93IElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB3b3JrZmxvd3MuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJzY2hlZHVsZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlIElEIGZvciBFeHRyYWN0QUkgb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImRvbWFpbl9uYW1lIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRG9tYWluIG5hbWUgZm9yIGN1c3RvbSBkb21haW4gb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvbmZpZ3VyYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJTY2hlZHVsZXIgY29uZmlndXJhdGlvbiBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBjb25maWd1cmF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2Vzc2lvbl9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlciBzZXNzaW9uIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyBhIHNlc3Npb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJib29raW5nX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQm9va2luZyBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBib29raW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ3JvdXBfZXZlbnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJHcm91cCBldmVudCBJRCBmb3IgY29sbGFib3JhdGl2ZSBzY2hlZHVsaW5nIHdpdGggbXVsdGlwbGUgcGFydGljaXBhbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2NoZWR1bGVyU2Vzc2lvblRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJTaG9ydC1saXZlZCBzZXNzaW9uIHRva2VuIGZvciBwdWJsaWMtZmFjaW5nIFNjaGVkdWxlciBlbmRwb2ludHMgKEF2YWlsYWJpbGl0eSwgQm9va2luZ3MpLiBDcmVhdGVkIHZpYSB0aGUgU2Vzc2lvbnMgZW5kcG9pbnQuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ2Ml9zY2hlZHVsZXJfc2x1ZyIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNsdWcgZnJvbSBhIHYyIFNjaGVkdWxlciBwYWdlLiBVc2VkIGZvciBtaWdyYXRpbmcgdjIgc2NoZWR1bGluZyBwYWdlcyB0byB2MyBjb25maWd1cmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InBhZ2VfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQYWdpbmF0aW9uIGN1cnNvci4gUGFzcyB0aGUgbmV4dF9jdXJzb3IgdmFsdWUgZnJvbSBhIGxpc3QgcmVzcG9uc2UgdG8gZ2V0IHRoZSBuZXh0IHBhZ2Ugb2YgcmVzdWx0cy4iLCJlbmFibGVkIjp0cnVlfV0=)\n\n## Enable compression to optimize performance\n\nThe Email, Calendar, Contacts, and Scheduler APIs return gzip-compressed responses when your request includes the [`Accept-Encoding: gzip`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding) header. Most HTTP libraries negotiate and decompress gzip responses automatically. With curl, use `--compressed`. Nylas skips compression for responses under about 200 bytes.\n\nCompression pairs well with [query parameters](#query-parameters) that limit the number of objects returned and [field selection](#reduce-response-size-with-field-selection) that limits which fields come back in each object. For the full walkthrough, including webhook, Pub/Sub, and SNS compression, see [Reducing payload size with compression](/docs/dev-guide/best-practices/compression/).\n\n## Query parameters\n\nNylas allows you to include query parameters in `GET` requests that return a list of results. Query parameters let you narrow the results Nylas returns, meaning fewer requests to the provider and less data for your application to sift through. For more information, see [Rate limits in Nylas](/docs/dev-guide/platform/rate-limits/).\n\nThe table below shows the query parameters you can use for the `GET` requests in the Email, Calendar, Contacts, and Notetaker APIs.\n\n| Endpoint                                                                                          | Query parameters                                                                                                                                                                                                                                                                               |\n| :------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/calendars`](/docs/reference/api/calendar/get-all-calendars/)    | `limit`, `page_token`, `metadata_pair`, `select`                                                                                                                                                                                                                                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/events`](/docs/reference/api/events/get-all-events/)            | `calendar_id` (required), `limit`, `page_token`, `show_cancelled`, `title`, `description`, `ical_uid`, `location`, `start`, `end`, `master_event_id`, `metadata_pair`, `busy`, `updated_before`, `updated_after`, `attendees`, `event_type`, `expand_recurring`, `tentative_as_busy`, `select` |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/drafts`](/docs/reference/api/drafts/get-drafts/)                | `limit`, `page_token`, `subject`, `any_email`, `to`, `cc`, `bcc`, `starred`, `thread_id`, `has_attachment`, `query_imap`, `select`                                                                                                                                                             |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/messages`](/docs/reference/api/messages/get-messages/)          | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `thread_id`, `received_before`, `received_after`, `has_attachment`, `fields`, `search_query_native`, `metadata_pair`, `query_imap`, `shared_from`, `select`                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/threads`](/docs/reference/api/threads/get-threads/)             | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `latest_message_before`, `latest_message_after`, `has_attachment`, `search_query_native`, `earliest_message_date`, `shared_folder_id`, `shared_from`, `select`                            |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/folders`](/docs/reference/api/folders/get-folder/)              | `limit`, `page_token`, `parent_id`, `include_hidden_folders`, `shared_from`, `single_level`, `select`                                                                                                                                                                                          |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/contacts`](/docs/reference/api/contacts/list-contact/)          | `limit`, `page_token`, `email`, `phone_number`, `source`, `group`, `recurse`, `select`                                                                                                                                                                                                         |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/notetakers`](/docs/reference/api/notetaker/get-all-notetakers/) | `limit`, `page_token`, `prev_page_token`, `join_time_start`, `join_time_end`, `state`, `order_by`, `order_direction`                                                                                                                                                                           |\n\nYou can use the `limit` parameter to set the maximum number of results Nylas returns for your request. Nylas recommends setting a lower `limit` if you encounter rate limits on the provider. For more information, see [Avoiding rate limits in Nylas](/docs/dev-guide/best-practices/rate-limits/).\n\nNylas supports case-insensitive partial matches for some query parameters:\n\n- `description`, `location`, and `title` in [Get all Events requests](/docs/reference/api/events/get-all-events/).\n- `subject` in [Get all Messages](/docs/reference/api/messages/get-messages/), [Get all Drafts](/docs/reference/api/drafts/get-drafts/), and [Get all Threads](/docs/reference/api/threads/get-threads/) requests.\n\nIf the specified field contains the query term, Nylas matches it regardless of the case. For example, if you set the `subject` query parameter to `march` in a Get all Messages request, Nylas might return the following messages:\n\n- \"Company **March** Meeting\"\n- \"Today in history: Mussolini's **march** on Rome\"\n- \"Your coupon code: **mARch**\"\n\nSince Nylas matches keywords, it won't return the following messages:\n\n- \"Confirmation code: abc**March**123\"\n- \"**M**cDonald's golden **arch**es\"\n\n## Pagination\n\nNylas might return multiple pages of data when you make a \"Get all\" request (for example, [Get all Events](/docs/reference/api/events/get-all-events/)). When this happens, Nylas includes the `next_cursor` field in its response. You can pass the value of `next_cursor` as the `page_token` query parameter in your next request to get the next page of results.\n\nYou can use the `limit` parameter to specify the maximum number of results you want in one page of data. If you see rate limits from the provider, try using a smaller `limit` value.\n\n| Query Parameter | Type    | Description                                                                                                                       |\n| :-------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------- |\n| `limit`         | integer | The number of objects to return, up to a maximum of `200` (defaults to `50`).                                                     |\n| `page_token`    | string  | An identifier that specifies which page of data to return. This value should be taken from the `next_cursor` response body field. |\n\n## Updating objects\n\n`PUT` and `PATCH` requests behave similarly in Nylas: when you make a request, Nylas replaces all data in the nested object with the information you define. Because of this, your request might fail if you don't include all mandatory fields.\n\nNylas doesn't erase the data from fields that you don't include in your request, so you can define only the mandatory fields and any that you want to update.\n\n## Grant ID patterns\n\nNylas supports multiple patterns for identifying grants in API calls. This flexibility allows you to reference grants using the identifier that's most convenient for your application, whether that's the Nylas grant ID, the user's email address, an external ID from your system, or a special shorthand syntax.\n\nAll endpoint paths that include `{grant_id}` support these patterns. For example, you can use any of these patterns with endpoints like `/v3/grants/{grant_id}/messages`, `/v3/grants/{grant_id}/events`, `/v3/grants/{grant_id}/contacts`, and others.\n\n| Pattern                  | Description                                                                                                                                                                                                             | Authorization           |\n| :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------- |\n| `<grant_id>`             | The Nylas grant ID (for example, `GET /v3/grants/e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This is the standard format.                                                                                          | API key or access token |\n| `grant:<grant_id>`       | Explicitly prefixed Nylas grant ID (for example, `GET /v3/grants/grant:e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This format is useful for clarity when working with multiple identifier types.                  | API key or access token |\n| `<email_address>`        | The email address associated with the grant (for example, `GET /v3/grants/user@example.com/messages`). Nylas looks up the grant associated with this email address.                                                     | API key or access token |\n| `email:<email_address>`  | Explicitly prefixed email address (for example, `GET /v3/grants/email:user@example.com/messages`). This format is useful for clarity when the email address might be ambiguous.                                         | API key or access token |\n| `external:<external_id>` | An external ID from your system (for example, `GET /v3/grants/external:user-12345/messages`). This allows you to reference grants using your own identifiers. For more information, see the External IDs documentation. | API key or access token |\n| `me`                     | A special shorthand syntax (for example, `GET /v3/grants/me/messages`). Nylas looks up the grant associated with the request's access token.                                                                            | Access token only       |\n\nThe `me` syntax is particularly useful for client-side applications where you authenticate end users with access tokens. You can't use this syntax with API key authorization, because there is no grant associated with an API key.\n\n## Metadata\n\nYou can use the `metadata` object to add a list of key-value pairs to Calendar, Event, Message, and Draft objects so you can store custom data with them. Both keys and values can be any string. If you want to filter on metadata, however, you must write values to one of the five [Nylas-specific keys](#metadata-keys-and-filtering).\n\nFor more information, see the [Metadata documentation](/docs/dev-guide/metadata/).\n\n### Metadata keys and filtering\n\nNylas reserves five metadata keys (`key1`, `key2`, `key3`, `key4`, `key5`) and indexes their contents. Nylas uses `key5` to identify events that count towards the `max-fairness` round-robin calculation for event availability. For more information, see [Group availability and booking best practices](/docs/v3/calendar/group-booking/#round-robin-max-fairness-groups).\n\nYou can add values to each of these reserved keys, and reference them in a query to filter the objects that Nylas returns. You can also add these filters as query parameters, as in the following examples:\n\n- `https://api.us.nylas.com/calendar?metadata_pair=key1:on-site`\n- `https://api.us.nylas.com/events?calendar_id=<CALENDAR_ID>&metadata_pair=key1:on-site`\n\nYou can't create a query that includes both a provider and metadata filter, other than `calendar_id`. For example, `https://api.us.nylas.com/calendar?metadata_pair=key1:plan-party&title=Birthday` returns an error.\n\n## Reduce response size with field selection\n\nField selection allows you to use the `select` query parameter to specify which fields you want Nylas to include in the response.\n\nYou can use field selection for all Nylas API endpoints, _except_ the following:\n\n- All `DELETE` endpoints.\n- All Attachments endpoints.\n- All Smart Compose endpoints.\n- The Send Message endpoint.\n- The Create a Draft endpoint.\n\nField selection helps to reduce the size of the response, improves latency, and helps you avoid rate limiting issues. You can also use it in cases where you want to avoid working with information from your users that you think might be sensitive.\n\nField selection can evaluate top-level object fields only. You cannot use it to return only nested fields.\n\n<div id=\"admonition-info\">\U0001F4DD <b>Note</b>: Nylas strongly suggests you always use field selection, so you only get the data that you need.</div>\n\nFor example, the following request specifies Nylas should return only the `id` and `name` fields of the Calendar object.\n\n```bash\ncurl --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/me/calendars?select=id,name'\n```\n\nThe response payload includes only the `id` and `name` fields in the `data` object, as in the example below.\n\n```json\n{\n  \"request_id\": \"5fa64c92-e840-4357-86b9-2aa364d35b88\",\n  \"data\": [\n    {\n      \"id\": \"5d3qmne77v32r8l4phyuksl2x\",\n      \"name\": \"My Calendar\"\n    },\n    {\n      \"id\": \"5d3qmne77v32r23aphyuksl2x\",\n      \"name\": \"My Calendar 2\"\n    }\n  ]\n}\n```\n\n## Nylas encoding\n\nResponse bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n"
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Notifications
+paths:
+  /v3/webhooks:
+    post:
+      tags:
+      - Notifications
+      summary: Create a webhook destination
+      operationId: post-webhook-destinations
+      description: 'Creates a webhook destination with the specified URL and list of trigger types.
+
+
+        ### Webhook destinations and retry logic
+
+
+        You should limit the number of webhook destinations you have for each trigger type. When Nylas
+
+        retries a webhook, the retry goes to all the destinations for that trigger type. This can result
+
+        in _a lot_ of notifications.
+
+
+        Some webhook testing tools rate-limit or block you if your endpoint generates too much traffic.
+
+        Nylas blocks Ngrok connections for this reason.
+
+
+        ### Webhook notification header
+
+
+        Every webhook notification Nylas sends includes the `x-nylas-signature` header. If you''re using
+
+        the Nylas SDKs, you might see `X-Nylas-Signature` instead.'
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/create_200'
+          description: Returns the new Destination
+        '400':
+          $ref: '#/components/responses/create_400'
+      requestBody:
+        required: true
+        description: Destination definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/destination_input_payload'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/webhooks/' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data-raw '{\n    \"trigger_types\": [\n      \"grant.created\",\n      \"grant.deleted\",\n      \"grant.expired\"\n    ],\n    \"description\": \"local\",\n    \"webhook_url\": \"<WEBHOOK_URL>\",\n    \"notification_email_addresses\": [\n      \"leyah@example.com\",\n      \"nyla@example.com\"\n    ]\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas, { WebhookTriggers } from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst createWebhook = async () => {\n  try {\n    const webhook = await nylas.webhooks.create({\n      requestBody: {\n        triggerTypes: [WebhookTriggers.EventCreated],\n        webhookUrl: \"<WEBHOOK_URL>\",\n        description: \"My first webhook\",\n        notificationEmailAddresses: [\"<EMAIL_ADDRESS>\"],\n      },\n    });\n\n    console.log(\"Webhook created:\", webhook);\n  } catch (error) {\n    console.error(\"Error creating webhook:\", error);\n  }\n};\n\ncreateWebhook();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.models.webhooks import WebhookTriggers\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nwebhook = nylas.webhooks.create(\n    request_body={\n        \"trigger_types\": [WebhookTriggers.EVENT_CREATED],\n        \"webhook_url\": \"<WEBHOOK_URL>\",\n        \"description\": \"My first webhook\",\n        \"notification_email_addresses\": [\"<EMAIL_ADDRESS>\"],\n    }\n)\n\nprint(webhook)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(api_key: \"<NYLAS_API_KEY>\")\n\nrequest_body = {\n  trigger_types: [Nylas::WebhookTrigger::EVENT_CREATED],\n  webhook_url: \"<WEBHOOK_URL>\",\n  description: 'My first webhook',\n  notification_email_addresses: [\"<EMAIL_ADDRESS>\"]\n}\n\nbegin\n  webhook, _request_id = nylas.webhooks.create(request_body: request_body)\n\n  puts \"Webhook created: #{webhook}\"\nrescue Nylas::NylasApiError => e\n  puts \"Error creating webhook: #{e.message}\"\nend\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class webhooks {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    List<WebhookTriggers> triggers = new ArrayList<>();\n    triggers.add(WebhookTriggers.EVENT_CREATED);\n\n    CreateWebhookRequest webhookRequest = new CreateWebhookRequest(\n        triggers,\n        \"<WEBHOOK_URL>\",\n        \"My first webhook\",\n        List.of(\"<EMAIL_ADDRESS>\"));\n\n    try {\n      Response<WebhookWithSecret> webhook = nylas.webhooks().create(webhookRequest);\n\n      System.out.println(webhook.getData());\n    } catch (Exception e) {\n      System.out.println(\"Error: \" + e);\n    }\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.*\n\nfun main(args: Array<String>){\n  val nylas: NylasClient = NylasClient(apiKey = \"<NYLAS_API_KEY>\")\n  val triggersList: List<WebhookTriggers> = listOf(WebhookTriggers.EVENT_CREATED)\n\n  val webhookRequest: CreateWebhookRequest = CreateWebhookRequest(\n      triggersList,\n      \"<WEBHOOK_URL>\",\n      \"My first webhook\",\n      listOf(\"<EMAIL_ADDRESS>\"))\n\n  try {\n    val webhook: Response<WebhookWithSecret> = nylas.webhooks().create(webhookRequest)\n\n    println(webhook.data)\n  } catch(exception : Exception) {\n    println(\"Error :$exception\")\n  }\n}\n"
+    get:
+      tags:
+      - Notifications
+      summary: Get destinations for an application
+      operationId: get-webhook-destinations-application
+      description: Get a list of all webhook destinations for an application id.
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/get_200'
+          description: List of destinations for an application.
+        '400':
+          $ref: '#/components/responses/get_400'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/webhooks' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst listWebhooks = async () => {\n  try {\n    const webhooks = await nylas.webhooks.list({});\n\n    console.log(\"webhooks:\", webhooks);\n  } catch (error) {\n    console.error(\"Error fetching webhooks:\", error);\n  }\n};\n\nlistWebhooks();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nwebhooks = nylas.webhooks.list()\n\nprint(\"webhooks:\", webhooks)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nwebhooks = nylas.webhooks.list()\nputs webhooks\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class webhooks {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        ListResponse<Webhook> webhooks = nylas.webhooks().list();\n        System.out.println(webhooks.getData());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>){\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val webhooks = nylas.webhooks().list()\n    println(webhooks.data)\n}\n"
+  /v3/webhooks/{id}:
+    get:
+      operationId: get-webhook-by-id
+      tags:
+      - Notifications
+      summary: Get the destinations for an application by webhook ID
+      description: Get the webhook destinations for an application ID by webhook ID
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/get_by_id_200'
+          description: The destinations matching the query
+        '400':
+          $ref: '#/components/responses/get_400'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/webhooks/<WEBHOOK_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function fetchWebhookById() {\n  try {\n    const webhook = await nylas.webhooks.find({\n      webhookId: \"<WEBHOOK_ID>\",\n    });\n\n    console.log(\"webhook:\", webhook);\n  } catch (error) {\n    console.error(\"Error fetching webhook:\", error);\n  }\n}\n\nfetchWebhookById();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nmessage = nylas.webhooks.find(\n    \"<WEBHOOK_ID>\",\n)\n\nprint(message)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nwebhook = nylas.webhooks.find(webhook_id: \"<WEBHOOK_ID>\")\nputs webhook\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class webhooks {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        Response<Webhook> webhook = nylas.webhooks().find(\"<WEBHOOK_ID>\");\n        System.out.println(webhook.getData());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>){\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val webhooks = nylas.webhooks().find(\"<WEBHOOK_ID>\")\n    println(webhooks.data)\n}\n"
+    put:
+      operationId: put-webhook-by-id
+      tags:
+      - Notifications
+      summary: Update a webhook destination
+      description: 'Update the values in a specific webhook destination.
+
+
+        ### Limitations
+
+
+        - You only need to specify fields that need to change when you make a request to this endpoint.
+
+        Empty fields in the request do not overwrite existing fields.
+
+        - You should limit how many webhook destinations you have for each trigger type. When Nylas retries
+
+        a webhook, the retry goes to _all destinations for the specific trigger type_. This can result in
+
+        a lot of notifications.
+
+        - Some webhook testing tools rate-limit or block you if your webhook destination endpoint generates
+
+        too much traffic. Nylas blocks Ngrok connections for this reason.'
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/update_200'
+        '400':
+          $ref: '#/components/responses/update_400'
+      requestBody:
+        required: true
+        description: Destination definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/destination_update_payload'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url 'https://api.us.nylas.com/v3/webhooks/<WEBHOOK_ID>' \\  \n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"notification_email_addresses\": [\"leyah@example.com\"]\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function updateWebhook() {\n  try {\n    const webhook = await nylas.webhooks.update({\n      webhookId: \"<WEBHOOK_ID>\",\n      requestBody: {\n        notificationEmailAddresses: [\"<EMAIL_ADDRESS>\"],\n      },\n    });\n\n    console.log(\"Updated Webhook:\", webhook);\n  } catch (error) {\n    console.error(\"Error updating webhook:\", error);\n  }\n}\n\nupdateWebhook();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nwebhook = nylas.webhooks.update(\n    \"<WEBHOOK_ID>\",\n    request_body={\n        \"notification_email_addresses\": [\"<EMAIL_ADDRESS>\"],\n    }\n)\n\nprint(webhook)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n    description: 'My updated webhook'\n}\n\nwebhooks = nylas.webhooks.update(webhook_id: \"<WEBHOOK_ID>\", \nrequest_body: request_body)\nputs webhooks\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class webhooks {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        UpdateWebhookRequest webhookRequest = new\n                UpdateWebhookRequest.Builder().\n                description(\"My updated webhook\").\n                build();\n\n        Response<Webhook> webhook = nylas.webhooks().update(\"<WEBHOOK_ID>\", \n        webhookRequest);\n        System.out.println(webhook.getData());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.UpdateWebhookRequest\n\nfun main(args: Array<String>){\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val webhookRequest : UpdateWebhookRequest =\n        UpdateWebhookRequest.Builder().\n        description(\"My updated webhook\").\n        build()\n\n    val webhooks = nylas.webhooks().update(\"<WEBHOOK_ID>\", \n    webhookRequest)\n    println(webhooks.data)\n}\n"
+    delete:
+      operationId: delete-webhook-by-id
+      tags:
+      - Notifications
+      summary: Delete a webhook destination
+      description: Delete a webhook destination record.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200'
+          description: Returns a success message.
+        '400':
+          $ref: '#/components/responses/delete_400'
+          description: Returns an error message.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/webhooks/<WEBHOOK_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst deleteWebhook = async () => {\n  try {\n    await nylas.webhooks.destroy({ webhookId: \"<WEBHOOK_ID>\" });\n    console.log(\"Webhook deleted successfully.\");\n  } catch (error) {\n    console.error(\"Error deleting webhook:\", error);\n  }\n};\n\ndeleteWebhook();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nrequest = nylas.webhooks.destroy(\n    \"<WEBHOOK_ID>\",\n)\n\nprint(request)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nstatus = nylas.webhooks.destroy(webhook_id: \"<WEBHOOK_ID>\")\nputs status\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class webhooks {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        WebhookDeleteResponse deleteResponse = \n        nylas.webhooks().destroy(\"<WEBHOOK_ID>\");\n        System.out.println(deleteResponse);\n    }\n}\n"
+      - lang: kotlin
+        label: Kotllin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>){\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val webhooks = nylas.webhooks().destroy(\"<WEBHOOK_ID>\")\n    println(webhooks.data)\n}\n"
+  /v3/webhooks/rotate-secret/{id}:
+    post:
+      operationId: post-new-secret
+      tags:
+      - Notifications
+      summary: Rotate a webhook secret
+      description: 'Update the webhook secret value for a destination. The previous value will immediately stop being used and the new value will take over.
+
+
+        ### Webhook notification header
+
+
+        Every webhook notification Nylas sends includes the `x-nylas-signature` header. Depending on the SDK you''re using, you might see `X-Nylas-Signature` instead.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/webhooks/rotate-secret/<WEBHOOK_ID>' \\  \n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst rotated = await nylas.webhooks.rotateSecret({\n  webhookId: \"<WEBHOOK_ID>\",\n});\n\nconsole.log(\"Rotated webhook secret:\", rotated);\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nwebhook = nylas.webhooks.rotate_secret(\n    \"<WEBHOOK_ID>\"\n)\n\nprint(webhook)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "# frozen_string_literal: true\n\n# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n    api_key: '<NYLAS_API_KEY>'\n)\n\nsecret, _ = nylas.webhooks.rotate_secret(webhook_id: \"<WEBHOOK_ID>\")\n\nputs secret\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport java.util.List;\n\npublic class read_grants {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n    Response<WebhookWithSecret> secret = nylas.webhooks().rotateSecret(\"<WEBHOOK_ID>\");\n    \n    System.out.println(secret);\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.UpdateGrantRequest\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val secret = nylas.webhooks().rotateSecret(\"<WEBHOOK_ID>\")\n  \n  print(secret)\n}\n"
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/rotate_secret_200'
+          description: Returns the updated Destination.
+        '400':
+          $ref: '#/components/responses/delete_400'
+  /v3/webhooks/mock-payload:
+    post:
+      operationId: get_mock_webhook_payload
+      tags:
+      - Notifications
+      summary: Get mock notification payload
+      description: 'Use this endpoint to see example notification payloads for the different Nylas events you specify,
+
+        to the webhook URL you specify.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/webhooks/mock-payload' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"trigger_type\": \"calendar.created\",\n    \"webhook_url\": \"<WEBHOOK_URL>\"\n  }'"
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/get_mock_payload_200'
+          description: Returns the mock payload for corresponding trigger type.
+        '400':
+          $ref: '#/components/responses/400'
+      requestBody:
+        required: true
+        description: Destination definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/get_mock_payload_input'
+  /v3/webhooks/send-test-event:
+    post:
+      operationId: send_test_event
+      tags:
+      - Notifications
+      summary: Send test event
+      description: 'Use this endpoint to check if your project''s webhook destination is configured correctly. Nylas
+
+        sends a test webhook payload to the webhook URL you specify, and listens for a success
+
+        acknowledgement.
+
+
+        The secret used is `mock-webhook-secret`.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/webhooks/send-test-event' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"trigger_type\": \"calendar.created\",\n    \"webhook_url\": \"<WEBHOOK_URL>\"\n  }'"
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/send_test_event_200'
+          description: Returns the mock payload for corresponding trigger type.
+        '400':
+          $ref: '#/components/responses/400'
+      requestBody:
+        required: true
+        description: Destination definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/send_test_event_input'
+  /v3/channels/pubsub:
+    post:
+      summary: Create a Pub/Sub channel
+      tags:
+      - Notifications
+      operationId: create-pubsub-channel
+      description: 'Create a Pub/Sub channel in the specified application.
+
+        '
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/create_pubsub_200'
+          description: Returns the new Destination
+        '400':
+          $ref: '#/components/responses/create_pubsub_400'
+          description: Returns the new Destination
+      requestBody:
+        required: true
+        description: Destination definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pubsub_input_payload'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/channels/pubsub' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data-raw '{\n    \"description\": \"PubSub Test\",\n    \"trigger_types\": [\"message.send_success\"],\n    \"encryption_key\": \"\",\n    \"topic\": \"projects/<YOUR_PROJECT_ID>/topics/<YOUR_TOPIC_ID>\",\n    \"notification_email_addresses\": [\"leyah@example.com\"]\n  }'"
+    get:
+      summary: Get Pub/Sub channels for an application
+      tags:
+      - Notifications
+      operationId: get-pubsub-channels
+      description: 'Get the Pub/Sub channels for an application.
+
+        '
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/get_pubsub_200'
+          description: List of destinations for an application.
+        '400':
+          $ref: '#/components/responses/get_pubsub_400'
+          description: List of destinations for an application.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/channels/pubsub/' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\"
+  /v3/channels/pubsub/{id}:
+    get:
+      operationId: get-pubsub-by-id
+      tags:
+      - Notifications
+      summary: Get a specific Pub/Sub channel
+      description: Get a specific Pub/Sub channel from a specific Nylas application.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        description: The ID of the Pub/Sub channel to retrieve.
+        required: true
+        schema:
+          type: string
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/channels/pubsub/<PUBSUB_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\"
+      responses:
+        '200':
+          $ref: '#/components/responses/get_pubsub_by_id_200'
+          description: The destinations matching the query
+        '400':
+          $ref: '#/components/responses/get_pubsub_400'
+    put:
+      operationId: put-pubsub-by-id
+      tags:
+      - Notifications
+      summary: Update a Pub/Sub channel
+      description: 'Updates the specified Pub/Sub channel.
+
+
+        When you make a `PUT` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        [Updating objects](/docs/reference/api/#updating-objects).'
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        description: The ID of the Pub/Sub channel to retrieve.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: The Pub/Sub channel properties to update.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: A human-readable description of the Pub/Sub channel.
+                  example: Prod account status notifications PubSub
+                trigger_types:
+                  $ref: '#/components/schemas/trigger_types'
+                topic:
+                  type: string
+                  description: The Google Pub/Sub topic that Nylas sends notifications to.
+                  example: projects/your-project-id/topics/your-topic-id
+                status:
+                  type: string
+                  description: The new status of the channel. Use this to restart a channel that you manually paused, or that was automatically paused due to deliverability issues.
+                  enum:
+                  - active
+                  - pause
+                notification_email_addresses:
+                  type: array
+                  items:
+                    type: string
+                  description: The email addresses that Nylas notifies if there are errors or deliverability problems. See the [rate limit documentation](/docs/dev-guide/best-practices/rate-limits/) for details.
+                  example:
+                  - sysadmin@example.com
+                  - sre_pager@example.com
+                compressed_delivery:
+                  type: boolean
+                  description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds a `content_encoding: gzip` message attribute to the Pub/Sub message.'
+                  example: true
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url 'https://api.us.nylas.com/v3/channels/pubsub/<PUBSUB_ID>' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data-raw '{\n    \"description\": \"PubSub Update Test\",\n    \"trigger_types\": [\"message.updated\"],\n    \"encryption_key\": \"\",\n    \"topic\": \"projects/<YOUR_PROJECT_NAME>/topics/<YOUR_TOPIC_NAME>\",\n    \"notification_email_addresses\": [\"leyah@example.com\"]\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/update_pubsub_200'
+        '400':
+          $ref: '#/components/responses/update_pubsub_400'
+    delete:
+      operationId: delete-pubsub-by-id
+      tags:
+      - Notifications
+      summary: Delete a specific Pub/Sub channel
+      description: Delete a specific Pub/Sub channel from a specific Nylas application.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        description: The ID of the Pub/Sub channel to retrieve.
+        required: true
+        schema:
+          type: string
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/channels/pubsub/<PUBSUB_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\"
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200'
+          description: Returns a success message.
+        '400':
+          $ref: '#/components/responses/delete_400'
+          description: Returns an error message.
+  /v3/channels/sns:
+    post:
+      summary: Create an Amazon SNS channel
+      tags:
+      - Notifications
+      operationId: create-sns-channel
+      description: 'Create an Amazon SNS notification channel in the specified application.
+
+
+        The `topic` must be a valid Amazon SNS topic ARN (starting with `arn:aws:sns:`).
+
+        '
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/create_sns_200'
+          description: Returns the new Amazon SNS channel.
+        '400':
+          $ref: '#/components/responses/create_sns_400'
+          description: Returns an error.
+      requestBody:
+        required: true
+        description: Amazon SNS channel definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/amazon_sns_input_payload'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/channels/sns' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data-raw '{\n    \"description\": \"SNS Test\",\n    \"trigger_types\": [\"message.send_success\"],\n    \"topic\": \"arn:aws:sns:us-east-1:123456789012:my-topic\",\n    \"role_arn\": \"arn:aws:iam::123456789012:role/nylas-sns-role\",\n    \"notification_email_addresses\": [\"leyah@example.com\"]\n  }'"
+    get:
+      summary: Get Amazon SNS channels for an application
+      tags:
+      - Notifications
+      operationId: get-sns-channels
+      description: 'Get the Amazon SNS notification channels for an application.
+
+        '
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/get_sns_200'
+          description: List of Amazon SNS channels for an application.
+        '400':
+          $ref: '#/components/responses/get_sns_400'
+          description: Returns an error.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/channels/sns/' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+  /v3/channels/sns/{id}:
+    get:
+      operationId: get-sns-by-id
+      tags:
+      - Notifications
+      summary: Get a specific Amazon SNS channel
+      description: Get a specific Amazon SNS notification channel from a specific Nylas application.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        description: The ID of the Amazon SNS channel to retrieve.
+        required: true
+        schema:
+          type: string
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/channels/sns/<SNS_CHANNEL_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+      responses:
+        '200':
+          $ref: '#/components/responses/get_sns_by_id_200'
+          description: The Amazon SNS channel matching the query.
+        '400':
+          $ref: '#/components/responses/get_sns_400'
+    put:
+      operationId: put-sns-by-id
+      tags:
+      - Notifications
+      summary: Update an Amazon SNS channel
+      description: 'Updates the specified Amazon SNS notification channel.
+
+
+        When you make a `PUT` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        [Updating objects](/docs/reference/api/#updating-objects).'
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        description: The ID of the Amazon SNS channel to update.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: The Amazon SNS channel properties to update.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: A human-readable description of the Amazon SNS channel.
+                  example: Prod account status notifications SNS
+                trigger_types:
+                  $ref: '#/components/schemas/trigger_types'
+                topic:
+                  type: string
+                  description: The Amazon SNS topic ARN that Nylas sends notifications to. Must start with `arn:aws:sns:`.
+                  example: arn:aws:sns:us-east-1:123456789012:my-topic
+                role_arn:
+                  type: string
+                  description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                  example: arn:aws:iam::123456789012:role/nylas-sns-role
+                status:
+                  type: string
+                  description: The new status of the channel. Use this to restart a channel that you manually paused, or that was automatically paused due to deliverability issues.
+                  enum:
+                  - active
+                  - pause
+                notification_email_addresses:
+                  type: array
+                  items:
+                    type: string
+                  description: The email addresses that Nylas notifies if there are errors or deliverability problems. See the [rate limit documentation](/docs/dev-guide/best-practices/rate-limits/) for details.
+                  example:
+                  - sysadmin@example.com
+                  - sre_pager@example.com
+                compressed_delivery:
+                  type: boolean
+                  description: 'If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them. Nylas adds a `content_encoding: gzip+base64` message attribute to the SNS message. To decode, base64-decode the message body, then gzip-decompress.'
+                  example: true
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url 'https://api.us.nylas.com/v3/channels/sns/<SNS_CHANNEL_ID>' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data-raw '{\n    \"description\": \"Updated SNS channel\",\n    \"trigger_types\": [\"event.created\", \"event.updated\"],\n    \"topic\": \"arn:aws:sns:us-east-1:123456789012:my-updated-topic\",\n    \"notification_email_addresses\": [\"sysadmin@example.com\"]\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/update_sns_200'
+        '400':
+          $ref: '#/components/responses/update_sns_400'
+    delete:
+      operationId: delete-sns-by-id
+      tags:
+      - Notifications
+      summary: Delete a specific Amazon SNS channel
+      description: Delete a specific Amazon SNS notification channel from a specific Nylas application.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        description: The ID of the Amazon SNS channel to delete.
+        required: true
+        schema:
+          type: string
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/channels/sns/<SNS_CHANNEL_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200'
+          description: Returns a success message.
+        '400':
+          $ref: '#/components/responses/delete_400'
+          description: Returns an error message.
+components:
+  schemas:
+    destination_update_payload:
+      title: Destination Update Payload
+      properties:
+        description:
+          type: string
+          description: A human-readable description of the webhook destination.
+          example: Production webhook destination
+        trigger_types:
+          $ref: '#/components/schemas/trigger_types'
+        webhook_url:
+          type: string
+          description: The URL to send webhooks to.
+          example: https://example.com/webhooks
+        status:
+          type: string
+          description: The new status of the destination.
+          enum:
+          - active
+          - pause
+        notification_email_addresses:
+          type: array
+          items:
+            type: string
+          description: The email addresses that Nylas notifies when a webhook is down for a while. See the [rate limit documentation](/docs/dev-guide/best-practices/rate-limits/) for details.
+          example:
+          - abc@example.com
+          - def@example.com
+        compressed_delivery:
+          type: boolean
+          description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds the `Content-Encoding: gzip` header to the request.'
+          example: true
+    trigger_types:
+      type: array
+      items:
+        type: string
+        enum:
+        - calendar.created
+        - calendar.updated
+        - calendar.deleted
+        - event.created
+        - event.updated
+        - event.deleted
+        - grant.created
+        - grant.updated
+        - grant.deleted
+        - grant.expired
+        - grant.imap_sync_completed
+        - message.send_success
+        - message.send_failed
+        - message.bounce_detected
+        - message.created
+        - message.created.cleaned
+        - message.opened
+        - message.opened.legacy
+        - message.updated
+        - message.link_clicked
+        - message.link_clicked.legacy
+        - thread.replied
+        - thread.replied.legacy
+        - contact.updated
+        - contact.deleted
+        - folder.created
+        - folder.updated
+        - folder.deleted
+        - booking.created
+        - booking.pending
+        - booking.rescheduled
+        - booking.cancelled
+        - booking.reminder
+        - message.deleted
+        - message.transactional.bounced
+        - message.transactional.complaint
+        - message.transactional.delivered
+        - message.transactional.rejected
+        - message.bounced
+        - message.complaint
+        - message.delivered
+        - message.rejected
+        - notetaker.created
+        - notetaker.updated
+        - notetaker.deleted
+        - notetaker.meeting_state
+        - notetaker.media
+      description: 'The event that triggers the notification. See the
+
+        [notification schemas](/docs/reference/notifications/) for details about each trigger
+
+        type.
+
+
+        See the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),
+
+        [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
+
+        for information on how to trigger each event type.'
+    destination_input_payload:
+      title: Destination Payload
+      required:
+      - trigger_types
+      - webhook_url
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human-readable description of the webhook destination.
+          example: Production webhook destination
+        trigger_types:
+          $ref: '#/components/schemas/trigger_types'
+        webhook_url:
+          type: string
+          description: The URL to send webhooks to.
+          example: https://example.com/webhooks
+        notification_email_addresses:
+          type: array
+          items:
+            type: string
+          description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+            [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for details.'
+          example:
+          - jane@example.com
+          - joe@example.com
+        compressed_delivery:
+          type: boolean
+          description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds the `Content-Encoding: gzip` header to the request. Default is `false`.'
+          default: false
+          example: true
+    send_test_event_input:
+      title: Input Payload
+      type: object
+      required:
+      - trigger_type
+      - webhook_url
+      properties:
+        trigger_type:
+          type: string
+          enum:
+          - calendar.created
+          - calendar.updated
+          - calendar.deleted
+          - event.created
+          - event.updated
+          - event.deleted
+          - grant.created
+          - grant.updated
+          - grant.deleted
+          - grant.expired
+          - message.send_success
+          - message.send_failed
+          - message.bounce_detected
+          - message.created
+          - message.created.truncated
+          - message.created.cleaned
+          - message.updated
+          - message.updated.truncated
+          - contact.updated
+          - contact.deleted
+          - folder.created
+          - folder.updated
+          - folder.deleted
+          - message.opened
+          - message.link_clicked
+          - thread.replied
+          description: 'Select the type of event that will trigger the webhook. See the
+
+            [notification schemas](/docs/reference/notifications/) for details about each
+
+            trigger type.
+
+
+            See the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),
+
+            [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
+
+            for information on how to trigger each event type.
+
+
+            You can test `message.created.truncated` and `message.updated.truncated` notifications using this
+
+            endpoint. For more information, see
+
+            [Truncated webhooks](/docs/v3/notifications/#truncated-webhooks).'
+        webhook_url:
+          type: string
+          description: The URL to send webhooks to.
+          example: https://example.com/webhooks
+    get_mock_payload_input:
+      title: Input Payload
+      type: object
+      required:
+      - trigger_type
+      - webhook_url
+      properties:
+        trigger_type:
+          type: string
+          enum:
+          - calendar.created
+          - calendar.updated
+          - calendar.deleted
+          - event.created
+          - event.updated
+          - event.deleted
+          - grant.created
+          - grant.updated
+          - grant.deleted
+          - grant.expired
+          - message.send_success
+          - message.send_failed
+          - message.bounce_detected
+          - message.created
+          - message.created.truncated
+          - message.created.cleaned
+          - message.updated
+          - message.updated.truncated
+          - contact.updated
+          - contact.deleted
+          - folder.created
+          - folder.updated
+          - folder.deleted
+          - message.opened
+          - message.link_clicked
+          - thread.replied
+          description: 'The event that will trigger the mock notification. See the
+
+            [notification schemas](/docs/reference/notifications/) for details about each
+
+            trigger type.
+
+
+            See the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),
+
+            [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
+
+            for information on how to trigger each event type.
+
+
+            You can test `message.created.truncated` and `message.updated.truncated` notifications using this
+
+            endpoint. For more information, see
+
+            [Truncated webhooks](/docs/v3/notifications/#truncated-webhooks).'
+    pubsub_input_payload:
+      title: Destination Payload
+      required:
+      - trigger_types
+      - webhook_url
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human-readable description of the Pub/Sub channel.
+          example: Production Pub/Sub for Events notifications
+        trigger_types:
+          $ref: '#/components/schemas/trigger_types'
+        topic:
+          type: string
+          description: The Google Pub/Sub topic that Nylas sends notifications to.
+          example: projects/your-project-id/topics/your-topic-id
+        notification_email_addresses:
+          type: array
+          items:
+            type: string
+          description: The email addresses that Nylas notifies if delivery to the Pub/Sub channel fails.
+          example:
+          - jane@example.com
+          - joe@example.com
+        compressed_delivery:
+          type: boolean
+          description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds a `content_encoding: gzip` message attribute to the Pub/Sub message. Default is `false`.'
+          default: false
+          example: true
+    amazon_sns_input_payload:
+      title: Amazon SNS Channel Payload
+      required:
+      - trigger_types
+      - topic
+      - role_arn
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human-readable description of the Amazon SNS channel.
+          example: Production SNS channel for Events notifications
+        trigger_types:
+          $ref: '#/components/schemas/trigger_types'
+        topic:
+          type: string
+          description: The Amazon SNS topic ARN that Nylas sends notifications to. Must start with `arn:aws:sns:`.
+          example: arn:aws:sns:us-east-1:123456789012:my-topic
+        role_arn:
+          type: string
+          description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic. Must match `arn:aws:iam::<account-id>:role/<role-name>`.
+          example: arn:aws:iam::123456789012:role/nylas-sns-role
+        notification_email_addresses:
+          type: array
+          items:
+            type: string
+          description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+          example:
+          - jane@example.com
+          - joe@example.com
+        compressed_delivery:
+          type: boolean
+          description: 'If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them. Nylas adds a `content_encoding: gzip+base64` message attribute to the SNS message. To decode, base64-decode the message body, then gzip-decompress. Default is `false`.'
+          default: false
+          example: true
+  responses:
+    create_400:
+      description: Destination not created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70005'
+                  message:
+                    type: string
+                    description: A human-readable message with details about the error.
+                    example: 'unable.verify.webhook_url : status is not ok, got 404'
+              request_id:
+                type: string
+                description: The ID of the request.
+    send_test_event_200:
+      description: Test event sent
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                description: Indicates if the test event succeeded or failed.
+                example: success
+              request_id:
+                type: string
+                description: The ID for each request.
+    delete_400:
+      description: Notification channel not deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'destination.id.not.found : record not found'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    update_200:
+      description: Destination Updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the webhook destination.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the webhook destination.
+                    example: Production webhook destination
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  webhook_url:
+                    type: string
+                    description: The URL to send webhooks to.
+                    example: https://example.com/webhooks
+                  status:
+                    type: string
+                    description: The status of the new destination.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                      details.'
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                    example: false
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the webhook destination was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the webhook destination was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The ID for each request.
+    rotate_secret_200:
+      description: Webhook Secret Updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the webhook destination.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the webhook destination.
+                    example: Production webhook destination
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  webhook_url:
+                    type: string
+                    description: The URL to send webhooks to.
+                    example: https://example.com/webhooks
+                  webhook_secret:
+                    type: string
+                    description: A secret value used to encode the `x-nylas-signature` header on webhook requests.
+                    example: 41dD3-nXTUfebYuk81Gr
+                  status:
+                    type: string
+                    description: The status of the new destination.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                      details.'
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+              request_id:
+                type: string
+                description: The request ID for each request.
+    get_mock_payload_200:
+      description: Webhook Payload Returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: This object is an example payload that Nylas sends to your webhook destination
+              request_id:
+                type: string
+                description: The ID for each request.
+    create_200:
+      description: Webhook Destination Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the webhook destination.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the webhook destination.
+                    example: Production webhook destination
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  webhook_url:
+                    type: string
+                    description: The URL to send webhooks to.
+                    example: https://example.com/webhooks
+                  webhook_secret:
+                    type: string
+                    description: A secret value used to encode the `x-nylas-signature` header on webhook requests.
+                    example: 41dD3-nXTUfebYuk81Gr
+                  status:
+                    type: string
+                    description: The status of the new destination. This will always be "active" if Nylas successfully created the destination. If you need to pause the destination, use the [Update webhook destination](#put-/v3/webhooks/-id-) method to change the status to `pause`.
+                    enum:
+                    - active
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                      details.'
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                    example: false
+              request_id:
+                type: string
+                description: The request ID for each request.
+    get_by_id_200:
+      description: Destinations Returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the webhook destination.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the webhook destination.
+                    example: Production webhook destination
+                  trigger_types:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                      - calendar.created
+                      - calendar.updated
+                      - calendar.deleted
+                      - event.created
+                      - event.updated
+                      - event.deleted
+                      - grant.created
+                      - grant.updated
+                      - grant.deleted
+                      - grant.expired
+                      - message.send_success
+                      - message.send_failed
+                      - message.bounce_detected
+                      - message.created
+                      - message.updated
+                      - contact.updated
+                      - contact.deleted
+                      - folder.created
+                      - folder.updated
+                      - folder.deleted
+                      - message.opened
+                      - message.link_clicked
+                      - thread.replied
+                    description: 'The event that triggers the webhook notification. See the
+
+                      [notification schemas](/docs/reference/notifications/) for details about
+
+                      each trigger type.
+
+
+                      See the [Grants](/docs/reference/api/manage-grants/),
+
+                      [Calendar](/docs/reference/api/calendar/), [Events](/docs/reference/api/events/), and
+
+                      [Messages](/docs/reference/api/messages/) references for information on how to trigger
+
+                      each event type.'
+                  webhook_url:
+                    type: string
+                    description: The URL to send webhooks to.
+                    example: https://example.com/webhooks
+                  status:
+                    type: string
+                    description: The status of the new destination.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                      details.'
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the webhook destination was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the webhook destination was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The ID for each request.
+    get_200:
+      description: Destinations Returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: A unique identifier for the webhook destination.
+                      example: UMWjAjMeWQ4D8gYF2moonK4486
+                    description:
+                      type: string
+                      description: A human-readable description of the webhook destination.
+                      example: Production webhook destination
+                    trigger_types:
+                      $ref: '#/components/schemas/trigger_types'
+                    webhook_url:
+                      type: string
+                      description: The URL to send webhooks to.
+                      example: https://example.com/webhooks
+                    status:
+                      type: string
+                      description: The status of the new destination.
+                      enum:
+                      - active
+                      - pause
+                      - failing
+                      - failed
+                    notification_email_addresses:
+                      type: array
+                      items:
+                        type: string
+                      description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                        [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                        details.'
+                      example:
+                      - jane@example.com
+                      - joe@example.com
+                    compressed_delivery:
+                      type: boolean
+                      description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                      example: false
+              request_id:
+                type: string
+                description: The ID for each request.
+    update_400:
+      description: Unable to update Pub/Sub channel
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'destination.id.not.found : record not found'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    delete_200:
+      description: Destination Deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - success
+              request_id:
+                type: string
+                description: The ID for each request.
+    get_400:
+      description: Destination not returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70001'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: application_id.required
+              request_id:
+                type: string
+                description: The ID for each request.
+    update_pubsub_400:
+      description: Pub/Sub channel not updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'invalid.input.format : topic is required"'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    create_pubsub_200:
+      description: Pub/Sub channel created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Pub/Sub notification channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Pub/Sub notification channel.
+                    example: Production Pub/Sub channel for Grant notifications
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Google Pub/Sub topic that Nylas sends notifications to.
+                    example: projects/your-project-id/topics/your-topic-id
+                  status:
+                    type: string
+                    description: The status of the Pub/Sub channel. When you first create a new channel, Nylas sets it to "active".
+                    enum:
+                    - active
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Pub/Sub channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                    example: false
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    update_pubsub_200:
+      description: Pub/Sub channel updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Pub/Sub channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Pub/Sub channel.
+                    example: Production Pub/Sub channel
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Google Pub/Sub topic that Nylas sends notifications to.
+                    example: projects/your-project-id/topics/your-topic-id
+                  status:
+                    type: string
+                    description: The deliverability status of the Pub/Sub channel.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Pub/Sub channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                    example: false
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the Pub/Sub channel was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the Pub/Sub channel was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    get_pubsub_400:
+      description: Unable to get Pub/Sub channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70001'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    get_pubsub_200:
+      description: Get Pub/Sub channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: A unique identifier for the Pub/Sub notification channel.
+                      example: UMWjAjMeWQ4D8gYF2moonK4486
+                    description:
+                      type: string
+                      description: A human-readable description of the Pub/Sub notification channel.
+                      example: Production Pub/Sub channel for Email notifications
+                    trigger_types:
+                      $ref: '#/components/schemas/trigger_types'
+                    topic:
+                      type: string
+                      description: The Google Pub/Sub topic that Nylas sends notifications to.
+                      example: projects/your-project-id/topics/your-topic-id
+                    status:
+                      type: string
+                      description: The status of the new destination.
+                      enum:
+                      - active
+                      - paused
+                      - failing
+                      - failed
+                    notification_email_addresses:
+                      type: array
+                      items:
+                        type: string
+                      description: The email addresses that Nylas notifies if delivery to the Pub/Sub channel fails.
+                      example:
+                      - jane@example.com
+                      - joe@example.com
+                    compressed_delivery:
+                      type: boolean
+                      description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                      example: false
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    create_pubsub_400:
+      description: Unable to create Pub/Sub channel
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70005'
+                  message:
+                    type: string
+                    description: A human-readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    get_pubsub_by_id_200:
+      description: Get specific Pub/Sub channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Pub/Sub channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Pub/Sub channel.
+                    example: Production Pub/Sub for Event updates
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Google Pub/Sub topic that Nylas sends notifications to.
+                    example: projects/your-project-id/topics/your-topic-id
+                  status:
+                    type: string
+                    description: The deliverability status of the Pub/Sub channel.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Pub/Sub channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                    example: false
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the Pub/Sub channel was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the Pub/Sub channel was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    create_sns_400:
+      description: Unable to create Amazon SNS channel
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70005'
+                  message:
+                    type: string
+                    description: A human-readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    get_sns_by_id_200:
+      description: Get specific Amazon SNS channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Amazon SNS channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Amazon SNS channel.
+                    example: Production SNS channel for Event updates
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Amazon SNS topic ARN that Nylas sends notifications to.
+                    example: arn:aws:sns:us-east-1:123456789012:my-topic
+                  role_arn:
+                    type: string
+                    description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                    example: arn:aws:iam::123456789012:role/nylas-sns-role
+                  status:
+                    type: string
+                    description: The deliverability status of the Amazon SNS channel.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them.
+                    example: false
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the Amazon SNS channel was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the Amazon SNS channel was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    create_sns_200:
+      description: Amazon SNS channel created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Amazon SNS notification channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Amazon SNS notification channel.
+                    example: Production SNS channel for Grant notifications
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Amazon SNS topic ARN that Nylas sends notifications to.
+                    example: arn:aws:sns:us-east-1:123456789012:my-topic
+                  role_arn:
+                    type: string
+                    description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                    example: arn:aws:iam::123456789012:role/nylas-sns-role
+                  status:
+                    type: string
+                    description: The status of the Amazon SNS channel. When you first create a new channel, Nylas sets it to "active".
+                    enum:
+                    - active
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them.
+                    example: false
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    update_sns_200:
+      description: Amazon SNS channel updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Amazon SNS channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Amazon SNS channel.
+                    example: Production SNS channel
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Amazon SNS topic ARN that Nylas sends notifications to.
+                    example: arn:aws:sns:us-east-1:123456789012:my-topic
+                  role_arn:
+                    type: string
+                    description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                    example: arn:aws:iam::123456789012:role/nylas-sns-role
+                  status:
+                    type: string
+                    description: The deliverability status of the Amazon SNS channel.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them.
+                    example: false
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the Amazon SNS channel was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the Amazon SNS channel was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    get_sns_200:
+      description: Get Amazon SNS channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: A unique identifier for the Amazon SNS notification channel.
+                      example: UMWjAjMeWQ4D8gYF2moonK4486
+                    description:
+                      type: string
+                      description: A human-readable description of the Amazon SNS notification channel.
+                      example: Production SNS channel for Email notifications
+                    trigger_types:
+                      $ref: '#/components/schemas/trigger_types'
+                    topic:
+                      type: string
+                      description: The Amazon SNS topic ARN that Nylas sends notifications to.
+                      example: arn:aws:sns:us-east-1:123456789012:my-topic
+                    role_arn:
+                      type: string
+                      description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                      example: arn:aws:iam::123456789012:role/nylas-sns-role
+                    status:
+                      type: string
+                      description: The status of the Amazon SNS channel.
+                      enum:
+                      - active
+                      - paused
+                      - failing
+                      - failed
+                    notification_email_addresses:
+                      type: array
+                      items:
+                        type: string
+                      description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+                      example:
+                      - jane@example.com
+                      - joe@example.com
+                    compressed_delivery:
+                      type: boolean
+                      description: If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them.
+                      example: false
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    get_sns_400:
+      description: Unable to get Amazon SNS channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70001'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    update_sns_400:
+      description: Amazon SNS channel not updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.

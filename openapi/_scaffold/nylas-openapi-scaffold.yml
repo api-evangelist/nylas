@@ -1,3 +1,13 @@
+# QUARANTINED — NOT A NYLAS CONTRACT.
+# API Evangelist derived this document by reading https://developer.nylas.com/docs/.
+# Nylas does not publish it. It is retained for audit only and is excluded from
+# scoring: build_provenance.py skips openapi/_scaffold/ entirely.
+# Superseded 2026-08-21 by the provider's own contract, harvested verbatim to
+# openapi/_original/nylas-api-openapi.yml (208 operations against this file's 22).
+# See api-evangelist/nylas#1.
+x-generated-from: documentation
+x-authored-by: API Evangelist
+x-superseded-by: openapi/_original/nylas-api-openapi.yml
 openapi: 3.1.0
 info:
   title: Nylas API (v3)
