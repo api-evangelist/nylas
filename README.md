@@ -42,7 +42,7 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Nylas connects your application to every email inbox and calendar in the world. The Nylas v3 platform provides REST APIs for email, calendar, contacts, scheduling, authentication, and administration with official SDKs for Node.js, Python, Ruby, and Kotlin/Java.
+Nylas connects your application to every email inbox and calendar in the world. The Nylas v3 platform provides REST APIs for email, calendar, contacts, scheduling, meeting notetaking, authentication, and administration across Google, Microsoft, Exchange, iCloud, Yahoo and any IMAP provider. Official SDKs cover Node.js, Python, Ruby and Kotlin/Java, alongside a CLI, a hosted MCP server, and Agent Accounts that provision a Nylas-hosted mailbox and calendar for autonomous agents without requiring an OAuth flow.
 
 **APIs.json:** [https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/apis.yml)
 
@@ -55,7 +55,7 @@ Nylas connects your application to every email inbox and calendar in the world. 
 ## Tags
 
 - Calendar
-- Communication
+- Communications
 - Contacts
 - Email
 - Messaging
@@ -70,7 +70,7 @@ Nylas connects your application to every email inbox and calendar in the world. 
 
 ### Nylas API
 
-The Nylas v3 REST API provides programmatic access to email, calendar, contacts, scheduling, authentication, and administration features across every major email and calendar provider.
+The Nylas v3 REST API provides programmatic access to email, calendar, contacts, meeting notetaking, scheduling, authentication and administration across Google, Microsoft, Exchange, iCloud, Yahoo and any IMAP provider. Resources are scoped to a grant, which represents one authenticated mailbox and calendar. The entries below are facets of this single contract.
 
 - **Human URL:** [https://developer.nylas.com/](https://developer.nylas.com/)
 - **Base URL:** `https://api.us.nylas.com`
@@ -78,7 +78,7 @@ The Nylas v3 REST API provides programmatic access to email, calendar, contacts,
 #### Tags
 
 - Calendar
-- Communication
+- Communications
 - Contacts
 - Email
 - Messaging
@@ -86,35 +86,278 @@ The Nylas v3 REST API provides programmatic access to email, calendar, contacts,
 
 #### Properties
 
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
 - [Documentation](https://developer.nylas.com/docs/)
 - [API Reference](https://developer.nylas.com/docs/reference/api/)
 - [Getting Started](https://developer.nylas.com/docs/v3/getting-started/)
 - [Authentication](https://developer.nylas.com/docs/v3/auth/)
 - [Rate Limits](https://developer.nylas.com/docs/dev-guide/platform/rate-limits/)
-- [Errors](https://developer.nylas.com/docs/api/errors/)
+- [Error Codes](https://developer.nylas.com/docs/api/errors/)
 - [Pricing](https://www.nylas.com/pricing/)
 - [Sign Up](https://dashboard-v3.nylas.com/register)
 - [Status Page](https://status.nylas.com/)
-- [SDK](https://github.com/nylas/nylas-nodejs)
-- [SDK](https://github.com/nylas/nylas-python)
-- [SDK](https://github.com/nylas/nylas-ruby)
-- [SDK](https://github.com/nylas/nylas-java)
-- [Postman Collection](collections/nylas.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/nylas.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Node.js SDK](https://github.com/nylas/nylas-nodejs)
+- [Python SDK](https://github.com/nylas/nylas-python)
+- [Ruby SDK](https://github.com/nylas/nylas-ruby)
+- [Java/Kotlin SDK](https://github.com/nylas/nylas-java)
+
+### Nylas Admin API
+
+Application-level administration: Nylas applications, API keys, custom domains, connectors and connector credentials, workspaces, and the rules, policies and lists that govern them.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/applications/](https://developer.nylas.com/docs/reference/api/applications/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Admin
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Auth API
+
+Authentication. Hosted OAuth 2.1 authorization and token exchange, custom (non-OAuth) grant creation for Agent Accounts, token refresh and revocation, and ID token validation.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/authentication-apis/](https://developer.nylas.com/docs/reference/api/authentication-apis/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Authentication
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Calendars API
+
+Calendars. List and manage a grant's calendars, query free/busy availability across participants, and read room and resource calendars.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/calendar/](https://developer.nylas.com/docs/reference/api/calendar/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Calendars
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Contacts API
+
+Contacts. Read, create, update and delete a grant's contacts and contact groups.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/contacts/](https://developer.nylas.com/docs/reference/api/contacts/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Contacts
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Drafts API
+
+Drafts. Compose, update, send and delete drafts, manage attachments, and generate draft bodies and replies with Smart Compose.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/drafts/](https://developer.nylas.com/docs/reference/api/drafts/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Drafts
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Events API
+
+Events. Create, update, delete and list calendar events, including recurring events, group events and RSVP handling.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/events/](https://developer.nylas.com/docs/reference/api/events/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Event
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Grants API
+
+Grants. A grant represents one authenticated mailbox and calendar. List, retrieve and delete grants, and inspect grant state and scopes.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/manage-grants/](https://developer.nylas.com/docs/reference/api/manage-grants/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Grants
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Messages API
+
+Messages. List, search, read, update and delete email messages. Send immediately, schedule a send and cancel a scheduled send, with folders, signatures and attachments alongside.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/messages/](https://developer.nylas.com/docs/reference/api/messages/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Message
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Scheduling API
+
+Scheduler. Booking configurations, scheduling sessions, availability lookups and booking lifecycle management for hosted and component-based booking flows.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/configurations/](https://developer.nylas.com/docs/reference/api/configurations/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Scheduling
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Threads API
+
+Threads. List, search, read and update email threads, and manage thread-level folders and state.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/threads/](https://developer.nylas.com/docs/reference/api/threads/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Threads
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+
+### Nylas Notifications API
+
+Change notifications. Nylas pushes events for messages, threads, calendars, events, grants and Notetaker over three interchangeable transports carrying the same payloads: HTTPS webhooks, Google Cloud Pub/Sub, and Amazon SNS. Covers subscription CRUD, delivery testing, mock payloads and the source IP ranges to allowlist. There is no polling requirement, and no WebSocket or SSE surface.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/notifications/](https://developer.nylas.com/docs/reference/notifications/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Webhooks
+- Notifications
+- Event
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [API Reference](https://developer.nylas.com/docs/reference/notifications/)
+- [Documentation](https://developer.nylas.com/docs/v3/notifications/)
+
+### Nylas Notetaker API
+
+Meeting notetaker. Send a notetaker to a Google Meet, Microsoft Teams or Zoom call, then retrieve the recording, transcript, summary and action items. Available grant-scoped, or standalone with no connected mailbox required.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/notetaker/](https://developer.nylas.com/docs/reference/api/notetaker/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Notetaker
+- Transcription
+- Meetings
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [API Reference](https://developer.nylas.com/docs/reference/api/notetaker/)
+- [Documentation](https://developer.nylas.com/docs/v3/notetaker/)
+
+### Nylas Templates and Workflows API
+
+Reusable email templates and automation workflows, at both application and grant scope. Define a template once and send against it, or trigger a workflow on an inbound event.
+
+- **Human URL:** [https://developer.nylas.com/docs/reference/api/application-level-templates/](https://developer.nylas.com/docs/reference/api/application-level-templates/)
+- **Base URL:** `https://api.us.nylas.com`
+
+#### Tags
+
+- Templates
+- Workflows
+- Automation
+
+#### Properties
+
+- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [API Reference](https://developer.nylas.com/docs/reference/api/application-level-templates/)
 
 ## Common Properties
 
+- [Agentic Access](agentic-access/nylas-agentic-access.yml)
+- [Trust Center](security/nylas-trust-center.yml)
+- [Vulnerability Disclosure](security/nylas-vulnerability-disclosure.yml)
+- [Domain Security](security/nylas-domain-security.yml)
+- [Authentication](authentication/nylas-authentication.yml)
 - [LinkedIn](https://www.linkedin.com/company/nylas)
 - [Website](https://www.nylas.com/)
 - [Documentation](https://developer.nylas.com/)
 - [Blog](https://www.nylas.com/blog/)
-- [Git Hub Org](https://github.com/nylas)
+- [GitHub Org](https://github.com/nylas)
 - [Terms of Service](https://www.nylas.com/legal/terms/)
 - [Privacy Policy](https://www.nylas.com/legal/privacy-policy/)
 - [Status Page](https://status.nylas.com/)
-- [L L Ms Txt](https://developer.nylas.com/llms.txt)
+- [LLMs Text](https://developer.nylas.com/llms.txt)
+- [Developer Portal](https://developer.nylas.com/)
+- [API Reference](https://developer.nylas.com/docs/reference/api/)
+- [Notifications reference](https://developer.nylas.com/docs/reference/notifications/)
+- [UI components reference](https://developer.nylas.com/docs/reference/ui/)
+- [Getting Started](https://developer.nylas.com/docs/v3/getting-started/)
+- [Node.js SDK](https://github.com/nylas/nylas-nodejs)
+- [Python SDK](https://github.com/nylas/nylas-python)
+- [Ruby SDK](https://github.com/nylas/nylas-ruby)
+- [Java/Kotlin SDK](https://github.com/nylas/nylas-java)
+- [C L I](https://cli.nylas.com/)
+- [Postman](https://developer.nylas.com/docs/v3/api-references/postman/)
+- [Postman Workspace](https://www.postman.com/trynylas/workspace/nylas-api/overview)
+- [Agent Skills](https://developer.nylas.com/.well-known/agent-skills/index.json)
+- [Support](https://developer.nylas.com/docs/support/)
+- [Change Log](https://developer.nylas.com/docs/changelogs/)
+- [Deprecation Policy](https://developer.nylas.com/docs/support/product-lifecycle/)
+- [Security](https://www.nylas.com/security/)
+- [Compliance](https://trust.nylas.com/public)
+- [Webhooks](https://developer.nylas.com/docs/v3/notifications/)
+- [Error Codes](https://developer.nylas.com/docs/api/errors/)
+- [Rate Limits](https://developer.nylas.com/docs/dev-guide/platform/rate-limits/)
+- [Idempotency](https://developer.nylas.com/docs/v3/email/idempotent-send/)
+- [Pricing](https://www.nylas.com/pricing/)
+- [Sign Up](https://dashboard-v3.nylas.com/register)
+- [Nylas MCP Server](https://mcp.us.nylas.com)
+- [Nylas MCP Server manifest](mcp/nylas-mcp.yml)
+- [Vocabulary](vocabulary/nylas-vocabulary.yml)
+- [Conformance](conformance/nylas-conformance.yml)
+- [Agent Card](a2a/nylas-a2a.yml)
+- [Security.txt](https://developer.nylas.com/.well-known/security.txt)
+- [Content Signal](https://developer.nylas.com/robots.txt)
+- [API Catalog](https://developer.nylas.com/.well-known/api-catalog)
+- [Well-Known](well-known/nylas-well-known.yml)
 
 ## Maintainers
 
-**FN:** Kin Lane
+**FN:** Kin Lane  
 **Email:** kin@apievangelist.com
