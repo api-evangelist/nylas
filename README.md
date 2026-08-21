@@ -114,7 +114,7 @@ Application-level administration: Nylas applications, API keys, custom domains, 
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-admin-api-openapi.yml)
 
 ### Nylas Auth API
 
@@ -129,7 +129,7 @@ Authentication. Hosted OAuth 2.1 authorization and token exchange, custom (non-O
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-auth-api-openapi.yml)
 
 ### Nylas Calendars API
 
@@ -144,7 +144,7 @@ Calendars. List and manage a grant's calendars, query free/busy availability acr
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-calendars-api-openapi.yml)
 
 ### Nylas Contacts API
 
@@ -159,7 +159,7 @@ Contacts. Read, create, update and delete a grant's contacts and contact groups.
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-contacts-api-openapi.yml)
 
 ### Nylas Drafts API
 
@@ -174,7 +174,7 @@ Drafts. Compose, update, send and delete drafts, manage attachments, and generat
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-drafts-api-openapi.yml)
 
 ### Nylas Events API
 
@@ -189,7 +189,7 @@ Events. Create, update, delete and list calendar events, including recurring eve
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-events-api-openapi.yml)
 
 ### Nylas Grants API
 
@@ -204,7 +204,7 @@ Grants. A grant represents one authenticated mailbox and calendar. List, retriev
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-grants-api-openapi.yml)
 
 ### Nylas Messages API
 
@@ -219,7 +219,7 @@ Messages. List, search, read, update and delete email messages. Send immediately
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-messages-api-openapi.yml)
 
 ### Nylas Scheduling API
 
@@ -234,7 +234,7 @@ Scheduler. Booking configurations, scheduling sessions, availability lookups and
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-scheduling-api-openapi.yml)
 
 ### Nylas Threads API
 
@@ -249,7 +249,7 @@ Threads. List, search, read and update email threads, and manage thread-level fo
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-threads-api-openapi.yml)
 
 ### Nylas Notifications API
 
@@ -266,7 +266,7 @@ Change notifications. Nylas pushes events for messages, threads, calendars, even
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-notifications-api-openapi.yml)
 - [API Reference](https://developer.nylas.com/docs/reference/notifications/)
 - [Documentation](https://developer.nylas.com/docs/v3/notifications/)
 
@@ -285,7 +285,7 @@ Meeting notetaker. Send a notetaker to a Google Meet, Microsoft Teams or Zoom ca
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-notetaker-api-openapi.yml)
 - [API Reference](https://developer.nylas.com/docs/reference/api/notetaker/)
 - [Documentation](https://developer.nylas.com/docs/v3/notetaker/)
 
@@ -304,7 +304,7 @@ Reusable email templates and automation workflows, at both application and grant
 
 #### Properties
 
-- [OpenAPI](https://developer.nylas.com/_spec-files/nylas-api.yaml)
+- [OpenAPI](openapi/nylas-templates-workflows-api-openapi.yml)
 - [API Reference](https://developer.nylas.com/docs/reference/api/application-level-templates/)
 
 ## Common Properties
