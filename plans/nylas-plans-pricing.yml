@@ -36,15 +36,22 @@ billing_units:
   - outgoing email message
   - Notetaker minute
 notes: >-
-  There is no per-API-request quota on any plan. The Free plan is sandbox only
-  and is not licensed for production use.
+  There is no per-API-request quota on any plan. The Free plan runs in the Nylas
+  Developer Sandbox, which carries the full platform feature set (bi-directional
+  email and calendar sync, Notetaker, Scheduler, Agent Accounts) and ships with
+  pre-configured provider connectors, so a developer can authenticate a test
+  account and exercise the API without first registering their own OAuth
+  application with Google or Microsoft. Sandbox applications use those supplied
+  connectors as-is: you cannot add your own connector or change requested scopes
+  on one.
 plans:
   - id: nylas-free
     name: Free
     type: freemium
     description: >-
-      Sandbox-only tier for building and evaluation, free indefinitely. Not for
-      production use.
+      Free indefinitely. Runs in the Nylas Developer Sandbox with the full
+      feature set and pre-configured provider connectors, so no OAuth
+      application setup is needed to start making calls.
     entries:
       - label: Monthly Base Fee
         name: base_fee
@@ -56,7 +63,7 @@ plans:
         price: '0.00'
         userMultiplied: false
       - label: Connected Accounts
-        description: Included connected accounts, sandbox environment only
+        description: Included connected accounts, in the Developer Sandbox
         name: connected_accounts
         type: quota
         metric: connected_accounts
