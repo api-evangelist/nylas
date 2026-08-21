@@ -48,8 +48,10 @@ apis:
 - aid: nylas:nylas-api
   name: Nylas API
   description: >-
-    The Nylas v3 REST API provides programmatic access to email, calendar, contacts, scheduling, authentication,
-    and administration features across every major email and calendar provider.
+    The Nylas v3 REST API provides programmatic access to email, calendar, contacts, meeting
+    notetaking, scheduling, authentication and administration across Google, Microsoft, Exchange,
+    iCloud, Yahoo and any IMAP provider. Resources are scoped to a grant, which represents one
+    authenticated mailbox and calendar. The entries below are facets of this single contract.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -101,7 +103,9 @@ apis:
     url: https://github.com/nylas/nylas-java
 - aid: nylas:nylas-admin-api
   name: Nylas Admin API
-  description: The Admin API from Nylas — 3 operation(s) for admin.
+  description: >-
+    Application-level administration: Nylas applications, API keys, custom domains, connectors and
+    connector credentials, workspaces, and the rules, policies and lists that govern them.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -111,7 +115,9 @@ apis:
     url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-auth-api
   name: Nylas Auth API
-  description: The Auth API from Nylas — 3 operation(s) for auth.
+  description: >-
+    Authentication. Hosted OAuth 2.1 authorization and token exchange, custom (non-OAuth) grant
+    creation for Agent Accounts, token refresh and revocation, and ID token validation.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -123,7 +129,9 @@ apis:
     url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-calendars-api
   name: Nylas Calendars API
-  description: The Calendars API from Nylas — 1 operation(s) for calendars.
+  description: >-
+    Calendars. List and manage a grant's calendars, query free/busy availability across
+    participants, and read room and resource calendars.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -133,7 +141,7 @@ apis:
     url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-contacts-api
   name: Nylas Contacts API
-  description: The Contacts API from Nylas — 1 operation(s) for contacts.
+  description: Contacts. Read, create, update and delete a grant's contacts and contact groups.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -143,7 +151,9 @@ apis:
     url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-drafts-api
   name: Nylas Drafts API
-  description: The Drafts API from Nylas — 1 operation(s) for drafts.
+  description: >-
+    Drafts. Compose, update, send and delete drafts, manage attachments, and generate draft bodies
+    and replies with Smart Compose.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -153,7 +163,9 @@ apis:
     url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-events-api
   name: Nylas Events API
-  description: The Events API from Nylas — 1 operation(s) for events.
+  description: >-
+    Events. Create, update, delete and list calendar events, including recurring events, group
+    events and RSVP handling.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -165,7 +177,9 @@ apis:
     url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-grants-api
   name: Nylas Grants API
-  description: The Grants API from Nylas — 2 operation(s) for grants.
+  description: >-
+    Grants. A grant represents one authenticated mailbox and calendar. List, retrieve and delete
+    grants, and inspect grant state and scopes.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -175,7 +189,9 @@ apis:
     url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-messages-api
   name: Nylas Messages API
-  description: The Messages API from Nylas — 1 operation(s) for messages.
+  description: >-
+    Messages. List, search, read, update and delete email messages. Send immediately, schedule a
+    send and cancel a scheduled send, with folders, signatures and attachments alongside.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -187,7 +203,9 @@ apis:
     url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-scheduling-api
   name: Nylas Scheduling API
-  description: The Scheduling API from Nylas — 3 operation(s) for scheduling.
+  description: >-
+    Scheduler. Booking configurations, scheduling sessions, availability lookups and booking
+    lifecycle management for hosted and component-based booking flows.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -197,7 +215,7 @@ apis:
     url: https://developer.nylas.com/_spec-files/nylas-api.yaml
 - aid: nylas:nylas-threads-api
   name: Nylas Threads API
-  description: The Threads API from Nylas — 1 operation(s) for threads.
+  description: Threads. List, search, read and update email threads, and manage thread-level folders and state.
   humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
@@ -256,6 +274,8 @@ common:
     url: https://cli.nylas.com/
   - type: Postman
     url: https://developer.nylas.com/docs/v3/api-references/postman/
+  - type: PostmanWorkspace
+    url: https://www.postman.com/trynylas/workspace/nylas-api/overview
   - type: AgentSkills
     url: https://developer.nylas.com/.well-known/agent-skills/index.json
   - type: Support
