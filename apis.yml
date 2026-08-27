@@ -45,67 +45,11 @@ url: >-
   https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/apis.yml
 specificationVersion: '0.23'
 apis:
-- aid: nylas:nylas-api
-  name: Nylas API
-  description: >-
-    The Nylas v3 REST API provides programmatic access to email, calendar, contacts, meeting
-    notetaking, scheduling, authentication and administration across Google, Microsoft, Exchange,
-    iCloud, Yahoo and any IMAP provider. Resources are scoped to a grant, which represents one
-    authenticated mailbox and calendar. The entries below are facets of this single contract.
-  humanURL: https://developer.nylas.com/
-  baseURL: https://api.us.nylas.com
-  tags:
-  - Calendar
-  - Communications
-  - Contacts
-  - Email
-  - Messaging
-  - Scheduling
-  tags_raw:
-  - Calendar
-  - Communication
-  - Contacts
-  - Email
-  - Messaging
-  - Scheduling
-  properties:
-  - type: OpenAPI
-    url: https://developer.nylas.com/_spec-files/nylas-api.yaml
-  - type: Documentation
-    url: https://developer.nylas.com/docs/
-  - type: APIReference
-    url: https://developer.nylas.com/docs/reference/api/
-  - type: GettingStarted
-    url: https://developer.nylas.com/docs/v3/getting-started/
-  - type: Authentication
-    url: https://developer.nylas.com/docs/v3/auth/
-  - type: RateLimits
-    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
-  - type: ErrorCodes
-    url: https://developer.nylas.com/docs/api/errors/
-  - type: Pricing
-    url: https://www.nylas.com/pricing/
-  - type: Signup
-    url: https://dashboard-v3.nylas.com/register
-  - type: StatusPage
-    url: https://status.nylas.com/
-  - type: SDKs
-    name: Node.js SDK
-    url: https://github.com/nylas/nylas-nodejs
-  - type: SDKs
-    name: Python SDK
-    url: https://github.com/nylas/nylas-python
-  - type: SDKs
-    name: Ruby SDK
-    url: https://github.com/nylas/nylas-ruby
-  - type: SDKs
-    name: Java/Kotlin SDK
-    url: https://github.com/nylas/nylas-java
 - aid: nylas:nylas-admin-api
   name: Nylas Admin API
   description: >-
-    Application-level administration: Nylas applications, API keys, custom domains, connectors and
-    connector credentials, workspaces, and the rules, policies and lists that govern them.
+    Application-level administration: Nylas applications, API keys, custom domains, connectors and connector
+    credentials, workspaces, and the rules, policies and lists that govern them.
   humanURL: https://developer.nylas.com/docs/reference/api/applications/
   baseURL: https://api.us.nylas.com
   tags:
@@ -116,8 +60,8 @@ apis:
 - aid: nylas:nylas-auth-api
   name: Nylas Auth API
   description: >-
-    Authentication. Hosted OAuth 2.1 authorization and token exchange, custom (non-OAuth) grant
-    creation for Agent Accounts, token refresh and revocation, and ID token validation.
+    Authentication. Hosted OAuth 2.1 authorization and token exchange, custom (non-OAuth) grant creation
+    for Agent Accounts, token refresh and revocation, and ID token validation.
   humanURL: https://developer.nylas.com/docs/reference/api/authentication-apis/
   baseURL: https://api.us.nylas.com
   tags:
@@ -130,8 +74,8 @@ apis:
 - aid: nylas:nylas-calendars-api
   name: Nylas Calendars API
   description: >-
-    Calendars. List and manage a grant's calendars, query free/busy availability across
-    participants, and read room and resource calendars.
+    Calendars. List and manage a grant's calendars, query free/busy availability across participants,
+    and read room and resource calendars.
   humanURL: https://developer.nylas.com/docs/reference/api/calendar/
   baseURL: https://api.us.nylas.com
   tags:
@@ -152,8 +96,8 @@ apis:
 - aid: nylas:nylas-drafts-api
   name: Nylas Drafts API
   description: >-
-    Drafts. Compose, update, send and delete drafts, manage attachments, and generate draft bodies
-    and replies with Smart Compose.
+    Drafts. Compose, update, send and delete drafts, manage attachments, and generate draft bodies and
+    replies with Smart Compose.
   humanURL: https://developer.nylas.com/docs/reference/api/drafts/
   baseURL: https://api.us.nylas.com
   tags:
@@ -164,8 +108,8 @@ apis:
 - aid: nylas:nylas-events-api
   name: Nylas Events API
   description: >-
-    Events. Create, update, delete and list calendar events, including recurring events, group
-    events and RSVP handling.
+    Events. Create, update, delete and list calendar events, including recurring events, group events
+    and RSVP handling.
   humanURL: https://developer.nylas.com/docs/reference/api/events/
   baseURL: https://api.us.nylas.com
   tags:
@@ -178,8 +122,8 @@ apis:
 - aid: nylas:nylas-grants-api
   name: Nylas Grants API
   description: >-
-    Grants. A grant represents one authenticated mailbox and calendar. List, retrieve and delete
-    grants, and inspect grant state and scopes.
+    Grants. A grant represents one authenticated mailbox and calendar. List, retrieve and delete grants,
+    and inspect grant state and scopes.
   humanURL: https://developer.nylas.com/docs/reference/api/manage-grants/
   baseURL: https://api.us.nylas.com
   tags:
@@ -190,8 +134,8 @@ apis:
 - aid: nylas:nylas-messages-api
   name: Nylas Messages API
   description: >-
-    Messages. List, search, read, update and delete email messages. Send immediately, schedule a
-    send and cancel a scheduled send, with folders, signatures and attachments alongside.
+    Messages. List, search, read, update and delete email messages. Send immediately, schedule a send
+    and cancel a scheduled send, with folders, signatures and attachments alongside.
   humanURL: https://developer.nylas.com/docs/reference/api/messages/
   baseURL: https://api.us.nylas.com
   tags:
@@ -204,8 +148,8 @@ apis:
 - aid: nylas:nylas-scheduling-api
   name: Nylas Scheduling API
   description: >-
-    Scheduler. Booking configurations, scheduling sessions, availability lookups and booking
-    lifecycle management for hosted and component-based booking flows.
+    Scheduler. Booking configurations, scheduling sessions, availability lookups and booking lifecycle
+    management for hosted and component-based booking flows.
   humanURL: https://developer.nylas.com/docs/reference/api/configurations/
   baseURL: https://api.us.nylas.com
   tags:
@@ -215,7 +159,8 @@ apis:
     url: openapi/nylas-scheduling-api-openapi.yml
 - aid: nylas:nylas-threads-api
   name: Nylas Threads API
-  description: Threads. List, search, read and update email threads, and manage thread-level folders and state.
+  description: >-
+    Threads. List, search, read and update email threads, and manage thread-level folders and state.
   humanURL: https://developer.nylas.com/docs/reference/api/threads/
   baseURL: https://api.us.nylas.com
   tags:
@@ -226,11 +171,10 @@ apis:
 - aid: nylas:nylas-notifications-api
   name: Nylas Notifications API
   description: >-
-    Change notifications. Nylas pushes events for messages, threads, calendars, events, grants and
-    Notetaker over three interchangeable transports carrying the same payloads: HTTPS webhooks,
-    Google Cloud Pub/Sub, and Amazon SNS. Covers subscription CRUD, delivery testing, mock payloads
-    and the source IP ranges to allowlist. There is no polling requirement, and no WebSocket or SSE
-    surface.
+    Change notifications. Nylas pushes events for messages, threads, calendars, events, grants and Notetaker
+    over three interchangeable transports carrying the same payloads: HTTPS webhooks, Google Cloud Pub/Sub,
+    and Amazon SNS. Covers subscription CRUD, delivery testing, mock payloads and the source IP ranges
+    to allowlist. There is no polling requirement, and no WebSocket or SSE surface.
   humanURL: https://developer.nylas.com/docs/reference/notifications/
   baseURL: https://api.us.nylas.com
   tags:
@@ -251,9 +195,9 @@ apis:
 - aid: nylas:nylas-notetaker-api
   name: Nylas Notetaker API
   description: >-
-    Meeting notetaker. Send a notetaker to a Google Meet, Microsoft Teams or Zoom call, then
-    retrieve the recording, transcript, summary and action items. Available grant-scoped, or
-    standalone with no connected mailbox required.
+    Meeting notetaker. Send a notetaker to a Google Meet, Microsoft Teams or Zoom call, then retrieve
+    the recording, transcript, summary and action items. Available grant-scoped, or standalone with no
+    connected mailbox required.
   humanURL: https://developer.nylas.com/docs/reference/api/notetaker/
   baseURL: https://api.us.nylas.com
   tags:
@@ -267,20 +211,43 @@ apis:
     url: https://developer.nylas.com/docs/reference/api/notetaker/
   - type: Documentation
     url: https://developer.nylas.com/docs/v3/notetaker/
-- aid: nylas:nylas-templates-workflows-api
+- aid: nylas:nylas-templates-and-workflows-api
   name: Nylas Templates and Workflows API
   description: >-
-    Reusable email templates and automation workflows, at both application and grant scope. Define a
-    template once and send against it, or trigger a workflow on an inbound event.
-  humanURL: https://developer.nylas.com/docs/reference/api/application-level-templates/
+    The Templates and Workflows API from Nylas — 12 operation(s) for templates and workflows.
+  humanURL: https://developer.nylas.com/
   baseURL: https://api.us.nylas.com
   tags:
-  - Templates
-  - Workflows
-  - Automation
+  - Templates and Workflows
   properties:
   - type: OpenAPI
-    url: openapi/nylas-templates-workflows-api-openapi.yml
+    url: openapi/nylas-templates-and-workflows-api-openapi.yml
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
   - type: APIReference
     url: https://developer.nylas.com/docs/reference/api/application-level-templates/
 common:
