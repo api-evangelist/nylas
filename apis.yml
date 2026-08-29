@@ -263,6 +263,9 @@ apis:
   - type: APIReference
     url: https://developer.nylas.com/docs/reference/api/application-level-templates/
 common:
+  - type: CapabilityMap
+    url: capabilities/nylas-capability-edges.yml
+    name: Nylas Business Capability Map
   - type: AgenticAccess
     url: agentic-access/nylas-agentic-access.yml
   - type: TrustCenter

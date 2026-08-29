@@ -1,0 +1,27 @@
+slug: nylas
+provider: Nylas
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Telecommunications
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Notifications
+  spec_file: nylas-notifications-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.75
+  evidence: POST /v3/webhooks post-webhook-destinations 'Create a webhook destination'; 'Rotate a webhook
+    secret'; 'Send test event'; POST /v3/channels/pubsub 'Create a Pub/Sub channel'
+  reason: Operations manage the lifecycle of outbound webhook destinations, secrets, trigger types and
+    Pub/Sub event channels for an application — this is exactly outbound webhook/event subscription management
+    on a developer platform, not a business notification process. Mapped at moderate confidence since
+    it is developer-platform plumbing that happens to have a named capability.
