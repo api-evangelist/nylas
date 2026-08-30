@@ -190,8 +190,8 @@ apis:
   humanURL: https://developer.nylas.com/docs/reference/notifications/
   baseURL: https://api.us.nylas.com
   tags:
-  - Webhooks
-  - Notifications
+  - Webhook
+  - Notification
   - Event
   tags_raw:
   - Webhooks
