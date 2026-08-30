@@ -1,0 +1,1622 @@
+openapi: 3.2.0
+info:
+  title: Nylas Templates and Workflows API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: "The Nylas API is designed using the [REST](https://en.wikipedia.org/wiki/Representational_State_Transfer) ideology to provide simple and predictable URIs to access and modify objects. Requests support [standard HTTP methods](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html) like `GET`, `PUT`, `POST`, and `DELETE`, and [standard status codes](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). Response bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n\nYou can use the [Nylas Postman collection](https://www.postman.com/trynylas/workspace/nylas-api/overview) to quickly start using the Nylas APIs. For more information, check out the [Nylas Postman collection documentation](/docs/v3/api-references/postman/).\n\n[<img src=\"https://run.pstmn.io/button.svg\" alt=\"Run In Postman\" style=\"width: 128px; height: 32px;\">](https://god.gw.postman.com/run-collection/21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a%26entityType%3Dcollection%26workspaceId%3De36cf1fc-a749-494d-9c8c-f3c28f18c342#?env%5Bv3%20Environment%5D=W3sia2V5IjoiYmFzZVVybCIsInZhbHVlIjoiaHR0cHM6Ly9hcGkudXMubnlsYXMuY29tIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik55bGFzIEFQSSBiYXNlIFVSTC4gVXNlIGh0dHBzOi8vYXBpLmV1Lm55bGFzLmNvbSBmb3IgdGhlIEVVIHJlZ2lvbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImJlYXJlclRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIEFQSSBrZXkgZnJvbSB0aGUgRGFzaGJvYXJkIChodHRwczovL2Rhc2hib2FyZC12My5ueWxhcy5jb20pLiBVc2VkIGZvciBhbGwgYXV0aGVudGljYXRlZCByZXF1ZXN0cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImdyYW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiVGhlIGdyYW50IElEIHJlcHJlc2VudGluZyBhbiBlbmQgdXNlcidzIGNvbm5lY3RlZCBhY2NvdW50LiBSZXF1aXJlZCBmb3IgRUNDICYgU2NoZWR1bGVyIGNvbGxlY3Rpb25zLiBGaW5kIHRoaXMgaW4gdGhlIERhc2hib2FyZCB1bmRlciBHcmFudHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhY2Nlc3NfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJzZWNyZXQiLCJkZXNjcmlwdGlvbiI6IkEgdXNlci1sZXZlbCBhY2Nlc3MgdG9rZW4gcmV0dXJuZWQgZnJvbSB0aGUgT0F1dGggZmxvdy4gQWx0ZXJuYXRpdmUgdG8gdXNpbmcgQVBJIGtleSArIGdyYW50X2lkIGZvciBwZXItdXNlciBhdXRoLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBwbGljYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIGFwcGxpY2F0aW9uIElELiBBdXRvLXNldCBieSB0aGUgJ1ZlcmlmeSBBUEkga2V5JyByZXF1ZXN0IGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoicHJvdmlkZXIiLCJ2YWx1ZSI6Imdvb2dsZSIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRoIHByb3ZpZGVyIGZvciBjb25uZWN0b3Igb3BlcmF0aW9uczogZ29vZ2xlLCBtaWNyb3NvZnQsIGltYXAsIG9yIHZpcnR1YWwtY2FsZW5kYXIuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJjYWxsYmFja19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlJlZGlyZWN0IFVSSSBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgY2FsbGJhY2sgVVJJIGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY3JlZGVudGlhbF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbm5lY3RvciBjcmVkZW50aWFsIElEIGZvciBzZXJ2aWNlIGFjY291bnRzIG9yIGFwcCBwYXNzd29yZHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3ZWJob29rX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiV2ViaG9vayBkZXN0aW5hdGlvbiBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgd2ViaG9vay4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNoYW5uZWxfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQdWIvU3ViIGNoYW5uZWwgSUQuIFNldCBhZnRlciBjcmVhdGluZyBhIGNoYW5uZWwuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3Jrc3BhY2VfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJXb3Jrc3BhY2UgSUQgZm9yIGdyYW50IGdyb3VwaW5nICYgb3JnYW5pemF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBpX2tleV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkFQSSBrZXkgcmVzb3VyY2UgSUQgKG5vdCB0aGUga2V5IGl0c2VsZikuIFVzZWQgZm9yIG1hbmFnaW5nIEFQSSBrZXlzIHZpYSB0aGUgQWRtaW4gQVBJLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBJRC4gVXNlZCBpbiBob3N0ZWQgT0F1dGggYXV0aG9yaXphdGlvbiBVUkxzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X3NlY3JldCIsInZhbHVlIjoiIiwidHlwZSI6InNlY3JldCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBzZWNyZXQuIFVzZWQgaW4gdGhlIE9BdXRoIHRva2VuIGV4Y2hhbmdlIHN0ZXAuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZWRpcmVjdF91cmkiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJPQXV0aCBjYWxsYmFjayBVUkwgcmVnaXN0ZXJlZCB3aXRoIHlvdXIgTnlsYXMgYXBwbGljYXRpb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZXNwb25zZV90eXBlIiwidmFsdWUiOiJjb2RlIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik9BdXRoIHJlc3BvbnNlIHR5cGUuIFVzZSAnY29kZScgZm9yIHNlcnZlci1zaWRlIGF1dGggKHJlY29tbWVuZGVkKSBvciAndG9rZW4nIGZvciBjbGllbnQtc2lkZS4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvZGUiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRob3JpemF0aW9uIGNvZGUgcmV0dXJuZWQgZnJvbSBob3N0ZWQgT0F1dGguIFVzZWQgdG8gZXhjaGFuZ2UgZm9yIGFuIGFjY2VzcyB0b2tlbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImlkX3Rva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiSUQgdG9rZW4gZm9yIGN1c3RvbSBhdXRoZW50aWNhdGlvbiBmbG93cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImVtYWlsIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRW1haWwgYWRkcmVzcyB1c2VkIGFzIGxvZ2luX2hpbnQgaW4gT0F1dGggZmxvd3MuIFByZS1maWxscyB0aGUgcHJvdmlkZXIgc2lnbi1pbiBwYWdlLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ29vZ2xlX2NsaWVudF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IllvdXIgR29vZ2xlIE9BdXRoIGNsaWVudCBJRC4gVXNlZCB3aGVuIGNyZWF0aW5nIGEgR29vZ2xlIGNvbm5lY3Rvci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6Imdvb2dsZV9jbGllbnRfc2VjcmV0IiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIEdvb2dsZSBPQXV0aCBjbGllbnQgc2VjcmV0LiBVc2VkIHdoZW4gY3JlYXRpbmcgYSBHb29nbGUgY29ubmVjdG9yLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY2FsZW5kYXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJDYWxlbmRhciBJRC4gQ2FuIGJlIHRoZSBncmFudCdzIGVtYWlsIGFkZHJlc3Mgb3IgJ3ByaW1hcnknIGZvciB0aGUgZGVmYXVsdCBjYWxlbmRhci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImV2ZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRXZlbnQgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGNyZWF0aW5nIG9yIGxpc3RpbmcgZXZlbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibWVzc2FnZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik1lc3NhZ2UgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3Igc2VuZGluZyBtZXNzYWdlcy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InRocmVhZF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlRocmVhZCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyB0aHJlYWRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZHJhZnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJEcmFmdCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgZHJhZnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZm9sZGVyX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRm9sZGVyIG9yIGxhYmVsIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBsaXN0aW5nIGZvbGRlcnMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhdHRhY2htZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQXR0YWNobWVudCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyBtZXNzYWdlIGF0dGFjaG1lbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY29udGFjdF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbnRhY3QgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3IgY3JlYXRpbmcgY29udGFjdHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJub3RldGFrZXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJOb3RldGFrZXIgSUQuIFNldCBhZnRlciBpbnZpdGluZyBhIG5vdGV0YWtlciBib3QgdG8gYSBtZWV0aW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoidGVtcGxhdGVfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJNZXNzYWdlIHRlbXBsYXRlIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB0ZW1wbGF0ZXMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3JrZmxvd19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IldvcmtmbG93IElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB3b3JrZmxvd3MuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJzY2hlZHVsZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlIElEIGZvciBFeHRyYWN0QUkgb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImRvbWFpbl9uYW1lIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRG9tYWluIG5hbWUgZm9yIGN1c3RvbSBkb21haW4gb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvbmZpZ3VyYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJTY2hlZHVsZXIgY29uZmlndXJhdGlvbiBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBjb25maWd1cmF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2Vzc2lvbl9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlciBzZXNzaW9uIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyBhIHNlc3Npb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJib29raW5nX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQm9va2luZyBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBib29raW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ3JvdXBfZXZlbnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJHcm91cCBldmVudCBJRCBmb3IgY29sbGFib3JhdGl2ZSBzY2hlZHVsaW5nIHdpdGggbXVsdGlwbGUgcGFydGljaXBhbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2NoZWR1bGVyU2Vzc2lvblRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJTaG9ydC1saXZlZCBzZXNzaW9uIHRva2VuIGZvciBwdWJsaWMtZmFjaW5nIFNjaGVkdWxlciBlbmRwb2ludHMgKEF2YWlsYWJpbGl0eSwgQm9va2luZ3MpLiBDcmVhdGVkIHZpYSB0aGUgU2Vzc2lvbnMgZW5kcG9pbnQuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ2Ml9zY2hlZHVsZXJfc2x1ZyIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNsdWcgZnJvbSBhIHYyIFNjaGVkdWxlciBwYWdlLiBVc2VkIGZvciBtaWdyYXRpbmcgdjIgc2NoZWR1bGluZyBwYWdlcyB0byB2MyBjb25maWd1cmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InBhZ2VfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQYWdpbmF0aW9uIGN1cnNvci4gUGFzcyB0aGUgbmV4dF9jdXJzb3IgdmFsdWUgZnJvbSBhIGxpc3QgcmVzcG9uc2UgdG8gZ2V0IHRoZSBuZXh0IHBhZ2Ugb2YgcmVzdWx0cy4iLCJlbmFibGVkIjp0cnVlfV0=)\n\n## Enable compression to optimize performance\n\nThe Email, Calendar, Contacts, and Scheduler APIs return gzip-compressed responses when your request includes the [`Accept-Encoding: gzip`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding) header. Most HTTP libraries negotiate and decompress gzip responses automatically. With curl, use `--compressed`. Nylas skips compression for responses under about 200 bytes.\n\nCompression pairs well with [query parameters](#query-parameters) that limit the number of objects returned and [field selection](#reduce-response-size-with-field-selection) that limits which fields come back in each object. For the full walkthrough, including webhook, Pub/Sub, and SNS compression, see [Reducing payload size with compression](/docs/dev-guide/best-practices/compression/).\n\n## Query parameters\n\nNylas allows you to include query parameters in `GET` requests that return a list of results. Query parameters let you narrow the results Nylas returns, meaning fewer requests to the provider and less data for your application to sift through. For more information, see [Rate limits in Nylas](/docs/dev-guide/platform/rate-limits/).\n\nThe table below shows the query parameters you can use for the `GET` requests in the Email, Calendar, Contacts, and Notetaker APIs.\n\n| Endpoint                                                                                          | Query parameters                                                                                                                                                                                                                                                                               |\n| :------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/calendars`](/docs/reference/api/calendar/get-all-calendars/)    | `limit`, `page_token`, `metadata_pair`, `select`                                                                                                                                                                                                                                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/events`](/docs/reference/api/events/get-all-events/)            | `calendar_id` (required), `limit`, `page_token`, `show_cancelled`, `title`, `description`, `ical_uid`, `location`, `start`, `end`, `master_event_id`, `metadata_pair`, `busy`, `updated_before`, `updated_after`, `attendees`, `event_type`, `expand_recurring`, `tentative_as_busy`, `select` |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/drafts`](/docs/reference/api/drafts/get-drafts/)                | `limit`, `page_token`, `subject`, `any_email`, `to`, `cc`, `bcc`, `starred`, `thread_id`, `has_attachment`, `query_imap`, `select`                                                                                                                                                             |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/messages`](/docs/reference/api/messages/get-messages/)          | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `thread_id`, `received_before`, `received_after`, `has_attachment`, `fields`, `search_query_native`, `metadata_pair`, `query_imap`, `shared_from`, `select`                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/threads`](/docs/reference/api/threads/get-threads/)             | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `latest_message_before`, `latest_message_after`, `has_attachment`, `search_query_native`, `earliest_message_date`, `shared_folder_id`, `shared_from`, `select`                            |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/folders`](/docs/reference/api/folders/get-folder/)              | `limit`, `page_token`, `parent_id`, `include_hidden_folders`, `shared_from`, `single_level`, `select`                                                                                                                                                                                          |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/contacts`](/docs/reference/api/contacts/list-contact/)          | `limit`, `page_token`, `email`, `phone_number`, `source`, `group`, `recurse`, `select`                                                                                                                                                                                                         |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/notetakers`](/docs/reference/api/notetaker/get-all-notetakers/) | `limit`, `page_token`, `prev_page_token`, `join_time_start`, `join_time_end`, `state`, `order_by`, `order_direction`                                                                                                                                                                           |\n\nYou can use the `limit` parameter to set the maximum number of results Nylas returns for your request. Nylas recommends setting a lower `limit` if you encounter rate limits on the provider. For more information, see [Avoiding rate limits in Nylas](/docs/dev-guide/best-practices/rate-limits/).\n\nNylas supports case-insensitive partial matches for some query parameters:\n\n- `description`, `location`, and `title` in [Get all Events requests](/docs/reference/api/events/get-all-events/).\n- `subject` in [Get all Messages](/docs/reference/api/messages/get-messages/), [Get all Drafts](/docs/reference/api/drafts/get-drafts/), and [Get all Threads](/docs/reference/api/threads/get-threads/) requests.\n\nIf the specified field contains the query term, Nylas matches it regardless of the case. For example, if you set the `subject` query parameter to `march` in a Get all Messages request, Nylas might return the following messages:\n\n- \"Company **March** Meeting\"\n- \"Today in history: Mussolini's **march** on Rome\"\n- \"Your coupon code: **mARch**\"\n\nSince Nylas matches keywords, it won't return the following messages:\n\n- \"Confirmation code: abc**March**123\"\n- \"**M**cDonald's golden **arch**es\"\n\n## Pagination\n\nNylas might return multiple pages of data when you make a \"Get all\" request (for example, [Get all Events](/docs/reference/api/events/get-all-events/)). When this happens, Nylas includes the `next_cursor` field in its response. You can pass the value of `next_cursor` as the `page_token` query parameter in your next request to get the next page of results.\n\nYou can use the `limit` parameter to specify the maximum number of results you want in one page of data. If you see rate limits from the provider, try using a smaller `limit` value.\n\n| Query Parameter | Type    | Description                                                                                                                       |\n| :-------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------- |\n| `limit`         | integer | The number of objects to return, up to a maximum of `200` (defaults to `50`).                                                     |\n| `page_token`    | string  | An identifier that specifies which page of data to return. This value should be taken from the `next_cursor` response body field. |\n\n## Updating objects\n\n`PUT` and `PATCH` requests behave similarly in Nylas: when you make a request, Nylas replaces all data in the nested object with the information you define. Because of this, your request might fail if you don't include all mandatory fields.\n\nNylas doesn't erase the data from fields that you don't include in your request, so you can define only the mandatory fields and any that you want to update.\n\n## Grant ID patterns\n\nNylas supports multiple patterns for identifying grants in API calls. This flexibility allows you to reference grants using the identifier that's most convenient for your application, whether that's the Nylas grant ID, the user's email address, an external ID from your system, or a special shorthand syntax.\n\nAll endpoint paths that include `{grant_id}` support these patterns. For example, you can use any of these patterns with endpoints like `/v3/grants/{grant_id}/messages`, `/v3/grants/{grant_id}/events`, `/v3/grants/{grant_id}/contacts`, and others.\n\n| Pattern                  | Description                                                                                                                                                                                                             | Authorization           |\n| :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------- |\n| `<grant_id>`             | The Nylas grant ID (for example, `GET /v3/grants/e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This is the standard format.                                                                                          | API key or access token |\n| `grant:<grant_id>`       | Explicitly prefixed Nylas grant ID (for example, `GET /v3/grants/grant:e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This format is useful for clarity when working with multiple identifier types.                  | API key or access token |\n| `<email_address>`        | The email address associated with the grant (for example, `GET /v3/grants/user@example.com/messages`). Nylas looks up the grant associated with this email address.                                                     | API key or access token |\n| `email:<email_address>`  | Explicitly prefixed email address (for example, `GET /v3/grants/email:user@example.com/messages`). This format is useful for clarity when the email address might be ambiguous.                                         | API key or access token |\n| `external:<external_id>` | An external ID from your system (for example, `GET /v3/grants/external:user-12345/messages`). This allows you to reference grants using your own identifiers. For more information, see the External IDs documentation. | API key or access token |\n| `me`                     | A special shorthand syntax (for example, `GET /v3/grants/me/messages`). Nylas looks up the grant associated with the request's access token.                                                                            | Access token only       |\n\nThe `me` syntax is particularly useful for client-side applications where you authenticate end users with access tokens. You can't use this syntax with API key authorization, because there is no grant associated with an API key.\n\n## Metadata\n\nYou can use the `metadata` object to add a list of key-value pairs to Calendar, Event, Message, and Draft objects so you can store custom data with them. Both keys and values can be any string. If you want to filter on metadata, however, you must write values to one of the five [Nylas-specific keys](#metadata-keys-and-filtering).\n\nFor more information, see the [Metadata documentation](/docs/dev-guide/metadata/).\n\n### Metadata keys and filtering\n\nNylas reserves five metadata keys (`key1`, `key2`, `key3`, `key4`, `key5`) and indexes their contents. Nylas uses `key5` to identify events that count towards the `max-fairness` round-robin calculation for event availability. For more information, see [Group availability and booking best practices](/docs/v3/calendar/group-booking/#round-robin-max-fairness-groups).\n\nYou can add values to each of these reserved keys, and reference them in a query to filter the objects that Nylas returns. You can also add these filters as query parameters, as in the following examples:\n\n- `https://api.us.nylas.com/calendar?metadata_pair=key1:on-site`\n- `https://api.us.nylas.com/events?calendar_id=<CALENDAR_ID>&metadata_pair=key1:on-site`\n\nYou can't create a query that includes both a provider and metadata filter, other than `calendar_id`. For example, `https://api.us.nylas.com/calendar?metadata_pair=key1:plan-party&title=Birthday` returns an error.\n\n## Reduce response size with field selection\n\nField selection allows you to use the `select` query parameter to specify which fields you want Nylas to include in the response.\n\nYou can use field selection for all Nylas API endpoints, _except_ the following:\n\n- All `DELETE` endpoints.\n- All Attachments endpoints.\n- All Smart Compose endpoints.\n- The Send Message endpoint.\n- The Create a Draft endpoint.\n\nField selection helps to reduce the size of the response, improves latency, and helps you avoid rate limiting issues. You can also use it in cases where you want to avoid working with information from your users that you think might be sensitive.\n\nField selection can evaluate top-level object fields only. You cannot use it to return only nested fields.\n\n<div id=\"admonition-info\">\U0001F4DD <b>Note</b>: Nylas strongly suggests you always use field selection, so you only get the data that you need.</div>\n\nFor example, the following request specifies Nylas should return only the `id` and `name` fields of the Calendar object.\n\n```bash\ncurl --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/me/calendars?select=id,name'\n```\n\nThe response payload includes only the `id` and `name` fields in the `data` object, as in the example below.\n\n```json\n{\n  \"request_id\": \"5fa64c92-e840-4357-86b9-2aa364d35b88\",\n  \"data\": [\n    {\n      \"id\": \"5d3qmne77v32r8l4phyuksl2x\",\n      \"name\": \"My Calendar\"\n    },\n    {\n      \"id\": \"5d3qmne77v32r23aphyuksl2x\",\n      \"name\": \"My Calendar 2\"\n    }\n  ]\n}\n```\n\n## Nylas encoding\n\nResponse bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n"
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Templates and Workflows
+paths:
+  /v3/templates:
+    get:
+      summary: Return all templates
+      tags:
+      - Templates and Workflows
+      operationId: list-app-level-templates
+      description: Returns a list of application-level templates.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page_token'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/templates\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/templates_list'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+    post:
+      summary: Create a template
+      tags:
+      - Templates and Workflows
+      operationId: create-app-level-template
+      description: Creates an application-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_create'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/templates\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"body\": \"<p>Hello from {{user}}</p>\",\n    \"name\": \"Nylas Alias\",\n    \"subject\": \"New notification for {{user}}\",\n    \"engine\": \"mustache\"\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template'
+        '400':
+          $ref: '#/components/responses/template_400'
+  /v3/templates/{template_id}:
+    parameters:
+    - schema:
+        type: string
+      name: template_id
+      in: path
+      required: true
+      description: The ID of the template to access.
+      example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+    get:
+      summary: Return a template
+      tags:
+      - Templates and Workflows
+      operationId: get-app-level-template
+      description: Returns the specified application-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/templates/<TEMPLATE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template'
+        '400':
+          $ref: '#/components/responses/template_400'
+    put:
+      summary: Update a template
+      tags:
+      - Templates and Workflows
+      operationId: update-app-level-template
+      description: Updates the specified application-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url \"https://api.us.nylas.com/v3/templates/<TEMPLATE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"body\": \"<p>Test from {{user.name}}</p>\",\n    \"name\": \"Update Template\",\n    \"subject\": \"Test from {{user.name}}\",\n    \"engine\": \"mustache\"\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template'
+        '400':
+          $ref: '#/components/responses/template_400'
+    delete:
+      summary: Delete a template
+      tags:
+      - Templates and Workflows
+      operationId: delete-app-level-template
+      description: Deletes the specified application-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/templates/<TEMPLATE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200_simple'
+        '400':
+          $ref: '#/components/responses/400'
+  /v3/templates/render:
+    post:
+      summary: Render template as HTML
+      tags:
+      - Templates and Workflows
+      operationId: render-template-html
+      description: 'Renders the HTML content of an application-level template using the provided variables and specified
+
+        templating engine.'
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_render_html'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/templates/render\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"body\": \"<p>Hello from {{user.name}}, test {{ foo }}</p>\",\n    \"variables\": {\n      \"user\": {\n        \"name\": \"Nylas\",\n        \"surname\": \"Tester\"\n      },\n      \"foo\": \"hi\"\n    },\n    \"engine\": \"mustache\"\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template_render_html'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+  /v3/templates/{template_id}/render:
+    parameters:
+    - schema:
+        type: string
+      name: template_id
+      in: path
+      required: true
+      description: The ID of the template to access.
+      example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+    post:
+      summary: Render a template
+      tags:
+      - Templates and Workflows
+      operationId: render-app-level-template
+      description: Renders the specified application-level template with the provided variables.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_render'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/templates/<TEMPLATE_ID>/render\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"variables\": {\n      \"user\": {\n        \"name\": \"Nylas\",\n        \"surname\": \"Tester\"\n      }\n    }\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template_render'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+  /v3/grants/{grant_id}/templates:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use
+
+        `/me/` to refer to the grant associated with an access token.'
+      example: nyla@example.com
+    get:
+      summary: Return all templates
+      tags:
+      - Templates and Workflows
+      operationId: get-grant-level-templates
+      description: Returns a list of grant-level templates.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page_token'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/templates\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/templates_list'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+    post:
+      summary: Create a template
+      tags:
+      - Templates and Workflows
+      operationId: create-grant-level-template
+      description: Creates a grant-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_create'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/templates\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"body\": \"<p>Hello from {{user}}</p>\",\n    \"name\": \"Nylas Alias\",\n    \"subject\": \"New notification for {{user}}\",\n    \"engine\": \"mustache\"\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template'
+        '400':
+          $ref: '#/components/responses/template_400'
+  /v3/grants/{grant_id}/templates/{template_id}:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use
+
+        `/me/` to refer to the grant associated with an access token.'
+      example: nyla@example.com
+    - schema:
+        type: string
+      name: template_id
+      in: path
+      required: true
+      description: The ID of the template to access.
+      example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+    get:
+      summary: Return a template
+      tags:
+      - Templates and Workflows
+      operationId: get-grant-level-template
+      description: Returns the specified grant-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/templates/<TEMPLATE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+    put:
+      summary: Update a template
+      tags:
+      - Templates and Workflows
+      operationId: update-grant-level-template
+      description: Updates the specified grant-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/templates/<TEMPLATE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"body\": \"<p>Test from {{user.name}}</p>\",\n    \"name\": \"Update Template\",\n    \"subject\": \"Test from {{user.name}}\",\n    \"engine\": \"mustache\"\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template'
+        '400':
+          $ref: '#/components/responses/template_400'
+    delete:
+      summary: Delete a template
+      tags:
+      - Templates and Workflows
+      operationId: delete-grant-level-template
+      description: Deletes the specified grant-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/templates/<TEMPLATE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200_simple'
+        '400':
+          $ref: '#/components/responses/400'
+  /v3/grants/{grant_id}/templates/{template_id}/render:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use
+
+        `/me/` to refer to the grant associated with an access token.'
+      example: nyla@example.com
+    - schema:
+        type: string
+      name: template_id
+      in: path
+      required: true
+      description: The ID of the template to access.
+      example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+    post:
+      summary: Render a template
+      tags:
+      - Templates and Workflows
+      operationId: render-grant-level-template
+      description: Renders the specified application-level template with the provided variables.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_render'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/templates/<TEMPLATE_ID>/render\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"variables\": {\n      \"user\": {\n        \"name\": \"Nylas\",\n        \"surname\": \"Tester\"\n      }\n    }\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template_render'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+  /v3/grants/{grant_id}/templates/render:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use
+
+        `/me/` to refer to the grant associated with an access token.'
+      example: nyla@example.com
+    post:
+      summary: Render template as HTML
+      tags:
+      - Templates and Workflows
+      operationId: render-grant-level-template-html
+      description: 'Renders the HTML content of a grant-level template using the provided variables and specified
+
+        templating engine.'
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_render_html'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/templates/render\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"body\": \"<p>Hello from {{user.name}}, test {{ foo }}</p>\",\n    \"variables\": {\n      \"user\": {\n        \"name\": \"Nylas\",\n        \"surname\": \"Tester\"\n      },\n      \"foo\": \"hi\"\n    },\n    \"engine\": \"mustache\"\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template_render_html'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+  /v3/workflows:
+    get:
+      summary: Return all workflows
+      tags:
+      - Templates and Workflows
+      operationId: list-workflows
+      description: Returns all application-level workflows.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page_token'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/workflows?limit=10\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflows_list'
+        '400':
+          $ref: '#/components/responses/workflow_400'
+    post:
+      summary: Create a workflow
+      tags:
+      - Templates and Workflows
+      operationId: create-workflow
+      description: 'Creates an application-level workflow.
+
+
+        <div id="admonition-info">ℹ️ <b>You must have an existing <a href="/docs/reference/api/application-level-templates/">template</a> to create a workflow</b>.</div>'
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/workflow_create'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/workflows\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"name\": \"Confirmation Workflow\",\n    \"trigger_event\": \"booking.created\",\n    \"template_id\": \"<TEMPLATE_ID>\",\n    \"delay\": 1,\n    \"is_enabled\": true\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflow'
+        '400':
+          $ref: '#/components/responses/workflow_400'
+        '404':
+          $ref: '#/components/responses/workflow_404'
+  /v3/workflows/{workflow_id}:
+    parameters:
+    - schema:
+        type: string
+      name: workflow_id
+      in: path
+      required: true
+      description: The ID of the workflow to access.
+      example: b79c82b2-a51b-4c54-8469-28006a43551a
+    get:
+      summary: Return a workflow
+      tags:
+      - Templates and Workflows
+      operationId: get-workflow
+      description: Returns the specified application-level workflow.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/workflows/<WORKFLOW_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflow'
+        '400':
+          $ref: '#/components/responses/400'
+    put:
+      summary: Update a workflow
+      tags:
+      - Templates and Workflows
+      operationId: update-workflow
+      description: Updates the specified application-level workflow.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/workflow_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url \"https://api.us.nylas.com/v3/workflows/<WORKFLOW_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"name\": \"Updated Workflow\",\n    \"is_enabled\": false\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflow'
+        '400':
+          $ref: '#/components/responses/workflow_400'
+        '404':
+          $ref: '#/components/responses/workflow_404'
+    delete:
+      summary: Delete a workflow
+      tags:
+      - Templates and Workflows
+      operationId: delete-workflow
+      description: Deletes the specified application-level workflow.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/workflows/<WORKFLOW_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200_simple'
+        '400':
+          $ref: '#/components/responses/400'
+  /v3/grants/{grant_id}/workflows:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use
+
+        `/me/` to refer to the grant associated with an access token.'
+      example: nyla@example.com
+    get:
+      summary: Return all workflows
+      tags:
+      - Templates and Workflows
+      operationId: list-grant-workflows
+      description: Returns all grant-level workflows for the specified grant.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page_token'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/workflows?limit=10\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflows_list'
+        '400':
+          $ref: '#/components/responses/400'
+    post:
+      summary: Create a workflow
+      tags:
+      - Templates and Workflows
+      operationId: create-grant-workflow
+      description: 'Creates a grant-level workflow.
+
+
+        <div id="admonition-info">ℹ️ <b>You must have an existing <a href="/docs/reference/api/grant-level-templates/">template</a> to create a workflow</b>.</div>'
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/workflow_create'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/workflows' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"name\": \"Confirmation Workflow\",\n    \"trigger_event\": \"booking.created\",\n    \"template_id\": \"<TEMPLATE_ID>\",\n    \"delay\": 1,\n    \"is_enabled\": true\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflow'
+        '400':
+          $ref: '#/components/responses/workflow_400'
+        '404':
+          $ref: '#/components/responses/workflow_404'
+  /v3/grants/{grant_id}/workflows/{workflow_id}:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use
+
+        `/me/` to refer to the grant associated with an access token.'
+      example: nyla@example.com
+    - schema:
+        type: string
+      name: workflow_id
+      in: path
+      required: true
+      description: The ID of the workflow to access.
+      example: b79c82b2-a51b-4c54-8469-28006a43551a
+    get:
+      summary: Get a workflow
+      tags:
+      - Templates and Workflows
+      operationId: get-grant-workflow
+      description: Returns the specified grant-level workflow.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/workflows/<WORKFLOW_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflow'
+        '400':
+          $ref: '#/components/responses/400'
+    put:
+      summary: Update a workflow
+      tags:
+      - Templates and Workflows
+      operationId: update-grant-workflow
+      description: Updates the specified grant-level workflow.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/workflow_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/workflows/<WORKFLOW_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"name\": \"Updated Workflow\",\n    \"is_enabled\": false\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflow'
+        '400':
+          $ref: '#/components/responses/workflow_400'
+        '404':
+          $ref: '#/components/responses/workflow_404'
+    delete:
+      summary: Delete a workflow
+      tags:
+      - Templates and Workflows
+      operationId: delete-grant-workflow
+      description: Deletes the specified grant-level workflow.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/workflows/<WORKFLOW_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200_simple'
+        '400':
+          $ref: '#/components/responses/400'
+components:
+  responses:
+    workflow_400:
+      description: 'Error: Bad request'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.invalid_request_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: invalid_event is not a valid option
+    workflows_list:
+      description: Success. Returns list of workflows.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - next_cursor
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 9ca1d434-5ac7-4331-b8fb-3749c9a758d3
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/workflow'
+                example:
+                - id: b79c82b2-a51b-4c54-8469-28006a43551a
+                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+                  app_id: null
+                  is_enabled: true
+                  name: Booking Confirmation Workflow
+                  trigger_event: booking.created
+                  delay: 1
+                  template_id: 14c00cc8-648c-4381-ad10-52641d9bac8e
+                  date_created: 1756477389
+                - id: c89d93c3-b62c-5d65-9570-39117b54662b
+                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+                  app_id: null
+                  is_enabled: true
+                  name: Booking Reminder Workflow
+                  trigger_event: booking.reminder
+                  delay: 60
+                  template_id: 25d11dd9-759d-5492-be21-63752e6cbd9f
+                  date_created: 1756477500
+                - id: d90e04d4-c73d-6e76-a681-40228c65773c
+                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+                  app_id: null
+                  is_enabled: false
+                  name: Booking Cancellation Workflow
+                  trigger_event: booking.cancelled
+                  delay: 0
+                  template_id: 36e22ee0-86ae-6603-cf32-74863f7dce0g
+                  date_created: 1756477600
+              next_cursor:
+                type: string
+                description: A cursor pointing to the next page of results for the request.
+                example: eyJjdXJzb3IiOiJub3RpZmljYXRpb25fd29ya2Zsb3dfYjc5YzgyYjIifQ==
+    template_render_html:
+      description: Success. Returns rendered HTML.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3907012912-13b5a9a4-f136-4761-a31b-68c6a8af825d
+              data:
+                type: object
+                required:
+                - body
+                properties:
+                  body:
+                    type: string
+                    description: The rendered HTML with variables substituted.
+                    example: <p>Hello Leyah, your booking has been confirmed.</p>
+    templates_list:
+      description: Success. Returns list of templates.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - next_cursor
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3821703913-a3548169-0de0-49de-9801-37d972b51766
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/template'
+                example:
+                - id: template_123
+                  grant_id: grant_456
+                  app_id: null
+                  engine: mustache
+                  name: Welcome Email
+                  subject: Welcome {{user.name}}!
+                  body: <p>Hello {{user.name}}, welcome to our service!</p><p>We're excited to have you on board.</p>
+                  created_at: 1640995200
+                  updated_at: 1640995200
+                  object: template
+                - id: template_456
+                  grant_id: grant_456
+                  app_id: null
+                  engine: handlebars
+                  name: Password Reset
+                  subject: Reset your password - {{company.name}}
+                  body: <h1>Password Reset Request</h1><p>Hi {{user.name}},</p><p>Click <a href='{{reset_link}}'>here</a> to reset your password.</p><p>This link expires in {{expiry_hours}} hours.</p>
+                  created_at: 1640995300
+                  updated_at: 1640995400
+                  object: template
+                - id: template_789
+                  grant_id: grant_456
+                  app_id: null
+                  engine: twig
+                  name: Order Confirmation
+                  subject: 'Order #{{order.number}} confirmed'
+                  body: '<h2>Thank you for your order!</h2><p>Order #{{order.number}} has been confirmed.</p><ul>{% for item in order.items %}<li>{{item.name}} - ${{item.price}}</li>{% endfor %}</ul><p>Total: ${{order.total}}</p>'
+                  created_at: 1640995500
+                  updated_at: 1640995500
+                  object: template
+              next_cursor:
+                type: string
+                description: A cursor pointing to the next page of results for the request.
+                example: eyJjdXJzb3IiOiJ0ZW1wbGF0ZV8xMjMifQ==
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    delete_200_simple:
+      description: 'Success: Object deleted'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3906564297-48e7fb5b-f220-427b-a4de-255736adba08
+    workflow_404:
+      description: 'Error: Not found'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.not_found_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: template not found
+    workflow:
+      description: Success. Returns workflow.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+              data:
+                $ref: '#/components/schemas/workflow'
+          example:
+            request_id: 9ca1d434-5ac7-4331-b8fb-3749c9a758d3
+            data:
+              app_id: null
+              date_created: 1756477389
+              delay: 5
+              grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+              id: b79c82b2-a51b-4c54-8469-28006a43551a
+              is_enabled: true
+              name: New booking confirmation workflow
+              template_id: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              trigger_event: booking.created
+              from:
+                email: support@example.com
+                name: Support
+    template:
+      description: Success. Returns template.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+              data:
+                $ref: '#/components/schemas/template'
+          example:
+            request_id: 3822087561-67d4f28f-a46b-4c90-8fd3-765a04105043
+            data:
+              id: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+              app_id: null
+              engine: mustache
+              name: Booking confirmed message
+              subject: '{{user.name}}, your booking is confirmed!'
+              body: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+              created_at: 1640995200
+              updated_at: 1640995200
+              object: template
+    template_render:
+      description: Success. Returns rendered template.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3822450015-47d9207c-4d06-4e15-b3e7-752c5dd5585d
+              data:
+                type: object
+                required:
+                - body
+                - subject
+                properties:
+                  body:
+                    type: string
+                    description: The rendered HTML body content with variables substituted.
+                    example: <p>Hello Leyah, your booking has been confirmed.</p>
+                  subject:
+                    type: string
+                    description: The rendered subject content with variables substituted.
+                    example: Leyah, your booking is confirmed!
+    template_400:
+      description: 'Error: Bad request'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3704952820-faf9214c-8bdd-4419-9d9c-f8f5ee464d57
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.invalid_request_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: Validation of request body failed
+  schemas:
+    workflow:
+      type: object
+      description: A custom workflow that sends messages from a template when certain events are triggered.
+      required:
+      - date_created
+      - delay
+      - id
+      - is_enabled
+      - name
+      - template_id
+      - trigger_event
+      properties:
+        app_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the Nylas application associated with the workflow. Returned only if the
+
+            workflow is configured at the application level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        date_created:
+          type: integer
+          description: When the workflow was created, in seconds using the Unix timestamp format.
+          example: 1756477389
+        delay:
+          type: integer
+          description: 'The number of minutes between a `trigger_event` being met and the workflow sending
+
+            a message.'
+          example: 5
+        grant_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the grant associated with the workflow. Returned only if the workflow is
+
+            configured at the grant level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        id:
+          type: string
+          description: The ID of the workflow.
+          example: b79c82b2-a51b-4c54-8469-28006a43551a
+        is_enabled:
+          type: boolean
+          description: When `true`, indicates that the workflow is enabled.
+          example: true
+        name:
+          type: string
+          description: The name of the workflow.
+          example: New booking confirmation workflow
+        template_id:
+          type: string
+          description: The ID of the email template the workflow uses.
+          example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+        trigger_event:
+          type: string
+          enum:
+          - booking.cancelled
+          - booking.created
+          - booking.pending
+          - booking.reminder
+          - booking.rescheduled
+          description: The event which triggers the workflow.
+          example: booking.created
+        from:
+          type:
+          - object
+          - 'null'
+          description: Details of the sender if the workflow uses transactional send.
+          properties:
+            email:
+              type: string
+              description: The email address of the sender.
+              example: support@example.com
+            name:
+              type: string
+              description: The name of the sender.
+              example: Support
+    400-2:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    template:
+      type: object
+      description: A custom message template.
+      required:
+      - body
+      - created_at
+      - engine
+      - id
+      - name
+      - object
+      - subject
+      - updated_at
+      properties:
+        app_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the Nylas application associated with the template. Returned only if the template is
+
+            configured at the application level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        body:
+          type: string
+          description: The body content of the template, in HTML format.
+          example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+        created_at:
+          type: integer
+          description: When the template was created, in seconds using the Unix timestamp format.
+          example: 1640995200
+        engine:
+          type: string
+          enum:
+          - handlebars
+          - mustache
+          - nunjucks
+          - twig
+          description: The templating engine.
+          example: mustache
+        grant_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the grant associated with the template. Returned only if the template is configured
+
+            at the grant level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        id:
+          type: string
+          description: The template ID.
+          example: b79c82b2-a51b-4c54-8469-28006a43551a
+        name:
+          type: string
+          description: The name of the template.
+          example: Booking confirmed message
+        object:
+          type: string
+          description: The object type identifier.
+          default: template
+          example: template
+        subject:
+          type: string
+          description: The subject line of the template.
+          example: '{{user.name}}, your booking is confirmed!'
+        updated_at:
+          type: integer
+          description: When the template was last updated, in seconds using the Unix timestamp format.
+          example: 1640995200
+  requestBodies:
+    workflow_create:
+      description: Create workflow request
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - name
+            - template_id
+            - trigger_event
+            properties:
+              delay:
+                type: integer
+                description: 'The number of minutes between a `trigger_event` being met and the workflow
+
+                  sending a message.'
+                default: 0
+                example: 5
+              is_enabled:
+                type: boolean
+                description: When `true`, indicates that the workflow is enabled.
+                default: true
+                example: true
+              name:
+                type: string
+                description: The name of the workflow.
+                example: New booking confirmation workflow
+              template_id:
+                type: string
+                description: The ID of the email template the workflow uses.
+                example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              trigger_event:
+                type: string
+                enum:
+                - booking.cancelled
+                - booking.created
+                - booking.pending
+                - booking.reminder
+                - booking.rescheduled
+                description: The event which triggers the workflow.
+                example: booking.created
+              from:
+                type:
+                - object
+                - 'null'
+                description: 'Details of the sender if the workflow should use [transactional send](/docs/reference/api/transactional-send/).
+
+                  If not provided, the sender will be the grant associated with the trigger event.'
+                properties:
+                  email:
+                    type: string
+                    description: The email address of the sender.
+                    example: support@example.com
+                  name:
+                    type: string
+                    description: The name of the sender.
+                    example: Support
+    template_update:
+      description: Update template request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              body:
+                type: string
+                description: The body content of the template, in HTML format.
+                example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+              engine:
+                type: string
+                description: The templating engine to use.
+                enum:
+                - handlebars
+                - mustache
+                - nunjucks
+                - twig
+                example: mustache
+              name:
+                type: string
+                description: The name of the template.
+                example: Updated booking confirmed message
+              subject:
+                type: string
+                description: The subject line of the template.
+                example: '{{user.name}}, your booking is confirmed!'
+    template_render:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - variables
+            properties:
+              strict:
+                type: boolean
+                description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
+
+                  defined in the `variables` object.'
+                default: true
+                example: true
+              variables:
+                type: object
+                description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                  template.'
+                additionalProperties:
+                  type: string
+                example:
+                  user:
+                    name: Leyah
+                    surname: Miller
+    template_render_html:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - body
+            - engine
+            - variables
+            properties:
+              body:
+                type: string
+                description: The body content of the template, in HTML format.
+                example: <p>Hello {{user.name}}, this shows test was {{ foo }}.</p>
+              engine:
+                type: string
+                description: The templating engine to use.
+                enum:
+                - handlebars
+                - mustache
+                - nunjucks
+                - twig
+                example: mustache
+              strict:
+                type: boolean
+                description: 'When `true`, Nylas returns an error if the template contains variables that aren''t defined
+
+                  in the `variables` object.'
+                default: true
+                example: true
+              variables:
+                type: object
+                description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                  template.'
+                additionalProperties:
+                  type: string
+                example:
+                  user:
+                    name: Leyah
+                    surname: Miller
+                  foo: testing successful
+    template_create:
+      description: Create template request
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - body
+            - name
+            - subject
+            properties:
+              body:
+                type: string
+                description: The body content of the template, in HTML format.
+                example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+              engine:
+                type: string
+                description: The templating engine to use.
+                enum:
+                - handlebars
+                - mustache
+                - nunjucks
+                - twig
+                default: mustache
+                example: mustache
+              name:
+                type: string
+                description: The name of the template.
+                example: Booking confirmed message
+              subject:
+                type: string
+                description: The subject line of the template.
+                example: '{{user.name}}, your booking is confirmed!'
+    workflow_update:
+      description: Update workflow request
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              delay:
+                type: integer
+                description: 'The number of minutes between a `trigger_event` being met and the workflow
+
+                  sending a message.'
+                example: 1
+              is_enabled:
+                type: boolean
+                description: When `true`, indicates that the workflow is enabled.
+                example: false
+              name:
+                type: string
+                description: The name of the workflow.
+                example: Updated booking confirmation workflow
+              template_id:
+                type: string
+                description: The ID of the email template the workflow uses.
+                example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              trigger_event:
+                type: string
+                enum:
+                - booking.cancelled
+                - booking.created
+                - booking.pending
+                - booking.reminder
+                - booking.rescheduled
+                description: The event which triggers the workflow.
+                example: booking.created
+              from:
+                type:
+                - object
+                - 'null'
+                description: 'Details of the sender if the workflow should use [transactional send](/docs/reference/api/transactional-send/).
+
+                  If not provided, the sender will be the grant associated with the trigger event.'
+                properties:
+                  email:
+                    type: string
+                    description: The email address of the sender.
+                    example: support@example.com
+                  name:
+                    type: string
+                    description: The name of the sender.
+                    example: Support
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
