@@ -74,6 +74,7 @@ conformance:
     - '[Nylas v3 API] No ''representativeQueries''. The semantic index is built from this term, so the
       entry will not be found by search — it is a valid catalog entry but not a discoverable ARD entry.'
     informational: []
+  did_web: null
 catalog:
   host_display_name: Nylas CLI
   host_identifier: cli.nylas.com
