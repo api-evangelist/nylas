@@ -1,0 +1,37 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Nylas CLI",
+    "identifier": "cli.nylas.com"
+  },
+  "entries": [
+    {
+      "identifier": "urn:ai:nylas.com:mcp:us",
+      "displayName": "Nylas MCP Server (US)",
+      "type": "application/mcp-server+json",
+      "url": "https://mcp.us.nylas.com",
+      "description": "Hosted Model Context Protocol server exposing Nylas email, calendar, and contacts tools to AI agents. Requires a Nylas API key; US data region. Install locally with `nylas mcp install` or proxy with `nylas mcp serve`."
+    },
+    {
+      "identifier": "urn:ai:nylas.com:mcp:eu",
+      "displayName": "Nylas MCP Server (EU)",
+      "type": "application/mcp-server+json",
+      "url": "https://mcp.eu.nylas.com",
+      "description": "Hosted Model Context Protocol server for the EU data region. Same email, calendar, and contacts tools as the US endpoint, served from EU infrastructure."
+    },
+    {
+      "identifier": "urn:ai:cli.nylas.com:knowledge:llms-txt",
+      "displayName": "Nylas CLI knowledge index (llms.txt)",
+      "type": "text/plain",
+      "url": "https://cli.nylas.com/llms.txt",
+      "description": "Curated index of guides, command reference, and AI answer hubs for the Nylas CLI, formatted for AI agents. Full catalog at https://cli.nylas.com/llms-full.txt."
+    },
+    {
+      "identifier": "urn:ai:nylas.com:api:v3",
+      "displayName": "Nylas v3 API",
+      "type": "text/html",
+      "url": "https://developer.nylas.com/docs/reference/api/",
+      "description": "REST API for email, calendar, contacts, agent accounts, and meeting transcription (Notetaker) across Gmail, Microsoft, iCloud, Yahoo, and IMAP providers."
+    }
+  ]
+}
