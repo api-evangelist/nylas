@@ -58,44 +58,6 @@ url: >-
   https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/apis.yml
 specificationVersion: '0.23'
 apis:
-- aid: nylas:nylas-admin-api
-  name: Nylas Admin API
-  description: >-
-    Application-level administration: Nylas applications, API keys, custom domains, connectors and connector
-    credentials, workspaces, and the rules, policies and lists that govern them.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
-  baseURL: https://api.us.nylas.com
-  tags:
-  - Admin
-  properties:
-  - type: OpenAPI
-    url: openapi/nylas-admin-api-openapi.yml
-- aid: nylas:nylas-auth-api
-  name: Nylas Auth API
-  description: >-
-    Authentication. Hosted OAuth 2.1 authorization and token exchange, custom (non-OAuth) grant creation
-    for Agent Accounts, token refresh and revocation, and ID token validation.
-  humanURL: https://developer.nylas.com/docs/reference/api/authentication-apis/
-  baseURL: https://api.us.nylas.com
-  tags:
-  - Authentication
-  tags_raw:
-  - Auth
-  properties:
-  - type: OpenAPI
-    url: openapi/nylas-auth-api-openapi.yml
-- aid: nylas:nylas-calendars-api
-  name: Nylas Calendars API
-  description: >-
-    Calendars. List and manage a grant's calendars, query free/busy availability across participants,
-    and read room and resource calendars.
-  humanURL: https://developer.nylas.com/docs/reference/api/calendar/
-  baseURL: https://api.us.nylas.com
-  tags:
-  - Calendars
-  properties:
-  - type: OpenAPI
-    url: openapi/nylas-calendars-api-openapi.yml
 - aid: nylas:nylas-contacts-api
   name: Nylas Contacts API
   description: Contacts. Read, create, update and delete a grant's contacts and contact groups.
@@ -132,18 +94,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/nylas-events-api-openapi.yml
-- aid: nylas:nylas-grants-api
-  name: Nylas Grants API
-  description: >-
-    Grants. A grant represents one authenticated mailbox and calendar. List, retrieve and delete grants,
-    and inspect grant state and scopes.
-  humanURL: https://developer.nylas.com/docs/reference/api/manage-grants/
-  baseURL: https://api.us.nylas.com
-  tags:
-  - Grants
-  properties:
-  - type: OpenAPI
-    url: openapi/nylas-grants-api-openapi.yml
 - aid: nylas:nylas-messages-api
   name: Nylas Messages API
   description: >-
@@ -158,18 +108,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/nylas-messages-api-openapi.yml
-- aid: nylas:nylas-scheduling-api
-  name: Nylas Scheduling API
-  description: >-
-    Scheduler. Booking configurations, scheduling sessions, availability lookups and booking lifecycle
-    management for hosted and component-based booking flows.
-  humanURL: https://developer.nylas.com/docs/reference/api/configurations/
-  baseURL: https://api.us.nylas.com
-  tags:
-  - Scheduling
-  properties:
-  - type: OpenAPI
-    url: openapi/nylas-scheduling-api-openapi.yml
 - aid: nylas:nylas-threads-api
   name: Nylas Threads API
   description: >-
@@ -181,30 +119,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/nylas-threads-api-openapi.yml
-- aid: nylas:nylas-notifications-api
-  name: Nylas Notifications API
-  description: >-
-    Change notifications. Nylas pushes events for messages, threads, calendars, events, grants and Notetaker
-    over three interchangeable transports carrying the same payloads: HTTPS webhooks, Google Cloud Pub/Sub,
-    and Amazon SNS. Covers subscription CRUD, delivery testing, mock payloads and the source IP ranges
-    to allowlist. There is no polling requirement, and no WebSocket or SSE surface.
-  humanURL: https://developer.nylas.com/docs/reference/notifications/
-  baseURL: https://api.us.nylas.com
-  tags:
-  - Webhook
-  - Notification
-  - Event
-  tags_raw:
-  - Webhooks
-  - Notifications
-  - Events
-  properties:
-  - type: OpenAPI
-    url: openapi/nylas-notifications-api-openapi.yml
-  - type: APIReference
-    url: https://developer.nylas.com/docs/reference/notifications/
-  - type: Documentation
-    url: https://developer.nylas.com/docs/v3/notifications/
 - aid: nylas:nylas-notetaker-api
   name: Nylas Notetaker API
   description: >-
@@ -224,17 +138,2899 @@ apis:
     url: https://developer.nylas.com/docs/reference/api/notetaker/
   - type: Documentation
     url: https://developer.nylas.com/docs/v3/notetaker/
-- aid: nylas:nylas-templates-and-workflows-api
-  name: Nylas Templates and Workflows API
+- aid: nylas:nylas-amazon-sns-notifications-api
+  name: Nylas Amazon SNS Notifications API
   description: >-
-    The Templates and Workflows API from Nylas — 12 operation(s) for templates and workflows.
-  humanURL: https://developer.nylas.com/
+    Amazon SNS notification channels allow you to receive Nylas event notifications through Amazon Simple
+    Notification Service (SNS) instead of webhooks.
+
+
+    To use Amazon SNS notifications, you need to set up an SNS topic and an IAM role in your AWS account.
+    The topic ARN must start with `arn:aws:sns:`. The IAM role must allow Nylas to assume it via STS `AssumeRoleWithWebIdentity`
+    and must have `sns:Publish` permission on the topic. For detailed set up instructions, see the [Amazon
+    SNS notification channel documentation](/docs/v3/notifications/sns-channel/).
+
+
+    The Amazon SNS notification channels use the same notification [trigger types and schemas](/docs/reference/notifications/)
+    as webhook notifications, and require the same [provider scopes](/docs/dev-guide/scopes/).
+
+
+    Nylas strongly recommends setting `compressed_delivery` to `true` when you create an SNS channel.
+    SNS enforces a 256 KB message size limit, and gzip compression is the simplest way to keep large `message.*`
+    notifications inside it. Nylas adds a `content_encoding: gzip+base64` message attribute so your subscriber
+    knows which messages to decompress. For setup and the decode pattern, see [Reducing payload size with
+    compression](/docs/dev-guide/best-practices/compression/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
   baseURL: https://api.us.nylas.com
   tags:
-  - Templates and Workflows
+  - Amazon SNS Notifications
   properties:
   - type: OpenAPI
-    url: openapi/nylas-templates-and-workflows-api-openapi.yml
+    url: openapi/nylas-amazon-sns-notifications-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-app-migration-api
+  name: Nylas App migration API
+  description: >-
+    Before you begin, you should already have:
+
+
+    - Linked your v2 and v3 Nylas organizations. If you're not sure if your organizations are linked and
+    you have a contract with us, [contact Nylas Support](/docs/support/#contact-nylas-support).
+
+    - Created v3 applications to serve as the destinations for your v2 settings and connected account
+    information.
+
+    - [Set up equivalent provider auth apps as needed](/docs/v2/upgrade-to-v3/upgrade/auth/), especially
+    if your users are authenticating with Microsoft.
+
+    - [Set up v3 notification infrastructure](/docs/v2/upgrade-to-v3/upgrade/webhooks/). You'll use this
+    to keep track of object that update while you're migrating your applications.
+
+
+    You make Migration API requests using the v3 API route, using an API key from the destination v3 application.
+
+
+    For each application to be migrated:
+
+
+    1. [Link apps](#post-/v3/migration-tools/link-v2v3-apps)
+
+    2. [Import app settings](#post-/v3/migration-tools/import-v2-app)
+
+    3. [Migrate a test user](#post-/v3/migration-tools/grants/-account_id-/clone) and/or [Start a batch
+    migration](#post-/v3/migration-tools/snapshot-batch-clone)
+
+
+    <div id="admonition-warning"><strong>Make sure you use the correct region!</strong> In Nylas v3, you
+    mange applications for both the U.S. and E.U. regions using the same Dashboard. If you're migrating
+    a v2 application to a v3 one, make sure you create the v3 application in the correct region. </div>
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - App migration
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-app-migration-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-application-level-templates-api
+  name: Nylas Application-level templates API
+  description: >-
+    Application-level templates let you create reusable messages with dynamic content. Each template is
+    linked to the Nylas application associated with the API key specified in a [Create Template request](/docs/reference/api/application-level-templates/create-app-level-template/).
+
+
+    <div id="admonition-info">💡 <b>If you want to create templates for specific grants, use the <a href="/docs/reference/api/grant-level-templates/">grant-level
+    templates endpoints</a></b>.</div>
+
+
+    Nylas supports the following templating engines:
+
+
+    - [Handlebars](https://handlebarsjs.com/)
+
+    - [mustache }}](https://mustache.github.io/)
+
+    - [Nunjucks](https://mozilla.github.io/nunjucks/)
+
+    - [Twig](https://twig.symfony.com/)
+
+
+    We recommend you use [mustache }}](https://mustache.github.io/) or [Handlebars](https://handlebarsjs.com/)
+    if you need a simple implementation. If you need more advanced formatting, conditions, or layouts,
+    we recommend [Nunjucks](https://mozilla.github.io/nunjucks/) or [Twig](https://twig.symfony.com/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Application-level templates
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-application-level-templates-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-application-level-workflows-api
+  name: Nylas Application-level workflows API
+  description: >-
+    Application-level workflows automatically send messages to certain users when a defined event is triggered.
+    For example, if you want to send a confirmation message when a user schedules a booking, you can create
+    a workflow that listens for [`booking.created` events](/docs/reference/notifications/#booking-created-notifications).
+
+
+    Each workflow is linked to the Nylas application associated with the API key specified in a [Create
+    Workflow request](/docs/reference/api/application-level-workflows/create-workflow/).
+
+
+    <div id="admonition-info">💡 <b>If you want to create workflows for specific grants, use the <a href="/docs/reference/api/grant-level-workflows/">grant-level
+    workflows endpoints</a></b>.</div>
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Application-level workflows
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-application-level-workflows-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-applications-api
+  name: Nylas Applications API
+  description: >-
+    In the context of the Nylas APIs, an "application" is the object record of your Nylas application.
+
+
+    <div id="admonition-info">🔍 <b>The term "application" can refer to any of three concepts</b>: your
+    Nylas application, the project you're building ("your application" or "your app"), and applications
+    that you use to connect to service providers ("provider auth applications"). We try to be specific
+    in this documentation to avoid confusion. The API endpoints described here are for working with your
+    Nylas application, specifically.</div>
+
+
+    The Nylas application is the central resource for your Nylas implementation. It collects the [connectors](/docs/reference/api/connectors-integrations/)
+    that you use to store information about third party services that your application connects to, and
+    stores the [grants](/docs/reference/api/manage-grants/) that you create when using connectors.
+
+
+    Nylas applications also allow you to define your specific branding, change the look and feel of the
+    Nylas Hosted authentication flow, and list your application's callback URIs.
+
+
+    ## Application callback URIs
+
+
+    Your Nylas application includes a list of allowed callback URIs. These are known URIs that Nylas can
+    direct users to after authentication. You need to define at least _one_ callback URI so your users
+    can complete the auth flow.
+
+
+    You must include any callback URIs you plan to use in this list. If an auth payload includes a callback
+    URI that isn't on the list, the whole authentication flow fails.
+
+
+    ## Application limitations
+
+
+    <div id="admonition-warning">⚠️ <b>You can create, edit, and delete applications from the Nylas Dashboard</b>.
+    You <i>cannot</i> create, edit, or delete them using the Nylas APIs.</div>
+
+
+    Keep the following limitations in mind as you work with Nylas applications:
+
+
+    - Applications are the central resource that stores other Nylas resources. You _must_ create an application
+    before you can create any other parts of your Nylas implementation.
+
+    - Applications can be associated with only one project at a time. While your project can have more
+    than one Nylas application to provide different authentication experiences, you cannot share applications,
+    connectors, or grants between more than one project.
+
+    - Applications cannot be nested, and cannot be set up with parent-child relationships.
+
+    - Your application must have _at least one_ callback URI, or else it cannot finish the authentication
+    flow, which means it cannot create grants. Nylas requires grants to access user data.
+      - In an ideal scenario, your application will have multiple callback URIs defined.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Applications
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-applications-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-attachments-api
+  name: Nylas Attachments API
+  description: >-
+    You can use the `attachments` schema in a [Send Message request](/docs/reference/api/messages/send-message/)
+    to send attachments, regardless of the email provider. You use the [Drafts](/docs/reference/api/drafts/)
+    endpoints to add and modify files attached to drafts. The Attachments endpoints let you download or
+    get the metadata for existing attachments. For more information, see [Working with email attachments](/docs/v3/email/attachments/).
+
+
+    If you're using draft support, the draft (including the attachment) is stored on the provider. If
+    you're not using draft support, Nylas stores the attachment.
+
+
+    You can make a [Get Attachment Metadata request](/docs/reference/api/attachments/get-attachments-id/)
+    to retrieve a single attachment's metadata using its ID.
+
+
+    ## What counts as an attachment?
+
+
+    In Nylas, an attachment is any file included either inline as part of a message, or attached to a
+    message as a file.
+
+
+    Some major email providers, such as Google and Microsoft, have their own cloud storage ("drive") services.
+    These files usually appear as links in the message body instead of attachments on the Message object.
+    Google Drive lets users attach files either as a link, or a file. Microsoft One Drive attachments
+    always appear as links in the message body.
+
+
+    ## Attachment size discrepancies
+
+
+    When Nylas returns information about an attachment, its listed size might be different from the actual
+    size of the file. This is because of provider encryption methods, message headers, and rounding on
+    the provider side. For example, if you receive a 3480-byte attachment in an email, Nylas might list
+    it as 3680 bytes.
+
+
+    ## Attachments scopes
+
+
+    The table below lists the Attachments endpoints and which scopes they require. The table shortens
+    the full scope URI for space reasons, so add the prefix for the provider when requesting scopes.
+
+
+    The ☑️ in each column indicates the most restrictive scope you can request for each provider and still
+    use that API. More permissive scopes appear under the minimum option. If you're already using one
+    of the permissive scopes, you don't need to add the more restrictive scope.
+
+
+    | Endpoint                                                                                   | Google
+    Scopes</br>`https://www.googleapis.com/auth/...` | Microsoft Scopes</br>`https://graph.microsoft.com/...`                                 |
+
+    | :----------------------------------------------------------------------------------------- | :------------------------------------------------------
+    | :------------------------------------------------------------------------------------- |
+
+    | **GET** `/attachments/<ATTACHMENT_ID>`</br>**GET** `/attachments/<ATTACHMENT_ID>/download` | `/gmail.readonly`
+    ☑️</br>`/gmail.modify`                | `Mail.Read` ☑️</br>`Mail.ReadWrite`</br>`Mail.ReadWrite.Shared`</br>`Mail.Read.Shared`
+    |
+
+
+    For more information about scopes, see [Using scopes to request user data](/docs/dev-guide/scopes/).
+
+
+    ## Query IMAP server directly
+
+
+    Set the `query_imap` query parameter to `true` in your [Get Attachment Metadata](/docs/reference/api/attachments/get-attachments-id/)
+    or [Download Attachment](/docs/reference/api/attachments/get-attachments-id-download/) requests to
+    query the IMAP server directly instead of the Nylas database. This lets you get the most up-to-date
+    information from the IMAP server, or data older than the default three-month retention time.
+
+
+    Keep in mind that most IMAP servers are slow and have low [rate limits](/docs/dev-guide/platform/rate-limits/).
+    Nylas might take more time to return responses compared to requests that don't use the `query_imap`
+    query parameter. If an account has many folders, or you're querying for a large attachment, your request
+    can take even longer.
+
+
+    ## Microsoft attachment size discrepancies
+
+
+    If you're working with Microsoft grants, you might notice a small difference between the attachment
+    size in Nylas' response and the actual size of the downloaded file. This is because Nylas' attachment
+    size calculation includes any MIME encoding headers. Nylas returns this value to be consistent with
+    the provider, and so that it doesn't have to pre-process all attachment content.
+
+
+    When working with attachments on Microsoft grants, we recommend you...
+
+
+    - Treat the metadata `size` field as an estimate for UI display purposes.
+
+    - Always use the actual downloaded file for storage calculations and file operations.
+
+    - Implement flexible buffer handling when the exact byte count of a file matters to your project.
+
+    - Test your Nylas integration with a number of different attachment types and sizes.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Attachments
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-attachments-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-authentication-apis-api
+  name: Nylas Authentication APIs API
+  description: >-
+    Nylas provides two ways to handle authentication:
+
+
+    - **Bring Your Own (BYO) Authentication**, which uses the [`/v3/connect/custom` endpoint](/docs/reference/api/manage-grants/byo_auth/).
+    In BYO Authentication, you already have refresh tokens for your users, and you just need to create
+    grants for them in Nylas. This endpoint is also used for [virtual calendars](/docs/v3/calendar/virtual-calendars/),
+    [IMAP auth](/docs/v3/auth/imap/), and [bulk auth grants](/docs/v3/auth/bulk-auth-grants/).
+
+    - **Hosted OAuth**, where the user completes an OAuth process on the provider, and the provider returns
+    an access token. Depending on your needs, you can use either the user's access token or a Nylas API
+    key to authorize requests after you complete the OAuth flow. See the [Authentication documentation](/docs/v3/auth/)
+    for more information.
+
+
+    ## Hosted authentication with OAuth
+
+
+    OAuth is the modern industry-standard protocol for authorization, and is used by major technology
+    companies like Google, Apple, Microsoft, and others. Nylas supports authentication using the [OAuth
+    2.0 protocol](https://oauth.net/2/) and an additional option to use PKCE for extra security. [PKCE
+    is an extension of the OAuth 2.0 protocol](https://oauth.net/2/pkce/) that prevents authorization
+    code interception attacks, and makes OAuth 2.0 more secure on mobile devices and client-side applications.
+
+
+    During the OAuth 2.0 authentication flow, the user provides the account that they want to authenticate
+    to Nylas, and they're prompted to allow your application's "scopes" (for example, `https://www.googleapis.com/auth/gmail.readonly`
+    or `https://www.googleapis.com/auth/userinfo.profile`). Nylas always returns the fully-qualified Google
+    scopes when you make an Authentication request that references a Google grant. For grants authenticated
+    with other providers, Nylas returns the truncated scopes.
+
+
+    ### Using Hosted OAuth
+
+
+    To use Hosted OAuth you first need to create a Nylas application in the Nylas Dashboard, then create
+    a [connector](/docs/reference/api/connectors-integrations/) in that application for each authentication
+    provider. This allows Nylas to get and store each provider's settings, and configure a set of default
+    scopes to apply.
+
+
+    Nylas can detect which provider a user is authenticating with and redirect them to the correct provider's
+    authentication system.
+
+
+    If the user decides to choose different provider settings for an OAuth 2.0 authorization protocol,
+    Nylas allows them to override the default provider connector's settings.
+
+
+    A successful OAuth authorization results in a [grant](/docs/reference/api/manage-grants/) with the
+    scopes that the user allowed.
+
+
+    See [Create grants with OAuth 2.0 and PKCE](/docs/v3/auth/hosted-oauth-accesstoken/#create-grants-with-oauth-2.0-and-pkce)
+    for more information.
+
+
+    ### Adding the "Sign in with Google" button
+
+
+    Your Google provider auth app must have a "Sign in with Google" button that meets [Google's branding
+    guidelines](https://developers.google.com/identity/branding-guidelines). This applies to the OAuth
+    flow for both personal Gmail (`@gmail.com`) and Workspace email addresses.
+
+
+    For Hosted authentication, Nylas recommends you do one of the following:
+
+
+    - Configure the OAuth login prompt by setting the `prompt` parameter with `select_provider` or `detect,select_provider`.
+    For more information, see [Configure the OAuth login prompt](/docs/v3/auth/customize-login-prompt/).
+
+      <div id="admonition-warning">⚠️ If you add a <code>login_hint</code> that is a personal Gmail or
+    Workspace email address, and you don't configure a <code>prompt</code> during the Hosted auth flow,
+    the user is directed immediately to the Google OAuth page without clicking the "Sign in with Google"
+    button. This can result in delays or failure in verification.
+      </div>
+
+    - Use the pre-approved "Sign in with Google" button along with the "Connect your account" button (or
+    other provider login buttons) in your application. For more information, see Google's official [Sign
+    in with Google branding guidelines](https://developers.google.com/identity/branding-guidelines).
+
+
+    For Bring Your Own Authentication, use the pre-approved "Sign in with Google" button along with the
+    "Connect your account" button (or other provider login buttons) in your application.
+
+
+    Learn more about [Google verification and security assessment](/docs/provider-guides/google/google-verification-security-assessment-guide/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Authentication APIs
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-authentication-apis-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-availability-api
+  name: Nylas Availability API
+  description: >-
+    Nylas Scheduler uses the `/v3/scheduling/availability` endpoint to retrieve availability information.
+    When you make a request, Nylas validates the provided session ID and uses it to retrieve the related
+    Configuration object.
+
+
+    When a Configuration participant is an [Agent Account](/docs/v3/scheduler/agent-accounts/), Scheduler
+    reads busy time from that account's primary calendar only. Set the participant's `availability.calendar_ids`
+    to `["primary"]`; additional calendars on the Agent Account don't affect the returned slots.
+
+
+    ## Availability scopes
+
+
+    The table below lists the Availability endpoints and which scopes they require. The table shortens
+    the full scope URI for space reasons, so add the prefix for the provider when requesting scopes.
+
+
+    The ☑️ in each column indicates the most restrictive scope you can request for each provider and still
+    use that API. More permissive scopes appear under the minimum option. If you're already using one
+    of the permissive scopes, you don't need to add the more restrictive scope.
+
+
+    | Endpoint                           | Google Scopes</br>`https://www.googleapis.com/auth/...` | Microsoft
+    Scopes</br>`https://graph.microsoft.com/...` |
+
+    | :--------------------------------- | :------------------------------------------------------ | :-----------------------------------------------------
+    |
+
+    | **GET** `/scheduling/availability` | `/calendar.readonly` ☑️</br>`/calendar`                 | `Calendars.Read`
+    ☑️</br>`Calendars.ReadWrite`          |
+
+
+    For more information about scopes, see [Using scopes to request user data](/docs/dev-guide/scopes/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Availability
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-availability-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-bookings-api
+  name: Nylas Bookings API
+  description: "Nylas Scheduler uses the `/v3/scheduling/bookings` endpoint to manage bookings.\n\nBookings\
+    \ work the same way when the organizer is an [Agent Account](/docs/v3/scheduler/agent-accounts/):\
+    \ the event is created on the Agent Account's primary calendar, and the confirmation, reschedule,\
+    \ cancellation, and reminder email all send from the Agent Account's own address. Each of those messages\
+    \ counts against the account's [daily send quota](/docs/v3/agent-accounts/send-limits/#sending-limits).\n\
+    \n## Booking types\n\nNylas Scheduler supports two booking types, `booking` and `organizer-confirmation`.\n\
+    \n`booking` represents a regular booking flow. When the booking type is `organizer-confirmation`,\
+    \ Nylas creates an event marked \"Pending\" in the organizer's calendar. It then sends an confirmation\
+    \ request email to the organizer, which includes a link to a page where the organizer can confirm\
+    \ or cancel the booking.\n\n### Finalizing pending bookings\n\nThe [`PUT /v3/scheduling/bookings/{booking_id}`\
+    \ request](/docs/reference/api/bookings/put-bookings-id/) allows the organizer to confirm or cancel\
+    \ a pending booking.\n\n## Booking flow\n\nThe Scheduling Component provides information about the\
+    \ selected time slot, and any additional information that the user added, to the [`/v3/scheduling/bookings`\
+    \ endpoint](/docs/reference/api/bookings/post-bookings/). The Bookings endpoint performs the following\
+    \ tasks:\n\n1. Validates the provided session ID and uses it to retrieve the related Configuration\
+    \ object.\n2. Confirms if the selected time slot is still available.\n3. Retrieves the booking participant's\
+    \ `grant_id`, using the list of participants' email addresses in the Configuration object.\n4. Creates\
+    \ an event.  \n   If the booking type is set to `organizer-confirmation`, a placeholder event is created\
+    \ in the organizer's calendar.\n5. Creates a booking entry in the database and maps the provider's\
+    \ event ID and Scheduler's `booking_id`.\n   If the booking type is set to `organizer-confirmation`,\
+    \ a booking entry with the `pending` status is created. The booking entry includes the placeholder\
+    \ event's `booking_id` and the `additional_fields` data provided in the request.\n6. Nylas creates\
+    \ a booking reference based on the configuration ID and the booking ID. You can use the booking reference\
+    \ to reschedule and cancel the event.\n7. (Optional) Emits a booking (`booking.created`) or a pending\
+    \ booking (`booking.pending`) webhook, depending on the booking type.\n\n## Bookings scopes\n\nThe\
+    \ table below lists the Bookings endpoints and which scopes they require. The table shortens the full\
+    \ scope URI for space reasons, so add the prefix for the provider when requesting scopes.\n\nThe ☑️\
+    \ in each column indicates the most restrictive scope you can request for each provider and still\
+    \ use that API. More permissive scopes appear under the minimum option. If you're already using one\
+    \ of the permissive scopes, you don't need to add the more restrictive scope.\n\n| Endpoint      \
+    \                                                                                                \
+    \                       | Google Scopes</br>`https://www.googleapis.com/auth/...` | Microsoft Scopes</br>`https://graph.microsoft.com/...`\
+    \ |\n| :-----------------------------------------------------------------------------------------------------------------------------------\
+    \ | :------------------------------------------------------ | :-----------------------------------------------------\
+    \ |\n| **POST** `/scheduling/bookings`</br>**DELETE** `/scheduling/bookings/<BOOKING_ID>`</br>**PATCH**\
+    \ `/scheduling/bookings/<BOOKING_ID>` | `/calendar.events` ☑️</br>`/calendar`                   |\
+    \ `Calendars.ReadWrite` ☑️                               |\n\nFor more information about scopes, see\
+    \ [Using scopes to request user data](/docs/dev-guide/scopes/)."
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Bookings
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-bookings-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-calendar-api
+  name: Nylas Calendar API
+  description: >-
+    The Nylas Calendar API allows you to create and manage calendars, and access the events they contain.
+    Nylas uses the same commands to manage calendars across providers, and you can refer to specific calendars
+    using the provider's `calendar_id`.
+
+
+    Depending on the provider, a calendar might be accessed by only one person, or shared among several
+    users. Some common calendars might include Personal, Work, or Shared calendars.
+
+
+    A calendar might contain overlapping events or conflicting schedules. You can use the [Get Availability
+    endpoint](/docs/reference/api/calendar/post-availability/) to find the best time for an event by identifying
+    time periods that have no conflicting events among all participants.
+
+
+    ## Find a calendar ID
+
+
+    You must specify a `calendar_id` in all calls you make to the Nylas Calendar API. You can use `primary`
+    to specify the primary calendar associated with a grant, or you can look up the ID of the calendar
+    that you want to work with and use that.
+
+
+    For virtual calendars, the `primary` calendar is the first created for a virtual account. You _cannot_
+    delete a virtual calendar that's designated as `primary`.
+
+
+    For iCloud, there is no `primary` calendar.
+
+
+    ## Free/Busy information
+
+
+    The [Get Free/Busy Schedule endpoint](/docs/reference/api/calendar/post-calendars-free-busy/) is available
+    for all providers, including Virtual Calendars, except for iCloud.
+
+
+    The [Get Availability endpoint](/docs/reference/api/calendar/post-availability/) doesn't support the
+    `free_busy` object.
+
+
+    ## Virtual calendars
+
+
+    Nylas allows you to create virtual calendars for users and resources that might not have calendars
+    on your providers (for example, external contractors or meeting rooms). You can use the Nylas Calendar
+    and Events APIs with the virtual accounts that power virtual calendars, just like you would any other
+    account. Virtual accounts don't provide email or contacts features, so you can't use them with the
+    Email or Contacts APIs.
+
+
+    For more information, see [Using virtual calendars](/docs/v3/calendar/virtual-calendars/).
+
+
+    ## Metadata on calendars
+
+
+    You can add metadata to new and existing calendars by including the `metadata` sub-object in your
+    `POST`, `PUT`, or `PATCH` request. For more information, see the [Metadata documentation](/docs/dev-guide/metadata/).
+
+
+    ## Calendar scopes
+
+
+    The table below lists the Calendar endpoints and which scopes they require. The table shortens the
+    full scope URI for space reasons, so add the prefix for the provider when requesting scopes.
+
+
+    The ☑️ in each column indicates the most restrictive scope you can request for each provider and still
+    use that API. More permissive scopes appear under the minimum option. If you're already using one
+    of the permissive scopes, you don't need to add the more restrictive scope.
+
+
+    | Endpoint                                                                                                                               |
+    Google Scopes</br>`https://www.googleapis.com/auth/...` | Microsoft Scopes</br>`https://graph.microsoft.com/...`
+    |
+
+    | :-------------------------------------------------------------------------------------------------------------------------------------
+    | :------------------------------------------------------ | :-----------------------------------------------------
+    |
+
+    | **GET** `/calendars`</br>**GET** `/calendars/<CALENDAR_ID>`</br>**POST** `/calendars/free-busy`</br>**POST**
+    `/calendars/availability` | `/calendar.readonly` ☑️</br>`/calendar`                 | `Calendars.Read`
+    ☑️</br>`Calendars.ReadWrite`          |
+
+    | **POST** `/calendars`</br>**PUT** `/calendars/<CALENDAR_ID>`</br>**DELETE** `/calendars/<CALENDAR_ID>`                                 |
+    `/calendar` ☑️                                          | `Calendars.ReadWrite` ☑️                               |
+
+
+    For more information about scopes, see [Using scopes to request user data](/docs/dev-guide/scopes/).
+
+
+    ## Calendar activity notifications
+
+
+    You can subscribe to the following triggers so Nylas notifies you about changes to your users' calendar
+    data:
+
+
+    - `calendar.created`
+
+    - `calendar.updated`
+
+    - `calendar.deleted`
+
+
+    For more information, see the [Calendar webhook notification schemas](/docs/reference/notifications/#calendar-notifications).
+
+
+    ## Microsoft event considerations
+
+
+    Microsoft Outlook events are often shared across all calendars in a user's account. If the user creates
+    an event on one of their calendars, you can retrieve it using another calendar ID from their grant.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Calendar
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-calendar-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-configurations-api
+  name: Nylas Configurations API
+  description: >-
+    A configuration is a collection of event settings and preferences. Nylas Scheduler stores Configuration
+    objects in the Scheduler database and loads them as Scheduling Pages in the Scheduler UI.
+
+
+    A configuration can be either private if it uses a session, or public if it does not. By default,
+    Nylas creates public configurations (`requires_session_auth: false`). To create a private configuration,
+    set `requires_session_auth` to `true`.
+
+
+    After you create a private configuration, you can make a [`POST /v3/scheduling/sessions` request](/docs/reference/api/sessions/post-sessions/)
+    that includes the Configuration object ID to create a session.
+
+
+    ## Agent Accounts as the organizer
+
+
+    The `grant_id` in the path can be an [Agent Account](/docs/v3/agent-accounts/) grant, which makes
+    the Agent Account the organizer of the Configuration. Guests then book against the agent's own calendar
+    and receive confirmation email from the agent's own address, with no OAuth connection involved.
+
+
+    Two limits apply when an Agent Account is a participant:
+
+
+    - Set `availability.calendar_ids` to `["primary"]` and `booking.calendar_id` to `"primary"`. Scheduler
+    reads and writes the Agent Account's primary calendar only.
+
+    - Round-robin Configurations aren't supported. An Agent Account can't be a host under `max-fairness`
+    or `max-availability`, though one-on-one, collective, and group Configurations all work.
+
+
+    The scopes table below covers Google and Microsoft grants. Agent Accounts have no OAuth token, so
+    they authenticate with your API key alone. For the full walkthrough, see [Use Scheduler with Agent
+    Accounts](/docs/v3/scheduler/agent-accounts/).
+
+
+    ## Configurations scopes
+
+
+    The table below lists the Configurations endpoints and which scopes they require. The table shortens
+    the full scope URI for space reasons, so add the prefix for the provider when requesting scopes.
+
+
+    The ☑️ in each column indicates the most restrictive scope you can request for each provider and still
+    use that API. More permissive scopes appear under the minimum option. If you're already using one
+    of the permissive scopes, you don't need to add the more restrictive scope.
+
+
+    | Endpoint                                                                                            |
+    Google Scopes</br>`https://www.googleapis.com/auth/...` | Microsoft Scopes</br>`https://graph.microsoft.com/...`
+    |
+
+    | :--------------------------------------------------------------------------------------------------
+    | :------------------------------------------------------ | :-----------------------------------------------------
+    |
+
+    | **POST** `/scheduling/configurations`</br>**PUT** `/scheduling/configuration/<SCHEDULER_CONFIG_ID>`
+    | `/calendar.readonly` ☑️</br>`/calendar`                 | `Calendars.Read` ☑️</br>`Calendars.ReadWrite`          |
+
+
+    For more information about scopes, see [Using scopes to request user data](/docs/dev-guide/scopes/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Configurations
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-configurations-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-connector-credentials-api
+  name: Nylas Connector credentials API
+  description: >-
+    A Nylas connector credential is a special type of record that securely stores information (such as
+    provider settings) that allows you to connect using an administrator account. Nylas securely stores,
+    hashes, and encrypts the connector credential's sensitive data, and the contents vary depending on
+    the authentication provider.
+
+
+    Bulk authentication grants use connector credentials to connect or reconnect user accounts to your
+    Nylas application. You can also use them to override a connector's settings to perform administrative
+    tasks. For more information, see the [Bulk authentication grant documentation](/docs/v3/auth/bulk-auth-grants/).
+
+
+    Both Google and Microsoft bulk authentication grants can use connector credentials.
+
+
+    To override the default values in a provider's connector settings (for example, the `client_secret`
+    and `client_id`), [create a grant using Bring Your Own Authentication](/docs/v3/auth/bring-your-own-authentication/)
+    and provide the connector credential in your request payload, along with the values to override.
+
+
+    ## Connector credential limitations
+
+
+    Keep the following limitations in mind as you work with connector credentials:
+
+
+    - A connector credential _must_ be connected to an existing Nylas connector.
+
+    - Each connector credential must have a unique name.
+
+    - When you make a [Create Credential request](/docs/reference/api/connector-credentials/create_credential/),
+    Nylas checks if a connector credential with the same parameters exists. If one _does_ exist, Nylas
+    uses that connector credential instead of creating one.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Connector credentials
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-connector-credentials-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-connectors-integrations-api
+  name: Nylas Connectors (Integrations) API
+  description: >-
+    In Nylas, a connector (formerly called an "integration") stores information that allows your Nylas
+    application to connect to a third party services, such as a provider auth application from Google
+    (GCP), Microsoft (Azure), or to an IMAP provider. You must create a connector in your Nylas application
+    for each specific provider before you can create Grants and access user data from that provider.
+
+
+    A Nylas connector stores data about how your Nylas application contacts the provider, the default
+    permissions the Nylas application requests, and is generally the starting point for any authentication
+    with that provider.
+
+
+    ## Connector contents
+
+
+    The connector stores a label provided by the user, the provider name or type (for example, `google`/`microsoft`/`imap`/`virtual_calendar`),
+    an expiry time for the hosted authentication link, and the provider settings.
+
+
+    The "provider's settings" come from the provider itself when you create your provider auth application
+    on Google, Azure, or IMAP. For example, a provider's settings might contain the provider auth application's
+    `client_id` and `client_secret`. Nylas stores these values securely and uses them as default credentials
+    when authenticating with that provider.
+
+
+    Nylas follows modern security best practices to encode and encrypt these provider settings, to ensure
+    that they can never be obtained by a third party, including Nylas internal employees.
+
+
+    ### What are limitations of connectors?
+
+
+    Connectors are associated with a single [Nylas application](/docs/reference/api/applications/).
+
+
+    You can have only one Nylas connector for each type of provider. For example, your Nylas application
+    can have only one Google connector.
+
+
+    If you want to create a grant for a different provider auth application, (for example, on a different
+    GCP project, but you already have a default Google connector), you can create additional credentials
+    for your connector. Each connector can have multiple credentials, where each credential represents
+    a different provider auth application. For more information, see [Using multiple provider applications](/docs/v3/auth/using-multiple-provider-applications/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Connectors (Integrations)
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-connectors-integrations-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-data-migration-api
+  name: Nylas Data migration API
+  description: >-
+    In Nylas v2, you used the unique Nylas ID to locate data and objects in Nylas's synced data. In Nylas
+    v3, you use the provider ID directly. These APIs look up the provider IDs for your v2 data.
+
+
+    Because every project is different, we leave it up to you to decide how your project updates the v2
+    IDs to v3 provider IDs.
+
+
+    <div id="admonition-warning"><strong>These APIs are for one-time translation for migration purposes
+    only.</strong> You can retry these APIs if you encounter issues, but they will be rate limited and
+    you should not use them as part of your project's code or object handling logic.</div>
+
+
+    Some data objects that exist in Nylas v2 may not have provider IDs available, meaning they do not
+    exist on the provider. When this happens, Nylas returns the `v3_resource_id` as `None`.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Data migration
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-data-migration-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-folders-api
+  name: Nylas Folders API
+  description: >-
+    To simplify your experience, the Nylas Email API uses the same commands to manage both folders and
+    labels, and can refer to specific folders using the provider's `folder_id`. The Email API also exposes
+    provider-specific fields (for example, Google's `background_color` field).
+
+
+    Email providers use folders and labels to store and organize messages. Depending on the provider (Google,
+    some IMAP providers, and so on), a message can be contained in more than one folder.
+
+
+    <div id="admonition-danger">⛔️ <b>The <a href="/docs/reference/api/folders/delete-folders-id/">Delete
+    Folder endpoint</a> deletes a folder, including all messages it contains</b>.</div>
+
+
+    ## Folders scopes
+
+
+    The table below lists the Folders endpoints and which scopes they require. The table shortens the
+    full scope URI for space reasons, so add the prefix for the provider when requesting scopes.
+
+
+    The ☑️ in each column indicates the most restrictive scope you can request for each provider and still
+    use that API. More permissive scopes appear under the minimum option. If you're already using one
+    of the permissive scopes, you don't need to add the more restrictive scope.
+
+
+    | Endpoint                                                                                     | Google
+    Scopes</br>`https://www.googleapis.com/auth/...` | Microsoft Scopes</br>`https://graph.microsoft.com/...`                                 |
+
+    | :------------------------------------------------------------------------------------------- | :------------------------------------------------------
+    | :------------------------------------------------------------------------------------- |
+
+    | **GET** `/folders`<br/>**GET** `/folders/<FOLDER_ID>`                                        | `/gmail.labels`
+    ☑️<br/>`/gmail.modify`                  | `Mail.Read` ☑️<br/>`Mail.ReadWrite`<br/>`Mail.ReadWrite.Shared`<br/>`Mail.Read.Shared`
+    |
+
+    | **POST** `/folders`<br/>**PUT** `/folders/<FOLDER_ID>`<br/>**DELETE** `/folders/<FOLDER_ID>` | `/gmail.labels`
+    ☑️<br/>`/gmail.modify`                  | `Mail.ReadWrite` ☑️<br/>`Mail.ReadWrite.Shared`                                        |
+
+
+    For more information about scopes, see [Using scopes to request user data](/docs/dev-guide/scopes/).
+
+
+    ## Folders notifications
+
+
+    You can subscribe to the following triggers so Nylas notifies you about changes to your users' data:
+
+
+    - `folder.created`
+
+    - `folder.updated`
+
+    - `folder.deleted`
+
+
+    For more information, see the [Folder notification schemas](/docs/reference/notifications/#folder-notifications).
+
+
+    ## Folders limitations
+
+
+    Keep the following limitations in mind when you're working with folders:
+
+
+    - Because providers structure folders in different ways, Nylas doesn't support nested folders. Instead,
+    Nylas flattens sub-folders and displays them in the same list as top-level folders.
+      - For Microsoft, you can use the `parent_id` to reflect the folder hierarchy in your project.
+      - On IMAP, the hierarchy is reflected in the folder name (for example, `Accounting.Taxes` or `INBOX\Accounting\Taxes`).
+    - Because of how IMAP providers handle folders and labels, the folder names that Nylas returns aren't
+    always the same as those listed in the provider's UI (for example, the "Trash" folder might be "Deleted
+    Messages" in a Nylas response). Instead of relying on names, you should [use attributes and IDs to
+    get the data you need](/docs/v3/email/folders/#folder-and-label-behavior).
+
+    - IMAP servers use provider-specific formats to represent the folder name and hierarchy. When you
+    make a [Create Folder request](/docs/reference/api/folders/post-folder/) for an IMAP account, Nylas
+    creates a folder with the name you pass. If the name includes the IMAP separator that corresponds
+    with the server settings, Nylas creates a sub-folder based on the folder name.
+
+    - Nylas doesn't support using keywords to reference folders on the provider (for example, `in:inbox`
+    returns a [`400` error](/docs/api/errors/400-response/)). Instead, Nylas recommends you use specific
+    folder `id`s to get the data you need.
+
+    - It might take up to 10 minutes for folders to be available in Nylas after you authenticate an IMAP
+    grant.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Folders
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-folders-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-grant-level-templates-api
+  name: Nylas Grant-level templates API
+  description: >-
+    Grant-level templates let you create reusable messages with dynamic content. Each template is linked
+    to the grant specified in a [Create Template request](/docs/reference/api/grant-level-templates/create-grant-level-template/).
+
+
+    <div id="admonition-info">💡 <b>If you want to create templates for a Nylas application, use the <a
+    href="/docs/reference/api/application-level-templates/">application-level templates endpoints</a></b>.</div>
+
+
+    Nylas supports the following templating engines:
+
+
+    - [Handlebars](https://handlebarsjs.com/)
+
+    - [mustache }}](https://mustache.github.io/)
+
+    - [Nunjucks](https://mozilla.github.io/nunjucks/)
+
+    - [Twig](https://twig.symfony.com/)
+
+
+    We recommend you use [mustache }}](https://mustache.github.io/) or [Handlebars](https://handlebarsjs.com/)
+    if you need a simple implementation. If you need more advanced formatting, conditions, or layouts,
+    we recommend [Nunjucks](https://mozilla.github.io/nunjucks/) or [Twig](https://twig.symfony.com/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Grant-level templates
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-grant-level-templates-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-grant-level-workflows-api
+  name: Nylas Grant-level workflows API
+  description: >-
+    Grant-level workflows automatically send messages to certain users when a defined event is triggered.
+    For example, if you want to send a confirmation message when a user schedules a booking, you can create
+    a workflow that listens for [`booking.created` events](/docs/reference/notifications/#booking-created-notifications).
+
+
+    Each workflow is linked to the grant specified in the [Create Workflow request](/docs/reference/api/grant-level-workflows/create-grant-workflow/).
+
+
+    <div id="admonition-info">💡 <b>If you want to create workflows for a Nylas application, use the <a
+    href="/docs/reference/api/application-level-workflows/">application-level workflows endpoints</a></b>.</div>
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Grant-level workflows
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-grant-level-workflows-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-group-events-api
+  name: Nylas Group Events API
+  description: >-
+    Group meetings let you host events with multiple participants. Unlike one-on-one meetings, group events
+    are designed for collaborative scheduling where multiple attendees are invited to the same event.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Group Events
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-group-events-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-lists-api
+  name: Nylas Lists API
+  description: >-
+    The Lists endpoints let you manage typed collections of values (email addresses, domains, or top-level
+    domains) that can be referenced by Rules using the `in_list` condition operator. Lists provide a way
+    to maintain dynamic allow lists and block lists that are evaluated during inbound rule processing
+    and outbound send evaluation without needing to update individual rules.
+
+
+    Each list has a `type` that determines what kind of values it accepts and which rule condition fields
+    it can be matched against:
+
+
+    - **`domain`** — Domain names (for example, `example.com`). Matched against the `from.domain` or `recipient.domain`
+    rule condition.
+
+    - **`tld`** — Top-level domains (for example, `com`, `xyz`). Matched against the `from.tld` or `recipient.tld`
+    rule condition.
+
+    - **`address`** — Full email addresses (for example, `user@example.com`). Matched against the `from.address`
+    or `recipient.address` rule condition.
+
+
+    List `type` is set at creation time and cannot be changed. Items within a list are managed via the
+    `/v3/lists/{list_id}/items` sub-resource endpoints. Values are automatically normalized (lowercased
+    and trimmed) and validated against the list's `type`. Duplicate additions are silently ignored. You
+    can submit up to 1000 items per add or remove request, and each item value can be at most 500 characters.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Lists
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-lists-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-manage-api-keys-api
+  name: Nylas Manage API keys API
+  description: >-
+    The Manage API Keys endpoints let you create, list, and delete API keys from your Nylas application
+    outside of the Nylas Dashboard.
+
+
+    ## Nylas Service Account
+
+
+    <div id="admonition-warning">⚠️ <b>Before you can use the Manage API Keys endpoints, you need to create
+    a Nylas Service Account</b>. If you have a contract with us, you can <a href="/docs/support/#contact-nylas-support">contact
+    Nylas Support</a> for more information.</div>
+
+
+    After Nylas Support creates a Service Account for your application, they send you a JSON file with
+    the following information:
+
+    </br></br>
+
+
+    ```json
+
+    {
+      "type": "service_account",
+      "private_key_id": "<API_KEY_GUID>",
+      "private_key": "<API_KEY_SECRET>",
+      "organization_id": "<ORGANIZATION_GUID>",
+      "region": "us"
+      "permissions": ["apikey.create", "apikey.delete", "apikey.get"]
+    }
+
+    ```
+
+
+    You use the information in this file to generate the headers that sign your requests (for example,
+    the `X-Nylas-Signature` header uses your private key's RSA, a 2048-bit key, and an SHA-256 hashed
+    string of the path, method, timestamp, nonce, and payload.). Be sure to [store this information securely](/docs/dev-guide/best-practices/#store-secrets-securely).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Manage API keys
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-manage-api-keys-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-manage-domains-api
+  name: Nylas Manage Domains API
+  description: >-
+    The Manage Domains endpoints let you register, verify, update, and delete email domains for use with
+    [Transactional Send](/docs/v3/getting-started/transactional-send/) and [Nylas Agent Accounts](/docs/v3/agent-accounts/).
+
+
+    Before you can use these endpoints, you need a [Nylas Service Account](/docs/v3/auth/nylas-service-account/)
+    to authenticate your requests. Nylas Service Account authentication uses cryptographic request signing
+    with four custom headers (`X-Nylas-Kid`, `X-Nylas-Timestamp`, `X-Nylas-Nonce`, `X-Nylas-Signature`).
+
+
+    ## Domain verification
+
+
+    After you register a domain, you must verify DNS records before you can use it. Call the **Get domain
+    info** endpoint to retrieve the DNS records you need to configure, then call the **Verify domain**
+    endpoint after you've added them to your DNS provider.
+
+
+    The verification types are:
+
+
+    | Type        | Required for                       | Description                              |
+
+    | ----------- | ---------------------------------- | ---------------------------------------- |
+
+    | `ownership` | All domains                        | Proves you control the domain.           |
+
+    | `dkim`      | Transactional Send, Agent Accounts | Authenticates outgoing mail.             |
+
+    | `spf`       | Transactional Send, Agent Accounts | Authorizes Nylas to send on your behalf. |
+
+    | `feedback`  | Transactional Send, Agent Accounts | Enables bounce reporting.                |
+
+    | `mx`        | Agent Accounts                     | Routes incoming mail to Nylas.           |
+
+
+    Nylas tracks `dmarc` and `arc` records but does not currently enforce or verify them. Setting up DMARC
+    is highly recommended to prevent emails going to spam.
+
+
+    For more information, see [Managing domains](/docs/v3/email/domains/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Manage Domains
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-manage-domains-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-manage-grants-api
+  name: Nylas Manage Grants API
+  description: >-
+    Grants are the main objects that power Nylas, because they _grant_ your Nylas application specific
+    scopes of access (for example, permission to read email messages) to the user's resources and data
+    on their provider. They also represent access granted to your application for certain resources.
+
+
+    There are several ways to create grants:
+
+
+    - Using [Hosted OAuth and an API key](/docs/v3/auth/hosted-oauth-apikey/).
+
+    - Using [Hosted OAuth and an access token](/docs/v3/auth/hosted-oauth-accesstoken/), with [optional
+    PKCE](/docs/v3/auth/hosted-oauth-accesstoken/#create-grants-with-oauth-2.0-and-pkce) for additional
+    security.
+
+    - Using [Bring Your Own Authentication](/docs/v3/auth/custom/).
+
+    - Using a special [bulk auth grant](/docs/v3/auth/bulk-auth-grants/) (also called a "service account").
+
+
+    You can re-authenticate grants using any of these methods, and Nylas handles all the re-authentication
+    logic internally.
+
+
+    ## Grant expiry
+
+
+    Grants, and their access tokens and refresh tokens are controlled by the provider, not Nylas. Nylas
+    can request that the provider invalidate or revoke a grant, but can't prevent the provider from expiring
+    a grant.
+
+
+    Usually when a provider expires a grant it is after a period of inactivity, and the provider expires
+    the associated access token for security reasons. To prevent grants from expiring, encourage users
+    to actively engage with their accounts and regularly refresh the access token with a valid refresh
+    token.
+
+
+    ## Re-authentication and notifications
+
+
+    Grants can become invalid for many reasons (for example, the user changing their password). When a
+    grant becomes invalid, the user must re-authenticate to access your application.
+
+
+    When a grant becomes invalid, Nylas loses access to the affected user's data and stops sending notifications
+    about changes to its objects. When the user re-authenticates, Nylas looks at when their grant last
+    authenticated successfully. If it was less than 72 hours ago, Nylas looks for any changes that happened
+    since the last successful sync and sends you notifications about those events. This can be _a lot_
+    of notifications.
+
+
+    If the grant was out of service for more than 72 hours, Nylas doesn't send backfill notifications.
+    When this happens, look for the `grant.expired` and `grant.updated` notifications and query the Nylas
+    APIs for objects that changed between those timestamps.
+
+
+    <div id="admonition-warning">⚠️ <b>If message tracking events occur while a grant is out of service
+    for more than 72 hours, you cannot backfill the notifications</b>. This includes <a href="/docs/reference/notifications/#message-opened-notifications"><code>message.opened</code></a>,
+    <a href="/docs/reference/notifications/#link-clicked-notifications"><code>message.link_clicked</code></a>,
+    and <a href="/docs/reference/notifications/#thread-replied-notifications"</a><code>thread.replied</code></a>
+    notifications.</div>
+
+
+    ## Grant limitations
+
+
+    When working with grants, keep the following limitations in mind:
+
+
+    - You can re-authenticate a grant to add new scopes, remove scopes, or extend its expiry date.
+
+    - Each grant belongs to a specific Nylas connector (because they come from a specific provider), in
+    a specific Nylas application. A grant cannot be associated with multiple connectors or applications.
+
+    - Grants expire after a pre-defined period of time. When this happens, they must be re-authenticated.
+
+
+    ## Grant notifications
+
+
+    You can subscribe to the following triggers so Nylas notifies you about changes to your users' data:
+
+
+    - `grant.created`
+
+    - `grant.updated`
+
+    - `grant.deleted`
+
+    - `grant.expired`
+
+
+    For more information, see the [Grant notification schemas](/docs/reference/notifications/#grant-notifications).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Manage Grants
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-manage-grants-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-policies-api
+  name: Nylas Policies API
+  description: >-
+    The Policies endpoints let you define the operational configuration for Nylas Agent Accounts, including
+    message limits, attachment constraints, spam detection settings, and linked rules for inbound message
+    filtering. Each policy is scoped to your application and can be assigned to one or more Agent Accounts,
+    or attached to a [workspace](/docs/reference/api/workspaces/) to apply its limits and spam settings
+    to the Agent Accounts it contains.
+
+
+    Policies let you control:
+
+
+    - **Limits** — Attachment sizes, counts, allowed types, total storage, daily message quotas, and retention
+    periods for the inbox and spam folders.
+
+    - **Spam detection** — DNS-based block list (DNSBL) checking, header anomaly detection, and sensitivity
+    tuning.
+
+    - **Rules** — Link filtering rules (created via the Rules API) to automatically process inbound messages
+    based on sender criteria.
+
+
+    Policy limits are validated against your plan's maximum values. If a limit field is omitted, it defaults
+    to the plan maximum. If a requested value exceeds the plan limit, the API returns an error.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Policies
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-policies-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-pub-sub-notifications-api
+  name: Nylas Pub/Sub Notifications API
+  description: >-
+    Nylas offers two ways to get notifications of what's happening on the provider. You can either subscribe
+    to webhook notifications, or you can set up a notification channel.
+
+
+    Nylas offers Pub/Sub and Amazon SNS notification channels. These can be used in place of, or in addition
+    to, normal webhook notifications.
+
+
+    To use Pub/Sub notifications, you first need to set up a Pub/Sub queue on Google Cloud Platform. For
+    detailed set up instructions see the [Pub/Sub notifications documentation](/docs/v3/notifications/pubsub-channel/).
+
+
+    To use Amazon SNS notifications, you need to set up an SNS topic and IAM role in your AWS account.
+    For detailed set up instructions see the [Amazon SNS notifications documentation](/docs/v3/notifications/sns-channel/).
+
+
+    Nylas notification channels use the same notification [trigger types and schemas](/docs/reference/notifications/)
+    as webhook notifications, and require the same [provider scopes](/docs/dev-guide/scopes/).
+
+
+    ## Payload compression
+
+
+    Both Pub/Sub and SNS channels accept a `compressed_delivery` boolean that gzip-compresses each notification
+    payload before delivery. Nylas adds a `content_encoding` message attribute (`gzip` for Pub/Sub, `gzip+base64`
+    for SNS) so your subscriber knows which messages to decompress. We strongly recommend enabling it
+    on SNS channels, where the 256 KB message limit makes compression the simplest way to avoid payload
+    truncation. For setup and decode patterns, see [Reducing payload size with compression](/docs/dev-guide/best-practices/compression/).
+
+
+    ## Monitor grant status
+
+
+    The most important notifications to subscribe to are those related to grant status: `grant.created`,
+    `grant.updated`, `grant.deleted`, and `grant.expired`. They allow you to automate important grant
+    lifecycle processes, like onboarding messages, data refreshes, and backend deletions.
+
+
+    The `grant.expired` trigger notifies you when a user needs to re-authenticate their account. When
+    you receive a `grant.expired` notification, you can take appropriate action (for example, notifying
+    the user or starting a background re-authentication process).
+
+
+    <div id="admonition-info"> 📝 <b>When a grant becomes invalid, Nylas cannot access the user's data
+    and does not send you notifications about it</b>. When you re-authenticate a grant, Nylas looks at
+    when the grant last authenticated successfully. If it was less than 72 hours ago, Nylas looks for
+    any changes that happened since the time of the last successful sync, and sends you notifications
+    about them. This can be a <i>lot</i> of notifications.
+
+
+    If the grant has been out of service for more than 72 hours, Nylas does _not_ send backfill notifications.
+    In this case, look for the `grant.expired` and `grant.updated` notifications, and query the Nylas
+    API for objects that changed between those timestamps.
+
+
+    </div>
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Pub/Sub Notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-pub-sub-notifications-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-room-resources-api
+  name: Nylas Room resources API
+  description: >-
+    The Nylas Contacts API allows you to return information about rooms that you can book for meetings,
+    conferences, and other events.
+
+
+    ## Room resource booking scopes
+
+
+    The table below lists the Microsoft and Google scopes for room resource bookings. All scopes must
+    include the fully qualified URI path for the provider, as defined in the table headers. These have
+    been omitted from the scopes due to space constraints.
+
+
+    The ☑️ character indicates the most restrictive scopes you can use for each provider.
+
+
+    | Endpoint                                        | Google Scopes</br>`https://www.googleapis.com/auth/...`
+    | Microsoft Scopes</br>`https://graph.microsoft.com/...` |
+
+    | :---------------------------------------------- | :------------------------------------------------------
+    | :----------------------------------------------------- |
+
+    | **GET** `/v3/grants/<NYLAS_GRANT_ID>/resources` | `/admin.directory.resource.calendar.readonly`
+    ☑️️       | `Place.Read.All` ☑️️                                   |
+
+
+    For more information, see [Using scopes to request user data](/docs/dev-guide/scopes/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Room resources
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-room-resources-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-rules-api
+  name: Nylas Rules API
+  description: >-
+    The Rules endpoints let you define automated filtering and routing logic for Nylas Agent Accounts.
+    Each rule specifies a `trigger` (`inbound` or `outbound`), matching conditions, and actions to perform
+    when those conditions are met.
+
+
+    **Inbound rules** run when mail arrives. Conditions match the sender — `from.address`, `from.domain`,
+    or `from.tld`. Actions include blocking the message at the SMTP level, marking as spam, assigning
+    to a folder, marking as read or starred, archiving, and trashing.
+
+
+    **Outbound rules** run before a send is submitted to the email provider. Conditions can match sender
+    data (`from.address`, `from.domain`, `from.tld`), recipient data (`recipient.address`, `recipient.domain`,
+    `recipient.tld`), or the send type via `outbound.type` (`compose` for new messages, `reply` for replies).
+    A `block` action on an outbound rule rejects the send with HTTP 403 before it reaches the provider,
+    so no message is delivered and no sent copy is stored. Non-blocking actions (`mark_as_spam`, `archive`,
+    `mark_as_read`, `mark_as_starred`, `assign_to_folder`, `trash`) apply to the stored sent copy. `recipient.*`
+    fields match against **any** recipient — including To, CC, BCC, and SMTP envelope recipients.
+
+
+    Inbound and outbound rules are isolated. Inbound rules never run during sends, and outbound rules
+    never run on message receipt, so stored sent copies aren't re-evaluated against inbound rules.
+
+
+    Rules are evaluated in priority order (lower numbers first). Inbound rules are applied through the
+    recipient grant's policy. Outbound rules are currently evaluated from the sending application's enabled
+    outbound rules. The `block` action is terminal and cannot be combined with other actions.
+
+
+    Rules support the `in_list` condition operator, which checks field values against Lists (managed via
+    the Lists API) for dynamic, maintainable allow and block lists. `in_list` works for `from.*` and `recipient.*`
+    fields but not for `outbound.type`, which accepts only `is` and `is_not`.
+
+
+    Rule executions are audited per grant. List evaluation records with `GET /v3/grants/{grant_id}/rule-evaluations`
+    to see which inbound or outbound rules ran, what normalized input was considered, and which actions
+    were applied.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Rules
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-rules-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-sessions-api
+  name: Nylas Sessions API
+  description: >-
+    Nylas Scheduler uses session IDs to authorize requests to the [`/v3/scheduling/availability`](/docs/reference/api/availability/)
+    and [`/v3/scheduling/bookings`](/docs/reference/api/bookings/) endpoints.
+
+
+    When you create a session, you must include the ID of an existing [Configuration object](/docs/reference/api/configurations/).
+    Sessions are only required for private configurations (`requires_session_auth: true`).
+
+
+    ## Time to live
+
+
+    For security purposes, Nylas recommends you set the `time_to_live` value for each session and refresh
+    the sessions as they expire.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Sessions
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-sessions-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-signatures-api
+  name: Nylas Signatures API
+  description: >-
+    The Nylas Signatures API lets you create and store HTML email signatures on Nylas, and reference them
+    by ID when sending messages or creating drafts. Nylas appends the signature to the end of the email
+    body at send time.
+
+
+    Nylas signatures are managed entirely through this API and are separate from any signatures configured
+    in the user's email provider (Gmail, Outlook, etc.). Provider signatures are not synced to Nylas,
+    and are not applied to emails sent through the Nylas API.
+
+
+    Each grant supports up to 10 signatures, so users can maintain variants for different contexts (for
+    example, "Work", "Personal", or "Mobile"). Signatures are automatically deleted when the parent grant
+    is deleted.
+
+
+    For more information, see the [Using email signatures](/docs/v3/email/signatures/) documentation.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Signatures
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-signatures-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-smart-compose-api
+  name: Nylas Smart compose API
+  description: >-
+    The Smart Compose endpoints extend the Nylas Messages API. Currently, Smart Compose supports only
+    two methods of getting AI responses: you can either receive them as a REST response in a single JSON
+    blob, or use server-sent events (SSE) to stream the response tokens as Nylas receives them.
+
+
+    If you want to receive responses using the REST method, add the `Accept: application/json` header.
+    Nylas will return a single JSON blob. If you use this method, you might want to add a "working" indicator
+    to your UI, as response times may vary.
+
+
+    To enable SSE for a request, add the `Accept: text/event-stream` header.
+
+
+    For more information, see the [Smart Compose documentation](/docs/v3/email/smart-compose/).
+
+
+    ## Smart Compose scopes
+
+
+    The table below lists the Smart Compose endpoints and which scopes they require. The table shortens
+    the full scope URI for space reasons, so add the prefix for the provider when requesting scopes.
+
+
+    The ☑️ in each column indicates the most restrictive scope you can request for each provider and still
+    use that API. More permissive scopes appear under the minimum option. If you're already using one
+    of the permissive scopes, you don't need to add the more restrictive scope.
+
+
+    | Endpoint                                                                               | Google
+    Scopes</br>`https://www.googleapis.com/auth/...` | Microsoft Scopes</br>`https://graph.microsoft.com/...`                                 |
+
+    | :------------------------------------------------------------------------------------- | :------------------------------------------------------
+    | :------------------------------------------------------------------------------------- |
+
+    | **POST** `/messages/smart-compose`</br>**POST** `/messages/<MESSAGE_ID>/smart-compose` | `/gmail.readonly`
+    ☑️</br>`/gmail.modify`                | `Mail.Read` ☑️</br>`Mail.ReadWrite`</br>`Mail.ReadWrite.Shared`</br>`Mail.Read.Shared`
+    |
+
+
+    For more information about scopes, see [Using scopes to request user data](/docs/dev-guide/scopes/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Smart compose
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-smart-compose-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-standalone-notetaker-api
+  name: Nylas Standalone Notetaker API
+  description: >-
+    Nylas Notetaker is a real-time meeting bot that you can invite to your online meetings. It records
+    and transcribes your discussion, and delivers results to you using the Nylas API and webhook notifications.
+
+
+    The `/v3/notetakers` endpoints let you interact with Nylas Notetaker without referencing a grant.
+    This lets all your users — even those who haven't authenticated with your Nylas application — use
+    Notetaker in their meetings.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Standalone Notetaker
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-standalone-notetaker-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-transactional-send-api
+  name: Nylas Transactional send API
+  description: >-
+    Nylas' Transactional Send endpoint lets you send messages directly from an email domain that you've
+    verified with Nylas. You can use this to send password reset emails, account verifications, or system
+    notifications.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Transactional send
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-transactional-send-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-v2-redirects-api
+  name: Nylas v2 Redirects API
+  description: >-
+    Nylas Scheduler uses the `/v3/scheduling/should-redirect/<V2_SCHEDULER_SLUG>` endpoint to redirect
+    existing v2 Scheduling Pages to v3.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - v2 Redirects
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-v2-redirects-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-webhook-notifications-api
+  name: Nylas Webhook Notifications API
+  description: >-
+    Your application receives information about changes to user accounts and data through Nylas webhooks.
+
+
+    <div id="admonition-info"> 🔍 <b>The term "webhook" can refer to any of three component parts</b>:
+    a location where you receive notifications (the "webhook URL" or "webhook endpoint"), a subscription
+    to events that you want notifications for ("webhook triggers"), or the information payload that is
+    sent when a trigger condition is met (the "webhook notification"). We try to be specific in this documentation
+    to avoid confusion.</div>
+
+
+    To configure webhooks, you first need a webhook URL in your project where your app can receive incoming
+    webhook payloads, and a list of triggers that you want to receive notifications for. See the [list
+    of available trigger types](/docs/reference/notifications/) for more information.
+
+
+    Webhooks in Nylas are not compatible with Ngrok because of throughput limiting concerns. Nylas recommends
+    you use [VS Code port forwarding](https://code.visualstudio.com/docs/editor/port-forwarding), [Hookdeck](https://hookdeck.com/),
+    or a similar webhook tool.
+
+
+    ## Testing webhooks
+
+
+    Nylas includes two utility API endpoints to help you identify problems with your webhook configuration.
+
+
+    Use the [Send Test Event endpoint](/docs/reference/api/webhook-notifications/send_test_event/) to
+    check if your project's webhook destination is configured correctly. This endpoint sends a test webhook
+    payload, and listens for a success acknowledgement from the webhook destination.
+
+
+    Use the [Get Mock Notification Payload endpoint](/docs/reference/api/webhook-notifications/get_mock_webhook_payload/)
+    to see example notification payloads for the different Nylas events.
+
+
+    ## Monitor grant status
+
+
+    The most important webhooks to subscribe to are those related to grant status: `grant.created`, `grant.updated`,
+    `grant.deleted`, and `grant.expired`. They allow you to automate important grant lifecycle processes,
+    like onboarding messages, data refreshes, and backend deletions.
+
+
+    The `grant.expired` trigger notifies you when a user needs to re-authenticate their account. When
+    you receive a `grant.expired` notification, you can take appropriate action (for example, notifying
+    the user or starting a background re-authentication process).
+
+
+    <div id="admonition-info"> 📝 <b>When a grant becomes invalid, Nylas cannot access the user's data
+    and does not send you webhook notifications about it</b>. When you re-authenticate a grant, Nylas
+    looks at when the grant last authenticated successfully. If it was less than 72 hours ago, Nylas looks
+    for any changes that happened since the time of the last successful sync, and sends you notifications
+    about them. This can be a <i>lot</i> of notifications.
+
+
+    If the grant has been out of service for more than 72 hours, Nylas does _not_ send backfill notifications.
+    In this case, look for the `grant.expired` and `grant.updated` notifications, and query the Nylas
+    API for objects that changed between those timestamps.</div>
+
+
+    ## iCloud limitation for Calendar notifications
+
+
+    Because iCloud doesn't support the `primary` property for calendars, Nylas sends `calendar.updated`
+    notifications for changes to all calendars on an iCloud account.
+
+
+    ## Gmail metadata notifications
+
+
+    Nylas sends [`message.created.metadata` and `message.updated.metadata` notifications](/docs/reference/notifications/#message-metadata-notifications)
+    for Google grants that include the `/gmail.metadata` scope. These notifications have limited data
+    because of the restrictive scope. Even if a grant has more permissive scopes, Google falls back to
+    the `/gmail.metadata` permissions.
+
+
+    When you subscribe to a `message.*` webhook trigger, Nylas automatically sends `message.*.metadata`
+    notifications as well. You don't need to subscribe to these triggers separately, and they don't appear
+    as a configuration option in the Nylas Dashboard. For more information, see our list of [available
+    trigger types](/docs/reference/notifications/).
+
+
+    ## Payload size limit and truncation
+
+
+    Nylas sends webhook notifications as JSON payloads that contain the object that triggered the notification,
+    up to a maximum payload size of 1MB. If a webhook notification exceeds the size limit, Nylas truncates
+    the payload by removing the body content, and adds the `.truncated` suffix to the webhook trigger
+    name (for example, `message.created.truncated`). This reduces the size of the payload and improves
+    performance.
+
+
+    When you receive a truncated webhook notification, you'll need to re-query the Nylas APIs to get the
+    data. For example, if you receive a `message.updated.truncated` notification, make a [Get Message
+    request](/docs/reference/api/messages/get-messages-id/) that includes the message ID.
+
+
+    If you subscribe to a webhook trigger that can be truncated, Nylas automatically sends you `.truncated`
+    notifications as well. You don't need to subscribe to webhook triggers with the `.truncated` suffix
+    separately, and the suffix doesn't appear as a option in the Nylas Dashboard. See the [list of available
+    trigger types](/docs/reference/notifications/) for more information.
+
+
+    You can monitor for `.truncated` notifications to create automations that retrieve the full affected
+    object. For example, you can create an automation that makes a [`GET /v3/grants/<NYLAS_GRANT_ID>/messages/<MESSAGE_ID>`
+    request](/docs/reference/api/messages/get-messages-id/) when your application receives a `message.updated.truncated`
+    notification.
+
+
+    ## Payload compression
+
+
+    Set `compressed_delivery` to `true` on a webhook destination and Nylas gzip-compresses each notification
+    before `POST`ing it to your endpoint, adding a `Content-Encoding: gzip` header. Compressed payloads
+    are also opaque to firewalls and WAFs that would otherwise block requests containing HTML in email
+    bodies. Verify the `X-Nylas-Signature` header against the raw compressed body _before_ decompressing.
+    For full setup and when to use it, see [Reducing payload size with compression](/docs/dev-guide/best-practices/compression/).
+
+
+    ## How to handle webhook failures
+
+
+    Nylas implements "circuit breaker" logic to handle failing webhooks. See [improvements to failure
+    notifications](/docs/new/in-v3/webhooks-changes/#improvements-to-webhook-failure-notifications) and
+    [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for more information.
+
+
+    - **Failing state**: If Nylas cannot deliver a webhook notification to the destination endpoint for
+    95% of webhooks over a 15-minute period, Nylas marks the endpoint as `failing` but continues sending
+    notifications to it. Nylas also sends you a message when this happens so you can troubleshoot the
+    issue.
+
+    - **Failed state**: If Nylas cannot deliver 95% of webhook notifications to a `failing` endpoint over
+    the next 72 hours, Nylas marks the endpoint as `failed` and stops sending notifications to it. Nylas
+    also sends you a message when this happens so you can address the issue.
+
+
+    <div id="admonition-warning">⚠️ Nylas does not automatically restart or reactivate <code>failed</code>
+    webhooks.</div>
+
+
+    This change gives you full control over when your webhook endpoint becomes active again, so you can
+    verify that it's working as expected before you restart normal webhook traffic.
+
+
+    ## Duplicate webhook notifications
+
+
+    Nylas guarantees "at least once" delivery of webhooks. You might receive duplicate webhook notifications
+    because of the provider's behavior (for example, when Google and Microsoft Graph send upserts).
+
+
+    ## Webhook triggers
+
+
+    - `contact.updated`: A contact was modified or updated.
+
+    - `contact.deleted`: A contact was deleted.
+
+    - `calendar.created`: A calendar was created.
+
+    - `calendar.updated`: A calendar was updated or modified.
+
+    - `calendar.deleted`: A calendar was deleted.
+
+    - `event.created`: An event was created on a user's calendar.
+
+    - `event.updated`: An event was updated or modified.
+
+    - `event.deleted`: An event was deleted.
+
+    - `grant.created`: A new grant was authenticated.
+
+    - `grant.updated`: A grant was modified, updated, or re-authenticated.
+
+    - `grant.deleted`: A grant was deleted as a result of the user making a [Delete Grant request](/docs/reference/api/manage-grants/delete_grant_by_id/).
+
+    - `grant.expired`: A grant's credentials have expired, and the user must re-authenticate.
+
+    - `message.created`: A message was created.
+
+    - `message.created.cleaned`: A cleaned (parsed) version of a newly created message was processed.
+    Requires Clean Conversations to be enabled.
+
+    - `message.updated`: A message was updated.
+
+    - `message.send_success`: A scheduled message was sent and delivered successfully. You must set the
+    `send_at` parameter in a message to use this trigger. For more information, see [Schedule messages
+    to send in the future](/docs/v3/email/scheduled-send/).
+
+    - `message.send_failed`: A scheduled message was sent, but was not delivered. You must set the `send_at`
+    parameter in a message to use this trigger. For more information, see [Schedule messages to send in
+    the future](/docs/v3/email/scheduled-send/).
+
+    - `message.bounce_detected`: (Available for Google, Microsoft Graph, iCloud, and Yahoo) A message
+    bounced or was not delivered.
+
+    - `message.opened`, `message.opened.legacy`: A participant opened a tracked message.
+
+    - `message.link_clicked`, `message.link_clicked.legacy`: A participant clicked a link in a tracked
+    message.
+
+    - `thread.replied`, `thread.replied.legacy`: A participant replied to a message in a tracked thread.
+
+    - `folder.created`: A folder or label was created.
+
+    - `folder.updated`: A folder or label was modified or updated.
+
+    - `folder.deleted`: A folder or label was deleted.
+
+    - `booking.created`: A new Scheduler event was created.
+
+    - `booking.rescheduled`: A Scheduler event was rescheduled through Scheduler.
+
+    - `booking.cancelled`: A Scheduler event was cancelled through the Scheduler.
+
+    - `booking.pending`: A pending booking was created.
+
+    - `booking.reminder`: Nylas sent a reminder about a booking.
+
+
+    For more information on webhook trigger types, and for schema examples, see the [notification schemas](/docs/reference/notifications/).
+
+
+    ## Scheduler events in Calendar webhooks
+
+
+    Calendar events that Nylas Scheduler creates also produce standard `event.*` notifications. Nylas
+    stamps these events with metadata so you can identify them in Calendar webhooks:
+
+
+    - `source`: Always `scheduler`.
+
+    - `key5`: The Scheduler Configuration ID.
+
+    - `scheduler_last_start`, `scheduler_last_end`, `scheduler_updated_at`: Unix timestamps (as strings)
+    that record the meeting time Scheduler most recently set, at booking creation and on each reschedule.
+
+
+    To tell Scheduler-driven changes apart from edits made directly on the organizer's calendar, compare
+    an `event.updated` notification's `when` times against `scheduler_last_start` and `scheduler_last_end`:
+    if the times match, the change came through Scheduler (Nylas also sends a `booking.rescheduled` notification),
+    and if they differ, the event was changed directly on the calendar.
+
+
+    These metadata entries share the event's customer-visible `metadata` object. If you update an event's
+    metadata using the Events API, include the Scheduler-stamped entries in your request — updates replace
+    the metadata object as a whole.
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Webhook Notifications
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-webhook-notifications-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/
+  - type: GettingStarted
+    url: https://developer.nylas.com/docs/v3/getting-started/
+  - type: Authentication
+    url: https://developer.nylas.com/docs/v3/auth/
+  - type: RateLimits
+    url: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
+  - type: ErrorCodes
+    url: https://developer.nylas.com/docs/api/errors/
+  - type: Pricing
+    url: https://www.nylas.com/pricing/
+  - type: Signup
+    url: https://dashboard-v3.nylas.com/register
+  - type: StatusPage
+    url: https://status.nylas.com/
+  - type: SDKs
+    url: https://github.com/nylas/nylas-nodejs
+  - type: SDKs
+    url: https://github.com/nylas/nylas-python
+  - type: SDKs
+    url: https://github.com/nylas/nylas-ruby
+  - type: SDKs
+    url: https://github.com/nylas/nylas-java
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/api/application-level-templates/
+- aid: nylas:nylas-workspaces-api
+  name: Nylas Workspaces API
+  description: >-
+    Workspaces group and organize grants in a Nylas application by a common attribute, such as the email
+    address domain (for example, `nylas.com`).
+
+
+    ## Assign grants to workspaces
+
+
+    Nylas offers two endpoints to manage workspaces and the grants they contain:
+
+
+    - [**Automatically Group Grants into Workspaces**](/docs/reference/api/workspaces/autogroup-workspace/):
+    Starts a background job that, based on your filters, processes existing grants in your Nylas application
+    and automatically sorts them to existing workspaces. If necessary, Nylas automatically creates new
+    workspaces.
+
+    - [**Update Workspace Assignments**](/docs/reference/api/workspaces/manually-assign-workspace/): Manually
+    specify a workspace ID and up to 500 grants to add or remove from that workspace.
+
+
+    ## Default workspace
+
+
+    A Nylas application can have a _default workspace_, which Nylas creates automatically when the application
+    is created and manages on your behalf. Applications created before default workspaces were introduced
+    might not have one. When you retrieve workspaces, Nylas identifies the default workspace with `"default":
+    true`, and the application object exposes its ID as `default_workspace_id`.
+
+
+    When a new grant is created without an explicit `workspace_id`, Nylas first tries to auto-group it
+    into a workspace that has `auto_group` enabled and a `domain` that matches the grant's email address
+    domain. If no domain workspace matches, Nylas assigns the grant to the application's default workspace,
+    if one exists.
+
+
+    The default workspace is protected: you can update only its `policy_id` and `rule_ids` values (changes
+    to `name` or `auto_group` return an error), and you can't delete it. A workspace's `domain` can't
+    be changed after creation, on any workspace.
+
+
+    ## Policies and rules
+
+
+    Workspaces can carry a [policy](/docs/v3/agent-accounts/policies-rules-lists/) (`policy_id`) and [rules](/docs/v3/agent-accounts/policies-rules-lists/#rules)
+    (`rule_ids`). Agent Accounts in a workspace use the policy attached to the workspace for limits and
+    spam settings, and the rules attached to the workspace for mail filtering.
+
+
+    ## Workspace limitations
+
+
+    - Workspaces are designed to group grants by the top-level domain (TLD) of users' email addresses.
+    Nylas allows you to manually assign grants to any workspace, but that workspace must have `auto_group`
+    set to `false`.
+
+    - When `auto_group` is set to `false`, Nylas doesn't automatically assign grants to that workspace.
+    You'll need to manually assign grants to the workspace using the [Update Workspace Assignments endpoint](/docs/reference/api/workspaces/manually-assign-workspace/).
+
+    - When `auto_group` is `true`, Nylas automatically assigns new grants to the workspace. You can move
+    grants to a different workspace by making an [Update Workspace Assignments request](/docs/reference/api/workspaces/manually-assign-workspace/).
+  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  baseURL: https://api.us.nylas.com
+  tags:
+  - Workspaces
+  properties:
+  - type: OpenAPI
+    url: openapi/nylas-workspaces-api-openapi.yml
+  - type: APIReference
+    url: https://developer.nylas.com/docs/reference/notifications/
+  - type: Documentation
+    url: https://developer.nylas.com/docs/v3/notifications/
   - type: Documentation
     url: https://developer.nylas.com/docs/
   - type: APIReference
