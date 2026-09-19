@@ -451,6 +451,8 @@ apis:
   humanURL: https://developer.nylas.com/docs/reference/api/applications/
   baseURL: https://api.us.nylas.com
   tags:
+  - Application
+  tags_raw:
   - Applications
   properties:
   - type: OpenAPI
@@ -871,6 +873,8 @@ apis:
   humanURL: https://developer.nylas.com/docs/reference/api/applications/
   baseURL: https://api.us.nylas.com
   tags:
+  - Booking
+  tags_raw:
   - Bookings
   properties:
   - type: OpenAPI
@@ -1344,6 +1348,8 @@ apis:
   humanURL: https://developer.nylas.com/docs/reference/api/applications/
   baseURL: https://api.us.nylas.com
   tags:
+  - Data Migration
+  tags_raw:
   - Data migration
   properties:
   - type: OpenAPI
@@ -1697,6 +1703,8 @@ apis:
   humanURL: https://developer.nylas.com/docs/reference/api/applications/
   baseURL: https://api.us.nylas.com
   tags:
+  - List
+  tags_raw:
   - Lists
   properties:
   - type: OpenAPI
@@ -3023,6 +3031,8 @@ apis:
   humanURL: https://developer.nylas.com/docs/reference/api/applications/
   baseURL: https://api.us.nylas.com
   tags:
+  - Workspace
+  tags_raw:
   - Workspaces
   properties:
   - type: OpenAPI
