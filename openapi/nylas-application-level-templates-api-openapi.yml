@@ -1,0 +1,744 @@
+openapi: 3.2.0
+info:
+  title: Nylas Application-level templates API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Application-level templates
+  description: Application-level templates let you create reusable messages with dynamic content.
+paths:
+  /v3/templates:
+    get:
+      summary: Return all templates
+      tags:
+      - Application-level templates
+      operationId: list-app-level-templates
+      description: Returns a list of application-level templates.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page_token'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/templates\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/templates_list'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+    post:
+      summary: Create a template
+      tags:
+      - Application-level templates
+      operationId: create-app-level-template
+      description: Creates an application-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_create'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/templates\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"body\": \"<p>Hello from {{user}}</p>\",\n    \"name\": \"Nylas Alias\",\n    \"subject\": \"New notification for {{user}}\",\n    \"engine\": \"mustache\"\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template'
+        '400':
+          $ref: '#/components/responses/template_400'
+  /v3/templates/{template_id}:
+    parameters:
+    - schema:
+        type: string
+      name: template_id
+      in: path
+      required: true
+      description: The ID of the template to access.
+      example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+    get:
+      summary: Return a template
+      tags:
+      - Application-level templates
+      operationId: get-app-level-template
+      description: Returns the specified application-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/templates/<TEMPLATE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template'
+        '400':
+          $ref: '#/components/responses/template_400'
+    put:
+      summary: Update a template
+      tags:
+      - Application-level templates
+      operationId: update-app-level-template
+      description: Updates the specified application-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url \"https://api.us.nylas.com/v3/templates/<TEMPLATE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"body\": \"<p>Test from {{user.name}}</p>\",\n    \"name\": \"Update Template\",\n    \"subject\": \"Test from {{user.name}}\",\n    \"engine\": \"mustache\"\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template'
+        '400':
+          $ref: '#/components/responses/template_400'
+    delete:
+      summary: Delete a template
+      tags:
+      - Application-level templates
+      operationId: delete-app-level-template
+      description: Deletes the specified application-level template.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/templates/<TEMPLATE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200_simple'
+        '400':
+          $ref: '#/components/responses/400'
+  /v3/templates/render:
+    post:
+      summary: Render template as HTML
+      tags:
+      - Application-level templates
+      operationId: render-template-html
+      description: 'Renders the HTML content of an application-level template using the provided variables and specified
+
+        templating engine.'
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_render_html'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/templates/render\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"body\": \"<p>Hello from {{user.name}}, test {{ foo }}</p>\",\n    \"variables\": {\n      \"user\": {\n        \"name\": \"Nylas\",\n        \"surname\": \"Tester\"\n      },\n      \"foo\": \"hi\"\n    },\n    \"engine\": \"mustache\"\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template_render_html'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+  /v3/templates/{template_id}/render:
+    parameters:
+    - schema:
+        type: string
+      name: template_id
+      in: path
+      required: true
+      description: The ID of the template to access.
+      example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+    post:
+      summary: Render a template
+      tags:
+      - Application-level templates
+      operationId: render-app-level-template
+      description: Renders the specified application-level template with the provided variables.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/template_render'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/templates/<TEMPLATE_ID>/render\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"variables\": {\n      \"user\": {\n        \"name\": \"Nylas\",\n        \"surname\": \"Tester\"\n      }\n    }\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/template_render'
+        '400':
+          description: 'Error: Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400-2'
+components:
+  responses:
+    template_render_html:
+      description: Success. Returns rendered HTML.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3907012912-13b5a9a4-f136-4761-a31b-68c6a8af825d
+              data:
+                type: object
+                required:
+                - body
+                properties:
+                  body:
+                    type: string
+                    description: The rendered HTML with variables substituted.
+                    example: <p>Hello Leyah, your booking has been confirmed.</p>
+    template:
+      description: Success. Returns template.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+              data:
+                $ref: '#/components/schemas/template'
+          example:
+            request_id: 3822087561-67d4f28f-a46b-4c90-8fd3-765a04105043
+            data:
+              id: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+              app_id: null
+              engine: mustache
+              name: Booking confirmed message
+              subject: '{{user.name}}, your booking is confirmed!'
+              body: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+              created_at: 1640995200
+              updated_at: 1640995200
+              object: template
+    template_render:
+      description: Success. Returns rendered template.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3822450015-47d9207c-4d06-4e15-b3e7-752c5dd5585d
+              data:
+                type: object
+                required:
+                - body
+                - subject
+                properties:
+                  body:
+                    type: string
+                    description: The rendered HTML body content with variables substituted.
+                    example: <p>Hello Leyah, your booking has been confirmed.</p>
+                  subject:
+                    type: string
+                    description: The rendered subject content with variables substituted.
+                    example: Leyah, your booking is confirmed!
+    templates_list:
+      description: Success. Returns list of templates.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - next_cursor
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3821703913-a3548169-0de0-49de-9801-37d972b51766
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/template'
+                example:
+                - id: template_123
+                  grant_id: grant_456
+                  app_id: null
+                  engine: mustache
+                  name: Welcome Email
+                  subject: Welcome {{user.name}}!
+                  body: <p>Hello {{user.name}}, welcome to our service!</p><p>We're excited to have you on board.</p>
+                  created_at: 1640995200
+                  updated_at: 1640995200
+                  object: template
+                - id: template_456
+                  grant_id: grant_456
+                  app_id: null
+                  engine: handlebars
+                  name: Password Reset
+                  subject: Reset your password - {{company.name}}
+                  body: <h1>Password Reset Request</h1><p>Hi {{user.name}},</p><p>Click <a href='{{reset_link}}'>here</a> to reset your password.</p><p>This link expires in {{expiry_hours}} hours.</p>
+                  created_at: 1640995300
+                  updated_at: 1640995400
+                  object: template
+                - id: template_789
+                  grant_id: grant_456
+                  app_id: null
+                  engine: twig
+                  name: Order Confirmation
+                  subject: 'Order #{{order.number}} confirmed'
+                  body: '<h2>Thank you for your order!</h2><p>Order #{{order.number}} has been confirmed.</p><ul>{% for item in order.items %}<li>{{item.name}} - ${{item.price}}</li>{% endfor %}</ul><p>Total: ${{order.total}}</p>'
+                  created_at: 1640995500
+                  updated_at: 1640995500
+                  object: template
+              next_cursor:
+                type: string
+                description: A cursor pointing to the next page of results for the request.
+                example: eyJjdXJzb3IiOiJ0ZW1wbGF0ZV8xMjMifQ==
+    delete_200_simple:
+      description: 'Success: Object deleted'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3906564297-48e7fb5b-f220-427b-a4de-255736adba08
+    template_400:
+      description: 'Error: Bad request'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3704952820-faf9214c-8bdd-4419-9d9c-f8f5ee464d57
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.invalid_request_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: Validation of request body failed
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  requestBodies:
+    template_create:
+      description: Create template request
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - body
+            - name
+            - subject
+            properties:
+              body:
+                type: string
+                description: The body content of the template, in HTML format.
+                example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+              engine:
+                type: string
+                description: The templating engine to use.
+                enum:
+                - handlebars
+                - mustache
+                - nunjucks
+                - twig
+                default: mustache
+                example: mustache
+              name:
+                type: string
+                description: The name of the template.
+                example: Booking confirmed message
+              subject:
+                type: string
+                description: The subject line of the template.
+                example: '{{user.name}}, your booking is confirmed!'
+    template_render_html:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - body
+            - engine
+            - variables
+            properties:
+              body:
+                type: string
+                description: The body content of the template, in HTML format.
+                example: <p>Hello {{user.name}}, this shows test was {{ foo }}.</p>
+              engine:
+                type: string
+                description: The templating engine to use.
+                enum:
+                - handlebars
+                - mustache
+                - nunjucks
+                - twig
+                example: mustache
+              strict:
+                type: boolean
+                description: 'When `true`, Nylas returns an error if the template contains variables that aren''t defined
+
+                  in the `variables` object.'
+                default: true
+                example: true
+              variables:
+                type: object
+                description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                  template.'
+                additionalProperties:
+                  type: string
+                example:
+                  user:
+                    name: Leyah
+                    surname: Miller
+                  foo: testing successful
+    template_update:
+      description: Update template request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              body:
+                type: string
+                description: The body content of the template, in HTML format.
+                example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+              engine:
+                type: string
+                description: The templating engine to use.
+                enum:
+                - handlebars
+                - mustache
+                - nunjucks
+                - twig
+                example: mustache
+              name:
+                type: string
+                description: The name of the template.
+                example: Updated booking confirmed message
+              subject:
+                type: string
+                description: The subject line of the template.
+                example: '{{user.name}}, your booking is confirmed!'
+    template_render:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - variables
+            properties:
+              strict:
+                type: boolean
+                description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
+
+                  defined in the `variables` object.'
+                default: true
+                example: true
+              variables:
+                type: object
+                description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                  template.'
+                additionalProperties:
+                  type: string
+                example:
+                  user:
+                    name: Leyah
+                    surname: Miller
+  parameters:
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+  schemas:
+    400-2:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    template:
+      type: object
+      description: A custom message template.
+      required:
+      - body
+      - created_at
+      - engine
+      - id
+      - name
+      - object
+      - subject
+      - updated_at
+      properties:
+        app_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the Nylas application associated with the template. Returned only if the template is
+
+            configured at the application level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        body:
+          type: string
+          description: The body content of the template, in HTML format.
+          example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+        created_at:
+          type: integer
+          description: When the template was created, in seconds using the Unix timestamp format.
+          example: 1640995200
+        engine:
+          type: string
+          enum:
+          - handlebars
+          - mustache
+          - nunjucks
+          - twig
+          description: The templating engine.
+          example: mustache
+        grant_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the grant associated with the template. Returned only if the template is configured
+
+            at the grant level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        id:
+          type: string
+          description: The template ID.
+          example: b79c82b2-a51b-4c54-8469-28006a43551a
+        name:
+          type: string
+          description: The name of the template.
+          example: Booking confirmed message
+        object:
+          type: string
+          description: The object type identifier.
+          default: template
+          example: template
+        subject:
+          type: string
+          description: The subject line of the template.
+          example: '{{user.name}}, your booking is confirmed!'
+        updated_at:
+          type: integer
+          description: When the template was last updated, in seconds using the Unix timestamp format.
+          example: 1640995200
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

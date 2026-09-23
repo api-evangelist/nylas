@@ -1,0 +1,1096 @@
+openapi: 3.2.0
+info:
+  title: Nylas App migration API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: App Migration
+  description: 'Before you begin, you should already have:
+
+
+    - Linked your v2 and v3 Nylas organizations.'
+paths:
+  /v3/migration-tools/link-v2v3-apps:
+    post:
+      operationId: migration_link_v2v3_apps
+      tags:
+      - App Migration
+      summary: Link a v2 app to a v3 app
+      description: 'Link an existing v2 application to an existing v3 application.
+
+
+        ⚠️Your v2 and v3 applications must be in the same data center region to use these tools. You can only use these tools to migrate a v2 application to a v3 application in the same region. You cannot use these to move a v2 application to a different region.
+
+
+        This is the first step of the migration process, and is how you tell Nylas which v2 application you are migrating.
+
+
+        To use this API you need the v2 source application ID and secret, in the format you use to authorize v2 API calls, and the v3 API key from the v3 destination application.
+
+
+        To verify that you own the v2 source application you''re linking, add the `BasicV2` API header. This extra header is required. The `BasicV2` API header contains a Base64-encoded `V2_APP_ID:V2_APP_SECRET`, which is also used for Basic auth for any v2 API call.
+
+
+        ```bash
+
+        --header ''BasicV2: // Use the -n flag when you Base64 encode
+
+        ```
+
+
+        No further request body is required. Nylas detects the v3 application ID from the API key, and the v2 application ID from the BasicV2 header.
+
+
+        The API is rate limited to 20 requests per second per Nylas application ID.'
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/ApplicationObject'
+          description: On success, returns the existing v3 application object with added linked v2 application ID.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/link-v2v3-apps' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'BasicV2: <base64-encoded V2_APP_ID:V2_APP_SECRET>'"
+  /v3/migration-tools/import-v2-app:
+    post:
+      operationId: migration_import_v2_app
+      tags:
+      - App Migration
+      summary: Import v2 app settings to linked v3 app
+      description: 'Import the settings from a v2 Nylas application to its linked v3 application. Before you use this
+
+        endpoint, make sure you
+
+        link a v2 application to a v3 application.
+
+
+        This endpoint imports the following v2 settings, and sets them to the corresponding v3 application
+
+        settings:
+
+
+        - Your website URL.
+
+        - Your icon URL (used to customize the Hosted OAuth page).
+
+        - Redirect URIs for OAuth.
+
+        - Integrations and their settings.
+
+        - Nylas migrates Google integrations to equivalent v3 connectors.
+
+        - If you have v2 Microsoft integrations, you should create a new Azure auth app and update the
+
+        connector settings. For detailed instructions, see
+
+        Migrating Microsoft accounts.
+
+        - Nylas migrates IMAP, iCloud, and EWS integrations to v3 connectors with auto-generated default
+
+        values.
+
+
+        Nylas automatically detects your application ID from the API key and finds its linked v2
+
+        application to begin the import process.
+
+
+        This endpoint is rate limited to 20 requests per second, per Nylas application ID.'
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    type: string
+                    description: Info message about success.
+                    example: 'V2 Application imported successfully to v3 Application: app settings, Connectors, redirect URIs, etc.'
+          description: Immedieately returns a list of two Jobs, Snapshot and BatchClone. Those Jobs continue to synchronously run in the background.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/import-v2-app' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\"
+  /v3/migration-tools/grants/{account_id}/clone:
+    post:
+      operationId: migration_clone_single_account
+      tags:
+      - App Migration
+      summary: Migrate v2 account to v3 grant
+      description: 'Migrates a single v2 connected account to a v3 grant. Use this endpoint to migrate a few accounts
+
+        to v3 as a test, then use the
+
+        Batch Clone endpoint
+
+        to migrate the rest.
+
+
+        Before you use this endpoint, your v2 Nylas applications need to be linked to their corresponding v3
+
+        applications and you need to have a working equivalent
+
+        authentication connector for each provider
+
+        you use. If you need help with this process, learn how to get support.
+
+
+        During migration, Nylas maps the v2 provider to its v3 equivalent using the connected account''s
+
+        v2 authorization type and provider. All sensitive data (such as tokens and passwords) is encrypted
+
+        and securely transfered only within the Nylas infrastructure. No secrets exit the internal Nylas
+
+        network.
+
+
+        This endpoint is rate limited to 20 requests per second, per Nylas application ID.
+
+
+        ### Create placeholder grants
+
+
+        Nylas can migrate existing Microsoft Graph, Office 365, and EWS accounts that use token
+
+        authentication. It can''t fully migrate
+
+        some types of Microsoft accounts
+
+        because of provider limitations and scope changes in v3.
+
+
+        By default, Nylas creates an invalid v3 Grant with fake credentials for accounts that it can''t
+
+        automatically migrate. These grants act as "placeholders" that the user can manually authenticate
+
+        to later. You can turn this feature off for Microsoft accounts only by setting the `clone_exchange`
+
+        query parameter to `false`, or for all providers by setting `allow_invalid_grant_creation` to
+
+        `false`.'
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - $ref: '#/components/parameters/account_id'
+      - name: allow_invalid_grant_creation
+        in: query
+        required: false
+        description: '(Not supported for Microsoft) When `true`, Nylas creates invalid v3 grants with fake credentials
+
+          for all connected accounts in your request. These grants act as placeholders that users can
+
+          authenticate to later.'
+        schema:
+          type: boolean
+          default: true
+      - name: clone_exchange
+        in: query
+        required: false
+        description: '(Microsoft only) When `true`, Nylas creates invalid v3 grants with fake credentials for any
+
+          Microsoft accounts that can''t be automatically migrated. These grants act as placeholders that
+
+          users can authenticate to later.'
+        schema:
+          type: boolean
+          default: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/GrantObject'
+          description: On success, returns the v3 Grant object Nylas created as part of the migration.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/grants/<account_id>/clone' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\"
+  /v3/migration-tools/snapshot-batch-clone:
+    post:
+      operationId: migration_snapshot_batch_clone
+      tags:
+      - App Migration
+      summary: Batch clone v2 accounts to v3 grants
+      description: 'Starts a batch migration job to clone v2 connected accounts to v3 grants.
+
+
+        Before you use this endpoint, your v2 Nylas applications need to be linked to their corresponding v3
+
+        applications and you need to have a working equivalent
+
+        authentication connector for each provider
+
+        you use. If you need help with this process, learn how to get support.
+
+
+        When you make a batch clone request, Nylas starts two background jobs:
+
+
+        - A snapshot job that prepares non-sensitive v2 account data for migration.
+
+        - A batch clone job that migrates the v2 account data to v3 grants.
+
+
+        Nylas handles all data and logic for these jobs and runs them in the background to they don''t block
+
+        API responses.
+
+
+        You can filter for certain types of accounts by specifying properties in the body of your request.
+
+        Use these options when you want to try migrating certain types of accounts in smaller batches,
+
+        or to retry failed migrations. If you don''t specify any filters, Nylas uses the default values.
+
+
+        During migration, Nylas maps the v2 provider to its v3 equivalent using the connected account''s
+
+        v2 authorization type and provider. All sensitive data (such as tokens and passwords) is encrypted
+
+        and securely transfered only within the Nylas infrastructure. No secrets exit the internal Nylas
+
+        network.
+
+
+        This endpoint is rate limited to 20 requests per second, per Nylas application ID.
+
+
+        ### Create placeholder grants
+
+
+        Nylas can migrate existing Microsoft Graph, Office 365, and EWS accounts that use token
+
+        authentication. It can''t fully migrate
+
+        some types of Microsoft accounts
+
+        because of provider limitations and scope changes in v3.
+
+
+        By default, Nylas creates an invalid v3 Grant with fake credentials for accounts that it can''t
+
+        automatically migrate. These grants act as "placeholders" that the user can manually authenticate
+
+        to later. You can turn this feature off for Microsoft accounts only by setting the `clone_exchange`
+
+        query parameter to `false`, or for all providers by setting `allow_invalid_grant_creation` to
+
+        `false`.'
+      parameters:
+      - name: allow_invalid_grant_creation
+        in: query
+        required: false
+        description: '(Not supported for Microsoft) When `true`, Nylas creates invalid v3 grants with fake credentials
+
+          for all connected accounts in your request. These grants act as placeholders that users can
+
+          authenticate to later.'
+        schema:
+          type: boolean
+          default: true
+      - name: clone_exchange
+        in: query
+        required: false
+        description: '(Microsoft only) When `true`, Nylas creates invalid v3 grants with fake credentials for any
+
+          Microsoft accounts that can''t be automatically migrated. These grants act as placeholders that
+
+          users can authenticate to later.'
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: integer
+                  default: 1000
+                  description: Number of accounts to migrate. Nylas orders the migration records created by the snapshot job, by `imported_at` timestamp from oldest to newest.
+                  example: 10
+                offset:
+                  type: integer
+                  default: 0
+                  description: Number of accounts to skip. Nylas orders the migration records created by the snapshot job, by `imported_at` timestamp from oldest to newest.
+                  example: 0
+                providers:
+                  type: array
+                  items:
+                    type: string
+                    default: If none specified, Nylas migrates all supported providers
+                    enum:
+                    - google
+                    - microsoft
+                    - graph
+                    - imap
+                    - icloud
+                    - ews
+                    - virtual-calendar
+                  description: Use this setting to limit the migration job to a specific provider or providers, so you can migrate one type at a time.
+                  example:
+                  - google
+                  - microsoft
+                mode:
+                  type: string
+                  default: all
+                  enum:
+                  - all
+                  - only_new
+                  - only_failed
+                  description: 'Use this setting to limit the migration job to accounts that have specific statuses, or when retrying failed migrations. - ''all'': No filtering, migrate all accounts that meet the request criteria. - ''only_new'': Migrate only accounts that haven''t attempted migration. - ''only_failed'': Migrate only accounts that attempted migration previously and were marked as failed.'
+                  example: all
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    type: object
+                    properties:
+                      clone_job:
+                        $ref: '#/components/schemas/MigrationJob'
+                      snapshot_job:
+                        $ref: '#/components/schemas/MigrationJob'
+          description: Immediately returns a list of the two jobs for the migration run:, snapshot and batch clone. Those jobs continue to synchronously run in the background.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/snapshot-batch-clone' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"limit\": 100,\n    \"providers\": [\n      \"google\",\n      \"imap\",\n      \"graph\",\n      \"ews\",\n      \"icloud\"\n    ],\n    \"mode\": \"all\",\n    \"clone_exchange\": false\n  }'"
+  /v3/migration-tools/jobs:
+    get:
+      operationId: migration_get_jobs
+      tags:
+      - App Migration
+      summary: Get migration jobs
+      description: 'Get information about the migration jobs for your application, including progress and status, for currently running and finished jobs.
+
+
+        Migration Jobs are a background task. After you start one Nylas returns a success response, and the jobs run in the background until they finish. These jobs do not block other API calls, but also do not send a notification when complete. This API allows you to get general information about a them, so you can see their status.
+
+
+        There are two types of migration job: "snapshot" and "migration". A Snapshot job takes a snapshot of the application''s v2 account data, and prepares it for migration. A Migration job actually turns the v2 account data into v3 grants.
+
+
+        Jobs have a status, which can be one of the following:
+
+        - A _pending_ job is queued and waiting to start.
+
+        - A _running_ job is currently in progress.
+
+        - A _partial_ job has finished, but was not able to migrate all accounts successfully.
+
+        - A _completed_ job has finished and successfully migrated _all_ accounts.
+
+        - A _failed_ job has finished but did not migrate any accounts.
+
+
+        You can optionally filter the list of jobs to return only jobs with a specific status or type.
+
+
+        You can also use the `sort_by_completion` argument to return the list of jobs with pending and running jobs first, followed by failed, completed, and partial jobs. Finished jobs are ordered by their completion timestamp (`CompletedAt`) from the most recent to the oldest.
+
+
+        If you don''t include any query parameters to filter the results, Nylas returns all jobs.
+
+
+        The API is rate limited to 20 requests per second per Nylas application ID.'
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: "Filter for jobs by status:\n\n  - `completed`: The job finished and all accounts were migrated successfully.\n  - `failed`: The job finished, but no accounts were migrated.\n  - `partial`: The job finished. Some accounts were migrated successfully, and some failed.\n  - `pending`: The job is queued.\n  - `running`: The job is running."
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - completed
+            - failed
+            - partial
+            - pending
+            - running
+          example: running,completed
+      - name: type
+        in: query
+        required: false
+        description: Filter for jobs by type.
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - migration
+            - snapshot
+          example: migration
+      - name: sort_by_completion
+        in: query
+        required: false
+        description: "When `true`, Nylas sorts the jobs it returns in the following order:\n\n  1. Jobs with `pending` status.\n  2. Jobs with `running` status.\n  3. Jobs with all other statuses, from most to least recent `CompletedAt` time."
+        schema:
+          type: boolean
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MigrationJob'
+          description: Returns a list of jobs.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/jobs?status=pending%2Crunning%2Cfailed%2Ccompleted&type=snapshot%2Cmigration&sort_by_completion=true' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+components:
+  schemas:
+    '401':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: invalid_request_error
+            message:
+              description: Informative error message
+              default: Authentication error
+              type: string
+              example: Authentication error
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    webDesktopCallbackNoSettings:
+      title: Web or Desktop
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - web
+          - desktop
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development
+
+            _only_. Otherwise, you need to use HTTPS.'
+          example: https://yourapp.com/callback
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    GrantObject:
+      type: object
+      required:
+      - created_at
+      - id
+      - provider
+      - scope
+      properties:
+        account_id:
+          type: string
+          description: 'The v2 Nylas account ID. This field appears only if the grant was created by migrating a v2
+
+            connected account.'
+          example: df0yq6c9okc6t9j4ejd5nyrt7
+        blocked:
+          type: boolean
+          description: When `true`, indicates that the grant is blocked from accessing the Nylas APIs.
+          example: false
+        created_at:
+          type: integer
+          description: When the grant was created, in seconds using the Unix timestamp format.
+          example: 1617817109
+        email:
+          type: string
+          description: 'The email address associated with the grant. If the provider supports `id_token` and exposes the
+
+            user''s email address, Nylas automatically extracts this value.'
+          example: nyla@example.com
+        grant_status:
+          type: string
+          description: Specifies whether the grant is valid or the user needs to re-authenticate.
+          enum:
+          - invalid
+          - valid
+          example: valid
+        id:
+          type: string
+          description: A unique identifier for the grant.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+        ip:
+          type: string
+          description: 'The user''s client IP address. Mostly useful for
+
+            [Hosted OAuth](/docs/v3/auth/hosted-oauth-apikey/).'
+          example: 1.1.1.1
+        name:
+          type: string
+          description: The user's display name.
+          example: Nyla
+        provider:
+          type: string
+          description: The provider that the user authenticated with.
+          enum:
+          - ews
+          - google
+          - icloud
+          - imap
+          - microsoft
+          - virtual-calendar
+          - yahoo
+          - zoom
+          - nylas
+          x-enum-descriptions:
+            virtual-calendar: Nylas' [virtual calendars](/docs/v3/calendar/virtual-calendars/).
+            nylas: Nylas [Agent Accounts](/docs/v3/agent-accounts/).
+          example: microsoft
+        provider_user_id:
+          type: string
+          description: The user's provider ID. This field might be changed at any time by the provider.
+          example: b16f171c-6640-4edd-a598-e507b546d841
+        scope:
+          type: array
+          items:
+            type: string
+          description: 'An array of [granular scopes](/docs/dev-guide/scopes/) associated with the grant. If none are
+
+            specified, Nylas uses the default scopes from the
+
+            [connector](/docs/reference/api/connectors-integrations/).'
+          example:
+          - Mail.Read
+          - User.Read
+          - offline_access
+        settings:
+          type: object
+          description: 'A list of settings associated with the grant. The contents of this object might differ between
+
+            grants or depending on the provider.'
+        email_aliases:
+          type: array
+          items:
+            type: string
+          description: "An array of found email aliases for this grant. Only returned if special query parameter `expose_aliases` for \n[Get Grant](/docs/reference/api/manage-grants/get_grant_by_id/) is used and set to `true`.\nApplicable only for Google and Microsoft grants.\nFor Microsoft, aliases require a Microsoft 365 / Exchange Online mailbox. Free Outlook.com\n(consumer) accounts have no aliases to expose, so this field is omitted from the response\neven when `expose_aliases=true`."
+          example:
+          - email_alias1@example.com
+          - email_alias2@example.com
+        state:
+          type: string
+          description: 'The initial state that was set as part of the authentication process. Nylas passes this value
+
+            back to your project without modifying it. You can use this field for verification, or to track
+
+            information about the user.'
+          example: my-state
+        updated_at:
+          type: integer
+          description: 'When the user last authenticated their grant, in seconds using the Unix timestamp format.
+
+            Initially, this value is the same as `created_at`.'
+          example: 1617817109
+        user_agent:
+          type: string
+          description: 'The user''s [client or browser information](https://www.useragents.me/). Mostly useful for
+
+            [Hosted OAuth](/docs/v3/auth/hosted-oauth-apikey/).'
+        workspace_id:
+          type: string
+          description: 'The ID of the Workspace the grant belongs to, if any. For grants from providers other than
+
+            Agent Accounts, Nylas may omit this field when the grant is in the application''s default
+
+            workspace.'
+          example: abf6ff99-05ad-4c0a-aaf8-400aacf2470a
+        credential_id:
+          type: string
+          description: The ID of the Credential the grant is associated with. Grant will use this Credential for provider communication.
+          example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+    AndroidCallbackwSettings:
+      title: Android
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - android
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+
+            `<package/bundle-name>://<deeplink>`).
+
+
+            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the Android callback URI.
+          type: object
+          required:
+          - package_name
+          - sha1_certificate_fingerprint
+          properties:
+            package_name:
+              type: string
+              description: Find your app's Package Name in the Android Manifest. It's a unique identifier that distinguishes your app on the Google Play Store and on the device. It follows a reverse domain name notation, such as `com.example.myapp`.
+              example: com.example.myapp
+            sha1_certificate_fingerprint:
+              type: string
+              description: A SHA-1 hash of the app's signing certificate. This ensures that only the _signed_ version of your app can use the redirect URI.
+              example: AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12
+    JsCallbackwSettings:
+      title: JS
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - js
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development _only_.
+
+            Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the Javascript callback URI.
+          type: object
+          required:
+          - origin
+          properties:
+            origin:
+              type: string
+              description: The `origin` is the base URL from which your project or app is served. It is required because it's a critical part of defining your app's trust boundaries to prevent cross-origin issues. Set this when you set up OAuth redirect URIs and other security settings.
+              example: yourapp.com
+    iosCallbackwSettings:
+      title: iOS
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - ios
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+
+            `<package/bundle-name>://<deeplink>`).
+
+
+            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the iOS callback URI.
+          type: object
+          required:
+          - bundle_id
+          properties:
+            bundle_id:
+              type: string
+              description: The `bundle_id` (Bundle Identifier) is a unique identifier for an iOS app. It's set in the Xcode project and follows a reverse domain name style.
+              example: com.example.myapp
+            app_store_id:
+              type: string
+              description: Unique identifier for your app on the Apple App Store. This ID is assigned to your app when you submit it to the App Store and it is approved.
+              example: 1234567890
+            team_id:
+              type: string
+              example: ABCDE12345
+              description: Unique identifier for your Apple Developer Account or team.
+    ApplicationObject:
+      type: object
+      properties:
+        application_id:
+          type: string
+          description: Application ID
+          example: ad410018-d306-43f9-8361-fa5d7b2172e0
+        organization_id:
+          type: string
+          description: ID of organization
+          example: f5db4482-dbbe-4b32-b347-61c260d803ce
+        region:
+          type: string
+          description: Region identifier
+          example: us
+        environment:
+          type: string
+          description: Environment identifier
+          enum:
+          - production
+          - staging
+        default_workspace_id:
+          type: string
+          readOnly: true
+          description: 'The ID of the application''s default [workspace](/docs/reference/api/workspaces/), if one exists.
+
+            Nylas manages this value, and ignores it in create and update requests.'
+          example: abf6ff99-05ad-4c0a-aaf8-400aacf2470a
+        v2_application_id:
+          type: string
+          description: Linked v2 Application ID
+          example: 9nsr7pjw1e1g6hgy9l1znjql7
+        branding:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the application
+              example: My application
+            icon_url:
+              type: string
+              description: URL points to application icon.
+              example: https://my-app.com/my-icon.png
+            website_url:
+              type: string
+              description: Application / publisher website URL
+              example: https://my-app.com
+            description:
+              type: string
+              description: Description of the application.
+              example: Online banking application.
+        hosted_authentication:
+          type: object
+          properties:
+            background_image_url:
+              type: string
+              description: URL of the background image
+              example: https://my-app.com/bg.jpg
+            alignment:
+              type: string
+              description: Alignment of background image
+              enum:
+              - left
+              - center
+              - right
+            color_primary:
+              type: string
+              description: Primary color
+              example: '#dc0000'
+            color_secondary:
+              type: string
+              description: Secondary color
+              example: '#000056'
+            title:
+              type: string
+              description: Title
+            subtitle:
+              type: string
+              description: Subtitle
+            background_color:
+              type: string
+              description: Background color
+              example: '#003400'
+            spacing:
+              type: integer
+              description: CSS spacing attribute in px
+              example: 5
+        callback_uris:
+          description: A list of your application's callback URIs.
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/webDesktopCallbackNoSettings'
+            - $ref: '#/components/schemas/JsCallbackwSettings'
+            - $ref: '#/components/schemas/iosCallbackwSettings'
+            - $ref: '#/components/schemas/AndroidCallbackwSettings'
+            discriminator:
+              propertyName: platform
+              mapping:
+                web: '#/components/schemas/webDesktopCallbackNoSettings'
+                desktop: '#/components/schemas/webDesktopCallbackNoSettings'
+                js: '#/components/schemas/JsCallbackwSettings'
+                ios: '#/components/schemas/iosCallbackwSettings'
+                android: '#/components/schemas/AndroidCallbackwSettings'
+    MigrationJob:
+      type: object
+      additionalProperties: false
+      required:
+      - job_id
+      - type
+      - public_application_id
+      - status
+      - count_all
+      - count_success
+      - count_failed
+      - count_warning
+      - created_at
+      - updated_at
+      properties:
+        job_id:
+          type: string
+          description: An identifier for the migration job.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+        type:
+          type: string
+          description: The type of job.
+          enum:
+          - snapshot
+          - migration
+          example: snapshot
+        public_application_id:
+          type: string
+          description: The ID of v3 application this job is running for.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+        status:
+          type: string
+          description: 'The state of the job.
+
+
+            - **Pending**: The job has been created, but not started. Batch clone runs only after the linked
+
+            snapshot job is completed.
+
+            - **Running**: The job is currently running.
+
+            - **Completed**: The job has successfully finished all migrations.
+
+            - **Failed**: _All_ migrations failed.
+
+            - **Partial**: The job successfully migrated _some_ accounts, but some could not be migrated or were created as "placeholder" grants.'
+          enum:
+          - pending
+          - running
+          - completed
+          - failed
+          - partial
+          example: pending
+        count_all:
+          type: integer
+          description: A total number of accounts to be migrated. The total is a sum of the successful and failed migrations.
+          example: 20
+        count_success:
+          type: integer
+          description: The number of accounts that were successfully migrated.
+          example: 10
+        count_failed:
+          type: integer
+          description: The number of accounts that were unable to migrate.
+          example: 5
+        count_warning:
+          type: integer
+          description: The number of accounts that were migrated as invalid grants ("placeholder" grant ready for re-authentication).
+          example: 5
+        created_at:
+          type: integer
+          description: The time when the job was created, in seconds using the Unix timestamp format.
+          example: 1617817109
+        updated_at:
+          type: integer
+          description: The time the job was updated, in seconds using the Unix timestamp format.
+          example: 1617817109
+        linked_job_id:
+          type: string
+          description: The bulk migration tool creates two separate jobs that run one after the other. This ID links them together.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+  parameters:
+    account_id:
+      name: account_id
+      required: true
+      in: path
+      schema:
+        type: string
+      example: df0yq6c9okc6t9j4ejd5nyrt7
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

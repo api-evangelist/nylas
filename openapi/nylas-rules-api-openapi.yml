@@ -1,0 +1,1083 @@
+openapi: 3.2.0
+info:
+  title: Nylas Rules API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Rules
+  description: The Rules endpoints let you define automated filtering and routing logic for Nylas Agent Accounts.
+paths:
+  /v3/rules:
+    post:
+      summary: Create a rule
+      tags:
+      - Rules
+      operationId: create-rule
+      description: 'Creates a rule for your application. A rule defines a `trigger` (`inbound` or `outbound`), conditions against
+
+        sender or recipient fields, and actions to apply when the conditions match. Inbound rules run on incoming
+
+        messages; outbound rules run on sends before they''re submitted to the email provider. Inbound and outbound
+
+        rules are isolated — inbound rules never run during sends, and outbound rules never run on message receipt.
+
+
+        Inbound rules can match `from.address`, `from.domain`, or `from.tld`. Outbound rules can match
+
+        `from.address`, `from.domain`, `from.tld`, `recipient.address`, `recipient.domain`, `recipient.tld`, or
+
+        `outbound.type` (`compose` or `reply`). Link inbound rules to a policy to apply them to specific Agent
+
+        Accounts. Outbound rules are currently evaluated from the sending application''s enabled outbound rules.
+
+
+        The `application_id` and `organization_id` are derived from your API key and are read-only.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - match
+              - actions
+              properties:
+                name:
+                  type: string
+                  description: A human-readable name for the rule.
+                  example: Block spam domains
+                description:
+                  type: string
+                  example: Rejects messages from known spam domains at the SMTP level.
+                priority:
+                  type: integer
+                  minimum: 0
+                  maximum: 1000
+                  default: 10
+                  example: 1
+                enabled:
+                  type: boolean
+                  default: true
+                  example: true
+                trigger:
+                  type: string
+                  enum:
+                  - inbound
+                  - outbound
+                  default: inbound
+                  description: 'When the rule is evaluated. `inbound` runs the rule on incoming messages; `outbound` runs the rule
+
+                    on sends before they''re submitted to the email provider. Inbound rules accept only `from.*`
+
+                    conditions. Outbound rules accept `from.*`, `recipient.*`, and `outbound.type`.'
+                  example: inbound
+                match:
+                  type: object
+                  required:
+                  - conditions
+                  properties:
+                    operator:
+                      type: string
+                      enum:
+                      - any
+                      - all
+                      description: Optional. When omitted, the rule defaults to `all`.
+                      example: any
+                    conditions:
+                      type: array
+                      minItems: 1
+                      items:
+                        type: object
+                        required:
+                        - field
+                        - operator
+                        - value
+                        properties:
+                          field:
+                            type: string
+                            enum:
+                            - from.address
+                            - from.domain
+                            - from.tld
+                            - recipient.address
+                            - recipient.domain
+                            - recipient.tld
+                            - outbound.type
+                            description: 'The field to match against. `from.*` fields match the normalized sender address,
+
+                              domain, or top-level domain. Inbound rules accept only `from.*`. Outbound rules also
+
+                              accept `recipient.*` and `outbound.type`. For outbound rules, `recipient.*` matches
+
+                              against any recipient — To, CC, BCC, and SMTP envelope recipients. `outbound.type`
+
+                              classifies the send as `compose` (new message) or `reply` (replying to an existing
+
+                              thread).'
+                            example: from.domain
+                          operator:
+                            type: string
+                            enum:
+                            - is
+                            - is_not
+                            - contains
+                            - in_list
+                            description: 'How to compare the field value. `outbound.type` supports only `is` and `is_not`;
+
+                              `contains` and `in_list` are rejected for that field.'
+                            example: is
+                          value:
+                            oneOf:
+                            - type: string
+                            - type: array
+                              items:
+                                type: string
+                            description: 'The value to compare against. For `in_list`, pass an array of List IDs. For
+
+                              `outbound.type`, pass `compose` or `reply` (case is normalized to lowercase).'
+                            example: spam-domain.com
+                actions:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                    - type
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                        - block
+                        - mark_as_spam
+                        - assign_to_folder
+                        - mark_as_read
+                        - mark_as_starred
+                        - archive
+                        - trash
+                        example: block
+                      value:
+                        type: string
+                        description: 'Required when `type` is `assign_to_folder` — the target folder by name. Use a custom
+
+                          folder''s name (or its full path for a nested folder, e.g. `Clients/Acme`), or a system
+
+                          folder name (`Inbox`, `Sent`, `Drafts`, `Trash`, `Junk`, `Archive`).'
+                        example: Receipts
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \"https://api.us.nylas.com/v3/rules\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"name\": \"Block spam domains\",\n    \"priority\": 1,\n    \"trigger\": \"inbound\",\n    \"match\": {\n      \"operator\": \"any\",\n      \"conditions\": [\n        {\n          \"field\": \"from.domain\",\n          \"operator\": \"is\",\n          \"value\": \"spam-domain.com\"\n        }\n      ]\n    },\n    \"actions\": [\n      { \"type\": \"block\" }\n    ]\n  }'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function createRule() {\n  try {\n    const rule = await nylas.rules.create({\n      requestBody: {\n        name: \"Block spam domains\",\n        description: \"Rejects messages from known spam domains.\",\n        priority: 1,\n        trigger: \"inbound\",\n        match: {\n          operator: \"any\",\n          conditions: [\n            {\n              field: \"from.domain\",\n              operator: \"is\",\n              value: \"spam-domain.com\",\n            },\n          ],\n        },\n        actions: [{ type: \"block\" }],\n      },\n    });\n\n    console.log(\"Rule:\", rule);\n  } catch (error) {\n    console.error(\"Error creating rule:\", error);\n  }\n}\n\ncreateRule();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nrule = nylas.rules.create(\n    request_body={\n        \"name\": \"Block spam domains\",\n        \"priority\": 1,\n        \"trigger\": \"inbound\",\n        \"match\": {\n            \"operator\": \"any\",\n            \"conditions\": [\n                {\n                    \"field\": \"from.domain\",\n                    \"operator\": \"is\",\n                    \"value\": \"spam-domain.com\",\n                },\n            ],\n        },\n        \"actions\": [\n            {\"type\": \"block\"},\n        ],\n    },\n)\n\nprint(rule)\n"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/RuleObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    get:
+      summary: List rules
+      tags:
+      - Rules
+      operationId: list-rules
+      description: Returns a list of all rules for your application.
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          type: string
+        description: A token to fetch the next page of results. Use the `next_cursor` value from the previous response.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/rules?limit=50\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function listRules() {\n  try {\n    const rules = await nylas.rules.list({\n      queryParams: {\n        limit: 10,\n      },\n    });\n\n    console.log(\"Rules:\", rules);\n  } catch (error) {\n    console.error(\"Error listing rules:\", error);\n  }\n}\n\nlistRules();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nrules = nylas.rules.list(\n    query_params={\n        \"limit\": 50,\n    },\n)\n\nprint(rules)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RuleObject'
+                  next_cursor:
+                    type: string
+                    description: A token to use for paginating through results. If present, pass this value as `page_token` in the next request.
+                    example: eyJhbGciOiJIUzI1NiJ9
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+  /v3/rules/{rule_id}:
+    parameters:
+    - schema:
+        type: string
+      name: rule_id
+      in: path
+      required: true
+      description: The ID of the rule to access.
+    get:
+      summary: Get a rule
+      tags:
+      - Rules
+      operationId: get-rule
+      description: Returns the specified rule.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/rules/<RULE_ID>\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function findRule() {\n  try {\n    const rule = await nylas.rules.find({\n      ruleId: \"<RULE_ID>\",\n    });\n\n    console.log(\"Rule:\", rule);\n  } catch (error) {\n    console.error(\"Error finding rule:\", error);\n  }\n}\n\nfindRule();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nrule = nylas.rules.find(\n    rule_id=\"<RULE_ID>\",\n)\n\nprint(rule)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/RuleObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    put:
+      summary: Update a rule
+      tags:
+      - Rules
+      operationId: update-rule
+      description: 'Updates the specified rule. All fields are optional — only provided fields are updated. The same validation rules
+
+        apply as on create.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Block spam domains (updated)
+                description:
+                  type: string
+                priority:
+                  type: integer
+                  minimum: 0
+                  maximum: 1000
+                enabled:
+                  type: boolean
+                trigger:
+                  type: string
+                  enum:
+                  - inbound
+                  - outbound
+                  description: 'The trigger the rule listens for. Inbound rules accept only `from.*` conditions. Outbound
+
+                    rules accept `from.*`, `recipient.*`, and `outbound.type`.'
+                match:
+                  type: object
+                  properties:
+                    operator:
+                      type: string
+                      enum:
+                      - any
+                      - all
+                      description: Optional. When omitted, the rule defaults to `all`.
+                    conditions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          field:
+                            type: string
+                            enum:
+                            - from.address
+                            - from.domain
+                            - from.tld
+                            - recipient.address
+                            - recipient.domain
+                            - recipient.tld
+                            - outbound.type
+                            description: '`from.*` fields match the normalized sender and are valid on both triggers.
+
+                              `recipient.*` fields and `outbound.type` apply only to `outbound` rules.
+
+                              `recipient.*` matches any recipient on the send, including To, CC, BCC, and SMTP
+
+                              envelope recipients.'
+                          operator:
+                            type: string
+                            enum:
+                            - is
+                            - is_not
+                            - contains
+                            - in_list
+                            description: '`outbound.type` accepts only `is` and `is_not`.'
+                          value:
+                            oneOf:
+                            - type: string
+                            - type: array
+                              items:
+                                type: string
+                            description: 'For `in_list`, pass an array of List IDs. For `outbound.type`, pass `compose` or
+
+                              `reply` (normalized to lowercase).'
+                actions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                        - block
+                        - mark_as_spam
+                        - assign_to_folder
+                        - mark_as_read
+                        - mark_as_starred
+                        - archive
+                        - trash
+                      value:
+                        type: string
+                        description: 'Required when `type` is `assign_to_folder` — the target folder by name. Use a custom
+
+                          folder''s name (or its full path for a nested folder, e.g. `Clients/Acme`), or a system
+
+                          folder name (`Inbox`, `Sent`, `Drafts`, `Trash`, `Junk`, `Archive`).'
+                        example: Receipts
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X PUT \"https://api.us.nylas.com/v3/rules/<RULE_ID>\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"enabled\": false\n  }'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function updateRule() {\n  try {\n    const rule = await nylas.rules.update({\n      ruleId: \"<RULE_ID>\",\n      requestBody: {\n        enabled: false,\n        priority: 5,\n      },\n    });\n\n    console.log(\"Updated rule:\", rule);\n  } catch (error) {\n    console.error(\"Error updating rule:\", error);\n  }\n}\n\nupdateRule();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nrule = nylas.rules.update(\n    rule_id=\"<RULE_ID>\",\n    request_body={\n        \"enabled\": False,\n    },\n)\n\nprint(rule)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/RuleObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    delete:
+      summary: Delete a rule
+      tags:
+      - Rules
+      operationId: delete-rule
+      description: 'Deletes the specified rule. This action is irreversible. Policies that reference the rule no longer apply it
+
+        during inbound processing, and outbound sends no longer evaluate it after deletion.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X DELETE \"https://api.us.nylas.com/v3/rules/<RULE_ID>\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function deleteRule() {\n  try {\n    const result = await nylas.rules.destroy({\n      ruleId: \"<RULE_ID>\",\n    });\n\n    console.log(\"Deleted rule:\", result);\n  } catch (error) {\n    console.error(\"Error deleting rule:\", error);\n  }\n}\n\ndeleteRule();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.rules.destroy(\n    rule_id=\"<RULE_ID>\",\n)\n\nprint(response)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+              examples:
+                OK:
+                  value:
+                    request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+  /v3/grants/{grant_id}/rule-evaluations:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: The ID of the grant to list rule evaluations for.
+    get:
+      summary: List rule evaluations
+      tags:
+      - Rules
+      operationId: list-rule-evaluations
+      description: 'Returns a paginated list of rule evaluation records for the specified grant. Each record captures
+
+        which rules were evaluated against an inbound message, SMTP envelope, or outbound send, the
+
+        normalized sender or recipient data that was matched, which rules matched, and which actions were
+
+        applied.
+
+
+        Rule evaluations are created automatically as inbound mail is processed and as outbound sends are
+
+        evaluated, and serve as an audit trail for the Rules engine. Records are returned in reverse
+
+        chronological order (most recent first).'
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          type: string
+        description: A cursor to fetch the next page of results. Use the `next_cursor` value from the previous response.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/rule-evaluations?limit=50\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function listRuleEvaluations() {\n  try {\n    const evaluations = await nylas.rules.listEvaluations({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      queryParams: {\n        limit: 10,\n      },\n    });\n\n    console.log(\"Rule evaluations:\", evaluations);\n  } catch (error) {\n    console.error(\"Error listing rule evaluations:\", error);\n  }\n}\n\nlistRuleEvaluations();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nevaluations = nylas.rules.list_evaluations(\n    grant_id=\"<NYLAS_GRANT_ID>\",\n    query_params={\n        \"limit\": 50,\n    },\n)\n\nprint(\"Rule evaluations:\", evaluations)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GrantRuleEvaluationObject'
+                  next_cursor:
+                    type: string
+                    description: 'A cursor for paginating through results. Present when there are more results; pass this
+
+                      value as `page_token` in the next request.'
+                    example: eyJsYXN0X2lkIjoiYjIzZGM0NWUtNjdmOC05MDEyLWJjZGUtMzQ1Njc4OWFiY2RmIn0=
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+components:
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  schemas:
+    RuleObject:
+      title: Rule
+      type: object
+      properties:
+        id:
+          type: string
+          description: Globally unique identifier for the rule (UUID).
+          example: c1d2e3f4-5678-4abc-9def-0123456789ab
+        name:
+          type: string
+          description: A human-readable name for the rule. Required on create.
+          example: Block spam domains
+        description:
+          type: string
+          description: An optional description of what the rule does.
+          example: Rejects messages from known spam domains at the SMTP level.
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 1000
+          default: 10
+          description: Execution order for the rule. Lower numbers run first. Must be between `0` and `1000`. Defaults to `10`.
+          example: 1
+        enabled:
+          type: boolean
+          default: true
+          description: Whether the rule is active. Defaults to `true`.
+          example: true
+        trigger:
+          type: string
+          enum:
+          - inbound
+          - outbound
+          default: inbound
+          description: 'When the rule is evaluated. `inbound` rules run on incoming messages. `outbound` rules run on sends
+
+            before the message is submitted to the email provider — an `outbound` rule with a `block` action
+
+            rejects the send with HTTP 403 and no message is delivered. Non-blocking actions (`mark_as_spam`,
+
+            `archive`, `mark_as_read`, `mark_as_starred`, `assign_to_folder`, `trash`) on outbound rules apply
+
+            to the stored sent copy. Inbound and outbound rules are isolated: inbound rules never run during sends, and
+
+            outbound rules never run on receipt.'
+          example: inbound
+        match:
+          type: object
+          description: Defines the conditions that must be met for the rule to apply.
+          properties:
+            operator:
+              type: string
+              enum:
+              - any
+              - all
+              description: 'How conditions are combined. Use `any` to match when any condition is true (OR), or `all` to
+
+                require every condition to be true (AND). When omitted, the rule defaults to `all`.'
+              example: any
+            conditions:
+              type: array
+              description: The list of conditions to evaluate. At least one condition is required.
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    enum:
+                    - from.address
+                    - from.domain
+                    - from.tld
+                    - recipient.address
+                    - recipient.domain
+                    - recipient.tld
+                    - outbound.type
+                    description: 'The field to match against. `from.*` fields match the normalized sender and are valid on
+
+                      both triggers: `from.address` is the full sender email, `from.domain` is the domain
+
+                      portion, and `from.tld` is the top-level domain. `recipient.*` fields are valid only on
+
+                      `outbound` rules and match against **any** recipient — including To, CC, BCC, and SMTP
+
+                      envelope recipients. For `is_not`, the condition is true only when **no** recipient
+
+                      matches. `outbound.type` is valid only on `outbound` rules and classifies the send as
+
+                      `compose` (a fresh message) or `reply` (a reply to an existing thread). The type is
+
+                      derived as `reply` when the send includes `reply_to_message_id` or the raw MIME
+
+                      contains `In-Reply-To` or `References` headers; otherwise it''s `compose`.'
+                    example: from.domain
+                  operator:
+                    type: string
+                    enum:
+                    - is
+                    - is_not
+                    - contains
+                    - in_list
+                    description: 'How to compare the field value. Use `is` for an exact match, `is_not` for the inverse,
+
+                      `contains` for substring matching, or `in_list` to check against one or more List
+
+                      resources. String matching is case-insensitive. The `outbound.type` field accepts only
+
+                      `is` and `is_not` — `contains` and `in_list` are rejected.'
+                    example: is
+                  value:
+                    description: 'The value to compare the field against. For `is`, `is_not`, and `contains`, this is a
+
+                      string. For `in_list`, this is an array of List IDs. For `outbound.type`, this is
+
+                      `compose` or `reply` — values are normalized to lowercase on write.'
+                    oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                    example: spam-domain.com
+        actions:
+          type: array
+          description: 'The actions to perform when the rule matches. At least one action is required. The `block` action cannot be
+
+            combined with other actions — it is terminal.'
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                - block
+                - mark_as_spam
+                - assign_to_folder
+                - mark_as_read
+                - mark_as_starred
+                - archive
+                - trash
+                description: 'The action to take on the matching message or send. `block` rejects inbound mail at the SMTP
+
+                  level or rejects an outbound send before provider submission. `mark_as_spam` routes the
+
+                  message or stored sent copy to the spam folder, `assign_to_folder` files it in the folder
+
+                  named in `value`, and the remaining actions modify the message state.'
+                example: block
+              value:
+                type: string
+                description: 'Required when `type` is `assign_to_folder` — the target folder by name. Use a custom folder''s
+
+                  name (or its full path for a nested folder, e.g. `Clients/Acme`), or a system folder name
+
+                  (`Inbox`, `Sent`, `Drafts`, `Trash`, `Junk`, `Archive`). The name is resolved when the rule
+
+                  runs, so a reference to a folder that doesn''t exist is skipped. Optional for other action types.'
+                example: Receipts
+        application_id:
+          type: string
+          description: The ID of the application that owns the rule. Read-only; derived from the authenticated API key.
+          example: ad410018-d306-43f9-8361-fa5d7b2172e0
+        organization_id:
+          type: string
+          description: The ID of the Nylas organization that owns the rule. Read-only; derived from the authenticated API key.
+          example: org-abc123
+        created_at:
+          type: integer
+          description: When the rule was created, in seconds using the Unix timestamp format.
+          example: 1742932766
+        updated_at:
+          type: integer
+          description: When the rule was last updated, in seconds using the Unix timestamp format.
+          example: 1742932766
+    GrantRuleEvaluationObject:
+      title: GrantRuleEvaluation
+      type: object
+      description: 'An audit record of a single rule-engine evaluation against an inbound message, SMTP envelope, or
+
+        outbound send for a grant. Rule evaluations are created automatically during inbound processing and
+
+        outbound send handling and can be listed to trace which rules matched, what input was considered,
+
+        and which actions were applied.'
+      properties:
+        id:
+          type: string
+          description: Globally unique identifier for this evaluation record (UUID).
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        grant_id:
+          type: string
+          description: The grant this evaluation belongs to (UUID).
+          example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+        message_id:
+          type: string
+          nullable: true
+          description: 'The inbound message or stored sent copy associated with this evaluation (UUID). `null` when the
+
+            evaluation happened before a message record existed, such as `smtp_rcpt`, or when an outbound
+
+            evaluation did not persist a sent copy.'
+          example: e8b5a51d-3c2f-4a1e-9d7b-6f8c2e1a4b3d
+        evaluated_at:
+          type: integer
+          description: When the evaluation occurred, in seconds using the Unix timestamp format.
+          example: 1713000000
+        evaluation_stage:
+          type: string
+          enum:
+          - smtp_rcpt
+          - inbox_processing
+          - outbound_send
+          description: 'Where in the processing pipeline the evaluation happened. `smtp_rcpt` means the evaluation ran
+
+            during SMTP RCPT TO processing (before the message was accepted) — `message_id` is `null` in
+
+            this case. `inbox_processing` means the evaluation ran after the message was accepted and
+
+            during inbox processing — `message_id` is populated. `outbound_send` means the evaluation ran
+
+            for an outbound send; `message_id` is populated when a sent copy was stored, and `null` when
+
+            the send was blocked before storage or no sent copy was persisted.'
+          example: inbox_processing
+        evaluation_input:
+          type: object
+          description: The normalized sender, recipient, and send-type data that rules were matched against.
+          properties:
+            from_address:
+              type: string
+              description: The normalized sender email address.
+              example: sender@example.com
+            from_domain:
+              type: string
+              description: The normalized domain portion of the sender address.
+              example: example.com
+            from_tld:
+              type: string
+              description: The normalized top-level domain of the sender address.
+              example: com
+            recipient_addresses:
+              type: array
+              description: Outbound recipient email addresses considered during rule evaluation.
+              items:
+                type: string
+              example:
+              - recipient@example.com
+              - bcc@example.net
+            recipient_domains:
+              type: array
+              description: Outbound recipient domains considered during rule evaluation.
+              items:
+                type: string
+              example:
+              - example.com
+              - example.net
+            recipient_tlds:
+              type: array
+              description: Outbound recipient top-level domains considered during rule evaluation.
+              items:
+                type: string
+              example:
+              - com
+              - net
+            outbound_type:
+              type: string
+              enum:
+              - compose
+              - reply
+              description: Outbound send classification used during rule evaluation.
+              example: reply
+        applied_actions:
+          type: object
+          description: 'The actions that were applied as a result of matching rules. Only populated fields are returned —
+
+            fields are **omitted** (not set to `false`) when the corresponding action was not applied.'
+          properties:
+            blocked:
+              type: boolean
+              description: The inbound message or outbound send was blocked and not delivered. Terminal action.
+              example: true
+            marked_as_spam:
+              type: boolean
+              description: The message or stored sent copy was moved to the junk/spam folder.
+            marked_as_read:
+              type: boolean
+              description: The message or stored sent copy was automatically marked as read.
+            marked_starred:
+              type: boolean
+              description: The message or stored sent copy was automatically starred.
+            archived:
+              type: boolean
+              description: The message or stored sent copy was archived.
+            trashed:
+              type: boolean
+              description: The message or stored sent copy was moved to trash.
+            folder_ids:
+              type: array
+              description: IDs of the custom folders the message or stored sent copy was assigned to.
+              items:
+                type: string
+              example:
+              - 4f2e1a0d-c3b2-4a5e-8d9c-6f8b2e1a4b3d
+        matched_rule_ids:
+          type: array
+          description: 'IDs of the rules that matched during this evaluation. Empty when no rules matched (for example,
+
+            when rule execution ran but nothing applied).'
+          items:
+            type: string
+          example:
+          - a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        application_id:
+          type: string
+          description: The application this evaluation belongs to (UUID). Read-only; derived from the authenticated API key.
+          example: 5f37fe8d-c4ba-4898-bc18-aad5bb34735e
+        organization_id:
+          type: string
+          description: The Nylas organization this evaluation belongs to (UUID). Read-only; derived from the authenticated API key.
+          example: 9a8b7c6d-5e4f-3a2b-1c0d-ef9876543210
+        created_at:
+          type: integer
+          description: When the evaluation record was created, in seconds using the Unix timestamp format.
+          example: 1713000000
+        updated_at:
+          type: integer
+          description: When the evaluation record was last updated, in seconds using the Unix timestamp format.
+          example: 1713000000
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

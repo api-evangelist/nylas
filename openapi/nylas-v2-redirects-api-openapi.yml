@@ -1,0 +1,216 @@
+openapi: 3.2.0
+info:
+  title: Nylas v2 Redirects API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: v2 Redirects
+  description: Nylas Scheduler uses the `/v3/scheduling/should-redirect/` endpoint to redirect existing v2 Scheduling Pages to v3.
+paths:
+  /v3/scheduling/should-redirect/{v2_scheduler_slug}:
+    parameters:
+    - schema:
+        type: string
+      name: v2_scheduler_slug
+      in: path
+      required: true
+      description: The slug for the v2 Scheduling Page to redirect to v3.
+    get:
+      summary: Redirect v2 Scheduling Page
+      tags:
+      - v2 Redirects
+      operationId: v2-redirect
+      description: Redirects an existing v2 Scheduling Page to a v3 URL.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request GET \\\n  --url \"https://api.us.nylas.com/v3/scheduling/should-redirect/<V2_SCHEDULER_SLUG>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' "
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/should-redirect'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+components:
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    should-redirect:
+      description: Redirect slug to v3
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    url:
+                      type: string
+                      description: The v3 URL for the redirected Scheduling Page.
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              url: /scheduler/<NYLAS_APPLICATION_ID>/<V3_SCHEDULER_SLUG>
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  schemas:
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

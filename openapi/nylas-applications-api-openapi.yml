@@ -1,0 +1,861 @@
+openapi: 3.2.0
+info:
+  title: Nylas Applications API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Applications
+  description: In the context of the Nylas APIs, an "application" is the object record of your Nylas application.
+paths:
+  /v3/applications:
+    get:
+      operationId: get_application
+      tags:
+      - Applications
+      summary: Get application
+      description: Gets the application object
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/applications' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst applicationDetails = await nylas.applications.getDetails();\n\nconsole.log({ applicationDetails });\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\napplication = nylas.applications.info()\napplication_id = application[1]\nprint(\"Application ID:\", application_id)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "# frozen_string_literal: true\n\n# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: '<NYLAS_API_KEY>'\n)\n\napplication = nylas.applications.get_details()\nputs application\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class getApplication {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n    Response<ApplicationDetails> application = nylas.applications().getDetails();\n    \n    System.out.println(application);\n  }\n}"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val application = nylas.applications().getDetails()\n  \n  print(application)\n}"
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/ApplicationObject'
+          description: Returns Application object
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+    patch:
+      operationId: update_application
+      tags:
+      - Applications
+      summary: Update an application
+      description: 'Updates a Nylas application using the client ID associated with the specified API key.
+
+
+        ⚠️ This endpoint will be removed in the future when application settings are available in the Nylas Dashboard.
+
+
+        When you make a `PATCH` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        Updating objects.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PATCH \\\n  --url 'https://api.us.nylas.com/v3/applications' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"branding\": {\n      \"name\": \"<APPLICATION_NAME>\",\n      \"icon_url\": \"<ICON_URL>\",\n      \"website_url\": \"<WEBSITE_URL>\",\n      \"description\": \"<APPLICATION_DESCRIPTION>\"\n    },\n    \"hosted_authentication\": {\n      \"background_image_url\": \"<BACKGROUND_IMAGE_URL>\",\n      \"alignment\": \"<ALIGNMENT>\",\n      \"color_primary\": \"<COLOR_PRIMARY>\",\n      \"color_secondary\": \"<COLOR_SECONDARY>\",\n      \"title\": \"<TITLE>\",\n      \"subtitle\": \"<SUBTITLE>\",\n      \"background_color\": \"<BACKGROUND_COLOR>\",\n      \"spacing\": 10\n    },\n    \"callback_uris\": [\n      {\n        \"id\": \"<CALLBACK_URI_ID>\",\n        \"url\": \"<CALLBACK_URL>\",\n        \"platform\": \"<PLATFORM>\",\n        \"settings\": {\n          \"origin\": \"<ORIGIN>\",\n          \"bundle_id\": \"<BUNDLE_ID>\",\n          \"package_name\": \"<PACKAGE_NAME>\",\n          \"sha1_certificate_fingerprint\": \"<SHA1_FINGERPRINT>\"\n        }\n      }\n    ]\n  }'\n"
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        required: true
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationObject'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ApplicationObject'
+          description: Returns application object
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+  /v3/applications/redirect-uris:
+    get:
+      operationId: get_all_callback_uris
+      tags:
+      - Applications
+      summary: Get an application's callback URIs
+      description: Returns a list of callback URIs for the specified Nylas application.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/applications/redirect-uris' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst redirectUris = await nylas.applications.redirectUris.list();\n\nconsole.log(\"Redirect URIs:\", redirectUris);\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\napplication_redirect_uris = nylas.applications.redirect_uris.list()\nprint(\"Application Redirects:\", application_redirect_uris.data)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "# frozen_string_literal: true\n\n# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: '<NYLAS_API_KEY>'\n)\n\nredirect_uris, _ = nylas.applications.redirect_uris.list\n\nredirect_uris.each do |uri|\n  puts uri[:url]\nend\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.ListResponse;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.RedirectUri;\n\npublic class GetApplicationCallbackUris {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    ListResponse<RedirectUri> redirectUris = nylas.applications().redirectUris().list();\n\n    System.out.println(\"Redirect URIs: \" + redirectUris.getData());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient(apiKey = \"<NYLAS_API_KEY>\")\n\n  val redirectUris = nylas.applications().redirectUris().list()\n\n  println(\"Redirect URIs: ${redirectUris.data}\")\n}\n"
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RedirectURIObject'
+          description: Returns a list of callback URIs
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    $ref: '#/components/schemas/400'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  error:
+                    $ref: '#/components/schemas/404'
+    post:
+      operationId: add_callback_uri
+      tags:
+      - Applications
+      summary: Add callback URI to application
+      description: 'Adds a callback URI to the specified Nylas application. Nylas uses callback URIs to redirect users
+
+        to your project after they complete the authentication flow. If you don''t specify a `platform`,
+
+        Nylas defaults to `web`.
+
+
+        The OAuth protocol requires that you include the `client_secret` field for calls made to this
+
+        endpoint, depending on the `platform` you define. If you''re using
+
+        OAuth 2.0 with PKCE
+
+        and your platform is `js`, `ios`, `android`, or `desktop`, the `client_secret` field is not
+
+        required.'
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        required: true
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - url
+              oneOf:
+              - $ref: '#/components/schemas/webDesktopCallbackNoSettings'
+              - $ref: '#/components/schemas/JsCallbackwSettings'
+              - $ref: '#/components/schemas/iosCallbackwSettings'
+              - $ref: '#/components/schemas/AndroidCallbackwSettings'
+              discriminator:
+                propertyName: platform
+                mapping:
+                  web: '#/components/schemas/webDesktopCallbackNoSettings'
+                  desktop: '#/components/schemas/webDesktopCallbackNoSettings'
+                  js: '#/components/schemas/JsCallbackwSettings'
+                  ios: '#/components/schemas/iosCallbackwSettings'
+                  android: '#/components/schemas/AndroidCallbackwSettings'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/RedirectURIObject'
+          description: Returns callback URI
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/applications/redirect-uris' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"platform\": \"web\",\n    \"url\": \"<CALLBACK_URI>\",\n    \"id\": \"<CALLBACK_URI_ID>\"\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst redirectUri = await nylas.applications.redirectUris.create({\n  requestBody: {\n    url: \"<CALLBACK_URI>\",\n    platform: \"web\",\n  },\n});\n\nconsole.log(\"Redirect URI created:\", redirectUri);\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nredirect_uri = nylas.applications.redirect_uris.create(\n    request_body={\n        \"url\": \"https://example.com/oauth/exchange\",\n        \"platform\": \"web\",\n    },\n)\n\nprint(\"Created redirect URI:\", redirect_uri)\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.CreateRedirectUriRequest;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Platform;\nimport com.nylas.models.RedirectUri;\nimport com.nylas.models.Response;\n\npublic class CreateRedirectUri {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    CreateRedirectUriRequest requestBody = new CreateRedirectUriRequest.Builder(\n        \"<CALLBACK_URI>\", Platform.WEB)\n        .build();\n\n    Response<RedirectUri> redirectUri = nylas.applications().redirectUris().create(requestBody);\n\n    System.out.println(\"Redirect URI created: \" + redirectUri.getData());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.CreateRedirectUriRequest\nimport com.nylas.models.Platform\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val requestBody = CreateRedirectUriRequest.Builder(\"<CALLBACK_URI>\", Platform.WEB)\n      .build()\n\n  val redirectUri = nylas.applications().redirectUris().create(requestBody)\n\n  println(\"Redirect URI created: ${redirectUri.data}\")\n}\n"
+  /v3/applications/redirect-uris/{id}:
+    parameters:
+    - example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+      name: id
+      schema:
+        type: string
+      in: path
+      required: true
+    get:
+      operationId: get_application_callback_uri
+      tags:
+      - Applications
+      summary: Return a callback URI
+      description: Returns the specified callback URI.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/applications/redirect-uris/<CALLBACK_URI_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function getRedirectUri() {\n  try {\n    const redirectUris = await nylas.applications.redirectUris.find({\n      redirectUriId: \"<CALLBACK_URI_ID>\",\n    });\n\n    console.log(\"Callback URI:\", redirectUris);\n  } catch (error) {\n    console.error(\"Couldn't get callback URI:\", error);\n  }\n}\n\ngetRedirectUri();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nredirect_uri = nylas.applications.redirect_uris.find(\n    redirect_uri_id=\"<CALLBACK_URI_ID>\",\n)\n\nprint(redirect_uri)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\t\n\nnylas = Nylas::Client.new(\n\t\tapi_key: \"<NYLAS_API_KEY>\"\n)\n\nredirect_uris = nylas.applications.redirect_uris.find(redirect_uri_id: \"<CALLBACK_URI_ID>\")\n\nputs redirect_uris"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class GetApplicationURIs {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n    Response<RedirectUri> redirect_uris = nylas.applications().redirectUris().find(\"<CALLBACK_URI_ID>\");\n\n    System.out.println(redirect_uris);\n  }\n}"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val redirecturis = nylas.applications().redirectUris().find(\"<CALLBACK_URI_ID>\")\n\n  print(redirecturis)\n}"
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/RedirectURIObject'
+          description: Returns callback URI
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+    patch:
+      operationId: update_callback_uri
+      tags:
+      - Applications
+      summary: Update a callback URI
+      description: 'Updates the specified callback URI.
+
+
+        If you don''t define the `platform`, Nylas doesn''t modify the existing settings.
+
+
+        When you make a `PATCH` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        Updating objects.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PATCH \\\n  --url 'https://api.us.nylas.com/v3/applications/redirect-uris/<CALLBACK_URI_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'\n  --data '{\n    \"url\": \"<UPDATED_CALLBACK_URI>\"\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst updated = await nylas.applications.redirectUris.update({\n  redirectUriId: \"<CALLBACK_URI_ID>\",\n  requestBody: {\n    url: \"<UPDATED_CALLBACK_URI>\",\n  },\n});\n\nconsole.log(\"Redirect URI updated:\", updated);\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nredirect_uri = nylas.applications.redirect_uris.update(\n    redirect_uri_id=\"<REDIRECT_URI_ID>\",\n    request_body={\n        \"url\": \"https://example.com/oauth/exchange\",\n        \"platform\": \"web\",\n    },\n)\n\nprint(\"Updated redirect URI:\", redirect_uri)\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.RedirectUri;\nimport com.nylas.models.Response;\nimport com.nylas.models.UpdateRedirectUriRequest;\n\npublic class UpdateRedirectUri {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    UpdateRedirectUriRequest requestBody = new UpdateRedirectUriRequest.Builder()\n        .url(\"<UPDATED_CALLBACK_URI>\")\n        .build();\n\n    Response<RedirectUri> updated = nylas.applications().redirectUris()\n        .update(\"<CALLBACK_URI_ID>\", requestBody);\n\n    System.out.println(\"Redirect URI updated: \" + updated.getData());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.UpdateRedirectUriRequest\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val requestBody = UpdateRedirectUriRequest.Builder()\n      .url(\"<UPDATED_CALLBACK_URI>\")\n      .build()\n\n  val updated = nylas.applications().redirectUris().update(\"<CALLBACK_URI_ID>\", requestBody)\n\n  println(\"Redirect URI updated: ${updated.data}\")\n}\n"
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        required: true
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - platform
+              - url
+              oneOf:
+              - $ref: '#/components/schemas/webDesktopCallbackNoSettings'
+              - $ref: '#/components/schemas/JsCallbackwSettings'
+              - $ref: '#/components/schemas/iosCallbackwSettings'
+              - $ref: '#/components/schemas/AndroidCallbackwSettings'
+              discriminator:
+                propertyName: platform
+                mapping:
+                  web: '#/components/schemas/webDesktopCallbackNoSettings'
+                  desktop: '#/components/schemas/webDesktopCallbackNoSettings'
+                  js: '#/components/schemas/JsCallbackwSettings'
+                  ios: '#/components/schemas/iosCallbackwSettings'
+                  android: '#/components/schemas/AndroidCallbackwSettings'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/RedirectURIObject'
+          description: Returns callback URI
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+    delete:
+      operationId: delete_callback_uri
+      tags:
+      - Applications
+      summary: Delete a callback URI
+      description: Deletes the specified callback URI.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/applications/redirect-uris/<CALLBACK_URI_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function deleteRedirectUriId() {\n  try {\n    const response = await nylas.applications.redirectUris.destroy({\n      redirectUriId: \"<CALLBACK_URI_ID>\",\n    });\n\n    console.log(\"Callback URI deleted:\", response);\n  } catch (error) {\n    console.error(\"Couldn't delete callback URI:\", error);\n  }\n}\n\ndeleteRedirectUriId();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.applications.redirect_uris.destroy(\n    redirect_uri_id=\"<CALLBACK_URI_ID>\",\n)\n\nprint(response)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "# frozen_string_literal: true\n\nrequire 'nylas'\n\nnylas = Nylas::Client.new(\n    api_key: '<NYLAS_API_KEY>'\n)\n\nredirect_uris = nylas.applications.redirect_uris.destroy(redirect_uri_id: \"<CALLBACK_URI_ID>\")\n\nputs redirect_uris"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class DeleteApplicationURIs {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        DeleteResponse redirect_uris = \n        nylas.applications().redirectUris().destroy(\"<REDIRECT_URI>\");\n        System.out.println(redirect_uris);\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val redirecturis = nylas.applications().redirectUris().destroy(\"<REDIRECT_URIS>\")\n    print(redirecturis)\n}\n"
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/200-delete'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+components:
+  schemas:
+    '401':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: invalid_request_error
+            message:
+              description: Informative error message
+              default: Authentication error
+              type: string
+              example: Authentication error
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    '404':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: xyz.not_found_error
+            message:
+              description: Informative error message
+              default: Resource not found
+              type: string
+              example: Resource not found
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    webDesktopCallbackNoSettings:
+      title: Web or Desktop
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - web
+          - desktop
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development
+
+            _only_. Otherwise, you need to use HTTPS.'
+          example: https://yourapp.com/callback
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    RedirectURIObject:
+      oneOf:
+      - $ref: '#/components/schemas/webDesktopCallbackNoSettings'
+      - $ref: '#/components/schemas/JsCallbackwSettings'
+      - $ref: '#/components/schemas/iosCallbackwSettings'
+      - $ref: '#/components/schemas/AndroidCallbackwSettings'
+      discriminator:
+        propertyName: platform
+        mapping:
+          web: '#/components/schemas/webDesktopCallbackNoSettings'
+          desktop: '#/components/schemas/webDesktopCallbackNoSettings'
+          js: '#/components/schemas/JsCallbackwSettings'
+          ios: '#/components/schemas/iosCallbackwSettings'
+          android: '#/components/schemas/AndroidCallbackwSettings'
+    AndroidCallbackwSettings:
+      title: Android
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - android
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+
+            `<package/bundle-name>://<deeplink>`).
+
+
+            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the Android callback URI.
+          type: object
+          required:
+          - package_name
+          - sha1_certificate_fingerprint
+          properties:
+            package_name:
+              type: string
+              description: Find your app's Package Name in the Android Manifest. It's a unique identifier that distinguishes your app on the Google Play Store and on the device. It follows a reverse domain name notation, such as `com.example.myapp`.
+              example: com.example.myapp
+            sha1_certificate_fingerprint:
+              type: string
+              description: A SHA-1 hash of the app's signing certificate. This ensures that only the _signed_ version of your app can use the redirect URI.
+              example: AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12
+    JsCallbackwSettings:
+      title: JS
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - js
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development _only_.
+
+            Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the Javascript callback URI.
+          type: object
+          required:
+          - origin
+          properties:
+            origin:
+              type: string
+              description: The `origin` is the base URL from which your project or app is served. It is required because it's a critical part of defining your app's trust boundaries to prevent cross-origin issues. Set this when you set up OAuth redirect URIs and other security settings.
+              example: yourapp.com
+    iosCallbackwSettings:
+      title: iOS
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - ios
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+
+            `<package/bundle-name>://<deeplink>`).
+
+
+            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the iOS callback URI.
+          type: object
+          required:
+          - bundle_id
+          properties:
+            bundle_id:
+              type: string
+              description: The `bundle_id` (Bundle Identifier) is a unique identifier for an iOS app. It's set in the Xcode project and follows a reverse domain name style.
+              example: com.example.myapp
+            app_store_id:
+              type: string
+              description: Unique identifier for your app on the Apple App Store. This ID is assigned to your app when you submit it to the App Store and it is approved.
+              example: 1234567890
+            team_id:
+              type: string
+              example: ABCDE12345
+              description: Unique identifier for your Apple Developer Account or team.
+    ApplicationObject:
+      type: object
+      properties:
+        application_id:
+          type: string
+          description: Application ID
+          example: ad410018-d306-43f9-8361-fa5d7b2172e0
+        organization_id:
+          type: string
+          description: ID of organization
+          example: f5db4482-dbbe-4b32-b347-61c260d803ce
+        region:
+          type: string
+          description: Region identifier
+          example: us
+        environment:
+          type: string
+          description: Environment identifier
+          enum:
+          - production
+          - staging
+        default_workspace_id:
+          type: string
+          readOnly: true
+          description: 'The ID of the application''s default [workspace](/docs/reference/api/workspaces/), if one exists.
+
+            Nylas manages this value, and ignores it in create and update requests.'
+          example: abf6ff99-05ad-4c0a-aaf8-400aacf2470a
+        v2_application_id:
+          type: string
+          description: Linked v2 Application ID
+          example: 9nsr7pjw1e1g6hgy9l1znjql7
+        branding:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the application
+              example: My application
+            icon_url:
+              type: string
+              description: URL points to application icon.
+              example: https://my-app.com/my-icon.png
+            website_url:
+              type: string
+              description: Application / publisher website URL
+              example: https://my-app.com
+            description:
+              type: string
+              description: Description of the application.
+              example: Online banking application.
+        hosted_authentication:
+          type: object
+          properties:
+            background_image_url:
+              type: string
+              description: URL of the background image
+              example: https://my-app.com/bg.jpg
+            alignment:
+              type: string
+              description: Alignment of background image
+              enum:
+              - left
+              - center
+              - right
+            color_primary:
+              type: string
+              description: Primary color
+              example: '#dc0000'
+            color_secondary:
+              type: string
+              description: Secondary color
+              example: '#000056'
+            title:
+              type: string
+              description: Title
+            subtitle:
+              type: string
+              description: Subtitle
+            background_color:
+              type: string
+              description: Background color
+              example: '#003400'
+            spacing:
+              type: integer
+              description: CSS spacing attribute in px
+              example: 5
+        callback_uris:
+          description: A list of your application's callback URIs.
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/webDesktopCallbackNoSettings'
+            - $ref: '#/components/schemas/JsCallbackwSettings'
+            - $ref: '#/components/schemas/iosCallbackwSettings'
+            - $ref: '#/components/schemas/AndroidCallbackwSettings'
+            discriminator:
+              propertyName: platform
+              mapping:
+                web: '#/components/schemas/webDesktopCallbackNoSettings'
+                desktop: '#/components/schemas/webDesktopCallbackNoSettings'
+                js: '#/components/schemas/JsCallbackwSettings'
+                ios: '#/components/schemas/iosCallbackwSettings'
+                android: '#/components/schemas/AndroidCallbackwSettings'
+  responses:
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

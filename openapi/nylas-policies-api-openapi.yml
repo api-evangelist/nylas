@@ -1,0 +1,682 @@
+openapi: 3.2.0
+info:
+  title: Nylas Policies API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Policies
+  description: The Policies endpoints let you define the operational configuration for Nylas Agent Accounts, including message limits, attachment constraints, spam detection settings, and linked rules for inbound message filtering.
+paths:
+  /v3/policies:
+    post:
+      summary: Create a policy
+      tags:
+      - Policies
+      operationId: create-policy
+      description: 'Creates a policy for your application. Policies define message limits, spam detection settings, and linked
+
+        rules for Nylas Agent Accounts. The `application_id` and `organization_id` are derived from your API key, so you
+
+        don''t need to include them in the request body — they are read-only.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  description: A human-readable name for the policy.
+                  example: Standard Agent Account Policy
+                limits:
+                  type: object
+                  properties:
+                    limit_attachment_size_limit:
+                      type: integer
+                      format: int64
+                      example: 26214400
+                    limit_attachment_count_limit:
+                      type: integer
+                      example: 20
+                    limit_attachment_allowed_types:
+                      type: array
+                      items:
+                        type: string
+                      example:
+                      - image/png
+                      - application/pdf
+                    limit_size_total_mime:
+                      type: integer
+                      format: int64
+                      example: 31457280
+                    limit_storage_total:
+                      type: integer
+                      format: int64
+                      example: 10737418240
+                    limit_count_daily_message_received:
+                      type: integer
+                      format: int64
+                      example: 1000
+                    limit_count_daily_email_sent:
+                      type: integer
+                      format: int64
+                      example: 1000
+                    limit_inbox_retention_period:
+                      type: integer
+                      description: Days. Must be greater than `limit_spam_retention_period` when both are set.
+                      example: 365
+                    limit_spam_retention_period:
+                      type: integer
+                      description: Days. Must be shorter than `limit_inbox_retention_period` when both are set.
+                      example: 30
+                rules:
+                  type: array
+                  description: Rule IDs to link to this policy.
+                  items:
+                    type: string
+                  example:
+                  - c1d2e3f4-5678-4abc-9def-0123456789ab
+                spam_detection:
+                  type: object
+                  properties:
+                    use_list_dnsbl:
+                      type: boolean
+                      example: true
+                    use_header_anomaly_detection:
+                      type: boolean
+                      example: true
+                    spam_sensitivity:
+                      type: number
+                      format: float
+                      minimum: 0.1
+                      maximum: 5
+                      example: 1.5
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \"https://api.us.nylas.com/v3/policies\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"name\": \"Standard Agent Account Policy\",\n    \"spam_detection\": {\n      \"use_list_dnsbl\": true,\n      \"use_header_anomaly_detection\": true,\n      \"spam_sensitivity\": 1.5\n    },\n    \"limits\": {\n      \"limit_attachment_size_limit\": 26214400,\n      \"limit_attachment_count_limit\": 20,\n      \"limit_inbox_retention_period\": 365,\n      \"limit_spam_retention_period\": 30\n    }\n  }'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function createPolicy() {\n  try {\n    const policy = await nylas.policies.create({\n      requestBody: {\n        name: \"Standard Agent Account Policy\",\n        rules: [\"<RULE_ID>\"],\n        limits: {\n          limitAttachmentSizeLimit: 26214400,\n          limitAttachmentCountLimit: 20,\n          limitInboxRetentionPeriod: 365,\n          limitSpamRetentionPeriod: 30,\n        },\n        spamDetection: {\n          useListDnsbl: true,\n          useHeaderAnomalyDetection: true,\n          spamSensitivity: 1.5,\n        },\n      },\n    });\n\n    console.log(\"Policy:\", policy);\n  } catch (error) {\n    console.error(\"Error creating policy:\", error);\n  }\n}\n\ncreatePolicy();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\npolicy = nylas.policies.create(\n    request_body={\n        \"name\": \"Standard Agent Account Policy\",\n        \"spam_detection\": {\n            \"use_list_dnsbl\": True,\n            \"use_header_anomaly_detection\": True,\n            \"spam_sensitivity\": 1.5,\n        },\n        \"limits\": {\n            \"limit_attachment_size_limit\": 26214400,\n            \"limit_attachment_count_limit\": 20,\n            \"limit_inbox_retention_period\": 365,\n            \"limit_spam_retention_period\": 30,\n        },\n    },\n)\n\nprint(policy)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/PolicyObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    get:
+      summary: List policies
+      tags:
+      - Policies
+      operationId: list-policies
+      description: Returns a list of all policies for your application.
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          type: string
+        description: A token to fetch the next page of results. Use the `next_cursor` value from the previous response.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/policies?limit=50\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function listPolicies() {\n  try {\n    const policies = await nylas.policies.list({\n      queryParams: {\n        limit: 10,\n      },\n    });\n\n    console.log(\"Policies:\", policies);\n  } catch (error) {\n    console.error(\"Error listing policies:\", error);\n  }\n}\n\nlistPolicies();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\npolicies = nylas.policies.list(\n    query_params={\n        \"limit\": 50,\n    },\n)\n\nprint(policies)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PolicyObject'
+                  next_cursor:
+                    type: string
+                    description: A token to use for paginating through results. If present, pass this value as `page_token` in the next request.
+                    example: eyJhbGciOiJIUzI1NiJ9
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+  /v3/policies/{policy_id}:
+    parameters:
+    - schema:
+        type: string
+      name: policy_id
+      in: path
+      required: true
+      description: The ID of the policy to access.
+    get:
+      summary: Get a policy
+      tags:
+      - Policies
+      operationId: get-policy
+      description: Returns the specified policy.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/policies/<POLICY_ID>\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function findPolicy() {\n  try {\n    const policy = await nylas.policies.find({\n      policyId: \"<POLICY_ID>\",\n    });\n\n    console.log(\"Policy:\", policy);\n  } catch (error) {\n    console.error(\"Error finding policy:\", error);\n  }\n}\n\nfindPolicy();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\npolicy = nylas.policies.find(\n    policy_id=\"<POLICY_ID>\",\n)\n\nprint(policy)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/PolicyObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    put:
+      summary: Update a policy
+      tags:
+      - Policies
+      operationId: update-policy
+      description: 'Updates the specified policy. All fields are optional — only provided fields are updated. The same plan-limit,
+
+        spam sensitivity, and retention-period validation applies as on create.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Updated policy name
+                limits:
+                  type: object
+                  properties:
+                    limit_attachment_size_limit:
+                      type: integer
+                      format: int64
+                    limit_attachment_count_limit:
+                      type: integer
+                    limit_attachment_allowed_types:
+                      type: array
+                      items:
+                        type: string
+                    limit_size_total_mime:
+                      type: integer
+                      format: int64
+                    limit_storage_total:
+                      type: integer
+                      format: int64
+                    limit_count_daily_message_received:
+                      type: integer
+                      format: int64
+                    limit_count_daily_email_sent:
+                      type: integer
+                      format: int64
+                    limit_inbox_retention_period:
+                      type: integer
+                    limit_spam_retention_period:
+                      type: integer
+                rules:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                  - c1d2e3f4-5678-4abc-9def-0123456789ab
+                spam_detection:
+                  type: object
+                  properties:
+                    use_list_dnsbl:
+                      type: boolean
+                    use_header_anomaly_detection:
+                      type: boolean
+                    spam_sensitivity:
+                      type: number
+                      format: float
+                      minimum: 0.1
+                      maximum: 5
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X PUT \"https://api.us.nylas.com/v3/policies/<POLICY_ID>\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"rules\": [\"<RULE_ID_1>\", \"<RULE_ID_2>\"]\n  }'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function updatePolicy() {\n  try {\n    const policy = await nylas.policies.update({\n      policyId: \"<POLICY_ID>\",\n      requestBody: {\n        limits: {\n          limitInboxRetentionPeriod: 180,\n        },\n      },\n    });\n\n    console.log(\"Updated policy:\", policy);\n  } catch (error) {\n    console.error(\"Error updating policy:\", error);\n  }\n}\n\nupdatePolicy();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\npolicy = nylas.policies.update(\n    policy_id=\"<POLICY_ID>\",\n    request_body={\n        \"rules\": [\"<RULE_ID_1>\", \"<RULE_ID_2>\"],\n    },\n)\n\nprint(policy)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/PolicyObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    delete:
+      summary: Delete a policy
+      tags:
+      - Policies
+      operationId: delete-policy
+      description: Deletes the specified policy. This action is irreversible.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X DELETE \"https://api.us.nylas.com/v3/policies/<POLICY_ID>\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function deletePolicy() {\n  try {\n    const result = await nylas.policies.destroy({\n      policyId: \"<POLICY_ID>\",\n    });\n\n    console.log(\"Deleted policy:\", result);\n  } catch (error) {\n    console.error(\"Error deleting policy:\", error);\n  }\n}\n\ndeletePolicy();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.policies.destroy(\n    policy_id=\"<POLICY_ID>\",\n)\n\nprint(response)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+              examples:
+                OK:
+                  value:
+                    request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+components:
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  schemas:
+    PolicyObject:
+      title: Policy
+      type: object
+      properties:
+        id:
+          type: string
+          description: Globally unique identifier for the policy (UUID).
+          example: b1c2d3e4-5678-4abc-9def-0123456789ab
+        name:
+          type: string
+          description: A human-readable name for the policy. Required on create.
+          example: Standard Agent Account Policy
+        application_id:
+          type: string
+          description: The ID of the application that owns the policy. Read-only; derived from the authenticated API key.
+          example: ad410018-d306-43f9-8361-fa5d7b2172e0
+        organization_id:
+          type: string
+          description: The ID of the Nylas organization that owns the policy. Read-only; derived from the authenticated API key.
+          example: org-abc123
+        limits:
+          type: object
+          description: 'Operational limits enforced for inboxes that use this policy. All fields are optional. If omitted, each limit defaults
+
+            to the plan''s maximum allowed value. If a requested value exceeds the plan limit, the API returns an error.'
+          properties:
+            limit_attachment_size_limit:
+              type: integer
+              format: int64
+              description: Maximum size (in bytes) for a single attachment.
+              example: 26214400
+            limit_attachment_count_limit:
+              type: integer
+              description: Maximum number of attachments allowed on a single message.
+              example: 20
+            limit_attachment_allowed_types:
+              type: array
+              description: Allowed attachment MIME types. If empty or omitted, all types permitted by the plan are allowed.
+              items:
+                type: string
+              example:
+              - image/png
+              - image/jpeg
+              - application/pdf
+            limit_size_total_mime:
+              type: integer
+              format: int64
+              description: Maximum total MIME size (in bytes) for a single message, including all attachments.
+              example: 31457280
+            limit_storage_total:
+              type: integer
+              format: int64
+              description: Maximum total storage (in bytes) for each inbox that uses this policy.
+              example: 10737418240
+            limit_count_daily_message_received:
+              type: integer
+              format: int64
+              description: Maximum number of messages each grant can receive per day.
+              example: 1000
+            limit_count_daily_email_sent:
+              type: integer
+              format: int64
+              description: Maximum number of messages each grant can send per day.
+              example: 1000
+            limit_inbox_retention_period:
+              type: integer
+              description: 'How long (in days) to retain messages in the inbox before they are deleted. Must be greater than
+
+                `limit_spam_retention_period` when both are set.'
+              example: 365
+            limit_spam_retention_period:
+              type: integer
+              description: 'How long (in days) to retain messages in the spam folder before they are deleted. Must be shorter than
+
+                `limit_inbox_retention_period` when both are set.'
+              example: 30
+        rules:
+          type: array
+          description: '(Legacy) Rule IDs linked to this policy. Rule evaluation uses the `rule_ids` array on the
+
+            [workspace](/docs/reference/api/workspaces/), not the policy. Set rules on the workspace instead.
+
+            Whether rules are allowed depends on your plan.'
+          items:
+            type: string
+          example:
+          - c1d2e3f4-5678-4abc-9def-0123456789ab
+        spam_detection:
+          type: object
+          description: Spam detection configuration for inboxes that use this policy.
+          properties:
+            use_list_dnsbl:
+              type: boolean
+              description: If `true`, enables DNS-based block list (DNSBL) checking on inbound messages.
+              example: true
+            use_header_anomaly_detection:
+              type: boolean
+              description: If `true`, enables header anomaly detection on inbound messages.
+              example: true
+            spam_sensitivity:
+              type: number
+              format: float
+              minimum: 0.1
+              maximum: 5
+              default: 1
+              description: Spam detection sensitivity. Must be between `0.1` and `5.0`. Higher values mark more messages as spam.
+              example: 1.5
+        created_at:
+          type: integer
+          description: When the policy was created, in seconds using the Unix timestamp format.
+          example: 1742932766
+        updated_at:
+          type: integer
+          description: When the policy was last updated, in seconds using the Unix timestamp format.
+          example: 1742932766
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

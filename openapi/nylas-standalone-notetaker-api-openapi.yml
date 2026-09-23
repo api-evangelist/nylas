@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Nylas Notetaker API
+  title: Nylas Standalone Notetaker API
   version: v3
   summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
   description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
@@ -29,18 +29,19 @@ security:
 - ACCESS_TOKEN: []
 - NYLAS_API_KEY: []
 tags:
-- name: Notetaker
-  description: Nylas Notetaker is a real-time meeting bot that you can invite to your online meetings.
+- name: Standalone Notetaker
+  description: 'Nylas Notetaker is a real-time meeting bot that you can invite to your online meetings. It records and transcribes your discussion, and delivers results to you using the Nylas API and webhook notifications.
+
+
+    The `/v3/notetakers` endpoints let you interact with Nylas Notetaker without referencing a grant. This lets all your users — even those who haven''t authenticated with your Nylas application — use Notetaker in their meetings.'
 paths:
-  /v3/grants/{grant_id}/notetakers:
-    parameters:
-    - $ref: '#/components/parameters/grant_id'
+  /v3/notetakers:
     get:
-      summary: Return all Notetakers
+      summary: Return all standalone Notetakers
       tags:
-      - Notetaker
-      operationId: get-all-notetakers
-      description: Returns a list of all Notetaker bots.
+      - Standalone Notetaker
+      operationId: get-all-standalone-notetakers
+      description: Returns a list of standalone Notetaker bots.
       x-scopes:
         google:
           min: ''
@@ -51,8 +52,8 @@ paths:
       security:
       - NYLAS_API_KEY: []
       parameters:
-      - $ref: '#/components/parameters/join_time_start'
       - $ref: '#/components/parameters/join_time_end'
+      - $ref: '#/components/parameters/join_time_start'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/notetaker_order_by'
       - $ref: '#/components/parameters/notetaker_order_direction'
@@ -62,35 +63,35 @@ paths:
       x-code-samples:
       - lang: bash
         label: cURL
-        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/notetakers\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/notetakers\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
       - lang: javascript
         label: Node.js SDK
-        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function listNotetakers() {\n  try {\n    const notetakers = await nylas.notetakers.list({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      queryParams: {\n        limit: 50,\n      },\n    });\n\n    console.log(\"Notetakers:\", notetakers);\n  } catch (error) {\n    console.error(\"Error listing notetakers:\", error);\n  }\n}\n\nlistNotetakers();\n"
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function listStandaloneNotetakers() {\n  try {\n    const notetakers = await nylas.notetakers.list({\n      queryParams: {\n        limit: 50,\n      },\n    });\n\n    console.log(\"Standalone notetakers:\", notetakers);\n  } catch (error) {\n    console.error(\"Error listing notetakers:\", error);\n  }\n}\n\nlistStandaloneNotetakers();\n"
       - lang: python
         label: Python SDK
-        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnotetakers = nylas.notetakers.list(\n    identifier=\"<NYLAS_GRANT_ID>\",\n    query_params={\n        \"limit\": 50,\n    },\n)\n\nprint(\"Notetakers:\", notetakers)\n"
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnotetakers = nylas.notetakers.list(\n    query_params={\n        \"limit\": 50,\n    },\n)\n\nprint(\"Standalone notetakers:\", notetakers)\n"
       - lang: java
         label: Java SDK
-        source: "import com.nylas.NylasClient;\nimport com.nylas.models.ListNotetakersQueryParams;\nimport com.nylas.models.ListResponse;\nimport com.nylas.models.Notetaker;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\n\npublic class ListNotetakers {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    ListNotetakersQueryParams queryParams = new ListNotetakersQueryParams.Builder()\n        .limit(50)\n        .build();\n\n    ListResponse<Notetaker> notetakers = nylas.notetakers().list(queryParams, \"<NYLAS_GRANT_ID>\");\n\n    System.out.println(\"Notetakers: \" + notetakers.getData());\n  }\n}\n"
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.ListNotetakersQueryParams;\nimport com.nylas.models.ListResponse;\nimport com.nylas.models.Notetaker;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\n\npublic class ListStandaloneNotetakers {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    ListNotetakersQueryParams queryParams = new ListNotetakersQueryParams.Builder()\n        .limit(50)\n        .build();\n\n    // Omit the grant identifier to query the standalone (account-level) Notetakers.\n    ListResponse<Notetaker> notetakers = nylas.notetakers().list(queryParams);\n\n    System.out.println(\"Standalone notetakers: \" + notetakers.getData());\n  }\n}\n"
       - lang: kotlin
         label: Kotlin SDK
-        source: "import com.nylas.NylasClient\nimport com.nylas.models.ListNotetakersQueryParams\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val queryParams = ListNotetakersQueryParams.Builder()\n      .limit(50)\n      .build()\n\n  val notetakers = nylas.notetakers().list(queryParams, \"<NYLAS_GRANT_ID>\")\n\n  println(\"Notetakers: ${notetakers.data}\")\n}\n"
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.ListNotetakersQueryParams\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val queryParams = ListNotetakersQueryParams.Builder()\n      .limit(50)\n      .build()\n\n  // Omit the grant identifier to query the standalone (account-level) Notetakers.\n  val notetakers = nylas.notetakers().list(queryParams)\n\n  println(\"Standalone notetakers: ${notetakers.data}\")\n}\n"
       responses:
         '200':
-          $ref: '#/components/responses/get-notetakers-200'
+          $ref: '#/components/responses/get-standalone-notetakers-200'
         '401':
           $ref: '#/components/responses/401'
         '429':
           $ref: '#/components/responses/429'
     post:
-      summary: Invite Notetaker to meeting
+      summary: Invite standalone Notetaker to meeting
       tags:
-      - Notetaker
-      operationId: invite-notetaker
-      description: 'Adds a Notetaker bot to the specified meeting.
+      - Standalone Notetaker
+      operationId: invite-standalone-notetaker
+      description: 'Adds a standalone Notetaker bot to the specified meeting.
 
 
-        ℹ️ Nylas doesn''t de-duplicate Notetaker bots. Every POST /v3/grants/<NYLAS_GRANT_ID>/notetakers request you make invites a new Notetaker to the specified meeting.'
+        ℹ️ Nylas doesn''t de-duplicate Notetaker bots. Every POST /v3/notetakers request you make invites a new Notetaker to the specified meeting.'
       x-scopes:
         google:
           min: ''
@@ -105,31 +106,30 @@ paths:
       x-code-samples:
       - lang: bash
         label: cURL
-        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/notetakers\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"join_time\": 1732657774,\n    \"meeting_link\": \"https://meet.google.com/xyz-abcd-ijk\",\n    \"meeting_settings\": {\n      \"action_items\": true,\n      \"action_items_settings\": {\n        \"custom_instructions\": \"Only return the 5 most important action items.\"\n      },\n      \"audio_recording\": true,\n      \"leave_after_silence_seconds\": 360,\n      \"summary\": true,\n      \"summary_settings\": {\n        \"custom_instructions\": \"Return this summary in the MEDPIC sales methodology.\"\n      },\n      \"transcription\": true,\n      \"transcription_settings\": {\n        \"expected_languages\": [\"en\", \"es\"],\n        \"fallback_language\": \"en\"\n      },\n      \"video_recording\": true\n    },\n    \"name\": \"Nylas Notetaker\"\n  }'"
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/notetakers\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"join_time\": 1732657774,\n    \"meeting_link\": \"https://meet.google.com/xyz-abcd-ijk\",\n    \"meeting_settings\": {\n      \"action_items\": true,\n      \"action_items_settings\": {\n        \"custom_instructions\": \"Only return the 5 most important action items.\"\n      },\n      \"audio_recording\": true,\n      \"leave_after_silence_seconds\": 360,\n      \"summary\": true,\n      \"summary_settings\": {\n        \"custom_instructions\": \"Return this summary in the MEDPIC sales methodology.\"\n      },\n      \"transcription\": true,\n      \"transcription_settings\": {\n        \"expected_languages\": [\"en\", \"es\"],\n        \"fallback_language\": \"en\"\n      },\n      \"video_recording\": true\n    },\n    \"name\": \"Nylas Notetaker\"\n  }'"
       - lang: javascript
         label: Node.js SDK
-        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function inviteNotetaker() {\n  try {\n    const notetaker = await nylas.notetakers.create({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      requestBody: {\n        meetingLink: \"https://meet.google.com/abc-defg-hij\",\n        name: \"Nylas Notetaker\",\n        meetingSettings: {\n          videoRecording: true,\n          audioRecording: true,\n          transcription: true,\n        },\n      },\n    });\n\n    console.log(\"Notetaker:\", notetaker);\n  } catch (error) {\n    console.error(\"Error inviting notetaker:\", error);\n  }\n}\n\ninviteNotetaker();\n"
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function inviteStandaloneNotetaker() {\n  try {\n    const notetaker = await nylas.notetakers.create({\n      requestBody: {\n        meetingLink: \"https://meet.google.com/abc-defg-hij\",\n        name: \"Nylas Notetaker\",\n        meetingSettings: {\n          videoRecording: true,\n          audioRecording: true,\n          transcription: true,\n        },\n      },\n    });\n\n    console.log(\"Standalone notetaker:\", notetaker);\n  } catch (error) {\n    console.error(\"Error inviting notetaker:\", error);\n  }\n}\n\ninviteStandaloneNotetaker();\n"
       - lang: python
         label: Python SDK
-        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnotetaker = nylas.notetakers.invite(\n    request_body={\n        \"meeting_link\": \"https://meet.google.com/abc-defg-hij\",\n        \"name\": \"Nylas Notetaker\",\n        \"meeting_settings\": {\n            \"video_recording\": True,\n            \"audio_recording\": True,\n            \"transcription\": True,\n        },\n    },\n    identifier=\"<NYLAS_GRANT_ID>\",\n)\n\nprint(\"Invited notetaker:\", notetaker)\n"
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnotetaker = nylas.notetakers.invite(\n    request_body={\n        \"meeting_link\": \"https://meet.google.com/abc-defg-hij\",\n        \"name\": \"Nylas Notetaker\",\n        \"meeting_settings\": {\n            \"video_recording\": True,\n            \"audio_recording\": True,\n            \"transcription\": True,\n        },\n    },\n)\n\nprint(\"Invited standalone notetaker:\", notetaker)\n"
       - lang: java
         label: Java SDK
-        source: "import com.nylas.NylasClient;\nimport com.nylas.models.CreateNotetakerRequest;\nimport com.nylas.models.Notetaker;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class InviteNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    CreateNotetakerRequest.MeetingSettings meetingSettings =\n        new CreateNotetakerRequest.MeetingSettings.Builder()\n            .videoRecording(true)\n            .audioRecording(true)\n            .transcription(true)\n            .build();\n\n    CreateNotetakerRequest requestBody = new CreateNotetakerRequest.Builder(\n        \"https://meet.google.com/abc-defg-hij\")\n        .name(\"Nylas Notetaker\")\n        .meetingSettings(meetingSettings)\n        .build();\n\n    Response<Notetaker> notetaker = nylas.notetakers().create(requestBody, \"<NYLAS_GRANT_ID>\");\n\n    System.out.println(\"Notetaker: \" + notetaker.getData());\n  }\n}\n"
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.CreateNotetakerRequest;\nimport com.nylas.models.Notetaker;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class InviteStandaloneNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    CreateNotetakerRequest.MeetingSettings meetingSettings =\n        new CreateNotetakerRequest.MeetingSettings.Builder()\n            .videoRecording(true)\n            .audioRecording(true)\n            .transcription(true)\n            .build();\n\n    CreateNotetakerRequest requestBody = new CreateNotetakerRequest.Builder(\n        \"https://meet.google.com/abc-defg-hij\")\n        .name(\"Nylas Notetaker\")\n        .meetingSettings(meetingSettings)\n        .build();\n\n    // Omit the grant identifier to create a standalone (account-level) Notetaker.\n    Response<Notetaker> notetaker = nylas.notetakers().create(requestBody);\n\n    System.out.println(\"Standalone notetaker: \" + notetaker.getData());\n  }\n}\n"
       - lang: kotlin
         label: Kotlin SDK
-        source: "import com.nylas.NylasClient\nimport com.nylas.models.CreateNotetakerRequest\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val meetingSettings = CreateNotetakerRequest.MeetingSettings.Builder()\n      .videoRecording(true)\n      .audioRecording(true)\n      .transcription(true)\n      .build()\n\n  val requestBody = CreateNotetakerRequest.Builder(\"https://meet.google.com/abc-defg-hij\")\n      .name(\"Nylas Notetaker\")\n      .meetingSettings(meetingSettings)\n      .build()\n\n  val notetaker = nylas.notetakers().create(requestBody, \"<NYLAS_GRANT_ID>\")\n\n  println(\"Notetaker: ${notetaker.data}\")\n}\n"
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.CreateNotetakerRequest\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val meetingSettings = CreateNotetakerRequest.MeetingSettings.Builder()\n      .videoRecording(true)\n      .audioRecording(true)\n      .transcription(true)\n      .build()\n\n  val requestBody = CreateNotetakerRequest.Builder(\"https://meet.google.com/abc-defg-hij\")\n      .name(\"Nylas Notetaker\")\n      .meetingSettings(meetingSettings)\n      .build()\n\n  // Omit the grant identifier to create a standalone (account-level) Notetaker.\n  val notetaker = nylas.notetakers().create(requestBody)\n\n  println(\"Standalone notetaker: ${notetaker.data}\")\n}\n"
       responses:
         '201':
-          $ref: '#/components/responses/invite-to-meeting-201'
+          $ref: '#/components/responses/invite-to-standalone-meeting-201'
         '400':
           $ref: '#/components/responses/400-2'
         '401':
           $ref: '#/components/responses/401'
         '429':
           $ref: '#/components/responses/429'
-  /v3/grants/{grant_id}/notetakers/{notetaker_id}:
+  /v3/notetakers/{notetaker_id}:
     parameters:
-    - $ref: '#/components/parameters/grant_id'
     - schema:
         type: string
       name: notetaker_id
@@ -138,10 +138,10 @@ paths:
       description: ID of the Notetaker bot to access.
       example: 71c807752c744ad0902f64d43e6cc399
     get:
-      summary: Return a Notetaker
+      summary: Return a standalone Notetaker
       tags:
-      - Notetaker
-      operationId: get-notetaker
+      - Standalone Notetaker
+      operationId: get-standalone-notetaker
       description: Returns the specified Notetaker bot and its details.
       x-scopes:
         google:
@@ -155,22 +155,22 @@ paths:
       x-code-samples:
       - lang: bash
         label: cURL
-        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/notetakers/<NOTETAKER_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/notetakers/<NOTETAKER_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
       - lang: javascript
         label: Node.js SDK
-        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function findNotetaker() {\n  try {\n    const notetaker = await nylas.notetakers.find({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      notetakerId: \"<NOTETAKER_ID>\",\n    });\n\n    console.log(\"Notetaker:\", notetaker);\n  } catch (error) {\n    console.error(\"Error finding notetaker:\", error);\n  }\n}\n\nfindNotetaker();\n"
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function findStandaloneNotetaker() {\n  try {\n    const notetaker = await nylas.notetakers.find({\n      notetakerId: \"<NOTETAKER_ID>\",\n    });\n\n    console.log(\"Standalone notetaker:\", notetaker);\n  } catch (error) {\n    console.error(\"Error finding notetaker:\", error);\n  }\n}\n\nfindStandaloneNotetaker();\n"
       - lang: python
         label: Python SDK
-        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnotetaker = nylas.notetakers.find(\n    notetaker_id=\"<NOTETAKER_ID>\",\n    identifier=\"<NYLAS_GRANT_ID>\",\n)\n\nprint(\"Notetaker:\", notetaker)\n"
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnotetaker = nylas.notetakers.find(\n    notetaker_id=\"<NOTETAKER_ID>\",\n)\n\nprint(\"Standalone notetaker:\", notetaker)\n"
       - lang: java
         label: Java SDK
-        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Notetaker;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class FindNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    Response<Notetaker> notetaker = nylas.notetakers().find(\"<NOTETAKER_ID>\", \"<NYLAS_GRANT_ID>\");\n\n    System.out.println(\"Notetaker: \" + notetaker.getData());\n  }\n}\n"
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Notetaker;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class FindStandaloneNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    // Omit the grant identifier to look up a standalone (account-level) Notetaker.\n    Response<Notetaker> notetaker = nylas.notetakers().find(\"<NOTETAKER_ID>\");\n\n    System.out.println(\"Standalone notetaker: \" + notetaker.getData());\n  }\n}\n"
       - lang: kotlin
         label: Kotlin SDK
-        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val notetaker = nylas.notetakers().find(\"<NOTETAKER_ID>\", \"<NYLAS_GRANT_ID>\")\n\n  println(\"Notetaker: ${notetaker.data}\")\n}\n"
+        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  // Omit the grant identifier to look up a standalone (account-level) Notetaker.\n  val notetaker = nylas.notetakers().find(\"<NOTETAKER_ID>\")\n\n  println(\"Standalone notetaker: ${notetaker.data}\")\n}\n"
       responses:
         '200':
-          $ref: '#/components/responses/get-notetaker-200'
+          $ref: '#/components/responses/get-standalone-notetaker-200'
         '401':
           $ref: '#/components/responses/401'
         '404':
@@ -178,11 +178,11 @@ paths:
         '429':
           $ref: '#/components/responses/429'
     patch:
-      summary: Update scheduled Notetaker
+      summary: Update standalone Notetaker
       tags:
-      - Notetaker
-      operationId: update-notetaker
-      description: Updates the specified scheduled Notetaker bot.
+      - Standalone Notetaker
+      operationId: update-standalone-notetaker
+      description: Updates the specified scheduled standalone Notetaker bot.
       x-scopes:
         google:
           min: ''
@@ -197,19 +197,19 @@ paths:
       x-code-samples:
       - lang: bash
         label: cURL
-        source: "curl --request PATCH \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/notetakers/<NOTETAKER_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"join_time\": 1732657774,\n    \"meeting_settings\": {\n      \"action_items\": true,\n      \"action_items_settings\": {\n        \"custom_instructions\": \"Only return the 5 most important action items.\"\n      },\n      \"audio_recording\": true,\n      \"summary\": true,\n      \"summary_settings\": {\n        \"custom_instructions\": \"Return this summary in the MEDPIC sales methodology.\"\n      },\n      \"transcription\": true,\n      \"transcription_settings\": {\n        \"expected_languages\": [\"en\", \"es\"],\n        \"fallback_language\": \"en\"\n      },\n      \"video_recording\": true\n    },\n    \"name\": \"Nylas Notetaker\",\n  }'"
+        source: "curl --request PATCH \\\n  --url \"https://api.us.nylas.com/v3/notetakers/<NOTETAKER_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"name\": \"Nylas Notetaker\",\n    \"join_time\": 1732657774,\n    \"meeting_settings\": {\n      \"action_items\": true,\n      \"action_items_settings\": {\n        \"custom_instructions\": \"Only return the 5 most important action items.\"\n      },\n      \"audio_recording\": true,\n      \"summary\": true,\n      \"summary_settings\": {\n        \"custom_instructions\": \"Return this summary in the MEDPIC sales methodology.\"\n      },\n      \"transcription\": true,\n      \"transcription_settings\": {\n        \"expected_languages\": [\"en\", \"es\"],\n        \"fallback_language\": \"en\"\n      },\n      \"video_recording\": true\n    }\n  }'"
       - lang: javascript
         label: Node.js SDK
-        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function updateNotetaker() {\n  try {\n    const notetaker = await nylas.notetakers.update({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      notetakerId: \"<NOTETAKER_ID>\",\n      requestBody: {\n        name: \"Updated Notetaker name\",\n        meetingSettings: {\n          transcription: false,\n        },\n      },\n    });\n\n    console.log(\"Updated notetaker:\", notetaker);\n  } catch (error) {\n    console.error(\"Error updating notetaker:\", error);\n  }\n}\n\nupdateNotetaker();\n"
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function updateStandaloneNotetaker() {\n  try {\n    const notetaker = await nylas.notetakers.update({\n      notetakerId: \"<NOTETAKER_ID>\",\n      requestBody: {\n        name: \"Updated Notetaker name\",\n        meetingSettings: {\n          transcription: false,\n        },\n      },\n    });\n\n    console.log(\"Updated notetaker:\", notetaker);\n  } catch (error) {\n    console.error(\"Error updating notetaker:\", error);\n  }\n}\n\nupdateStandaloneNotetaker();\n"
       - lang: java
         label: Java SDK
-        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Notetaker;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\nimport com.nylas.models.UpdateNotetakerRequest;\n\npublic class UpdateNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    UpdateNotetakerRequest.MeetingSettings meetingSettings =\n        new UpdateNotetakerRequest.MeetingSettings.Builder()\n            .transcription(false)\n            .build();\n\n    UpdateNotetakerRequest requestBody = new UpdateNotetakerRequest.Builder()\n        .name(\"Updated Notetaker name\")\n        .meetingSettings(meetingSettings)\n        .build();\n\n    Response<Notetaker> notetaker = nylas.notetakers().update(\n        \"<NOTETAKER_ID>\", requestBody, \"<NYLAS_GRANT_ID>\");\n\n    System.out.println(\"Updated notetaker: \" + notetaker.getData());\n  }\n}\n"
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Notetaker;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\nimport com.nylas.models.UpdateNotetakerRequest;\n\npublic class UpdateStandaloneNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    UpdateNotetakerRequest.MeetingSettings meetingSettings =\n        new UpdateNotetakerRequest.MeetingSettings.Builder()\n            .transcription(false)\n            .build();\n\n    UpdateNotetakerRequest requestBody = new UpdateNotetakerRequest.Builder()\n        .name(\"Updated Notetaker name\")\n        .meetingSettings(meetingSettings)\n        .build();\n\n    // Omit the grant identifier to update a standalone (account-level) Notetaker.\n    Response<Notetaker> notetaker = nylas.notetakers().update(\"<NOTETAKER_ID>\", requestBody);\n\n    System.out.println(\"Updated standalone notetaker: \" + notetaker.getData());\n  }\n}\n"
       - lang: kotlin
         label: Kotlin SDK
-        source: "import com.nylas.NylasClient\nimport com.nylas.models.UpdateNotetakerRequest\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val meetingSettings = UpdateNotetakerRequest.MeetingSettings.Builder()\n      .transcription(false)\n      .build()\n\n  val requestBody = UpdateNotetakerRequest.Builder()\n      .name(\"Updated Notetaker name\")\n      .meetingSettings(meetingSettings)\n      .build()\n\n  val notetaker = nylas.notetakers().update(\n      \"<NOTETAKER_ID>\", requestBody, \"<NYLAS_GRANT_ID>\")\n\n  println(\"Updated notetaker: ${notetaker.data}\")\n}\n"
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.UpdateNotetakerRequest\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val meetingSettings = UpdateNotetakerRequest.MeetingSettings.Builder()\n      .transcription(false)\n      .build()\n\n  val requestBody = UpdateNotetakerRequest.Builder()\n      .name(\"Updated Notetaker name\")\n      .meetingSettings(meetingSettings)\n      .build()\n\n  // Omit the grant identifier to update a standalone (account-level) Notetaker.\n  val notetaker = nylas.notetakers().update(\"<NOTETAKER_ID>\", requestBody)\n\n  println(\"Updated standalone notetaker: ${notetaker.data}\")\n}\n"
       responses:
         '200':
-          $ref: '#/components/responses/get-notetaker-200'
+          $ref: '#/components/responses/get-standalone-notetaker-200'
         '401':
           $ref: '#/components/responses/401'
         '404':
@@ -217,15 +217,15 @@ paths:
         '429':
           $ref: '#/components/responses/429'
     delete:
-      summary: Delete a Notetaker
+      summary: Delete a standalone Notetaker
       tags:
-      - Notetaker
-      operationId: delete-notetaker
+      - Standalone Notetaker
+      operationId: delete-standalone-notetaker
       description: Permanently deletes the specified Notetaker and all associated data, including any recordings, transcripts, thumbnails, summaries, and action items. This works regardless of the Notetaker's current state — scheduled, active, or completed. This is a hard delete and cannot be undone. Once deleted, Nylas cannot recover the Notetaker or any of its data.
       x-code-samples:
       - lang: bash
         label: cURL
-        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/notetakers/<NOTETAKER_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n"
+        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/notetakers/<NOTETAKER_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n"
       security:
       - NYLAS_API_KEY: []
       responses:
@@ -237,22 +237,21 @@ paths:
           $ref: '#/components/responses/404'
         '429':
           $ref: '#/components/responses/429'
-  /v3/grants/{grant_id}/notetakers/{notetaker_id}/history:
+  /v3/notetakers/{notetaker_id}/history:
     parameters:
-    - $ref: '#/components/parameters/grant_id'
     - schema:
         type: string
       name: notetaker_id
       in: path
       required: true
-      description: ID of the Notetaker bot to access.
+      description: ID of the standalone Notetaker bot to access.
       example: 71c807752c744ad0902f64d43e6cc399
     get:
-      summary: Return Notetaker history
+      summary: Return standalone Notetaker history
       tags:
-      - Notetaker
-      operationId: get-notetaker-history
-      description: Returns the full history of events and state changes for the specified Notetaker bot.
+      - Standalone Notetaker
+      operationId: get-standalone-notetaker-history
+      description: Returns the full history of events and state changes for the specified standalone Notetaker bot.
       x-scopes:
         google:
           min: ''
@@ -265,24 +264,18 @@ paths:
       x-code-samples:
       - lang: bash
         label: cURL
-        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/notetakers/<NOTETAKER_ID>/history\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n\n\n"
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/notetakers/<NOTETAKER_ID>/history\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n\n\n"
       responses:
         '200':
-          $ref: '#/components/responses/get-notetaker-history-200'
+          $ref: '#/components/responses/get-standalone-notetaker-history-200'
         '401':
           $ref: '#/components/responses/401'
         '404':
           $ref: '#/components/responses/404'
         '429':
           $ref: '#/components/responses/429'
-  /v3/grants/{grant_id}/notetakers/{notetaker_id}/cancel:
+  /v3/notetakers/{notetaker_id}/cancel:
     parameters:
-    - schema:
-        type: string
-      name: grant_id
-      in: path
-      required: true
-      description: ID of the grant to access.
     - schema:
         type: string
       name: notetaker_id
@@ -290,27 +283,27 @@ paths:
       required: true
       description: ID of the Notetaker bot to access.
     delete:
-      summary: Cancel Notetaker before it joins
+      summary: Cancel standalone Notetaker before it joins
       tags:
-      - Notetaker
-      operationId: cancel-notetaker
-      description: Cancels a Notetaker while its status is `scheduled`, `connecting`, or `waiting_for_entry`, preventing it from joining the meeting. After the Notetaker joins the meeting, use the leave endpoint. To permanently delete a Notetaker in any state, use the delete endpoint instead.
+      - Standalone Notetaker
+      operationId: cancel-standalone-notetaker
+      description: Cancels a standalone Notetaker while its status is `scheduled`, `connecting`, or `waiting_for_entry`, preventing it from joining the meeting. After the Notetaker joins the meeting, use the leave endpoint. To permanently delete a Notetaker in any state, use the delete endpoint instead.
       x-code-samples:
       - lang: bash
         label: cURL
-        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/notetakers/<NOTETAKER_ID>/cancel\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/notetakers/<NOTETAKER_ID>/cancel\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
       - lang: javascript
         label: Node.js SDK
-        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function cancelNotetaker() {\n  try {\n    const result = await nylas.notetakers.cancel({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      notetakerId: \"<NOTETAKER_ID>\",\n    });\n\n    console.log(\"Cancelled notetaker:\", result);\n  } catch (error) {\n    console.error(\"Error cancelling notetaker:\", error);\n  }\n}\n\ncancelNotetaker();\n"
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function cancelStandaloneNotetaker() {\n  try {\n    const result = await nylas.notetakers.cancel({\n      notetakerId: \"<NOTETAKER_ID>\",\n    });\n\n    console.log(\"Cancelled notetaker:\", result);\n  } catch (error) {\n    console.error(\"Error cancelling notetaker:\", error);\n  }\n}\n\ncancelStandaloneNotetaker();\n"
       - lang: python
         label: Python SDK
-        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.notetakers.cancel(\n    notetaker_id=\"<NOTETAKER_ID>\",\n    identifier=\"<NYLAS_GRANT_ID>\",\n)\n\nprint(\"Notetaker cancelled:\", response)\n"
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.notetakers.cancel(\n    notetaker_id=\"<NOTETAKER_ID>\",\n)\n\nprint(\"Standalone notetaker cancelled:\", response)\n"
       - lang: java
         label: Java SDK
-        source: "import com.nylas.NylasClient;\nimport com.nylas.models.DeleteResponse;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\n\npublic class CancelNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    DeleteResponse result = nylas.notetakers().cancel(\"<NOTETAKER_ID>\", \"<NYLAS_GRANT_ID>\");\n\n    System.out.println(\"Cancelled notetaker: \" + result);\n  }\n}\n"
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.DeleteResponse;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\n\npublic class CancelStandaloneNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    // Omit the grant identifier to cancel a standalone (account-level) Notetaker.\n    DeleteResponse result = nylas.notetakers().cancel(\"<NOTETAKER_ID>\");\n\n    System.out.println(\"Cancelled standalone notetaker: \" + result);\n  }\n}\n"
       - lang: kotlin
         label: Kotlin SDK
-        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val result = nylas.notetakers().cancel(\"<NOTETAKER_ID>\", \"<NYLAS_GRANT_ID>\")\n\n  println(\"Cancelled notetaker: $result\")\n}\n"
+        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  // Omit the grant identifier to cancel a standalone (account-level) Notetaker.\n  val result = nylas.notetakers().cancel(\"<NOTETAKER_ID>\")\n\n  println(\"Cancelled standalone notetaker: $result\")\n}\n"
       security:
       - NYLAS_API_KEY: []
       responses:
@@ -324,14 +317,8 @@ paths:
           $ref: '#/components/responses/409'
         '429':
           $ref: '#/components/responses/429'
-  /v3/grants/{grant_id}/notetakers/{notetaker_id}/leave:
+  /v3/notetakers/{notetaker_id}/leave:
     parameters:
-    - schema:
-        type: string
-      name: grant_id
-      in: path
-      required: true
-      description: ID of the grant to access.
     - schema:
         type: string
       name: notetaker_id
@@ -339,27 +326,27 @@ paths:
       required: true
       description: ID of the Notetaker bot to access.
     post:
-      summary: Remove Notetaker from meeting
+      summary: Remove standalone Notetaker from meeting
       tags:
-      - Notetaker
-      operationId: post-notetaker-leave
-      description: Sends a request to the specified Notetaker bot to leave the meeting it's currently attending. If the Notetaker's status is `scheduled`, `connecting`, or `waiting_for_entry`, use the cancel endpoint instead.
+      - Standalone Notetaker
+      operationId: post-standalone-notetaker-leave
+      description: Sends a request to the specified standalone Notetaker bot to leave the meeting it's currently attending. If the Notetaker's status is `scheduled`, `connecting`, or `waiting_for_entry`, use the cancel endpoint instead.
       x-code-samples:
       - lang: bash
         label: cURL
-        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/notetakers/<NOTETAKER_ID>/leave\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/notetakers/<NOTETAKER_ID>/leave\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
       - lang: javascript
         label: Node.js SDK
-        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function leaveMeeting() {\n  try {\n    const result = await nylas.notetakers.leave({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      notetakerId: \"<NOTETAKER_ID>\",\n    });\n\n    console.log(\"Notetaker left meeting:\", result);\n  } catch (error) {\n    console.error(\"Error leaving meeting:\", error);\n  }\n}\n\nleaveMeeting();\n"
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function leaveStandaloneMeeting() {\n  try {\n    const result = await nylas.notetakers.leave({\n      notetakerId: \"<NOTETAKER_ID>\",\n    });\n\n    console.log(\"Notetaker left meeting:\", result);\n  } catch (error) {\n    console.error(\"Error leaving meeting:\", error);\n  }\n}\n\nleaveStandaloneMeeting();\n"
       - lang: python
         label: Python SDK
-        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.notetakers.leave(\n    notetaker_id=\"<NOTETAKER_ID>\",\n    identifier=\"<NYLAS_GRANT_ID>\",\n)\n\nprint(\"Notetaker left meeting:\", response)\n"
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.notetakers.leave(\n    notetaker_id=\"<NOTETAKER_ID>\",\n)\n\nprint(\"Standalone notetaker left meeting:\", response)\n"
       - lang: java
         label: Java SDK
-        source: "import com.nylas.NylasClient;\nimport com.nylas.models.LeaveNotetakerResponse;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class LeaveNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    Response<LeaveNotetakerResponse> result = nylas.notetakers().leave(\n        \"<NOTETAKER_ID>\", \"<NYLAS_GRANT_ID>\");\n\n    System.out.println(\"Notetaker left meeting: \" + result.getData());\n  }\n}\n"
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.LeaveNotetakerResponse;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class LeaveStandaloneNotetaker {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    // Omit the grant identifier to remove a standalone (account-level) Notetaker.\n    Response<LeaveNotetakerResponse> result = nylas.notetakers().leave(\"<NOTETAKER_ID>\");\n\n    System.out.println(\"Standalone notetaker left meeting: \" + result.getData());\n  }\n}\n"
       - lang: kotlin
         label: Kotlin SDK
-        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val result = nylas.notetakers().leave(\"<NOTETAKER_ID>\", \"<NYLAS_GRANT_ID>\")\n\n  println(\"Notetaker left meeting: ${result.data}\")\n}\n"
+        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  // Omit the grant identifier to remove a standalone (account-level) Notetaker.\n  val result = nylas.notetakers().leave(\"<NOTETAKER_ID>\")\n\n  println(\"Standalone notetaker left meeting: ${result.data}\")\n}\n"
       security:
       - NYLAS_API_KEY: []
       responses:
@@ -375,21 +362,20 @@ paths:
           $ref: '#/components/responses/409'
         '429':
           $ref: '#/components/responses/429'
-  /v3/grants/{grant_id}/notetakers/{notetaker_id}/media:
+  /v3/notetakers/{notetaker_id}/media:
     parameters:
-    - $ref: '#/components/parameters/grant_id'
-    - name: notetaker_id
-      schema:
+    - schema:
         type: string
+      name: notetaker_id
       in: path
       required: true
       description: ID of the Notetaker bot to access.
     get:
-      summary: Return Notetaker media links
+      summary: Return standalone Notetaker media links
       tags:
-      - Notetaker
-      operationId: get-notetaker-media
-      description: Returns a list of links to media generated by the specified Notetaker bot.
+      - Standalone Notetaker
+      operationId: get-standalone-notetaker-media
+      description: Returns a list of links to media generated by the specified standalone Notetaker bot.
       x-scopes:
         google:
           min: ''
@@ -402,19 +388,19 @@ paths:
       x-code-samples:
       - lang: bash
         label: cURL
-        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/notetakers/<NOTETAKER_ID>/media\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/notetakers/<NOTETAKER_ID>/media\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
       - lang: javascript
         label: Node.js SDK
-        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function downloadMedia() {\n  try {\n    const media = await nylas.notetakers.downloadMedia({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      notetakerId: \"<NOTETAKER_ID>\",\n    });\n\n    console.log(\"Media:\", media);\n  } catch (error) {\n    console.error(\"Error downloading media:\", error);\n  }\n}\n\ndownloadMedia();\n"
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function downloadStandaloneMedia() {\n  try {\n    const media = await nylas.notetakers.downloadMedia({\n      notetakerId: \"<NOTETAKER_ID>\",\n    });\n\n    console.log(\"Media:\", media);\n  } catch (error) {\n    console.error(\"Error downloading media:\", error);\n  }\n}\n\ndownloadStandaloneMedia();\n"
       - lang: python
         label: Python SDK
-        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nmedia = nylas.notetakers.get_media(\n    notetaker_id=\"<NOTETAKER_ID>\",\n    identifier=\"<NYLAS_GRANT_ID>\",\n)\n\nprint(\"Notetaker media:\", media)\n"
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nmedia = nylas.notetakers.get_media(\n    notetaker_id=\"<NOTETAKER_ID>\",\n)\n\nprint(\"Standalone notetaker media:\", media)\n"
       - lang: java
         label: Java SDK
-        source: "import com.nylas.NylasClient;\nimport com.nylas.models.NotetakerMediaResponse;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class DownloadNotetakerMedia {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    Response<NotetakerMediaResponse> media = nylas.notetakers().downloadMedia(\n        \"<NOTETAKER_ID>\", \"<NYLAS_GRANT_ID>\");\n\n    System.out.println(\"Media: \" + media.getData());\n  }\n}\n"
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.NotetakerMediaResponse;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class DownloadStandaloneNotetakerMedia {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    // Omit the grant identifier for standalone (account-level) Notetaker media.\n    Response<NotetakerMediaResponse> media = nylas.notetakers().downloadMedia(\"<NOTETAKER_ID>\");\n\n    System.out.println(\"Media: \" + media.getData());\n  }\n}\n"
       - lang: kotlin
         label: Kotlin SDK
-        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val media = nylas.notetakers().downloadMedia(\"<NOTETAKER_ID>\", \"<NYLAS_GRANT_ID>\")\n\n  println(\"Media: ${media.data}\")\n}\n"
+        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  // Omit the grant identifier for standalone (account-level) Notetaker media.\n  val media = nylas.notetakers().downloadMedia(\"<NOTETAKER_ID>\")\n\n  println(\"Media: ${media.data}\")\n}\n"
       responses:
         '200':
           $ref: '#/components/responses/get-notetaker-media-200'
@@ -426,7 +412,81 @@ paths:
           $ref: '#/components/responses/429'
 components:
   schemas:
-    notetaker_history_event:
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    meeting_settings_common:
+      type: object
+      description: A collection of settings for the Notetaker bot.
+      properties:
+        action_items:
+          type: boolean
+          description: 'When `true`, Notetaker generates a list of action items from the meeting. If `action_items` is
+
+            `true`, `video_recording`, `audio_recording`, and `transcription` must also be `true`.'
+          default: true
+          example: true
+        action_items_settings:
+          type: object
+          properties:
+            custom_instructions:
+              type: string
+              description: 'A custom prompt to pass to Nylas'' AI model and specify settings for the list of action items
+
+                it generates. `action_items` must be `true` to use this field.'
+              example: Only return the 5 most important action items.
+        audio_recording:
+          type: boolean
+          description: When `true`, Notetaker records the meeting's audio.
+          default: true
+          example: true
+        leave_after_silence_seconds:
+          type: integer
+          description: 'The number of seconds of silence after which the Notetaker bot automatically leaves
+
+            the meeting. This helps end recordings when meetings have concluded but participants
+
+            haven''t disconnected the call. Must be between 10 and 3600 seconds (1 hour).'
+          minimum: 10
+          maximum: 3600
+          default: 300
+          example: 360
+        summary:
+          type: boolean
+          description: 'When `true`, Notetaker generates a summary of the meeting. If `summary` is `true`,
+
+            `video_recording`, `audio_recording`, and `transcription` must also be `true`.'
+          default: true
+          example: true
+        summary_settings:
+          type: object
+          properties:
+            custom_instructions:
+              type: string
+              description: 'A custom prompt to pass to Nylas'' AI model and specify settings for the summary it generates.
+
+                `summary` must be `true` to use this field.'
+              example: Return this summary in the MEDPIC sales methodology.
+        transcription:
+          type: boolean
+          description: 'When `true`, Notetaker transcribes the meeting''s audio. If `transcription` is `true`,
+
+            `video_recording` and `audio_recording` must also be `true`.'
+          default: true
+          example: true
+        video_recording:
+          type: boolean
+          description: When `true`, Notetaker records the meeting's video.
+          default: true
+          example: true
+    standalone_notetaker_history_event:
       type: object
       description: A history event that records a change to a Notetaker bot.
       properties:
@@ -446,7 +506,7 @@ components:
           example: notetaker.media
         data:
           allOf:
-          - $ref: '#/components/schemas/notetaker'
+          - $ref: '#/components/schemas/standalone_notetaker'
           - type: object
             description: The Notetaker bot payload at the time of the event.
             properties:
@@ -513,138 +573,6 @@ components:
                     type: string
                     description: The master event ID for recurring events, if applicable.
                     example: 7d93zl2palhxqdy6e5qinsakt
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    notetaker:
-      type: object
-      properties:
-        grant_id:
-          type: string
-          description: The ID of the grant associated with this Notetaker bot.
-          example: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
-        id:
-          type: string
-          description: The Notetaker ID.
-          example: 71c807752c744ad0902f64d43e6cc399
-        join_time:
-          type: integer
-          description: When Notetaker joined the meeting, in seconds using the Unix timestamp format.
-          example: 1732657774
-        meeting_link:
-          type: string
-          description: The meeting link.
-          example: https://meet.google.com/xyz-abcd-ijk
-        meeting_provider:
-          type: string
-          description: The meeting provider.
-          enum:
-          - Google Meet
-          - Zoom Meeting
-          - Microsoft Teams
-          example: Google Meet
-        meeting_settings:
-          $ref: '#/components/schemas/meeting_settings'
-        name:
-          type: string
-          description: The display name for the Notetaker bot.
-          default: Nylas Notetaker
-          example: Nylas Notetaker
-        object:
-          type: string
-          description: The type of object.
-          example: notetaker
-        state:
-          type: string
-          description: The current state of the Notetaker bot.
-          enum:
-          - scheduled
-          - connecting
-          - waiting_for_entry
-          - attending
-          - disconnected
-          - worker_finished
-          - processing
-          - available
-          - media_error
-          - media_deleted
-          - failed_entry
-          example: scheduled
-        status:
-          type: string
-          description: The current status of the Notetaker bot.
-          example: scheduled
-    meeting_settings_common:
-      type: object
-      description: A collection of settings for the Notetaker bot.
-      properties:
-        action_items:
-          type: boolean
-          description: 'When `true`, Notetaker generates a list of action items from the meeting. If `action_items` is
-
-            `true`, `video_recording`, `audio_recording`, and `transcription` must also be `true`.'
-          default: true
-          example: true
-        action_items_settings:
-          type: object
-          properties:
-            custom_instructions:
-              type: string
-              description: 'A custom prompt to pass to Nylas'' AI model and specify settings for the list of action items
-
-                it generates. `action_items` must be `true` to use this field.'
-              example: Only return the 5 most important action items.
-        audio_recording:
-          type: boolean
-          description: When `true`, Notetaker records the meeting's audio.
-          default: true
-          example: true
-        leave_after_silence_seconds:
-          type: integer
-          description: 'The number of seconds of silence after which the Notetaker bot automatically leaves
-
-            the meeting. This helps end recordings when meetings have concluded but participants
-
-            haven''t disconnected the call. Must be between 10 and 3600 seconds (1 hour).'
-          minimum: 10
-          maximum: 3600
-          default: 300
-          example: 360
-        summary:
-          type: boolean
-          description: 'When `true`, Notetaker generates a summary of the meeting. If `summary` is `true`,
-
-            `video_recording`, `audio_recording`, and `transcription` must also be `true`.'
-          default: true
-          example: true
-        summary_settings:
-          type: object
-          properties:
-            custom_instructions:
-              type: string
-              description: 'A custom prompt to pass to Nylas'' AI model and specify settings for the summary it generates.
-
-                `summary` must be `true` to use this field.'
-              example: Return this summary in the MEDPIC sales methodology.
-        transcription:
-          type: boolean
-          description: 'When `true`, Notetaker transcribes the meeting''s audio. If `transcription` is `true`,
-
-            `video_recording` and `audio_recording` must also be `true`.'
-          default: true
-          example: true
-        video_recording:
-          type: boolean
-          description: When `true`, Notetaker records the meeting's video.
-          default: true
-          example: true
     meeting_settings:
       allOf:
       - $ref: '#/components/schemas/meeting_settings_common'
@@ -702,6 +630,60 @@ components:
 
                   transcribed accurately. Optional. Cannot be `null`.'
                 example: true
+    standalone_notetaker:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The Notetaker ID.
+          example: 71c807752c744ad0902f64d43e6cc399
+        join_time:
+          type: integer
+          description: When Notetaker joined the meeting, in seconds using the Unix timestamp format.
+          example: 1732657774
+        meeting_link:
+          type: string
+          description: The meeting link.
+          example: https://meet.google.com/xyz-abcd-ijk
+        meeting_provider:
+          type: string
+          description: The meeting provider.
+          enum:
+          - Google Meet
+          - Zoom Meeting
+          - Microsoft Teams
+          example: Google Meet
+        meeting_settings:
+          $ref: '#/components/schemas/meeting_settings'
+        name:
+          type: string
+          description: The display name for the Notetaker bot.
+          default: Nylas Notetaker
+          example: Nylas Notetaker
+        object:
+          type: string
+          description: The type of object.
+          example: notetaker
+        state:
+          type: string
+          description: The current state of the Notetaker bot.
+          enum:
+          - scheduled
+          - connecting
+          - waiting_for_entry
+          - attending
+          - disconnected
+          - worker_finished
+          - processing
+          - available
+          - media_error
+          - media_deleted
+          - failed_entry
+          example: scheduled
+        status:
+          type: string
+          description: The current status of the Notetaker bot.
+          example: scheduled
     notetakers:
       type: object
       required:
@@ -800,6 +782,24 @@ components:
                   provider_error:
                     code: TargetIdShouldNotBeMeOrWhitespace
                     message: Id is malformed.
+    get-standalone-notetakers-200:
+      description: Success. Returns list of standalone Notetaker bots.
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                prev_cursor:
+                  type:
+                  - string
+                  - 'null'
+                  description: A cursor pointing to the previous page of results for the request.
+                  example: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBCQR28w4=
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/standalone_notetaker'
     '409':
       description: Conflict
       content:
@@ -823,24 +823,6 @@ components:
                     type: string
                     description: The error message.
                     example: This request isn't supported for the Notetaker's current state.
-    get-notetakers-200:
-      description: Success. Returns list of Notetaker bots.
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response_with_cursor'
-            - properties:
-                prev_cursor:
-                  type:
-                  - string
-                  - 'null'
-                  description: A cursor pointing to the previous page of results for the request.
-                  example: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBCQR28w4=
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/notetaker'
     '401':
       description: Unauthorized
       content:
@@ -875,6 +857,85 @@ components:
                   provider_error:
                     code: 401
                     message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    invite-to-standalone-meeting-201:
+      description: Success. Returns information about standalone Notetaker bot.
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/standalone_notetaker'
+    get-standalone-notetaker-history-200:
+      description: Success. Returns standalone Notetaker bot history events.
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    events:
+                      type: array
+                      description: A list of Notetaker history events, ordered by most recent first.
+                      items:
+                        $ref: '#/components/schemas/standalone_notetaker_history_event'
+          example:
+            request_id: abc-123-def
+            data:
+              events:
+              - created_at: 1700000300
+                event_type: notetaker.media
+                data:
+                  id: 71c807752c744ad0902f64d43e6cc399
+                  meeting_link: https://meet.google.com/abc-def-ghi
+                  meeting_provider: Google Meet
+                  join_time: 1700000050
+                  object: notetaker
+                  state: available
+                  status: available
+                  meeting_settings:
+                    audio_recording: true
+                    video_recording: true
+                    transcription: true
+                    transcription_settings:
+                      expected_languages:
+                      - en
+                      - es
+                      fallback_language: en
+                    summary: true
+                    action_items: true
+                  media:
+                    recording: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/recording.mp4
+                    recording_duration: '3600'
+                    transcript: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/transcript.json
+                    thumbnail: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/thumbnail.jpg
+                    summary: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/summary.txt
+                    action_items: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/action_items.json
+              - created_at: 1700000200
+                event_type: notetaker.meeting_state
+                data:
+                  id: 71c807752c744ad0902f64d43e6cc399
+                  meeting_link: https://meet.google.com/abc-def-ghi
+                  meeting_provider: Google Meet
+                  join_time: 1700000050
+                  object: notetaker
+                  state: disconnected
+                  status: disconnected
+                  meeting_state: meeting_ended
+              - created_at: 1700000000
+                event_type: notetaker.created
+                data:
+                  id: 71c807752c744ad0902f64d43e6cc399
+                  meeting_link: https://meet.google.com/abc-def-ghi
+                  meeting_provider: Google Meet
+                  join_time: 1700000050
+                  object: notetaker
+                  state: scheduled
+                  status: scheduled
     '429':
       description: Rate Limit
       content:
@@ -1109,8 +1170,8 @@ components:
                           type: string
                           description: A link to the meeting transcript.
                           example: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/...
-    get-notetaker-200:
-      description: Success. Returns Notetaker bot.
+    get-standalone-notetaker-200:
+      description: Success. Returns standalone Notetaker bot.
       content:
         application/json:
           schema:
@@ -1118,7 +1179,7 @@ components:
             - $ref: '#/components/schemas/common_response'
             - properties:
                 data:
-                  $ref: '#/components/schemas/notetaker'
+                  $ref: '#/components/schemas/standalone_notetaker'
     '404':
       description: Not Found
       content:
@@ -1191,88 +1252,6 @@ components:
             data:
               id: AAAA-BBBB-1111-2222
               message: Notetaker is already leaving meeting.
-    invite-to-meeting-201:
-      description: Success. Returns information about Notetaker bot.
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/notetaker'
-    get-notetaker-history-200:
-      description: Success. Returns Notetaker bot history events.
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  type: object
-                  properties:
-                    events:
-                      type: array
-                      description: A list of Notetaker history events, ordered by most recent first.
-                      items:
-                        $ref: '#/components/schemas/notetaker_history_event'
-          example:
-            request_id: abc-123-def
-            data:
-              events:
-              - created_at: 1700000300
-                event_type: notetaker.media
-                data:
-                  grant_id: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
-                  id: 71c807752c744ad0902f64d43e6cc399
-                  meeting_link: https://meet.google.com/abc-def-ghi
-                  meeting_provider: Google Meet
-                  join_time: 1700000050
-                  object: notetaker
-                  state: available
-                  status: available
-                  meeting_settings:
-                    audio_recording: true
-                    video_recording: true
-                    transcription: true
-                    transcription_settings:
-                      expected_languages:
-                      - en
-                      - es
-                      fallback_language: en
-                    summary: true
-                    action_items: true
-                  media:
-                    recording: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/recording.mp4
-                    recording_duration: '3600'
-                    transcript: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/transcript.json
-                    thumbnail: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/thumbnail.jpg
-                    summary: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/summary.txt
-                    action_items: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/action_items.json
-              - created_at: 1700000200
-                event_type: notetaker.meeting_state
-                data:
-                  grant_id: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
-                  id: 71c807752c744ad0902f64d43e6cc399
-                  meeting_link: https://meet.google.com/abc-def-ghi
-                  meeting_provider: Google Meet
-                  join_time: 1700000050
-                  object: notetaker
-                  state: disconnected
-                  status: disconnected
-                  meeting_state: meeting_ended
-              - created_at: 1700000000
-                event_type: notetaker.created
-                data:
-                  grant_id: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
-                  id: 71c807752c744ad0902f64d43e6cc399
-                  meeting_link: https://meet.google.com/abc-def-ghi
-                  meeting_provider: Google Meet
-                  join_time: 1700000050
-                  object: notetaker
-                  state: scheduled
-                  status: scheduled
   parameters:
     page_token:
       name: page_token
@@ -1313,16 +1292,6 @@ components:
       description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
 
         for more information.'
-    grant_id:
-      name: grant_id
-      schema:
-        type: string
-      in: path
-      required: true
-      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use `/me/`
-
-        to refer to the grant associated with an access token.'
-      example: nyla@example.com
     notetaker_order_by:
       name: order_by
       in: query

@@ -1,0 +1,609 @@
+openapi: 3.2.0
+info:
+  title: Nylas Application-level workflows API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Application-level workflows
+  description: 'Application-level workflows automatically send messages to certain users when a defined event is triggered. For example, if you want to send a confirmation message when a user schedules a booking, you can create a workflow that listens for `booking.created` events.
+
+
+    Each workflow is linked to the Nylas application associated with the API key specified in a Create Workflow request.
+
+
+    💡 If you want to create workflows for specific grants, use the grant-level workflows endpoints.'
+paths:
+  /v3/workflows:
+    get:
+      summary: Return all workflows
+      tags:
+      - Application-level workflows
+      operationId: list-workflows
+      description: Returns all application-level workflows.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page_token'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/workflows?limit=10\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflows_list'
+        '400':
+          $ref: '#/components/responses/workflow_400'
+    post:
+      summary: Create a workflow
+      tags:
+      - Application-level workflows
+      operationId: create-workflow
+      description: 'Creates an application-level workflow.
+
+
+        ℹ️ You must have an existing template to create a workflow.'
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/workflow_create'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/workflows\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"name\": \"Confirmation Workflow\",\n    \"trigger_event\": \"booking.created\",\n    \"template_id\": \"<TEMPLATE_ID>\",\n    \"delay\": 1,\n    \"is_enabled\": true\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflow'
+        '400':
+          $ref: '#/components/responses/workflow_400'
+        '404':
+          $ref: '#/components/responses/workflow_404'
+  /v3/workflows/{workflow_id}:
+    parameters:
+    - schema:
+        type: string
+      name: workflow_id
+      in: path
+      required: true
+      description: The ID of the workflow to access.
+      example: b79c82b2-a51b-4c54-8469-28006a43551a
+    get:
+      summary: Return a workflow
+      tags:
+      - Application-level workflows
+      operationId: get-workflow
+      description: Returns the specified application-level workflow.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/workflows/<WORKFLOW_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflow'
+        '400':
+          $ref: '#/components/responses/400'
+    put:
+      summary: Update a workflow
+      tags:
+      - Application-level workflows
+      operationId: update-workflow
+      description: Updates the specified application-level workflow.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        $ref: '#/components/requestBodies/workflow_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url \"https://api.us.nylas.com/v3/workflows/<WORKFLOW_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"name\": \"Updated Workflow\",\n    \"is_enabled\": false\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/workflow'
+        '400':
+          $ref: '#/components/responses/workflow_400'
+        '404':
+          $ref: '#/components/responses/workflow_404'
+    delete:
+      summary: Delete a workflow
+      tags:
+      - Application-level workflows
+      operationId: delete-workflow
+      description: Deletes the specified application-level workflow.
+      x-scopes:
+        google:
+          min: ''
+        microsoft:
+          min: ''
+        yahoo:
+          min: ''
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/workflows/<WORKFLOW_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200_simple'
+        '400':
+          $ref: '#/components/responses/400'
+components:
+  responses:
+    workflow_400:
+      description: 'Error: Bad request'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.invalid_request_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: invalid_event is not a valid option
+    delete_200_simple:
+      description: 'Success: Object deleted'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3906564297-48e7fb5b-f220-427b-a4de-255736adba08
+    workflows_list:
+      description: Success. Returns list of workflows.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - next_cursor
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 9ca1d434-5ac7-4331-b8fb-3749c9a758d3
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/workflow'
+                example:
+                - id: b79c82b2-a51b-4c54-8469-28006a43551a
+                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+                  app_id: null
+                  is_enabled: true
+                  name: Booking Confirmation Workflow
+                  trigger_event: booking.created
+                  delay: 1
+                  template_id: 14c00cc8-648c-4381-ad10-52641d9bac8e
+                  date_created: 1756477389
+                - id: c89d93c3-b62c-5d65-9570-39117b54662b
+                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+                  app_id: null
+                  is_enabled: true
+                  name: Booking Reminder Workflow
+                  trigger_event: booking.reminder
+                  delay: 60
+                  template_id: 25d11dd9-759d-5492-be21-63752e6cbd9f
+                  date_created: 1756477500
+                - id: d90e04d4-c73d-6e76-a681-40228c65773c
+                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+                  app_id: null
+                  is_enabled: false
+                  name: Booking Cancellation Workflow
+                  trigger_event: booking.cancelled
+                  delay: 0
+                  template_id: 36e22ee0-86ae-6603-cf32-74863f7dce0g
+                  date_created: 1756477600
+              next_cursor:
+                type: string
+                description: A cursor pointing to the next page of results for the request.
+                example: eyJjdXJzb3IiOiJub3RpZmljYXRpb25fd29ya2Zsb3dfYjc5YzgyYjIifQ==
+    workflow:
+      description: Success. Returns workflow.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+              data:
+                $ref: '#/components/schemas/workflow'
+          example:
+            request_id: 9ca1d434-5ac7-4331-b8fb-3749c9a758d3
+            data:
+              app_id: null
+              date_created: 1756477389
+              delay: 5
+              grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+              id: b79c82b2-a51b-4c54-8469-28006a43551a
+              is_enabled: true
+              name: New booking confirmation workflow
+              template_id: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              trigger_event: booking.created
+              from:
+                email: support@example.com
+                name: Support
+    workflow_404:
+      description: 'Error: Not found'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.not_found_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: template not found
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  parameters:
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+  schemas:
+    workflow:
+      type: object
+      description: A custom workflow that sends messages from a template when certain events are triggered.
+      required:
+      - date_created
+      - delay
+      - id
+      - is_enabled
+      - name
+      - template_id
+      - trigger_event
+      properties:
+        app_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the Nylas application associated with the workflow. Returned only if the
+
+            workflow is configured at the application level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        date_created:
+          type: integer
+          description: When the workflow was created, in seconds using the Unix timestamp format.
+          example: 1756477389
+        delay:
+          type: integer
+          description: 'The number of minutes between a `trigger_event` being met and the workflow sending
+
+            a message.'
+          example: 5
+        grant_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the grant associated with the workflow. Returned only if the workflow is
+
+            configured at the grant level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        id:
+          type: string
+          description: The ID of the workflow.
+          example: b79c82b2-a51b-4c54-8469-28006a43551a
+        is_enabled:
+          type: boolean
+          description: When `true`, indicates that the workflow is enabled.
+          example: true
+        name:
+          type: string
+          description: The name of the workflow.
+          example: New booking confirmation workflow
+        template_id:
+          type: string
+          description: The ID of the email template the workflow uses.
+          example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+        trigger_event:
+          type: string
+          enum:
+          - booking.cancelled
+          - booking.created
+          - booking.pending
+          - booking.reminder
+          - booking.rescheduled
+          description: The event which triggers the workflow.
+          example: booking.created
+        from:
+          type:
+          - object
+          - 'null'
+          description: Details of the sender if the workflow uses transactional send.
+          properties:
+            email:
+              type: string
+              description: The email address of the sender.
+              example: support@example.com
+            name:
+              type: string
+              description: The name of the sender.
+              example: Support
+  requestBodies:
+    workflow_update:
+      description: Update workflow request
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              delay:
+                type: integer
+                description: 'The number of minutes between a `trigger_event` being met and the workflow
+
+                  sending a message.'
+                example: 1
+              is_enabled:
+                type: boolean
+                description: When `true`, indicates that the workflow is enabled.
+                example: false
+              name:
+                type: string
+                description: The name of the workflow.
+                example: Updated booking confirmation workflow
+              template_id:
+                type: string
+                description: The ID of the email template the workflow uses.
+                example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              trigger_event:
+                type: string
+                enum:
+                - booking.cancelled
+                - booking.created
+                - booking.pending
+                - booking.reminder
+                - booking.rescheduled
+                description: The event which triggers the workflow.
+                example: booking.created
+              from:
+                type:
+                - object
+                - 'null'
+                description: 'Details of the sender if the workflow should use [transactional send](/docs/reference/api/transactional-send/).
+
+                  If not provided, the sender will be the grant associated with the trigger event.'
+                properties:
+                  email:
+                    type: string
+                    description: The email address of the sender.
+                    example: support@example.com
+                  name:
+                    type: string
+                    description: The name of the sender.
+                    example: Support
+    workflow_create:
+      description: Create workflow request
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - name
+            - template_id
+            - trigger_event
+            properties:
+              delay:
+                type: integer
+                description: 'The number of minutes between a `trigger_event` being met and the workflow
+
+                  sending a message.'
+                default: 0
+                example: 5
+              is_enabled:
+                type: boolean
+                description: When `true`, indicates that the workflow is enabled.
+                default: true
+                example: true
+              name:
+                type: string
+                description: The name of the workflow.
+                example: New booking confirmation workflow
+              template_id:
+                type: string
+                description: The ID of the email template the workflow uses.
+                example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              trigger_event:
+                type: string
+                enum:
+                - booking.cancelled
+                - booking.created
+                - booking.pending
+                - booking.reminder
+                - booking.rescheduled
+                description: The event which triggers the workflow.
+                example: booking.created
+              from:
+                type:
+                - object
+                - 'null'
+                description: 'Details of the sender if the workflow should use [transactional send](/docs/reference/api/transactional-send/).
+
+                  If not provided, the sender will be the grant associated with the trigger event.'
+                properties:
+                  email:
+                    type: string
+                    description: The email address of the sender.
+                    example: support@example.com
+                  name:
+                    type: string
+                    description: The name of the sender.
+                    example: Support
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

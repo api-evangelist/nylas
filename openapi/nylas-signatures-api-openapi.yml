@@ -1,0 +1,613 @@
+openapi: 3.2.0
+info:
+  title: Nylas Signatures API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Signatures
+  description: The Nylas Signatures API lets you create and store HTML email signatures on Nylas, and reference them by ID when sending messages or creating drafts.
+paths:
+  /v3/grants/{grant_id}/signatures:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    get:
+      summary: Return all signatures
+      tags:
+      - Signatures
+      x-scopes: {}
+      responses:
+        '200':
+          $ref: '#/components/responses/signatures'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: list-signatures
+      description: Return all signatures for a grant.
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page_token'
+      - $ref: '#/components/parameters/field_selection'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/signatures' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n"
+    post:
+      summary: Create a signature
+      operationId: post-signature
+      description: 'Create a signature for a grant. Each grant can have up to 10 signatures.
+
+
+        Nylas sanitizes the HTML content on input to prevent malicious content. Images must use
+
+        externally hosted URLs (base64 inline images are not supported). Maximum signature size is 100 KB.'
+      tags:
+      - Signatures
+      x-scopes: {}
+      requestBody:
+        $ref: '#/components/requestBodies/signature_create'
+      responses:
+        '201':
+          $ref: '#/components/responses/signature'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/field_selection'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/signatures' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"name\": \"Work Signature\",\n    \"body\": \"<div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p><p><a href=\\\"mailto:nick@nylas.com\\\">nick@nylas.com</a></p></div>\"\n  }'\n"
+  /v3/grants/{grant_id}/signatures/{signature_id}:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    - schema:
+        type: string
+      name: signature_id
+      in: path
+      required: true
+      description: ID of the signature to access.
+    get:
+      summary: Return a signature
+      tags:
+      - Signatures
+      x-scopes: {}
+      responses:
+        '200':
+          $ref: '#/components/responses/signature'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: get-signature
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      description: Return a signature by ID.
+      parameters:
+      - $ref: '#/components/parameters/field_selection'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/signatures/<SIGNATURE_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n"
+    put:
+      summary: Update a signature
+      tags:
+      - Signatures
+      x-scopes: {}
+      responses:
+        '200':
+          $ref: '#/components/responses/signature'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: put-signature
+      description: 'Update the specified signature. You can update the `name`, `body`, or both. The signature ID
+
+        does not change.'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      parameters:
+      - $ref: '#/components/parameters/field_selection'
+      requestBody:
+        $ref: '#/components/requestBodies/signature_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/signatures/<SIGNATURE_ID>' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"name\": \"Updated Work Signature\",\n    \"body\": \"<div><p><strong>Nick Barraclough</strong></p><p>Senior Product Manager | Nylas</p><p><a href=\\\"mailto:nick@nylas.com\\\">nick@nylas.com</a></p></div>\"\n  }'\n"
+    delete:
+      summary: Delete a signature
+      tags:
+      - Signatures
+      x-scopes: {}
+      responses:
+        '200':
+          $ref: '#/components/responses/200-delete'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: delete-signature
+      description: 'Permanently delete a signature. Signatures are also automatically deleted when the parent grant
+
+        is deleted.'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/signatures/<SIGNATURE_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n"
+components:
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    signatures:
+      description: Signatures
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/signature'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+            - id: sig_abc123
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              name: Work Signature
+              body: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p></div>
+              object: signature
+              created_at: 1706367600
+              updated_at: 1706367600
+            - id: sig_def456
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              name: Personal Signature
+              body: <div><p>Nick B.</p><p>Sent from my phone</p></div>
+              object: signature
+              created_at: 1706367700
+              updated_at: 1706367700
+            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    signature:
+      description: Signature
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/signature'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              id: sig_abc123
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              name: Work Signature
+              body: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p><p><a href="mailto:nick@nylas.com">nick@nylas.com</a></p></div>
+              object: signature
+              created_at: 1706367600
+              updated_at: 1706367600
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  requestBodies:
+    signature_create:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - name
+            - body
+            properties:
+              name:
+                type: string
+                description: A label for the signature (for example, "Work", "Personal", or "Mobile").
+                example: Work Signature
+              body:
+                type: string
+                description: 'The HTML content of the signature. Maximum 100 KB. Images must use externally hosted URLs
+
+                  (base64 inline images are not supported). Nylas sanitizes the HTML on input to prevent
+
+                  malicious content.'
+                example: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p><p><a href="mailto:nick@nylas.com">nick@nylas.com</a></p></div>
+          example:
+            name: Work Signature
+            body: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p><p><a href="mailto:nick@nylas.com">nick@nylas.com</a></p></div>
+    signature_update:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Updated label for the signature.
+                example: Updated Work Signature
+              body:
+                type: string
+                description: 'Updated HTML content for the signature. Maximum 100 KB. Images must use externally hosted
+
+                  URLs (base64 inline images are not supported). Nylas sanitizes the HTML on input to prevent
+
+                  malicious content.'
+                example: <div><p><strong>Nick Barraclough</strong></p><p>Senior Product Manager | Nylas</p></div>
+          example:
+            name: Updated Work Signature
+            body: <div><p><strong>Nick Barraclough</strong></p><p>Senior Product Manager | Nylas</p></div>
+  schemas:
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    signature:
+      title: Signature
+      type: object
+      properties:
+        id:
+          type: string
+          description: Globally unique identifier for the signature.
+          readOnly: true
+          example: sig_abc123
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        name:
+          type: string
+          description: A label for the signature (for example, "Work", "Personal", or "Mobile").
+          example: Work Signature
+        body:
+          type: string
+          description: The HTML content of the signature. Images must use externally hosted URLs.
+          example: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p></div>
+        object:
+          type: string
+          description: The type of object.
+          example: signature
+          readOnly: true
+        created_at:
+          type: integer
+          description: Unix timestamp when the signature was created.
+          readOnly: true
+          example: 1706367600
+        updated_at:
+          type: integer
+          description: Unix timestamp when the signature was last modified.
+          readOnly: true
+          example: 1706367600
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

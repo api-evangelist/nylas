@@ -1,14 +1,9 @@
-openapi: 3.1.0
-servers:
-- url: https://api.us.nylas.com
-  description: U.S.
-- url: https://api.eu.nylas.com
-  description: E.U.
+openapi: 3.2.0
 info:
-  title: Nylas Calendars API
+  title: Nylas Calendar API
   version: v3
   summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
-  description: "The Nylas API is designed using the [REST](https://en.wikipedia.org/wiki/Representational_State_Transfer) ideology to provide simple and predictable URIs to access and modify objects. Requests support [standard HTTP methods](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html) like `GET`, `PUT`, `POST`, and `DELETE`, and [standard status codes](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). Response bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n\nYou can use the [Nylas Postman collection](https://www.postman.com/trynylas/workspace/nylas-api/overview) to quickly start using the Nylas APIs. For more information, check out the [Nylas Postman collection documentation](/docs/v3/api-references/postman/).\n\n[<img src=\"https://run.pstmn.io/button.svg\" alt=\"Run In Postman\" style=\"width: 128px; height: 32px;\">](https://god.gw.postman.com/run-collection/21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21157315-b864762a-ddbb-4e08-bcc5-e87bb51a825a%26entityType%3Dcollection%26workspaceId%3De36cf1fc-a749-494d-9c8c-f3c28f18c342#?env%5Bv3%20Environment%5D=W3sia2V5IjoiYmFzZVVybCIsInZhbHVlIjoiaHR0cHM6Ly9hcGkudXMubnlsYXMuY29tIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik55bGFzIEFQSSBiYXNlIFVSTC4gVXNlIGh0dHBzOi8vYXBpLmV1Lm55bGFzLmNvbSBmb3IgdGhlIEVVIHJlZ2lvbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImJlYXJlclRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIEFQSSBrZXkgZnJvbSB0aGUgRGFzaGJvYXJkIChodHRwczovL2Rhc2hib2FyZC12My5ueWxhcy5jb20pLiBVc2VkIGZvciBhbGwgYXV0aGVudGljYXRlZCByZXF1ZXN0cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImdyYW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiVGhlIGdyYW50IElEIHJlcHJlc2VudGluZyBhbiBlbmQgdXNlcidzIGNvbm5lY3RlZCBhY2NvdW50LiBSZXF1aXJlZCBmb3IgRUNDICYgU2NoZWR1bGVyIGNvbGxlY3Rpb25zLiBGaW5kIHRoaXMgaW4gdGhlIERhc2hib2FyZCB1bmRlciBHcmFudHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhY2Nlc3NfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJzZWNyZXQiLCJkZXNjcmlwdGlvbiI6IkEgdXNlci1sZXZlbCBhY2Nlc3MgdG9rZW4gcmV0dXJuZWQgZnJvbSB0aGUgT0F1dGggZmxvdy4gQWx0ZXJuYXRpdmUgdG8gdXNpbmcgQVBJIGtleSArIGdyYW50X2lkIGZvciBwZXItdXNlciBhdXRoLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBwbGljYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJZb3VyIE55bGFzIGFwcGxpY2F0aW9uIElELiBBdXRvLXNldCBieSB0aGUgJ1ZlcmlmeSBBUEkga2V5JyByZXF1ZXN0IGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoicHJvdmlkZXIiLCJ2YWx1ZSI6Imdvb2dsZSIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRoIHByb3ZpZGVyIGZvciBjb25uZWN0b3Igb3BlcmF0aW9uczogZ29vZ2xlLCBtaWNyb3NvZnQsIGltYXAsIG9yIHZpcnR1YWwtY2FsZW5kYXIuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJjYWxsYmFja19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlJlZGlyZWN0IFVSSSBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgY2FsbGJhY2sgVVJJIGluIHRoZSBBZG1pbiBjb2xsZWN0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY3JlZGVudGlhbF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbm5lY3RvciBjcmVkZW50aWFsIElEIGZvciBzZXJ2aWNlIGFjY291bnRzIG9yIGFwcCBwYXNzd29yZHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3ZWJob29rX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiV2ViaG9vayBkZXN0aW5hdGlvbiBJRC4gU2V0IGFmdGVyIGNyZWF0aW5nIGEgd2ViaG9vay4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNoYW5uZWxfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQdWIvU3ViIGNoYW5uZWwgSUQuIFNldCBhZnRlciBjcmVhdGluZyBhIGNoYW5uZWwuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3Jrc3BhY2VfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJXb3Jrc3BhY2UgSUQgZm9yIGdyYW50IGdyb3VwaW5nICYgb3JnYW5pemF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiYXBpX2tleV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkFQSSBrZXkgcmVzb3VyY2UgSUQgKG5vdCB0aGUga2V5IGl0c2VsZikuIFVzZWQgZm9yIG1hbmFnaW5nIEFQSSBrZXlzIHZpYSB0aGUgQWRtaW4gQVBJLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBJRC4gVXNlZCBpbiBob3N0ZWQgT0F1dGggYXV0aG9yaXphdGlvbiBVUkxzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibnlsYXNfY2xpZW50X3NlY3JldCIsInZhbHVlIjoiIiwidHlwZSI6InNlY3JldCIsImRlc2NyaXB0aW9uIjoiWW91ciBOeWxhcyBhcHBsaWNhdGlvbidzIGNsaWVudCBzZWNyZXQuIFVzZWQgaW4gdGhlIE9BdXRoIHRva2VuIGV4Y2hhbmdlIHN0ZXAuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZWRpcmVjdF91cmkiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJPQXV0aCBjYWxsYmFjayBVUkwgcmVnaXN0ZXJlZCB3aXRoIHlvdXIgTnlsYXMgYXBwbGljYXRpb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJyZXNwb25zZV90eXBlIiwidmFsdWUiOiJjb2RlIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik9BdXRoIHJlc3BvbnNlIHR5cGUuIFVzZSAnY29kZScgZm9yIHNlcnZlci1zaWRlIGF1dGggKHJlY29tbWVuZGVkKSBvciAndG9rZW4nIGZvciBjbGllbnQtc2lkZS4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvZGUiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJBdXRob3JpemF0aW9uIGNvZGUgcmV0dXJuZWQgZnJvbSBob3N0ZWQgT0F1dGguIFVzZWQgdG8gZXhjaGFuZ2UgZm9yIGFuIGFjY2VzcyB0b2tlbi4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImlkX3Rva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiSUQgdG9rZW4gZm9yIGN1c3RvbSBhdXRoZW50aWNhdGlvbiBmbG93cy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImVtYWlsIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRW1haWwgYWRkcmVzcyB1c2VkIGFzIGxvZ2luX2hpbnQgaW4gT0F1dGggZmxvd3MuIFByZS1maWxscyB0aGUgcHJvdmlkZXIgc2lnbi1pbiBwYWdlLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ29vZ2xlX2NsaWVudF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IllvdXIgR29vZ2xlIE9BdXRoIGNsaWVudCBJRC4gVXNlZCB3aGVuIGNyZWF0aW5nIGEgR29vZ2xlIGNvbm5lY3Rvci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6Imdvb2dsZV9jbGllbnRfc2VjcmV0IiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJZb3VyIEdvb2dsZSBPQXV0aCBjbGllbnQgc2VjcmV0LiBVc2VkIHdoZW4gY3JlYXRpbmcgYSBHb29nbGUgY29ubmVjdG9yLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY2FsZW5kYXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJDYWxlbmRhciBJRC4gQ2FuIGJlIHRoZSBncmFudCdzIGVtYWlsIGFkZHJlc3Mgb3IgJ3ByaW1hcnknIGZvciB0aGUgZGVmYXVsdCBjYWxlbmRhci4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImV2ZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRXZlbnQgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGNyZWF0aW5nIG9yIGxpc3RpbmcgZXZlbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoibWVzc2FnZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6Ik1lc3NhZ2UgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3Igc2VuZGluZyBtZXNzYWdlcy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InRocmVhZF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlRocmVhZCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyB0aHJlYWRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZHJhZnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJEcmFmdCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgZHJhZnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZm9sZGVyX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRm9sZGVyIG9yIGxhYmVsIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBsaXN0aW5nIGZvbGRlcnMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJhdHRhY2htZW50X2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQXR0YWNobWVudCBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gbGlzdGluZyBtZXNzYWdlIGF0dGFjaG1lbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiY29udGFjdF9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IkNvbnRhY3QgSUQuIEF1dG8tc2V0IGJ5IHRlc3Qgc2NyaXB0cyB3aGVuIGxpc3Rpbmcgb3IgY3JlYXRpbmcgY29udGFjdHMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJub3RldGFrZXJfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJOb3RldGFrZXIgSUQuIFNldCBhZnRlciBpbnZpdGluZyBhIG5vdGV0YWtlciBib3QgdG8gYSBtZWV0aW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoidGVtcGxhdGVfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJNZXNzYWdlIHRlbXBsYXRlIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB0ZW1wbGF0ZXMuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ3b3JrZmxvd19pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IldvcmtmbG93IElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyB3b3JrZmxvd3MuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJzY2hlZHVsZV9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlIElEIGZvciBFeHRyYWN0QUkgb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImRvbWFpbl9uYW1lIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiRG9tYWluIG5hbWUgZm9yIGN1c3RvbSBkb21haW4gb3BlcmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6ImNvbmZpZ3VyYXRpb25faWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJTY2hlZHVsZXIgY29uZmlndXJhdGlvbiBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBjb25maWd1cmF0aW9uLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2Vzc2lvbl9pZCIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNjaGVkdWxlciBzZXNzaW9uIElELiBBdXRvLXNldCBieSB0ZXN0IHNjcmlwdHMgd2hlbiBjcmVhdGluZyBhIHNlc3Npb24uIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJib29raW5nX2lkIiwidmFsdWUiOiIiLCJ0eXBlIjoiZGVmYXVsdCIsImRlc2NyaXB0aW9uIjoiQm9va2luZyBJRC4gQXV0by1zZXQgYnkgdGVzdCBzY3JpcHRzIHdoZW4gY3JlYXRpbmcgYSBib29raW5nLiIsImVuYWJsZWQiOnRydWV9LHsia2V5IjoiZ3JvdXBfZXZlbnRfaWQiLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJHcm91cCBldmVudCBJRCBmb3IgY29sbGFib3JhdGl2ZSBzY2hlZHVsaW5nIHdpdGggbXVsdGlwbGUgcGFydGljaXBhbnRzLiIsImVuYWJsZWQiOnRydWV9LHsia2V5Ijoic2NoZWR1bGVyU2Vzc2lvblRva2VuIiwidmFsdWUiOiIiLCJ0eXBlIjoic2VjcmV0IiwiZGVzY3JpcHRpb24iOiJTaG9ydC1saXZlZCBzZXNzaW9uIHRva2VuIGZvciBwdWJsaWMtZmFjaW5nIFNjaGVkdWxlciBlbmRwb2ludHMgKEF2YWlsYWJpbGl0eSwgQm9va2luZ3MpLiBDcmVhdGVkIHZpYSB0aGUgU2Vzc2lvbnMgZW5kcG9pbnQuIiwiZW5hYmxlZCI6dHJ1ZX0seyJrZXkiOiJ2Ml9zY2hlZHVsZXJfc2x1ZyIsInZhbHVlIjoiIiwidHlwZSI6ImRlZmF1bHQiLCJkZXNjcmlwdGlvbiI6IlNsdWcgZnJvbSBhIHYyIFNjaGVkdWxlciBwYWdlLiBVc2VkIGZvciBtaWdyYXRpbmcgdjIgc2NoZWR1bGluZyBwYWdlcyB0byB2MyBjb25maWd1cmF0aW9ucy4iLCJlbmFibGVkIjp0cnVlfSx7ImtleSI6InBhZ2VfdG9rZW4iLCJ2YWx1ZSI6IiIsInR5cGUiOiJkZWZhdWx0IiwiZGVzY3JpcHRpb24iOiJQYWdpbmF0aW9uIGN1cnNvci4gUGFzcyB0aGUgbmV4dF9jdXJzb3IgdmFsdWUgZnJvbSBhIGxpc3QgcmVzcG9uc2UgdG8gZ2V0IHRoZSBuZXh0IHBhZ2Ugb2YgcmVzdWx0cy4iLCJlbmFibGVkIjp0cnVlfV0=)\n\n## Enable compression to optimize performance\n\nThe Email, Calendar, Contacts, and Scheduler APIs return gzip-compressed responses when your request includes the [`Accept-Encoding: gzip`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Encoding) header. Most HTTP libraries negotiate and decompress gzip responses automatically. With curl, use `--compressed`. Nylas skips compression for responses under about 200 bytes.\n\nCompression pairs well with [query parameters](#query-parameters) that limit the number of objects returned and [field selection](#reduce-response-size-with-field-selection) that limits which fields come back in each object. For the full walkthrough, including webhook, Pub/Sub, and SNS compression, see [Reducing payload size with compression](/docs/dev-guide/best-practices/compression/).\n\n## Query parameters\n\nNylas allows you to include query parameters in `GET` requests that return a list of results. Query parameters let you narrow the results Nylas returns, meaning fewer requests to the provider and less data for your application to sift through. For more information, see [Rate limits in Nylas](/docs/dev-guide/platform/rate-limits/).\n\nThe table below shows the query parameters you can use for the `GET` requests in the Email, Calendar, Contacts, and Notetaker APIs.\n\n| Endpoint                                                                                          | Query parameters                                                                                                                                                                                                                                                                               |\n| :------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/calendars`](/docs/reference/api/calendar/get-all-calendars/)    | `limit`, `page_token`, `metadata_pair`, `select`                                                                                                                                                                                                                                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/events`](/docs/reference/api/events/get-all-events/)            | `calendar_id` (required), `limit`, `page_token`, `show_cancelled`, `title`, `description`, `ical_uid`, `location`, `start`, `end`, `master_event_id`, `metadata_pair`, `busy`, `updated_before`, `updated_after`, `attendees`, `event_type`, `expand_recurring`, `tentative_as_busy`, `select` |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/drafts`](/docs/reference/api/drafts/get-drafts/)                | `limit`, `page_token`, `subject`, `any_email`, `to`, `cc`, `bcc`, `starred`, `thread_id`, `has_attachment`, `query_imap`, `select`                                                                                                                                                             |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/messages`](/docs/reference/api/messages/get-messages/)          | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `thread_id`, `received_before`, `received_after`, `has_attachment`, `fields`, `search_query_native`, `metadata_pair`, `query_imap`, `shared_from`, `select`                               |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/threads`](/docs/reference/api/threads/get-threads/)             | `limit`, `page_token`, `subject`, `any_email`, `to`, `from`, `cc`, `bcc`, `in`, `unread`, `starred`, `latest_message_before`, `latest_message_after`, `has_attachment`, `search_query_native`, `earliest_message_date`, `shared_folder_id`, `shared_from`, `select`                            |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/folders`](/docs/reference/api/folders/get-folder/)              | `limit`, `page_token`, `parent_id`, `include_hidden_folders`, `shared_from`, `single_level`, `select`                                                                                                                                                                                          |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/contacts`](/docs/reference/api/contacts/list-contact/)          | `limit`, `page_token`, `email`, `phone_number`, `source`, `group`, `recurse`, `select`                                                                                                                                                                                                         |\n| [`GET /v3/grants/<NYLAS_GRANT_ID>/notetakers`](/docs/reference/api/notetaker/get-all-notetakers/) | `limit`, `page_token`, `prev_page_token`, `join_time_start`, `join_time_end`, `state`, `order_by`, `order_direction`                                                                                                                                                                           |\n\nYou can use the `limit` parameter to set the maximum number of results Nylas returns for your request. Nylas recommends setting a lower `limit` if you encounter rate limits on the provider. For more information, see [Avoiding rate limits in Nylas](/docs/dev-guide/best-practices/rate-limits/).\n\nNylas supports case-insensitive partial matches for some query parameters:\n\n- `description`, `location`, and `title` in [Get all Events requests](/docs/reference/api/events/get-all-events/).\n- `subject` in [Get all Messages](/docs/reference/api/messages/get-messages/), [Get all Drafts](/docs/reference/api/drafts/get-drafts/), and [Get all Threads](/docs/reference/api/threads/get-threads/) requests.\n\nIf the specified field contains the query term, Nylas matches it regardless of the case. For example, if you set the `subject` query parameter to `march` in a Get all Messages request, Nylas might return the following messages:\n\n- \"Company **March** Meeting\"\n- \"Today in history: Mussolini's **march** on Rome\"\n- \"Your coupon code: **mARch**\"\n\nSince Nylas matches keywords, it won't return the following messages:\n\n- \"Confirmation code: abc**March**123\"\n- \"**M**cDonald's golden **arch**es\"\n\n## Pagination\n\nNylas might return multiple pages of data when you make a \"Get all\" request (for example, [Get all Events](/docs/reference/api/events/get-all-events/)). When this happens, Nylas includes the `next_cursor` field in its response. You can pass the value of `next_cursor` as the `page_token` query parameter in your next request to get the next page of results.\n\nYou can use the `limit` parameter to specify the maximum number of results you want in one page of data. If you see rate limits from the provider, try using a smaller `limit` value.\n\n| Query Parameter | Type    | Description                                                                                                                       |\n| :-------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------- |\n| `limit`         | integer | The number of objects to return, up to a maximum of `200` (defaults to `50`).                                                     |\n| `page_token`    | string  | An identifier that specifies which page of data to return. This value should be taken from the `next_cursor` response body field. |\n\n## Updating objects\n\n`PUT` and `PATCH` requests behave similarly in Nylas: when you make a request, Nylas replaces all data in the nested object with the information you define. Because of this, your request might fail if you don't include all mandatory fields.\n\nNylas doesn't erase the data from fields that you don't include in your request, so you can define only the mandatory fields and any that you want to update.\n\n## Grant ID patterns\n\nNylas supports multiple patterns for identifying grants in API calls. This flexibility allows you to reference grants using the identifier that's most convenient for your application, whether that's the Nylas grant ID, the user's email address, an external ID from your system, or a special shorthand syntax.\n\nAll endpoint paths that include `{grant_id}` support these patterns. For example, you can use any of these patterns with endpoints like `/v3/grants/{grant_id}/messages`, `/v3/grants/{grant_id}/events`, `/v3/grants/{grant_id}/contacts`, and others.\n\n| Pattern                  | Description                                                                                                                                                                                                             | Authorization           |\n| :----------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------- |\n| `<grant_id>`             | The Nylas grant ID (for example, `GET /v3/grants/e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This is the standard format.                                                                                          | API key or access token |\n| `grant:<grant_id>`       | Explicitly prefixed Nylas grant ID (for example, `GET /v3/grants/grant:e19f8e1a-eb1c-4673-b602-ba4a189b18bd/messages`). This format is useful for clarity when working with multiple identifier types.                  | API key or access token |\n| `<email_address>`        | The email address associated with the grant (for example, `GET /v3/grants/user@example.com/messages`). Nylas looks up the grant associated with this email address.                                                     | API key or access token |\n| `email:<email_address>`  | Explicitly prefixed email address (for example, `GET /v3/grants/email:user@example.com/messages`). This format is useful for clarity when the email address might be ambiguous.                                         | API key or access token |\n| `external:<external_id>` | An external ID from your system (for example, `GET /v3/grants/external:user-12345/messages`). This allows you to reference grants using your own identifiers. For more information, see the External IDs documentation. | API key or access token |\n| `me`                     | A special shorthand syntax (for example, `GET /v3/grants/me/messages`). Nylas looks up the grant associated with the request's access token.                                                                            | Access token only       |\n\nThe `me` syntax is particularly useful for client-side applications where you authenticate end users with access tokens. You can't use this syntax with API key authorization, because there is no grant associated with an API key.\n\n## Metadata\n\nYou can use the `metadata` object to add a list of key-value pairs to Calendar, Event, Message, and Draft objects so you can store custom data with them. Both keys and values can be any string. If you want to filter on metadata, however, you must write values to one of the five [Nylas-specific keys](#metadata-keys-and-filtering).\n\nFor more information, see the [Metadata documentation](/docs/dev-guide/metadata/).\n\n### Metadata keys and filtering\n\nNylas reserves five metadata keys (`key1`, `key2`, `key3`, `key4`, `key5`) and indexes their contents. Nylas uses `key5` to identify events that count towards the `max-fairness` round-robin calculation for event availability. For more information, see [Group availability and booking best practices](/docs/v3/calendar/group-booking/#round-robin-max-fairness-groups).\n\nYou can add values to each of these reserved keys, and reference them in a query to filter the objects that Nylas returns. You can also add these filters as query parameters, as in the following examples:\n\n- `https://api.us.nylas.com/calendar?metadata_pair=key1:on-site`\n- `https://api.us.nylas.com/events?calendar_id=<CALENDAR_ID>&metadata_pair=key1:on-site`\n\nYou can't create a query that includes both a provider and metadata filter, other than `calendar_id`. For example, `https://api.us.nylas.com/calendar?metadata_pair=key1:plan-party&title=Birthday` returns an error.\n\n## Reduce response size with field selection\n\nField selection allows you to use the `select` query parameter to specify which fields you want Nylas to include in the response.\n\nYou can use field selection for all Nylas API endpoints, _except_ the following:\n\n- All `DELETE` endpoints.\n- All Attachments endpoints.\n- All Smart Compose endpoints.\n- The Send Message endpoint.\n- The Create a Draft endpoint.\n\nField selection helps to reduce the size of the response, improves latency, and helps you avoid rate limiting issues. You can also use it in cases where you want to avoid working with information from your users that you think might be sensitive.\n\nField selection can evaluate top-level object fields only. You cannot use it to return only nested fields.\n\n<div id=\"admonition-info\">\U0001F4DD <b>Note</b>: Nylas strongly suggests you always use field selection, so you only get the data that you need.</div>\n\nFor example, the following request specifies Nylas should return only the `id` and `name` fields of the Calendar object.\n\n```bash\ncurl --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/me/calendars?select=id,name'\n```\n\nThe response payload includes only the `id` and `name` fields in the `data` object, as in the example below.\n\n```json\n{\n  \"request_id\": \"5fa64c92-e840-4357-86b9-2aa364d35b88\",\n  \"data\": [\n    {\n      \"id\": \"5d3qmne77v32r8l4phyuksl2x\",\n      \"name\": \"My Calendar\"\n    },\n    {\n      \"id\": \"5d3qmne77v32r23aphyuksl2x\",\n      \"name\": \"My Calendar 2\"\n    }\n  ]\n}\n```\n\n## Nylas encoding\n\nResponse bodies are always UTF-8 encoded JSON objects, unless explicitly documented otherwise.\n"
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
   contact:
     url: https://www.nylas.com/
   x-provenance:
@@ -25,11 +20,17 @@ info:
     what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
   - url: https://developer.nylas.com/.well-known/api-catalog
     what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
 security:
 - ACCESS_TOKEN: []
 - NYLAS_API_KEY: []
 tags:
-- name: Calendars
+- name: Calendar
+  description: The Nylas Calendar API allows you to create and manage calendars, and access the events they contain.
 paths:
   /v3/grants/{grant_id}/calendars:
     parameters:
@@ -37,7 +38,7 @@ paths:
     get:
       summary: Return all calendars
       tags:
-      - Calendars
+      - Calendar
       operationId: get-all-calendars
       description: (Not supported for IMAP) Returns all calendars.
       x-scopes:
@@ -88,7 +89,7 @@ paths:
     post:
       summary: Create a calendar
       tags:
-      - Calendars
+      - Calendar
       operationId: create-calendar
       description: Creates a calendar.
       x-scopes:
@@ -158,7 +159,7 @@ paths:
     get:
       summary: Return a calendar
       tags:
-      - Calendars
+      - Calendar
       x-scopes:
         google:
           min: https://www.googleapis.com/auth/calendar.readonly
@@ -208,7 +209,7 @@ paths:
     put:
       summary: Update a calendar
       tags:
-      - Calendars
+      - Calendar
       x-scopes:
         google:
           min: https://www.googleapis.com/auth/calendar
@@ -237,7 +238,7 @@ paths:
 
         included in your request. For more information, see
 
-        [Updating objects](/docs/reference/api/#updating-objects).'
+        Updating objects.'
       x-code-samples:
       - lang: bash
         label: cURL
@@ -267,7 +268,7 @@ paths:
     delete:
       summary: Delete a calendar
       tags:
-      - Calendars
+      - Calendar
       x-scopes:
         google:
           min: https://www.googleapis.com/auth/calendar
@@ -318,7 +319,7 @@ paths:
     post:
       summary: Get availability
       tags:
-      - Calendars
+      - Calendar
       operationId: post-availability
       description: 'Returns availability information for the specified user or group of users. All participants'' email
 
@@ -495,7 +496,7 @@ paths:
     post:
       summary: Get free/busy schedule
       tags:
-      - Calendars
+      - Calendar
       x-scopes:
         google:
           min: https://www.googleapis.com/auth/calendar.readonly
@@ -565,201 +566,44 @@ paths:
           $ref: '#/components/responses/429'
         '504':
           $ref: '#/components/responses/504'
-  /v3/scheduling/availability:
-    parameters:
-    - schema:
-        type: string
-      name: start_time
-      in: query
-      required: true
-      description: The time from which to check availability, in seconds using the Unix timestamp format.
-    - schema:
-        type: string
-      name: end_time
-      in: query
-      required: true
-      description: The time until which to check availability, in seconds using the Unix timestamp format.
-    - schema:
-        type: string
-      name: configuration_id
-      in: query
-      required: false
-      description: 'The ID of the Configuration object used for calculating availability. If you''re using session
-
-        authentication (`requires_session_auth: true`), the `configuration_id` isn''t required.'
-    - schema:
-        type: string
-      name: slug
-      in: query
-      required: false
-      description: 'The Configuration object slug. You can use this with the `client_id` instead of using the
-
-        `configuration_id`. If you''re using session authentication (`requires_session_auth: true`) or
-
-        using the `configuration_id`, `slug` isn''t required.'
-    - schema:
-        type: string
-      name: client_id
-      in: query
-      required: false
-      description: 'The client ID that was used to create the Configuration object. Required only if you''re using
-
-        `slug`.'
-    - schema:
-        type: string
-      name: booking_id
-      in: query
-      required: false
-      description: 'The ID of the booking to reschedule, if you''re checking availability to reschedule a round-robin
-
-        booking. Required only if `availability_method` is `max-fairness` or `max-availability`. See
-
-        [Retrieve booking IDs](/docs/v3/scheduler/retrieve-booking-ids/) for more information.'
-    get:
-      summary: Get availability
-      tags:
-      - Calendars
-      x-scopes:
-        google:
-          min: https://www.googleapis.com/auth/calendar.readonly
-          others: https://www.googleapis.com/auth/calendar
-        microsoft:
-          min: https://graph.microsoft.com/Calendars.Read
-          others: https://graph.microsoft.com/Calendars.ReadWrite
-      operationId: get-availability
-      description: 'Gets available time slots within the given time range, using the rules defined in the specified
-
-        Configuration object. If the Configuration `type` is `group`, Nylas returns only valid group events
-
-        within the time range, including recurring events.
-
-
-        Nylas validates the provided session ID and uses it to retrieve the related
-
-        [Configuration object](/docs/reference/api/configurations/). If you created a public
-
-        Configuration, you don''t need to include the `Authorization` request header with a session ID, but
-
-        you do need to pass the Configuration object ID as a query parameter.'
-      x-code-samples:
-      - lang: bash
-        label: cURL (Public)
-        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/scheduling/availability?start_time=1709643600&end_time=1709665200&configuration_id=<SCHEDULER_CONFIG_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json'"
-      - lang: bash
-        label: cURL (Private)
-        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/scheduling/availability?start_time=1709643600&end_time=1709665200' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <SCHEDULER_SESSION_ID>' \\\n  --header 'Content-Type: application/json' "
-      - lang: javascript
-        label: Node.js SDK
-        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function getAvailability() {\n  try {\n    const availability = await nylas.scheduler.availability.get({\n      queryParams: {\n        configurationId: \"<CONFIGURATION_ID>\",\n        startTime: 1748908800,\n        endTime: 1748995200,\n      },\n    });\n\n    console.log(\"Availability:\", availability);\n  } catch (error) {\n    console.error(\"Error getting availability:\", error);\n  }\n}\n\ngetAvailability();\n"
-      responses:
-        '200':
-          $ref: '#/components/responses/availability'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '404':
-          $ref: '#/components/responses/404'
-        '429':
-          $ref: '#/components/responses/429'
-        '504':
-          $ref: '#/components/responses/504'
-      security:
-      - SCHEDULER_SESSION_TOKEN: []
-  /v3/grants/{grant_id}/resources:
-    parameters:
-    - schema:
-        type: string
-      name: grant_id
-      in: path
-      required: true
-      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use
-
-        `/me/` to refer to the grant associated with an access token.'
-      example: nyla@example.com
-    get:
-      summary: Return room resource information
-      tags:
-      - Calendars
-      operationId: list-room-resources
-      description: Returns information about all room resources.
-      x-scopes:
-        google:
-          min: https://www.googleapis.com/auth/admin.directory.resource.calendar.readonly
-          others: ''
-        microsoft:
-          min: https://graph.microsoft.com/Place.Read.All
-          others: ''
-      security:
-      - NYLAS_API_KEY: []
-      - ACCESS_TOKEN: []
-      parameters:
-      - $ref: '#/components/parameters/limit'
-      - $ref: '#/components/parameters/page_token'
-      x-code-samples:
-      - lang: bash
-        label: cURL
-        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/resources' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
-      responses:
-        '200':
-          $ref: '#/components/responses/resources'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '429':
-          $ref: '#/components/responses/429'
-        '504':
-          $ref: '#/components/responses/504'
 components:
   schemas:
-    id:
-      title: ID
-      type: string
-      minLength: 1
-      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
-      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
-    calendar:
-      allOf:
-      - $ref: '#/components/schemas/calendar_common'
-      - properties:
-          notetaker:
-            $ref: '#/components/schemas/calendar_sync'
-    freebusy_request:
-      title: free-busy
+    metadata:
+      title: Metadata
+      type: object
+      description: 'The metadata associated with the object. For more information, see
+
+        [Metadata](/docs/reference/api/#metadata).'
+      additionalProperties:
+        type: string
+        description: A key-value pair.
+        maxLength: 500
+      maxProperties: 50
+    availability_specific_time_availability:
+      description: A specific date and time range when the participant is available.
       type: object
       required:
-      - start_time
-      - end_time
-      - emails
+      - date
+      - start
+      - end
+      - timezone
       properties:
-        start_time:
-          type: integer
-          description: 'The start of a time block, in seconds using the Unix timestamp format. Nylas uses `start_time` and `end_time` to assess
-
-            the specified account''s free/busy schedule.'
-          example: 1690862400
-        end_time:
-          type: integer
-          description: 'The end of a time block, in seconds using the Unix timestamp format. Nylas uses `start_time` and `end_time` to
-
-            assess the specified account''s free/busy schedule.
-
-
-            For Google and EWS accounts, Nylas can query a timespan of up to 3 months from the `start_time`.
-
-
-            For Microsoft Graph accounts, Nylas can query a timespan of up to 62 days from the `start_time`.'
-          example: 1691208000
-        emails:
-          type: array
-          description: A list of email addresses to check the free/busy schedules for.
-          items:
-            type: string
-        tentative_as_busy:
-          type: boolean
-          default: true
-          description: When `true`, Nylas treats tentative events as busy.
+        date:
+          type: string
+          description: The date in `YYYY-MM-DD` format.
+          example: '2026-03-18'
+        end:
+          type: string
+          description: The end time in `HH:MM` format (24-hour).
+          example: '17:00'
+        start:
+          type: string
+          description: The start time in `HH:MM` format (24-hour).
+          example: 09:00
+        timezone:
+          type: string
+          description: The participant's IANA timezone for this availability window.
+          example: America/Toronto
     common_response:
       properties:
         request_id:
@@ -770,76 +614,122 @@ components:
           description: The response object.
       example:
         request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    calendar_location:
+    calendar_hex_color:
+      title: Background color hex code
       type: string
-      description: (Not supported for iCloud or EWS) The geographic location of the calendar, as free-form text.
-      example: London, England
-    common_response_with_cursor:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-        next_cursor:
-          type:
-          - string
-          - 'null'
-          description: A cursor pointing to the next page of results for the request.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    availability_open_hours:
-      description: A time block when a participant is available for meetings.
+      description: '(Not supported for iCloud or EWS) The background color of the calendar, in hexadecimal format (for
+
+        example, `#0099EE`). When empty, Nylas uses the default background color.
+
+
+        You can set or modify this value using a `PUT` request only.'
+      example: '#039BE5'
+    availability_buffer:
+      title: buffer
       type: object
-      title: Open Hours
-      examples: []
       properties:
-        days:
-          type: array
-          description: 'The days of the week that the open hours settings are applied to. Sunday corresponds to `0`, and
+        before:
+          type: integer
+          description: 'The amount of buffer time to add before meetings, in increments of five minutes. For example,
 
-            Saturday corresponds to `6`.'
-          items:
-            type: integer
-            enum:
-            - 0
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          example:
-          - 0
-          - 1
-          - 2
-        timezone:
-          type: string
-          minLength: 1
-          description: The calendar's time zone as an [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string.
-          example: America/Chicago
-        start:
-          type: string
-          minLength: 1
-          description: 'The start time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.
+            if an account has a meeting scheduled from 10:00–11:00a.m., and you set a `before` buffer of
+
+            30 minutes, Nylas treats 9:30–11:00a.m. as busy.
 
 
-            The minimum start time is `0:00`, and the maximum is `23:49`.'
-          example: '10:00'
-        end:
+            This value must be between 0 and 120, and must be divisible by 5.'
+          default: 0
+          minimum: 0
+          maximum: 120
+        after:
+          type: integer
+          description: 'The amount of buffer time to add after meetings, in increments of five minutes. For example, if
+
+            an account has a meeting scheduled from 10:00–11:00a.m., and you set an `after` buffer of 15
+
+            minutes, Nylas treats 10:00–11:15a.m. as busy.
+
+
+            This value must be between 0 and 120, and must be divisible by 5.'
+          default: 0
+          minimum: 0
+          maximum: 120
+    calendar_sync:
+      type: object
+      properties:
+        meeting_settings:
+          $ref: '#/components/schemas/meeting_settings'
+        name:
           type: string
-          minLength: 1
-          description: The end time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.
-          example: '14:00'
-        exdates:
-          type: array
-          description: A list of dates that Nylas excludes from the account's open hours, in `YYYY-MM-DD` format.
-          items:
-            type: string
-          example:
-          - '2006-01-18'
+          description: The display name for the Notetaker bot.
+          default: Nylas Notetaker
+          example: Nylas Notetaker
+        rules:
+          type: object
+          description: Rules for when the Notetaker bot should join a meeting.
+          properties:
+            event_selection:
+              type: array
+              items:
+                type: string
+                enum:
+                - all
+                - external
+                - internal
+                - own_events
+                - participant_only
+                x-enum-descriptions:
+                  all: Join all events with meeting links.
+                  external: Join all events where the host's domain differs from any participant's domain.
+                  internal: Join all events where the host's domain matches all participants' domains.
+                  own_events: Join all events where the user is the host.
+                  participant_only: Join all events where the user is a participant, but not the host.
+              description: 'Specify the types of events Notetaker should join.
+
+                - "all": Join all events with meeting links.
+
+                - "external": Join all events where the host''s domain differs from any participant''s domain.
+
+                - "internal": Join all events where the host''s domain matches all participants'' domains.
+
+                - "own_events": Join all events where the user is the host.
+
+                - "participant_only": Join all events where the user is a participant, but not the host.'
+              example:
+              - internal
+            participant_filter:
+              type: object
+              description: 'Specify filters to determine which events Notetaker should join, based on the number of
+
+                participants. If you don''t specify any settings, a Notetaker joins meetings regardless of
+
+                participants.'
+              properties:
+                participants_gte:
+                  type: integer
+                  description: 'Join all events where the number of participants is greater than or equal to the specified
+
+                    value.'
+                  example: 5
+                participants_lte:
+                  type: integer
+                  description: 'Join all events where the number of participants is less than or equal to the specified
+
+                    value.'
+                  example: 5
+    is_owned_by_user:
+      title: Is Owned By User
+      type: boolean
+      description: If `true`, indicates that the user owns the calendar. This field can't be modified once set.
+    calendar_read_only:
+      title: Read-only setting
+      type: boolean
+      description: 'Set by the provider. If `true`, indicates that the calendar is read-only.
+
+
+        If the calendar is read-only, all of its events have `read_only` set to `true`. This field _cannot_
+
+        be modified.'
     calendar_common:
       title: Calendar
       type: object
@@ -876,6 +766,32 @@ components:
           $ref: '#/components/schemas/calendar_read_only'
         timezone:
           $ref: '#/components/schemas/calendar_timezone'
+    availability_time_slot:
+      title: TimeSlot
+      type: object
+      properties:
+        emails:
+          type:
+          - array
+          - 'null'
+          description: A list of participant email addresses for this time slot. This field may be `null`. Treat `null` the same as an empty array.
+          items:
+            type: string
+        start_time:
+          type: integer
+          description: The start of a time slot, in seconds using the Unix timestamp format.
+        end_time:
+          type: integer
+          description: The end of a time slot, in seconds using the Unix timestamp format.
+        event_id:
+          type: string
+          description: (Group Events Only). The event ID of the group event
+        master_id:
+          type: string
+          description: (Group Events Only). The master ID of the recurring group event
+        calendar_id:
+          type: string
+          description: (Group Events Only). The calendar ID of the group event
     meeting_settings_common:
       type: object
       description: A collection of settings for the Notetaker bot.
@@ -940,48 +856,91 @@ components:
           description: When `true`, Notetaker records the meeting's video.
           default: true
           example: true
-    object:
-      type: string
-      description: The type of object.
-    calendar_hex_foreground_color:
-      title: Foreground color hex code
-      type: string
-      description: '(Google only) The foreground color of the calendar, in hexadecimal format (for example, `#0099EE`).
+    availability_open_hours:
+      description: A time block when a participant is available for meetings.
+      type: object
+      title: Open Hours
+      examples: []
+      properties:
+        days:
+          type: array
+          description: 'The days of the week that the open hours settings are applied to. Sunday corresponds to `0`, and
 
-        When empty, Nylas uses the default foreground color.
-
-
-        You can modify this value using a `PUT` request only.'
-      example: '#039BE5'
-    calendar_read_only:
-      title: Read-only setting
-      type: boolean
-      description: 'Set by the provider. If `true`, indicates that the calendar is read-only.
-
-
-        If the calendar is read-only, all of its events have `read_only` set to `true`. This field _cannot_
-
-        be modified.'
-    calendar_hex_color:
-      title: Background color hex code
-      type: string
-      description: '(Not supported for iCloud or EWS) The background color of the calendar, in hexadecimal format (for
-
-        example, `#0099EE`). When empty, Nylas uses the default background color.
-
-
-        You can set or modify this value using a `PUT` request only.'
-      example: '#039BE5'
-    calendar_owner_email:
-      title: Owner email
-      type: string
-      description: '(Microsoft only) The email address of the account that owns the calendar. Use it to tell the grant''s own
-
-        calendars apart from calendars shared with the grant.
+            Saturday corresponds to `6`.'
+          items:
+            type: integer
+            enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          example:
+          - 0
+          - 1
+          - 2
+        timezone:
+          type: string
+          minLength: 1
+          description: The calendar's time zone as an [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string.
+          example: America/Chicago
+        start:
+          type: string
+          minLength: 1
+          description: 'The start time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.
 
 
-        This field is read-only.'
-      example: nyla@example.com
+            The minimum start time is `0:00`, and the maximum is `23:49`.'
+          example: '10:00'
+        end:
+          type: string
+          minLength: 1
+          description: The end time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.
+          example: '14:00'
+        exdates:
+          type: array
+          description: A list of dates that Nylas excludes from the account's open hours, in `YYYY-MM-DD` format.
+          items:
+            type: string
+          example:
+          - '2006-01-18'
+    freebusy_request:
+      title: free-busy
+      type: object
+      required:
+      - start_time
+      - end_time
+      - emails
+      properties:
+        start_time:
+          type: integer
+          description: 'The start of a time block, in seconds using the Unix timestamp format. Nylas uses `start_time` and `end_time` to assess
+
+            the specified account''s free/busy schedule.'
+          example: 1690862400
+        end_time:
+          type: integer
+          description: 'The end of a time block, in seconds using the Unix timestamp format. Nylas uses `start_time` and `end_time` to
+
+            assess the specified account''s free/busy schedule.
+
+
+            For Google and EWS accounts, Nylas can query a timespan of up to 3 months from the `start_time`.
+
+
+            For Microsoft Graph accounts, Nylas can query a timespan of up to 62 days from the `start_time`.'
+          example: 1691208000
+        emails:
+          type: array
+          description: A list of email addresses to check the free/busy schedules for.
+          items:
+            type: string
+        tentative_as_busy:
+          type: boolean
+          default: true
+          description: When `true`, Nylas treats tentative events as busy.
     availability_response:
       description: The response to a successful request to get availability for a participant.
       type: object
@@ -1000,6 +959,22 @@ components:
           description: 'An array of the available time slots when you can create a meeting using the requested settings.
 
             This field may be `null` if no time slots are available. Treat `null` the same as an empty array.'
+    calendar:
+      allOf:
+      - $ref: '#/components/schemas/calendar_common'
+      - properties:
+          notetaker:
+            $ref: '#/components/schemas/calendar_sync'
+    object:
+      type: string
+      description: The type of object.
+    calendar_timezone:
+      title: Calendar timezone
+      type: string
+      description: '(Google and virtual calendars only) An [IANA timezone database](https://en.wikipedia.org/wiki/Tz_database)
+
+        formatted string (for example, `America/New_York`).'
+      example: America/Los_Angeles
     meeting_settings:
       allOf:
       - $ref: '#/components/schemas/meeting_settings_common'
@@ -1057,146 +1032,27 @@ components:
 
                   transcribed accurately. Optional. Cannot be `null`.'
                 example: true
-    availability_time_slot:
-      title: TimeSlot
-      type: object
-      properties:
-        emails:
-          type:
-          - array
-          - 'null'
-          description: A list of participant email addresses for this time slot. This field may be `null`. Treat `null` the same as an empty array.
-          items:
-            type: string
-        start_time:
-          type: integer
-          description: The start of a time slot, in seconds using the Unix timestamp format.
-        end_time:
-          type: integer
-          description: The end of a time slot, in seconds using the Unix timestamp format.
-        event_id:
-          type: string
-          description: (Group Events Only). The event ID of the group event
-        master_id:
-          type: string
-          description: (Group Events Only). The master ID of the recurring group event
-        calendar_id:
-          type: string
-          description: (Group Events Only). The calendar ID of the group event
-    metadata:
-      title: Metadata
-      type: object
-      description: 'The metadata associated with the object. For more information, see
-
-        [Metadata](/docs/reference/api/#metadata).'
-      additionalProperties:
-        type: string
-        description: A key-value pair.
-        maxLength: 500
-      maxProperties: 50
-    calendar_timezone:
-      title: Calendar timezone
+    calendar_description:
+      title: Calendar description
       type: string
-      description: '(Google and virtual calendars only) An [IANA timezone database](https://en.wikipedia.org/wiki/Tz_database)
-
-        formatted string (for example, `America/New_York`).'
-      example: America/Los_Angeles
-    availability_specific_time_availability:
-      description: A specific date and time range when the participant is available.
-      type: object
-      required:
-      - date
-      - start
-      - end
-      - timezone
-      properties:
-        date:
-          type: string
-          description: The date in `YYYY-MM-DD` format.
-          example: '2026-03-18'
-        end:
-          type: string
-          description: The end time in `HH:MM` format (24-hour).
-          example: '17:00'
-        start:
-          type: string
-          description: The start time in `HH:MM` format (24-hour).
-          example: 09:00
-        timezone:
-          type: string
-          description: The participant's IANA timezone for this availability window.
-          example: America/Toronto
+      description: (Not supported for iCloud or EWS) A brief description of the calendar.
+      example: Junior sports league carpool drivers
+    id:
+      title: ID
+      type: string
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
     calendar_name:
       type: string
       description: The name of the calendar.
       example: My New Calendar
-    is_owned_by_user:
-      title: Is Owned By User
-      type: boolean
-      description: If `true`, indicates that the user owns the calendar. This field can't be modified once set.
-    calendar_sync:
-      type: object
-      properties:
-        meeting_settings:
-          $ref: '#/components/schemas/meeting_settings'
-        name:
-          type: string
-          description: The display name for the Notetaker bot.
-          default: Nylas Notetaker
-          example: Nylas Notetaker
-        rules:
-          type: object
-          description: Rules for when the Notetaker bot should join a meeting.
-          properties:
-            event_selection:
-              type: array
-              items:
-                type: string
-                enum:
-                - all
-                - external
-                - internal
-                - own_events
-                - participant_only
-                x-enum-descriptions:
-                  all: Join all events with meeting links.
-                  external: Join all events where the host's domain differs from any participant's domain.
-                  internal: Join all events where the host's domain matches all participants' domains.
-                  own_events: Join all events where the user is the host.
-                  participant_only: Join all events where the user is a participant, but not the host.
-              description: 'Specify the types of events Notetaker should join.
-
-                - "all": Join all events with meeting links.
-
-                - "external": Join all events where the host''s domain differs from any participant''s domain.
-
-                - "internal": Join all events where the host''s domain matches all participants'' domains.
-
-                - "own_events": Join all events where the user is the host.
-
-                - "participant_only": Join all events where the user is a participant, but not the host.'
-              example:
-              - internal
-            participant_filter:
-              type: object
-              description: 'Specify filters to determine which events Notetaker should join, based on the number of
-
-                participants. If you don''t specify any settings, a Notetaker joins meetings regardless of
-
-                participants.'
-              properties:
-                participants_gte:
-                  type: integer
-                  description: 'Join all events where the number of participants is greater than or equal to the specified
-
-                    value.'
-                  example: 5
-                participants_lte:
-                  type: integer
-                  description: 'Join all events where the number of participants is less than or equal to the specified
-
-                    value.'
-                  example: 5
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
     availability_rules:
       title: ''
       type: object
@@ -1241,224 +1097,102 @@ components:
           type: boolean
           default: true
           description: (Microsoft and EWS only) When `true`, Nylas treats tentative events as busy.
-    calendar_description:
-      title: Calendar description
+    calendar_owner_email:
+      title: Owner email
       type: string
-      description: (Not supported for iCloud or EWS) A brief description of the calendar.
-      example: Junior sports league carpool drivers
-    availability_buffer:
-      title: buffer
-      type: object
+      description: '(Microsoft only) The email address of the account that owns the calendar. Use it to tell the grant''s own
+
+        calendars apart from calendars shared with the grant.
+
+
+        This field is read-only.'
+      example: nyla@example.com
+    common_response_with_cursor:
       properties:
-        before:
-          type: integer
-          description: 'The amount of buffer time to add before meetings, in increments of five minutes. For example,
-
-            if an account has a meeting scheduled from 10:00–11:00a.m., and you set a `before` buffer of
-
-            30 minutes, Nylas treats 9:30–11:00a.m. as busy.
-
-
-            This value must be between 0 and 120, and must be divisible by 5.'
-          default: 0
-          minimum: 0
-          maximum: 120
-        after:
-          type: integer
-          description: 'The amount of buffer time to add after meetings, in increments of five minutes. For example, if
-
-            an account has a meeting scheduled from 10:00–11:00a.m., and you set an `after` buffer of 15
-
-            minutes, Nylas treats 10:00–11:15a.m. as busy.
-
-
-            This value must be between 0 and 120, and must be divisible by 5.'
-          default: 0
-          minimum: 0
-          maximum: 120
-    grant_id:
-      title: Grant ID
-      type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
-    resource_floor_section:
-      title: Resource Floor Section
-      type: string
-      description: The section of the floor where the room is located.
-      example: A
-    resource_email:
-      title: Resource Email
-      type: string
-      description: The email address associated with the room resource.
-      example: conference-room@resources.google.com
-    resource:
-      title: Room Resource
-      type: object
-      properties:
-        building:
-          $ref: '#/components/schemas/resource_building'
-        capacity:
-          $ref: '#/components/schemas/resource_capacity'
-        email:
-          $ref: '#/components/schemas/resource_email'
-        floor_name:
-          $ref: '#/components/schemas/resource_floor_name'
-        floor_number:
-          $ref: '#/components/schemas/resource_floor_number'
-        floor_section:
-          $ref: '#/components/schemas/resource_floor_section'
-        grant_id:
-          $ref: '#/components/schemas/grant_id'
-        object:
+        request_id:
           type: string
-          description: The object type (in this case, `room_resource`).
-          example: room_resource
-    resource_capacity:
-      title: Resource Capacity
-      type: integer
-      description: The number of people the room can seat.
-      example: 5
-    resource_floor_name:
-      title: Resource Floor Name
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    calendar_location:
       type: string
-      description: The name of the floor where the room is located.
-      example: 1st Floor
-    resource_building:
-      title: Resource Building
+      description: (Not supported for iCloud or EWS) The geographic location of the calendar, as free-form text.
+      example: London, England
+    calendar_hex_foreground_color:
+      title: Foreground color hex code
       type: string
-      description: The name of the building where the room is located.
-      example: Building 1
-    resource_floor_number:
-      title: Resource Floor Number
-      type: integer
-      description: The floor number where the room is located.
-      example: 1
+      description: '(Google only) The foreground color of the calendar, in hexadecimal format (for example, `#0099EE`).
+
+        When empty, Nylas uses the default foreground color.
+
+
+        You can modify this value using a `PUT` request only.'
+      example: '#039BE5'
+  parameters:
+    metadata_pair:
+      name: metadata_pair
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Pass a metadata key/value pair (for example, `?metadata_pair=key1:value`) to search for metadata
+
+        associated with objects. See [Metadata](/docs/reference/api/#metadata) for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+    grant_id:
+      name: grant_id
+      schema:
+        type: string
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use `/me/`
+
+        to refer to the grant associated with an access token.'
+      example: nyla@example.com
   responses:
-    calendar:
-      description: Calendar Response
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/calendar'
-          example:
-            Calendar response example:
-              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-              data:
-                description: Description of my new calendar
-                hex_color: '#039BE5'
-                hex_foreground_color: '#039BE5'
-                id: 5d3qmne77v32r8l4phyuksl2x
-                is_owned_by_user: true
-                is_primary: true
-                location: Los Angeles, CA
-                metadata:
-                  your-key: value
-                name: My New Calendar
-                object: calendar
-                owner_email: nyla@example.com
-                read_only: false
-                timezone: America/Los_Angeles
-                notetaker:
-                  id: 5fa64c92-e840-4357-86b9-2aa364d35b87
-                  name: Nylas Notetaker
-                  meeting_settings:
-                    video_recording: true
-                    audio_recording: true
-                    transcription: true
-                    transcription_settings:
-                      expected_languages:
-                      - en
-                      - es
-                      fallback_language: en
-                  rules:
-                    event_selection:
-                    - internal
-                    participant_filter:
-                      participants_gte: 5
-                      participants_lte: 10
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    calendars:
-      description: Calendars Response
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response_with_cursor'
-            - properties:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/calendar_common'
-          example:
-            Calendars response example:
-              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-              data:
-              - description: Description of my new calendar
-                hex_color: '#039BE5'
-                hex_foreground_color: '#039BE5'
-                id: 5d3qmne77v32r8l4phyuksl2x
-                is_owned_by_user: true
-                is_primary: true
-                location: Los Angeles, CA
-                metadata:
-                  your-key: value
-                name: My New Calendar
-                object: calendar
-                owner_email: nyla@example.com
-                read_only: false
-                timezone: America/Los_Angeles
-              next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    200-delete:
-      description: Delete Succeeded
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
     '400':
       description: Bad Request
       content:
@@ -1499,8 +1233,8 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-    '504':
-      description: Provider Failure
+    '401':
+      description: Unauthorized
       content:
         application/json:
           schema:
@@ -1520,13 +1254,19 @@ components:
                   message:
                     type: string
                     description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
           examples:
-            Provider Failure:
+            Unauthorized:
               value:
                 request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
                 error:
-                  type: provider_error
-                  message: Provider request timed out.
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
     '429':
       description: Rate Limit
       content:
@@ -1555,56 +1295,37 @@ components:
                 error:
                   type: rate_limit_error
                   message: Too many requests, please try again shortly.
-    availability:
-      description: Return availability
+    calendars:
+      description: Calendars Response
       content:
         application/json:
           schema:
             allOf:
-            - $ref: '#/components/schemas/common_response'
+            - $ref: '#/components/schemas/common_response_with_cursor'
             - properties:
                 data:
-                  $ref: '#/components/schemas/availability_response'
-          examples:
-            Return round-robin scheduling:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                data:
-                  order:
-                  - nyla@example.com
-                  - leyah@example.com
-                  time_slots:
-                  - emails:
-                    - leyah@example.com
-                    - nyla@example.com
-                    start_time: 1659367800
-                    end_time: 1659369600
-                  - emails:
-                    - nyla@example.com
-                    start_time: 1659376800
-                    end_time: 1659378600
-            Return group Configuration availability:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                data:
-                  time_slots:
-                  - emails:
-                    - leyah@example.com
-                    - nyla@example.com
-                    start_time: 1659367800
-                    end_time: 1659369600
-                    capacity: 100
-                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
-                    calendar_id: primary
-                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA
-                  - emails:
-                    - nyla@example.com
-                    start_time: 1659376800
-                    end_time: 1659378600
-                    capacity: 100
-                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EtegrfdsczUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
-                    calendar_id: primary
-                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EfsrgdfeasECYNfAbiKd_mQABCjy6hAAA
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/calendar_common'
+          example:
+            Calendars response example:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+              - description: Description of my new calendar
+                hex_color: '#039BE5'
+                hex_foreground_color: '#039BE5'
+                id: 5d3qmne77v32r8l4phyuksl2x
+                is_owned_by_user: true
+                is_primary: true
+                location: Los Angeles, CA
+                metadata:
+                  your-key: value
+                name: My New Calendar
+                object: calendar
+                owner_email: nyla@example.com
+                read_only: false
+                timezone: America/Los_Angeles
+              next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
     freebusy:
       description: Free/Busy Response
       content:
@@ -1719,97 +1440,144 @@ components:
                   provider_error:
                     code: MailboxNotEnabledForRESTAPI
                     message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    resources:
-      description: Room resource bookings
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    availability:
+      description: Return availability
       content:
         application/json:
           schema:
             allOf:
-            - $ref: '#/components/schemas/common_response_with_cursor'
+            - $ref: '#/components/schemas/common_response'
             - properties:
                 data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/resource'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-            - building: West Building
-              capacity: '8'
-              email: training-room-1A@example.com
-              floor_name: '7'
-              floor_section: '7'
-              floor_number: '7'
-              name: Training Room 1A
-              object": room_resource
-            next_cursor: OQ==
-  parameters:
-    grant_id:
-      name: grant_id
-      schema:
-        type: string
-      in: path
-      required: true
-      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use `/me/`
-
-        to refer to the grant associated with an access token.'
-      example: nyla@example.com
-    metadata_pair:
-      name: metadata_pair
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Pass a metadata key/value pair (for example, `?metadata_pair=key1:value`) to search for metadata
-
-        associated with objects. See [Metadata](/docs/reference/api/#metadata) for more information.'
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
-    field_selection:
-      name: select
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
-
-        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
-
-        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
-
-        to only the information that you need.'
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
-  requestBodies:
-    freebusy:
+                  $ref: '#/components/schemas/availability_response'
+          examples:
+            Return round-robin scheduling:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                data:
+                  order:
+                  - nyla@example.com
+                  - leyah@example.com
+                  time_slots:
+                  - emails:
+                    - leyah@example.com
+                    - nyla@example.com
+                    start_time: 1659367800
+                    end_time: 1659369600
+                  - emails:
+                    - nyla@example.com
+                    start_time: 1659376800
+                    end_time: 1659378600
+            Return group Configuration availability:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                data:
+                  time_slots:
+                  - emails:
+                    - leyah@example.com
+                    - nyla@example.com
+                    start_time: 1659367800
+                    end_time: 1659369600
+                    capacity: 100
+                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
+                    calendar_id: primary
+                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA
+                  - emails:
+                    - nyla@example.com
+                    start_time: 1659376800
+                    end_time: 1659378600
+                    capacity: 100
+                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EtegrfdsczUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
+                    calendar_id: primary
+                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EfsrgdfeasECYNfAbiKd_mQABCjy6hAAA
+    calendar:
+      description: Calendar Response
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/freebusy_request'
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/calendar'
           example:
-            start_time: 1633698000
-            end_time: 1633698000
-            emails:
-            - user1@example.com
-            - user2@example.com
+            Calendar response example:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+                description: Description of my new calendar
+                hex_color: '#039BE5'
+                hex_foreground_color: '#039BE5'
+                id: 5d3qmne77v32r8l4phyuksl2x
+                is_owned_by_user: true
+                is_primary: true
+                location: Los Angeles, CA
+                metadata:
+                  your-key: value
+                name: My New Calendar
+                object: calendar
+                owner_email: nyla@example.com
+                read_only: false
+                timezone: America/Los_Angeles
+                notetaker:
+                  id: 5fa64c92-e840-4357-86b9-2aa364d35b87
+                  name: Nylas Notetaker
+                  meeting_settings:
+                    video_recording: true
+                    audio_recording: true
+                    transcription: true
+                    transcription_settings:
+                      expected_languages:
+                      - en
+                      - es
+                      fallback_language: en
+                  rules:
+                    event_selection:
+                    - internal
+                    participant_filter:
+                      participants_gte: 5
+                      participants_lte: 10
+  requestBodies:
     calendar_update:
       content:
         application/json:
@@ -1905,3 +1673,34 @@ components:
                   participants_gte: 5
                   participants_lte: 10
             timezone: America/Los_Angeles
+    freebusy:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/freebusy_request'
+          example:
+            start_time: 1633698000
+            end_time: 1633698000
+            emails:
+            - user1@example.com
+            - user2@example.com
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

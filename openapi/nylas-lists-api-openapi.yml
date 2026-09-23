@@ -1,0 +1,738 @@
+openapi: 3.2.0
+info:
+  title: Nylas Lists API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Lists
+  description: The Lists endpoints let you manage typed collections of values (email addresses, domains, or top-level domains) that can be referenced by Rules using the `in_list` condition operator.
+paths:
+  /v3/lists:
+    post:
+      summary: Create a list
+      tags:
+      - Lists
+      operationId: create-list
+      description: 'Creates a list for your application. Lists are typed collections of values (domains, TLDs, or email addresses)
+
+        that can be referenced by rules using the `in_list` condition operator.
+
+
+        The list''s `type` is set at creation and cannot be changed.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - type
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 256
+                  example: Blocked domains
+                description:
+                  type: string
+                  example: Domains we've identified as sending unwanted mail.
+                type:
+                  type: string
+                  enum:
+                  - domain
+                  - tld
+                  - address
+                  description: The kind of values the list holds. Immutable after creation.
+                  example: domain
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \"https://api.us.nylas.com/v3/lists\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"name\": \"Blocked domains\",\n    \"description\": \"Domains we have identified as sending unwanted mail.\",\n    \"type\": \"domain\"\n  }'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function createList() {\n  try {\n    const list = await nylas.lists.create({\n      requestBody: {\n        name: \"Blocked domains\",\n        description: \"Domains we have identified as sending unwanted mail.\",\n        type: \"domain\",\n      },\n    });\n\n    console.log(\"List:\", list);\n  } catch (error) {\n    console.error(\"Error creating list:\", error);\n  }\n}\n\ncreateList();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnylas_list = nylas.lists.create(\n    request_body={\n        \"name\": \"Blocked domains\",\n        \"description\": \"Domains we have identified as sending unwanted mail.\",\n        \"type\": \"domain\",\n    },\n)\n\nprint(nylas_list)\n"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/ListObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    get:
+      summary: List lists
+      tags:
+      - Lists
+      operationId: list-lists
+      description: Returns all lists for your application.
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          type: string
+        description: A token to fetch the next page of results. Use the `next_cursor` value from the previous response.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/lists?limit=50\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function listAgentLists() {\n  try {\n    const lists = await nylas.lists.list({\n      queryParams: {\n        limit: 10,\n      },\n    });\n\n    console.log(\"Lists:\", lists);\n  } catch (error) {\n    console.error(\"Error listing lists:\", error);\n  }\n}\n\nlistAgentLists();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nlists = nylas.lists.list(\n    query_params={\n        \"limit\": 50,\n    },\n)\n\nprint(lists)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ListObject'
+                  next_cursor:
+                    type: string
+                    description: A token to use for paginating through results. If present, pass this value as `page_token` in the next request.
+                    example: eyJhbGciOiJIUzI1NiJ9
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+  /v3/lists/{list_id}:
+    parameters:
+    - schema:
+        type: string
+      name: list_id
+      in: path
+      required: true
+      description: The ID of the list to access.
+    get:
+      summary: Get a list
+      tags:
+      - Lists
+      operationId: get-list
+      description: Returns the specified list.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/lists/<LIST_ID>\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function findList() {\n  try {\n    const list = await nylas.lists.find({\n      listId: \"<LIST_ID>\",\n    });\n\n    console.log(\"List:\", list);\n  } catch (error) {\n    console.error(\"Error finding list:\", error);\n  }\n}\n\nfindList();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnylas_list = nylas.lists.find(\n    list_id=\"<LIST_ID>\",\n)\n\nprint(nylas_list)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/ListObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    put:
+      summary: Update a list
+      tags:
+      - Lists
+      operationId: update-list
+      description: 'Updates the specified list. Only `name` and `description` can be updated. The list `type` is immutable after
+
+        creation.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 256
+                  example: Blocked domains (updated)
+                description:
+                  type: string
+                  example: Updated description.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X PUT \"https://api.us.nylas.com/v3/lists/<LIST_ID>\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"name\": \"Blocked domains (updated)\",\n    \"description\": \"Updated description.\"\n  }'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function updateList() {\n  try {\n    const list = await nylas.lists.update({\n      listId: \"<LIST_ID>\",\n      requestBody: {\n        name: \"Updated list name\",\n        description: \"Updated description.\",\n      },\n    });\n\n    console.log(\"Updated list:\", list);\n  } catch (error) {\n    console.error(\"Error updating list:\", error);\n  }\n}\n\nupdateList();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnylas_list = nylas.lists.update(\n    list_id=\"<LIST_ID>\",\n    request_body={\n        \"name\": \"Blocked domains (updated)\",\n        \"description\": \"Updated description.\",\n    },\n)\n\nprint(nylas_list)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/ListObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    delete:
+      summary: Delete a list
+      tags:
+      - Lists
+      operationId: delete-list
+      description: 'Deletes the specified list. This action is irreversible and cascades to all items in the list. Rules that
+
+        reference the list through an `in_list` condition no longer match its values after deletion.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X DELETE \"https://api.us.nylas.com/v3/lists/<LIST_ID>\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function deleteList() {\n  try {\n    const result = await nylas.lists.destroy({\n      listId: \"<LIST_ID>\",\n    });\n\n    console.log(\"Deleted list:\", result);\n  } catch (error) {\n    console.error(\"Error deleting list:\", error);\n  }\n}\n\ndeleteList();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.lists.destroy(\n    list_id=\"<LIST_ID>\",\n)\n\nprint(response)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+              examples:
+                OK:
+                  value:
+                    request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+  /v3/lists/{list_id}/items:
+    parameters:
+    - schema:
+        type: string
+      name: list_id
+      in: path
+      required: true
+      description: The ID of the list whose items you want to manage.
+    post:
+      summary: Add items to a list
+      tags:
+      - Lists
+      operationId: add-list-items
+      description: 'Adds items to the specified list. Values are normalized (lowercased and trimmed) and validated against the list''s
+
+        `type` — `domain` lists accept domain names, `tld` lists accept top-level domains, and `address` lists accept full
+
+        email addresses. Duplicate additions are silently ignored.
+
+
+        The response returns the updated List object with a refreshed `items_count`. You can submit up to 1000 items per
+
+        request, and each item value can be at most 500 characters. Values that exceed this length return a `400`.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - items
+              properties:
+                items:
+                  type: array
+                  maxItems: 1000
+                  items:
+                    type: string
+                    maxLength: 500
+                  example:
+                  - spam-domain.com
+                  - another-bad-domain.net
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \"https://api.us.nylas.com/v3/lists/<LIST_ID>/items\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"items\": [\"spam-domain.com\", \"another-bad-domain.net\"]\n  }'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function addItems() {\n  try {\n    const list = await nylas.lists.addItems({\n      listId: \"<LIST_ID>\",\n      requestBody: {\n        items: [\"spam-domain.com\", \"another-bad-domain.net\"],\n      },\n    });\n\n    console.log(\"Updated list:\", list);\n  } catch (error) {\n    console.error(\"Error adding items:\", error);\n  }\n}\n\naddItems();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnylas_list = nylas.lists.add_items(\n    list_id=\"<LIST_ID>\",\n    request_body={\n        \"items\": [\"spam-domain.com\", \"another-bad-domain.net\"],\n    },\n)\n\nprint(nylas_list)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/ListObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    get:
+      summary: List items in a list
+      tags:
+      - Lists
+      operationId: list-list-items
+      description: Returns the items in the specified list.
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          type: string
+        description: A token to fetch the next page of results. Use the `next_cursor` value from the previous response.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/lists/<LIST_ID>/items?limit=50\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\"\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function listItems() {\n  try {\n    const items = await nylas.lists.listItems({\n      listId: \"<LIST_ID>\",\n      queryParams: {\n        limit: 10,\n      },\n    });\n\n    console.log(\"List items:\", items);\n  } catch (error) {\n    console.error(\"Error listing items:\", error);\n  }\n}\n\nlistItems();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nitems = nylas.lists.list_items(\n    list_id=\"<LIST_ID>\",\n    query_params={\n        \"limit\": 50,\n    },\n)\n\nprint(items)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ListItemObject'
+                  next_cursor:
+                    type: string
+                    description: A token to use for paginating through results. If present, pass this value as `page_token` in the next request.
+                    example: eyJhbGciOiJIUzI1NiJ9
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+    delete:
+      summary: Remove items from a list
+      tags:
+      - Lists
+      operationId: remove-list-items
+      description: 'Removes the specified items from the list. Values not currently in the list are silently ignored. The response
+
+        returns the updated List object with a refreshed `items_count`. You can submit up to 1000 items per request.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - items
+              properties:
+                items:
+                  type: array
+                  maxItems: 1000
+                  items:
+                    type: string
+                  example:
+                  - spam-domain.com
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X DELETE \"https://api.us.nylas.com/v3/lists/<LIST_ID>/items\" \\\n  -H \"Authorization: Bearer <NYLAS_API_KEY>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"items\": [\"spam-domain.com\"]\n  }'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function removeItems() {\n  try {\n    const list = await nylas.lists.removeItems({\n      listId: \"<LIST_ID>\",\n      requestBody: {\n        items: [\"another-bad-domain.net\"],\n      },\n    });\n\n    console.log(\"Updated list:\", list);\n  } catch (error) {\n    console.error(\"Error removing items:\", error);\n  }\n}\n\nremoveItems();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nnylas_list = nylas.lists.remove_items(\n    list_id=\"<LIST_ID>\",\n    request_body={\n        \"items\": [\"spam-domain.com\"],\n    },\n)\n\nprint(nylas_list)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/ListObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+components:
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  schemas:
+    ListItemObject:
+      title: ListItem
+      type: object
+      properties:
+        id:
+          type: string
+          description: Globally unique identifier for the list item (UUID).
+          example: e1f2a3b4-5678-4abc-9def-0123456789ab
+        list_id:
+          type: string
+          description: The ID of the list that contains the item.
+          example: d1e2f3a4-5678-4abc-9def-0123456789ab
+        value:
+          type: string
+          description: 'The item''s value, normalized (lowercased and trimmed) on write. The format depends on the parent list''s `type`:
+
+            a domain, a top-level domain, or an email address.'
+          example: spam-domain.com
+        created_at:
+          type: integer
+          description: When the item was added to the list, in seconds using the Unix timestamp format.
+          example: 1742932766
+    ListObject:
+      title: List
+      type: object
+      properties:
+        id:
+          type: string
+          description: Globally unique identifier for the list (UUID).
+          example: d1e2f3a4-5678-4abc-9def-0123456789ab
+        name:
+          type: string
+          description: A human-readable name for the list. 1–256 characters. Required on create.
+          example: Blocked domains
+        description:
+          type: string
+          description: An optional description of the list's purpose.
+          example: Domains we've identified as sending unwanted mail.
+        type:
+          type: string
+          enum:
+          - domain
+          - tld
+          - address
+          description: 'The kind of values the list holds and which rule condition fields it can be used with. Required on create and
+
+            immutable after creation. `domain` holds domain names (matched against `from.domain` or `recipient.domain`),
+
+            `tld` holds top-level domains (matched against `from.tld` or `recipient.tld`), and `address` holds full email
+
+            addresses (matched against `from.address` or `recipient.address`).'
+          example: domain
+        items_count:
+          type: integer
+          description: The number of items currently in the list. Read-only; maintained by the system.
+          example: 42
+        application_id:
+          type: string
+          description: The ID of the application that owns the list. Read-only; derived from the authenticated API key.
+          example: ad410018-d306-43f9-8361-fa5d7b2172e0
+        organization_id:
+          type: string
+          description: The ID of the Nylas organization that owns the list. Read-only; derived from the authenticated API key.
+          example: org-abc123
+        created_at:
+          type: integer
+          description: When the list was created, in seconds using the Unix timestamp format.
+          example: 1742932766
+        updated_at:
+          type: integer
+          description: When the list was last updated, in seconds using the Unix timestamp format.
+          example: 1742932766
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

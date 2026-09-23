@@ -1,0 +1,346 @@
+openapi: 3.2.0
+info:
+  title: Nylas Sessions API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Sessions
+  description: 'Nylas Scheduler uses session IDs to authorize requests to the `/v3/scheduling/availability` and `/v3/scheduling/bookings` endpoints.
+
+
+    When you create a session, you must include the ID of an existing Configuration object. Sessions are only required for private configurations (`requires_session_auth: true`).
+
+
+    ## Time to live
+
+
+    For security purposes, Nylas recommends you set the `time_to_live` value for each session and refresh the sessions as they expire.'
+paths:
+  /v3/scheduling/sessions:
+    post:
+      summary: Create a session
+      tags:
+      - Sessions
+      operationId: post-sessions
+      description: 'Creates a new short-lived session that you can pass to the Scheduling Component to enforce user
+
+        authentication. Your request must include the ID of an existing Configuration object.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request POST \\\n  --url \"https://api.us.nylas.com/v3/scheduling/sessions\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"configuration_id\": \"<SCHEDULER_CONFIGURATION_ID>\",\n    \"time_to_live\": 10\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function createSession() {\n  try {\n    const session = await nylas.scheduler.sessions.create({\n      requestBody: {\n        configurationId: \"<CONFIGURATION_ID>\",\n        timeToLive: 30,\n      },\n    });\n\n    console.log(\"Session:\", session);\n  } catch (error) {\n    console.error(\"Error creating session:\", error);\n  }\n}\n\ncreateSession();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nsession = nylas.scheduler.sessions.create(\n    request_body={\n        \"configuration_id\": \"<SCHEDULER_CONFIG_ID>\",\n        \"time_to_live\": 30,\n    },\n)\n\nprint(\"Created session:\", session)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  \"configuration_id\": \"<SCHEDULER_CONFIG_ID>\",\n  \"time_to_live\": 30\n}\n\nsession, _request_ids = nylas.scheduler.sessions.create(request_body: request_body)\n\nputs session"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.CreateSessionRequest;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\nimport com.nylas.models.Session;\n\npublic class CreateSession {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    CreateSessionRequest requestBody = new CreateSessionRequest.Builder()\n        .configurationId(\"<CONFIGURATION_ID>\")\n        .timeToLive(30)\n        .build();\n\n    Response<Session> session = nylas.scheduler().sessions().create(requestBody);\n\n    System.out.println(\"Session: \" + session.getData());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.CreateSessionRequest\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val requestBody = CreateSessionRequest.Builder()\n      .configurationId(\"<CONFIGURATION_ID>\")\n      .timeToLive(30)\n      .build()\n\n  val session = nylas.scheduler().sessions().create(requestBody)\n\n  println(\"Session: ${session.data}\")\n}\n"
+      security:
+      - NYLAS_API_KEY: []
+      parameters: []
+      requestBody:
+        $ref: '#/components/requestBodies/session_create'
+      responses:
+        '200':
+          $ref: '#/components/responses/session_create'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+  /v3/scheduling/sessions/{session_id}:
+    parameters:
+    - schema:
+        type: string
+      name: session_id
+      in: path
+      required: true
+      description: The ID of the session to modify.
+    delete:
+      summary: Delete a session
+      tags:
+      - Sessions
+      operationId: delete-session
+      description: Deletes a specific session.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/scheduling/sessions/<SCHEDULER_SESSION_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' "
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function deleteSession() {\n  try {\n    const result = await nylas.scheduler.sessions.destroy({\n      sessionId: \"<SESSION_ID>\",\n    });\n\n    console.log(\"Deleted session:\", result);\n  } catch (error) {\n    console.error(\"Error deleting session:\", error);\n  }\n}\n\ndeleteSession();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.scheduler.sessions.destroy(\n    session_id=\"<SESSION_ID>\",\n)\n\nprint(\"Session deleted:\", response)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\n_, request_ids = nylas.scheduler.sessions.destroy(session_id: \"<SCHEDULER_SESSION_ID>\")"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.DeleteResponse;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\n\npublic class DeleteSession {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    DeleteResponse result = nylas.scheduler().sessions().destroy(\"<SESSION_ID>\");\n\n    System.out.println(\"Deleted session: \" + result);\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val result = nylas.scheduler().sessions().destroy(\"<SESSION_ID>\")\n\n  println(\"Deleted session: $result\")\n}\n"
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/session_delete'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+components:
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    session_create:
+      description: Create a new scheduling session
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    session_id:
+                      type: string
+                      description: The ID of the session
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              session_id: AAAA-BBBB-1111-2222
+    session_delete:
+      description: The response to a successful request to delete a scheduling session.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  schemas:
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+  requestBodies:
+    session_create:
+      description: Create a new scheduling session
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              configuration_id:
+                type: string
+                description: The ID of the Scheduler Configuration object for the session. If you're using `slug`, `configuration_id` is not required.
+                example: AAAA-BBBB-1111-2222
+              slug:
+                type: string
+                description: The slug of the Scheduler Configuration object for the session. You can use `slug` instead of `configuration_id`.
+                example: my-page-slug
+              time_to_live:
+                type: number
+                description: The time to live for the session in minutes. The maximum value is `30`.
+                default: 5
+                example: 10
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

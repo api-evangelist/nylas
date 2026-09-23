@@ -1,0 +1,31 @@
+# Front Door AI Index — nylas — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: nylas
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.nylas.com
+  final_host: www.nylas.com
+  ownership: own
+  owner: nylas
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 24
+  host_score: 24
+  density: 16.14
+  words: 1487
+  tiers:
+    agentic: 12
+    core: 11
+    model: 1
+  ambiguous: 22
+  top_terms:
+    agent: 20
+    AI: 11
+    AI agent: 7
+    MCP: 4
+    intelligence: 2
+    Claude: 1
+    agentic: 1

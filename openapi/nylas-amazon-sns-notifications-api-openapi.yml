@@ -1,0 +1,656 @@
+openapi: 3.2.0
+info:
+  title: Nylas Amazon SNS Notifications API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Amazon SNS Notifications
+  description: Amazon SNS notification channels allow you to receive Nylas event notifications through Amazon Simple Notification Service (SNS) instead of webhooks.
+paths:
+  /v3/channels/sns:
+    post:
+      summary: Create an Amazon SNS channel
+      tags:
+      - Amazon SNS Notifications
+      operationId: create-sns-channel
+      description: 'Create an Amazon SNS notification channel in the specified application.
+
+
+        The `topic` must be a valid Amazon SNS topic ARN (starting with `arn:aws:sns:`).'
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/create_sns_200'
+          description: Returns the new Amazon SNS channel.
+        '400':
+          $ref: '#/components/responses/create_sns_400'
+          description: Returns an error.
+      requestBody:
+        required: true
+        description: Amazon SNS channel definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/amazon_sns_input_payload'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/channels/sns' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data-raw '{\n    \"description\": \"SNS Test\",\n    \"trigger_types\": [\"message.send_success\"],\n    \"topic\": \"arn:aws:sns:us-east-1:123456789012:my-topic\",\n    \"role_arn\": \"arn:aws:iam::123456789012:role/nylas-sns-role\",\n    \"notification_email_addresses\": [\"leyah@example.com\"]\n  }'"
+    get:
+      summary: Get Amazon SNS channels for an application
+      tags:
+      - Amazon SNS Notifications
+      operationId: get-sns-channels
+      description: Get the Amazon SNS notification channels for an application.
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/get_sns_200'
+          description: List of Amazon SNS channels for an application.
+        '400':
+          $ref: '#/components/responses/get_sns_400'
+          description: Returns an error.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/channels/sns/' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+  /v3/channels/sns/{id}:
+    get:
+      operationId: get-sns-by-id
+      tags:
+      - Amazon SNS Notifications
+      summary: Get a specific Amazon SNS channel
+      description: Get a specific Amazon SNS notification channel from a specific Nylas application.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        description: The ID of the Amazon SNS channel to retrieve.
+        required: true
+        schema:
+          type: string
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/channels/sns/<SNS_CHANNEL_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+      responses:
+        '200':
+          $ref: '#/components/responses/get_sns_by_id_200'
+          description: The Amazon SNS channel matching the query.
+        '400':
+          $ref: '#/components/responses/get_sns_400'
+    put:
+      operationId: put-sns-by-id
+      tags:
+      - Amazon SNS Notifications
+      summary: Update an Amazon SNS channel
+      description: 'Updates the specified Amazon SNS notification channel.
+
+
+        When you make a `PUT` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        Updating objects.'
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        description: The ID of the Amazon SNS channel to update.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: The Amazon SNS channel properties to update.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: A human-readable description of the Amazon SNS channel.
+                  example: Prod account status notifications SNS
+                trigger_types:
+                  $ref: '#/components/schemas/trigger_types'
+                topic:
+                  type: string
+                  description: The Amazon SNS topic ARN that Nylas sends notifications to. Must start with `arn:aws:sns:`.
+                  example: arn:aws:sns:us-east-1:123456789012:my-topic
+                role_arn:
+                  type: string
+                  description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                  example: arn:aws:iam::123456789012:role/nylas-sns-role
+                status:
+                  type: string
+                  description: The new status of the channel. Use this to restart a channel that you manually paused, or that was automatically paused due to deliverability issues.
+                  enum:
+                  - active
+                  - pause
+                notification_email_addresses:
+                  type: array
+                  items:
+                    type: string
+                  description: The email addresses that Nylas notifies if there are errors or deliverability problems. See the [rate limit documentation](/docs/dev-guide/best-practices/rate-limits/) for details.
+                  example:
+                  - sysadmin@example.com
+                  - sre_pager@example.com
+                compressed_delivery:
+                  type: boolean
+                  description: 'If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them. Nylas adds a `content_encoding: gzip+base64` message attribute to the SNS message. To decode, base64-decode the message body, then gzip-decompress.'
+                  example: true
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url 'https://api.us.nylas.com/v3/channels/sns/<SNS_CHANNEL_ID>' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data-raw '{\n    \"description\": \"Updated SNS channel\",\n    \"trigger_types\": [\"event.created\", \"event.updated\"],\n    \"topic\": \"arn:aws:sns:us-east-1:123456789012:my-updated-topic\",\n    \"notification_email_addresses\": [\"sysadmin@example.com\"]\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/update_sns_200'
+        '400':
+          $ref: '#/components/responses/update_sns_400'
+    delete:
+      operationId: delete-sns-by-id
+      tags:
+      - Amazon SNS Notifications
+      summary: Delete a specific Amazon SNS channel
+      description: Delete a specific Amazon SNS notification channel from a specific Nylas application.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        description: The ID of the Amazon SNS channel to delete.
+        required: true
+        schema:
+          type: string
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/channels/sns/<SNS_CHANNEL_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200'
+          description: Returns a success message.
+        '400':
+          $ref: '#/components/responses/delete_400'
+          description: Returns an error message.
+components:
+  responses:
+    update_sns_400:
+      description: Amazon SNS channel not updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    get_sns_200:
+      description: Get Amazon SNS channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: A unique identifier for the Amazon SNS notification channel.
+                      example: UMWjAjMeWQ4D8gYF2moonK4486
+                    description:
+                      type: string
+                      description: A human-readable description of the Amazon SNS notification channel.
+                      example: Production SNS channel for Email notifications
+                    trigger_types:
+                      $ref: '#/components/schemas/trigger_types'
+                    topic:
+                      type: string
+                      description: The Amazon SNS topic ARN that Nylas sends notifications to.
+                      example: arn:aws:sns:us-east-1:123456789012:my-topic
+                    role_arn:
+                      type: string
+                      description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                      example: arn:aws:iam::123456789012:role/nylas-sns-role
+                    status:
+                      type: string
+                      description: The status of the Amazon SNS channel.
+                      enum:
+                      - active
+                      - paused
+                      - failing
+                      - failed
+                    notification_email_addresses:
+                      type: array
+                      items:
+                        type: string
+                      description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+                      example:
+                      - jane@example.com
+                      - joe@example.com
+                    compressed_delivery:
+                      type: boolean
+                      description: If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them.
+                      example: false
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    delete_400:
+      description: Notification channel not deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'destination.id.not.found : record not found'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    delete_200:
+      description: Destination Deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - success
+              request_id:
+                type: string
+                description: The ID for each request.
+    get_sns_by_id_200:
+      description: Get specific Amazon SNS channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Amazon SNS channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Amazon SNS channel.
+                    example: Production SNS channel for Event updates
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Amazon SNS topic ARN that Nylas sends notifications to.
+                    example: arn:aws:sns:us-east-1:123456789012:my-topic
+                  role_arn:
+                    type: string
+                    description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                    example: arn:aws:iam::123456789012:role/nylas-sns-role
+                  status:
+                    type: string
+                    description: The deliverability status of the Amazon SNS channel.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them.
+                    example: false
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the Amazon SNS channel was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the Amazon SNS channel was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    update_sns_200:
+      description: Amazon SNS channel updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Amazon SNS channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Amazon SNS channel.
+                    example: Production SNS channel
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Amazon SNS topic ARN that Nylas sends notifications to.
+                    example: arn:aws:sns:us-east-1:123456789012:my-topic
+                  role_arn:
+                    type: string
+                    description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                    example: arn:aws:iam::123456789012:role/nylas-sns-role
+                  status:
+                    type: string
+                    description: The deliverability status of the Amazon SNS channel.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them.
+                    example: false
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the Amazon SNS channel was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the Amazon SNS channel was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    get_sns_400:
+      description: Unable to get Amazon SNS channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70001'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    create_sns_200:
+      description: Amazon SNS channel created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Amazon SNS notification channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Amazon SNS notification channel.
+                    example: Production SNS channel for Grant notifications
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Amazon SNS topic ARN that Nylas sends notifications to.
+                    example: arn:aws:sns:us-east-1:123456789012:my-topic
+                  role_arn:
+                    type: string
+                    description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic.
+                    example: arn:aws:iam::123456789012:role/nylas-sns-role
+                  status:
+                    type: string
+                    description: The status of the Amazon SNS channel. When you first create a new channel, Nylas sets it to "active".
+                    enum:
+                    - active
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them.
+                    example: false
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    create_sns_400:
+      description: Unable to create Amazon SNS channel
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70005'
+                  message:
+                    type: string
+                    description: A human-readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+  schemas:
+    amazon_sns_input_payload:
+      title: Amazon SNS Channel Payload
+      required:
+      - trigger_types
+      - topic
+      - role_arn
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human-readable description of the Amazon SNS channel.
+          example: Production SNS channel for Events notifications
+        trigger_types:
+          $ref: '#/components/schemas/trigger_types'
+        topic:
+          type: string
+          description: The Amazon SNS topic ARN that Nylas sends notifications to. Must start with `arn:aws:sns:`.
+          example: arn:aws:sns:us-east-1:123456789012:my-topic
+        role_arn:
+          type: string
+          description: The ARN of the IAM role that Nylas assumes to publish messages to the SNS topic. Must match `arn:aws:iam::<account-id>:role/<role-name>`.
+          example: arn:aws:iam::123456789012:role/nylas-sns-role
+        notification_email_addresses:
+          type: array
+          items:
+            type: string
+          description: The email addresses that Nylas notifies if delivery to the Amazon SNS channel fails.
+          example:
+          - jane@example.com
+          - joe@example.com
+        compressed_delivery:
+          type: boolean
+          description: 'If `true`, Nylas gzip-compresses and then base64-encodes notification payloads before delivering them. Nylas adds a `content_encoding: gzip+base64` message attribute to the SNS message. To decode, base64-decode the message body, then gzip-decompress. Default is `false`.'
+          default: false
+          example: true
+    trigger_types:
+      type: array
+      items:
+        type: string
+        enum:
+        - calendar.created
+        - calendar.updated
+        - calendar.deleted
+        - event.created
+        - event.updated
+        - event.deleted
+        - grant.created
+        - grant.updated
+        - grant.deleted
+        - grant.expired
+        - grant.imap_sync_completed
+        - message.send_success
+        - message.send_failed
+        - message.bounce_detected
+        - message.created
+        - message.created.cleaned
+        - message.opened
+        - message.opened.legacy
+        - message.updated
+        - message.link_clicked
+        - message.link_clicked.legacy
+        - thread.replied
+        - thread.replied.legacy
+        - contact.updated
+        - contact.deleted
+        - folder.created
+        - folder.updated
+        - folder.deleted
+        - booking.created
+        - booking.pending
+        - booking.rescheduled
+        - booking.cancelled
+        - booking.reminder
+        - message.deleted
+        - message.transactional.bounced
+        - message.transactional.complaint
+        - message.transactional.delivered
+        - message.transactional.rejected
+        - message.bounced
+        - message.complaint
+        - message.delivered
+        - message.rejected
+        - notetaker.created
+        - notetaker.updated
+        - notetaker.deleted
+        - notetaker.meeting_state
+        - notetaker.media
+      description: 'The event that triggers the notification. See the
+
+        [notification schemas](/docs/reference/notifications/) for details about each trigger
+
+        type.
+
+
+        See the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),
+
+        [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
+
+        for information on how to trigger each event type.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

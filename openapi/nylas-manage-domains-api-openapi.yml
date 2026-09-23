@@ -1,0 +1,901 @@
+openapi: 3.2.0
+info:
+  title: Nylas Manage Domains API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Manage Domains
+  description: The Manage Domains endpoints let you register, verify, update, and delete email domains for use with Transactional Send and Nylas Agent Accounts.
+paths:
+  /v3/admin/domains:
+    parameters:
+    - in: header
+      name: X-Nylas-Signature
+      schema:
+        type: string
+      required: true
+      description: 'A Base64-encoded signature using your private key''s RSA with a 2048-bit key and an SHA-256 hashed
+
+        string of the path, method, timestamp, nonce, and payload.'
+    - in: header
+      name: X-Nylas-Kid
+      schema:
+        type: string
+      required: true
+      description: The `private_key_id` from your Service Account JSON file.
+    - in: header
+      name: X-Nylas-Nonce
+      schema:
+        type: string
+      required: true
+      description: 'A randomly generated nonce. Each request needs to have a unique nonce. If you try to reuse a
+
+        nonce, Nylas rejects the request.'
+    - in: header
+      name: X-Nylas-Timestamp
+      schema:
+        type: number
+      required: true
+      description: 'The time when you submit your request, in seconds using the Unix timestamp format. This timestamp should fall within
+
+        a 5-minute window of your real request time.'
+    post:
+      summary: Create domain
+      tags:
+      - Manage Domains
+      operationId: create-domain
+      description: '⚠️ Before you can use the Manage Domains endpoints, you need a Nylas Service Account.
+
+
+        Registers a new email domain for your organization. After creating a domain, you must
+
+        verify its DNS records before you can use it with Transactional Send or Nylas Agent Accounts.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - domain_address
+              properties:
+                name:
+                  type: string
+                  description: A human-readable label for the domain.
+                  example: My transactional domain
+                domain_address:
+                  type: string
+                  description: The domain address to register (for example, `mail.example.com`).
+                  example: mail.example.com
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \"https://api.us.nylas.com/v3/admin/domains\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"X-Nylas-Signature: <BASE64_SIGNATURE>\" \\\n  -H \"X-Nylas-Kid: <SERVICE_ACCOUNT_ID>\" \\\n  -H \"X-Nylas-Nonce: <NONCE>\" \\\n  -H \"X-Nylas-Timestamp: 1742932766\" \\\n  -d '{\n    \"name\": \"My transactional domain\",\n    \"domain_address\": \"mail.example.com\"\n  }'"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.handler.service_account import ServiceAccountSigner\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nsigner = ServiceAccountSigner(\n    private_key_pem=\"<SERVICE_ACCOUNT_PRIVATE_KEY_PEM>\",\n    private_key_id=\"<SERVICE_ACCOUNT_ID>\",\n)\n\ndomain = nylas.domains.create(\n    request_body={\n        \"name\": \"My transactional domain\",\n        \"domain_address\": \"mail.example.com\",\n    },\n    signer=signer,\n)\n\nprint(domain)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/DomainObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+    get:
+      summary: List domains
+      tags:
+      - Manage Domains
+      operationId: list-domains
+      description: '⚠️ Before you can use the Manage Domains endpoints, you need a Nylas Service Account.
+
+
+        Returns a list of all domains registered to your organization.'
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          type: string
+        description: A token to fetch the next page of results. Use the `next_cursor` value from the previous response.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/admin/domains\" \\\n  -H \"X-Nylas-Signature: <BASE64_SIGNATURE>\" \\\n  -H \"X-Nylas-Kid: <SERVICE_ACCOUNT_ID>\" \\\n  -H \"X-Nylas-Nonce: <NONCE>\" \\\n  -H \"X-Nylas-Timestamp: 1742932766\""
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.handler.service_account import ServiceAccountSigner\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nsigner = ServiceAccountSigner(\n    private_key_pem=\"<SERVICE_ACCOUNT_PRIVATE_KEY_PEM>\",\n    private_key_id=\"<SERVICE_ACCOUNT_ID>\",\n)\n\ndomains = nylas.domains.list(signer=signer)\n\nprint(domains)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DomainObject'
+                  next_cursor:
+                    type: string
+                    description: A token to use for paginating through results. If present, pass this value as `page_token` in the next request.
+                    example: eyJhbGciOiJIUzI1NiJ9
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+  /v3/admin/domains/{domain_id}:
+    parameters:
+    - schema:
+        type: string
+      name: domain_id
+      in: path
+      required: true
+      description: ID of the domain to access.
+    - in: header
+      name: X-Nylas-Signature
+      schema:
+        type: string
+      required: true
+      description: 'A Base64-encoded signature using your private key''s RSA with a 2048-bit key and an SHA-256 hashed
+
+        string of the path, method, timestamp, nonce, and payload.'
+    - in: header
+      name: X-Nylas-Kid
+      schema:
+        type: string
+      required: true
+      description: The `private_key_id` from your Service Account JSON file.
+    - in: header
+      name: X-Nylas-Nonce
+      schema:
+        type: string
+      required: true
+      description: 'A randomly generated nonce. Each request needs to have a unique nonce. If you try to reuse a
+
+        nonce, Nylas rejects the request.'
+    - in: header
+      name: X-Nylas-Timestamp
+      schema:
+        type: number
+      required: true
+      description: 'The time when you submit your request, in seconds using the Unix timestamp format. This timestamp should fall within
+
+        a 5-minute window of your real request time.'
+    get:
+      summary: Get domain
+      tags:
+      - Manage Domains
+      operationId: get-domain
+      description: '⚠️ Before you can use the Manage Domains endpoints, you need a Nylas Service Account.
+
+
+        Returns the specified domain.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X GET \"https://api.us.nylas.com/v3/admin/domains/<DOMAIN_ID>\" \\\n  -H \"X-Nylas-Signature: <BASE64_SIGNATURE>\" \\\n  -H \"X-Nylas-Kid: <SERVICE_ACCOUNT_ID>\" \\\n  -H \"X-Nylas-Nonce: <NONCE>\" \\\n  -H \"X-Nylas-Timestamp: 1742932766\""
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.handler.service_account import ServiceAccountSigner\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nsigner = ServiceAccountSigner(\n    private_key_pem=\"<SERVICE_ACCOUNT_PRIVATE_KEY_PEM>\",\n    private_key_id=\"<SERVICE_ACCOUNT_ID>\",\n)\n\ndomain = nylas.domains.find(\n    domain_id=\"<DOMAIN_ID>\",\n    signer=signer,\n)\n\nprint(domain)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/DomainObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+    put:
+      summary: Update domain
+      tags:
+      - Manage Domains
+      operationId: update-domain
+      description: '⚠️ Before you can use the Manage Domains endpoints, you need a Nylas Service Account.
+
+
+        Updates the specified domain. Currently, only the `name` field can be updated.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: A human-readable label for the domain.
+                  example: Updated domain name
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X PUT \"https://api.us.nylas.com/v3/admin/domains/<DOMAIN_ID>\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"X-Nylas-Signature: <BASE64_SIGNATURE>\" \\\n  -H \"X-Nylas-Kid: <SERVICE_ACCOUNT_ID>\" \\\n  -H \"X-Nylas-Nonce: <NONCE>\" \\\n  -H \"X-Nylas-Timestamp: 1742932766\" \\\n  -d '{\n    \"name\": \"Updated domain name\"\n  }'"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.handler.service_account import ServiceAccountSigner\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nsigner = ServiceAccountSigner(\n    private_key_pem=\"<SERVICE_ACCOUNT_PRIVATE_KEY_PEM>\",\n    private_key_id=\"<SERVICE_ACCOUNT_ID>\",\n)\n\ndomain = nylas.domains.update(\n    domain_id=\"<DOMAIN_ID>\",\n    request_body={\n        \"name\": \"Updated domain name\",\n    },\n    signer=signer,\n)\n\nprint(domain)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/DomainObject'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+    delete:
+      summary: Delete domain
+      tags:
+      - Manage Domains
+      operationId: delete-domain
+      description: '⚠️ Before you can use the Manage Domains endpoints, you need a Nylas Service Account.
+
+
+        Deletes the specified domain. This action is irreversible.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X DELETE \"https://api.us.nylas.com/v3/admin/domains/<DOMAIN_ID>\" \\\n  -H \"X-Nylas-Signature: <BASE64_SIGNATURE>\" \\\n  -H \"X-Nylas-Kid: <SERVICE_ACCOUNT_ID>\" \\\n  -H \"X-Nylas-Nonce: <NONCE>\" \\\n  -H \"X-Nylas-Timestamp: 1742932766\""
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.handler.service_account import ServiceAccountSigner\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nsigner = ServiceAccountSigner(\n    private_key_pem=\"<SERVICE_ACCOUNT_PRIVATE_KEY_PEM>\",\n    private_key_id=\"<SERVICE_ACCOUNT_ID>\",\n)\n\nresponse = nylas.domains.destroy(\n    domain_id=\"<DOMAIN_ID>\",\n    signer=signer,\n)\n\nprint(response)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+              examples:
+                OK:
+                  value:
+                    request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+  /v3/admin/domains/{domain_id}/info:
+    parameters:
+    - schema:
+        type: string
+      name: domain_id
+      in: path
+      required: true
+      description: ID of the domain to get DNS info for.
+    - in: header
+      name: X-Nylas-Signature
+      schema:
+        type: string
+      required: true
+      description: 'A Base64-encoded signature using your private key''s RSA with a 2048-bit key and an SHA-256 hashed
+
+        string of the path, method, timestamp, nonce, and payload.'
+    - in: header
+      name: X-Nylas-Kid
+      schema:
+        type: string
+      required: true
+      description: The `private_key_id` from your Service Account JSON file.
+    - in: header
+      name: X-Nylas-Nonce
+      schema:
+        type: string
+      required: true
+      description: 'A randomly generated nonce. Each request needs to have a unique nonce. If you try to reuse a
+
+        nonce, Nylas rejects the request.'
+    - in: header
+      name: X-Nylas-Timestamp
+      schema:
+        type: number
+      required: true
+      description: 'The time when you submit your request, in seconds using the Unix timestamp format. This timestamp should fall within
+
+        a 5-minute window of your real request time.'
+    post:
+      summary: Get domain info
+      tags:
+      - Manage Domains
+      operationId: get-domain-info
+      description: '⚠️ Before you can use the Manage Domains endpoints, you need a Nylas Service Account.
+
+
+        Returns the DNS record information and verification status for the specified verification type.
+
+        Use this endpoint to retrieve the DNS records you need to add at your DNS provider before
+
+        calling the Verify domain endpoint.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  description: The type of DNS verification to get info for.
+                  enum:
+                  - ownership
+                  - mx
+                  - spf
+                  - dkim
+                  - feedback
+                  example: ownership
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \"https://api.us.nylas.com/v3/admin/domains/<DOMAIN_ID>/info\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"X-Nylas-Signature: <BASE64_SIGNATURE>\" \\\n  -H \"X-Nylas-Kid: <SERVICE_ACCOUNT_ID>\" \\\n  -H \"X-Nylas-Nonce: <NONCE>\" \\\n  -H \"X-Nylas-Timestamp: 1742932766\" \\\n  -d '{\n    \"type\": \"ownership\"\n  }'"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.handler.service_account import ServiceAccountSigner\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nsigner = ServiceAccountSigner(\n    private_key_pem=\"<SERVICE_ACCOUNT_PRIVATE_KEY_PEM>\",\n    private_key_id=\"<SERVICE_ACCOUNT_ID>\",\n)\n\ninfo = nylas.domains.get_info(\n    domain_id=\"<DOMAIN_ID>\",\n    request_body={\n        \"type\": \"ownership\",\n    },\n    signer=signer,\n)\n\nprint(info)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    type: object
+                    properties:
+                      domain_id:
+                        type: string
+                        description: The ID of the domain.
+                        example: abc-123-domain-id
+                      attempt:
+                        type: object
+                        description: Details about the DNS records required for this verification type.
+                        properties:
+                          type:
+                            type: string
+                            description: The type of DNS verification.
+                            example: ownership
+                          options:
+                            type: object
+                            description: The DNS record values to configure at your DNS provider.
+                            properties:
+                              host:
+                                type: string
+                                description: The DNS host value.
+                                example: '@'
+                              type:
+                                type: string
+                                description: The DNS record type.
+                                example: TXT
+                              value:
+                                type: string
+                                description: The DNS record value to set.
+                                example: nylas-ownership-verify=gNIeZAtY1lPUEpWOhA2XBB...
+                      status:
+                        type: string
+                        description: The current verification status for this type.
+                        enum:
+                        - done
+                        - failed
+                        - pending
+                        example: pending
+                      created_at:
+                        type: number
+                        description: When the info record was created, in seconds using the Unix timestamp format.
+                        example: 1770242496
+                      expires_at:
+                        type: number
+                        description: When the info record expires, in seconds using the Unix timestamp format. Some verification values are temporary and change after expiration.
+                        example: 1770415296
+                      message:
+                        type: string
+                        description: A human-readable message about the current status.
+                        example: Please configure the TXT record for the domain to the returned options. Once done, you can retry the verification.
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+  /v3/admin/domains/{domain_id}/verify:
+    parameters:
+    - schema:
+        type: string
+      name: domain_id
+      in: path
+      required: true
+      description: ID of the domain to verify.
+    - in: header
+      name: X-Nylas-Signature
+      schema:
+        type: string
+      required: true
+      description: 'A Base64-encoded signature using your private key''s RSA with a 2048-bit key and an SHA-256 hashed
+
+        string of the path, method, timestamp, nonce, and payload.'
+    - in: header
+      name: X-Nylas-Kid
+      schema:
+        type: string
+      required: true
+      description: The `private_key_id` from your Service Account JSON file.
+    - in: header
+      name: X-Nylas-Nonce
+      schema:
+        type: string
+      required: true
+      description: 'A randomly generated nonce. Each request needs to have a unique nonce. If you try to reuse a
+
+        nonce, Nylas rejects the request.'
+    - in: header
+      name: X-Nylas-Timestamp
+      schema:
+        type: number
+      required: true
+      description: 'The time when you submit your request, in seconds using the Unix timestamp format. This timestamp should fall within
+
+        a 5-minute window of your real request time.'
+    post:
+      summary: Verify domain
+      tags:
+      - Manage Domains
+      operationId: verify-domain
+      description: '⚠️ Before you can use the Manage Domains endpoints, you need a Nylas Service Account.
+
+
+        Triggers a verification check for the specified DNS record type. Before calling this endpoint,
+
+        add the required DNS records to your domain''s DNS configuration. You can get the required records
+
+        by calling the Get domain info endpoint.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  description: The type of DNS verification to trigger.
+                  enum:
+                  - ownership
+                  - mx
+                  - spf
+                  - dkim
+                  - feedback
+                  example: dkim
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl -X POST \"https://api.us.nylas.com/v3/admin/domains/<DOMAIN_ID>/verify\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"X-Nylas-Signature: <BASE64_SIGNATURE>\" \\\n  -H \"X-Nylas-Kid: <SERVICE_ACCOUNT_ID>\" \\\n  -H \"X-Nylas-Nonce: <NONCE>\" \\\n  -H \"X-Nylas-Timestamp: 1742932766\" \\\n  -d '{\n    \"type\": \"dkim\"\n  }'"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.handler.service_account import ServiceAccountSigner\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nsigner = ServiceAccountSigner(\n    private_key_pem=\"<SERVICE_ACCOUNT_PRIVATE_KEY_PEM>\",\n    private_key_id=\"<SERVICE_ACCOUNT_ID>\",\n)\n\nresult = nylas.domains.verify(\n    domain_id=\"<DOMAIN_ID>\",\n    request_body={\n        \"type\": \"dkim\",\n    },\n    signer=signer,\n)\n\nprint(result)\n"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                  data:
+                    $ref: '#/components/schemas/DomainVerificationResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+components:
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  schemas:
+    DomainObject:
+      title: Domain
+      type: object
+      properties:
+        id:
+          type: string
+          description: Globally unique identifier for the domain.
+          example: abc-123-domain-id
+        name:
+          type: string
+          description: A human-readable label for the domain.
+          example: My transactional domain
+        branded:
+          type: boolean
+          description: If `true`, this is a Nylas-branded `nylas.email` subdomain managed by Nylas. You can only have one free Nylas branded domain per organization and region. If `false`, this is a custom domain.
+          example: false
+        domain_address:
+          type: string
+          description: The domain address (for example, `mail.example.com`).
+          example: mail.example.com
+        organization_id:
+          type: string
+          description: The ID of the Nylas organization that owns the domain.
+          example: org-123
+        region:
+          type: string
+          description: The Nylas data center region where the domain is registered.
+          enum:
+          - us
+          - eu
+          example: us
+        verified_ownership:
+          type: boolean
+          description: If `true`, the domain's ownership TXT record has been verified.
+          example: true
+        verified_dkim:
+          type: boolean
+          description: If `true`, the domain's DKIM TXT record has been verified.
+          example: false
+        verified_spf:
+          type: boolean
+          description: If `true`, the domain's SPF record has been verified.
+          example: false
+        verified_mx:
+          type: boolean
+          description: If `true`, the domain's MX record has been verified.
+          example: false
+        verified_feedback:
+          type: boolean
+          description: If `true`, the domain's feedback MX record for bounce detection has been verified.
+          example: false
+        verified_dmarc:
+          type: boolean
+          description: Currently not verified by Nylas. However, it is highly recommended to set DMARC to your desired value to prevent emails going to spam.
+          example: false
+        verified_arc:
+          type: boolean
+          description: Currently not verified by Nylas.
+          example: false
+        created_at:
+          type: number
+          description: When the domain was created, in seconds using the Unix timestamp format.
+          example: 1742932766
+        updated_at:
+          type: number
+          description: When the domain was last updated, in seconds using the Unix timestamp format.
+          example: 1742932766
+    DomainVerificationResponse:
+      title: DomainVerificationResponse
+      type: object
+      properties:
+        domain_id:
+          type: string
+          description: The ID of the domain.
+          example: abc-123-domain-id
+        attempt:
+          type: object
+          description: Details about the verification attempt.
+          properties:
+            type:
+              type: string
+              description: The type of DNS verification.
+              enum:
+              - ownership
+              - mx
+              - spf
+              - dkim
+              - feedback
+              example: ownership
+            options:
+              type: object
+              description: The DNS record values to configure at your DNS provider.
+              properties:
+                host:
+                  type: string
+                  description: The DNS host value.
+                  example: '@'
+                type:
+                  type: string
+                  description: The DNS record type.
+                  example: TXT
+                value:
+                  type: string
+                  description: The DNS record value to set.
+                  example: nylas-ownership-verify=gNIeZAtY1lPUEpWOhA2XBB...
+        status:
+          type: string
+          description: The status of the verification attempt.
+          enum:
+          - done
+          - failed
+          - pending
+          example: done
+        created_at:
+          type: number
+          description: When the verification attempt was created, in seconds using the Unix timestamp format.
+          example: 1742932766
+        expires_at:
+          type: number
+          description: When the verification attempt expires, in seconds using the Unix timestamp format.
+          example: 1743537566
+        message:
+          type: string
+          description: A human-readable message about the verification status.
+          example: Domain ownership verified successfully.
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

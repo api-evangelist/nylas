@@ -1,0 +1,424 @@
+openapi: 3.2.0
+info:
+  title: Nylas Smart compose API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Smart compose
+  description: The Smart Compose endpoints extend the Nylas Messages API.
+paths:
+  /v3/grants/{grant_id}/messages/smart-compose:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    post:
+      summary: Compose a message
+      tags:
+      - Smart compose
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.readonly
+          others: https://www.googleapis.com/auth/gmail.modify
+        microsoft:
+          min: https://graph.microsoft.com/Mail.Read
+          others:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.ReadWrite.Shared
+          - https://graph.microsoft.com/Mail.Read.Shared
+        yahoo:
+          min: email, mail-r, mail-w
+      responses:
+        '200':
+          $ref: '#/components/responses/smart_compose_200'
+        '400':
+          $ref: '#/components/responses/smart_compose_400'
+        '401':
+          $ref: '#/components/responses/401'
+        '422':
+          $ref: '#/components/responses/smart_compose_422'
+        '500':
+          $ref: '#/components/responses/smart_compose_500'
+      operationId: post-smart-compose
+      description: Generates a message based on a prompt.
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/smart_compose'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/messages/smart-compose' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function composeEmail() {\n  try {\n    const message = await nylas.messages.smartCompose.composeMessage({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      requestBody: {\n        prompt: \"Tell my colleague how we can use Nylas APIs\",\n      },\n    });\n\n    console.log(\"Message created:\", message);\n  } catch (error) {\n    console.error(\"Error creating message:\", error);\n  }\n}\n\ncomposeEmail();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\nemail = \"<EMAIL>\"\n\nmessage = nylas.messages.smart_compose.compose_message(\n  grant_id,\n  request_body={\n    \"prompt\": \"Tell my colleague how we can use Nylas APIs\",\n  }\n)\n\nprint(message)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  prompt: \"Let's talk about Nylas\"\n}\n\nmessage, _ = nylas.messages.smart_compose.compose_message(\n  identifier: \"<NYLAS_GRANT_ID>\",\n  request_body: request_body\n)\n\nputs message[:suggestion]\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class SmartCompose {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n    ComposeMessageRequest requestBody = new ComposeMessageRequest(\"Let's talk about Nylas\");\n    Response<ComposeMessageResponse> message = nylas.messages().smartCompose().composeMessage(\"<NYLAS_GRANT_ID>\", requestBody);\n    \n    System.out.println(message.getData().getSuggestion());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.ComposeMessageRequest\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val requestBody : ComposeMessageRequest = ComposeMessageRequest(\"Let's talk about Nylas\")\n  val message = nylas.messages().smartCompose().composeMessage(\"<NYLAS_GRANT_ID>\", requestBody)\n  \n  print(message.data.suggestion)\n}\n"
+  /v3/grants/{grant_id}/messages/{message_id}/smart-compose:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    - schema:
+        type: string
+      name: message_id
+      in: path
+      required: true
+      description: 'ID of the message to access. Nylas recommends you URL-encode this field, or you might receive
+
+        a [`404` error](/docs/api/errors/400-response/) if the ID contains special characters (for
+
+        example, `#`).'
+    post:
+      summary: Compose a reply
+      tags:
+      - Smart compose
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.readonly
+          others: https://www.googleapis.com/auth/gmail.modify
+        microsoft:
+          min: https://graph.microsoft.com/Mail.Read
+          others:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.ReadWrite.Shared
+          - https://graph.microsoft.com/Mail.Read.Shared
+        yahoo:
+          min: email, mail-r, mail-w
+      responses:
+        '200':
+          $ref: '#/components/responses/smart_compose_200'
+        '400':
+          $ref: '#/components/responses/smart_compose_400'
+        '401':
+          $ref: '#/components/responses/401'
+        '422':
+          $ref: '#/components/responses/smart_compose_422'
+        '500':
+          $ref: '#/components/responses/smart_compose_500'
+      operationId: post-smart-compose-reply
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+      requestBody:
+        $ref: '#/components/requestBodies/smart_compose'
+      description: Generates a reply to the specified message based on a prompt.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/messages/<MESSAGE_ID>/smart-compose' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function composeEmailReply() {\n  try {\n    const message = await nylas.messages.smartCompose.composeMessageReply({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      messageId: \"<MESSAGE_ID>\",\n      requestBody: {\n        prompt: \"Respond to the email\",\n      },\n    });\n\n    console.log(\"Message created:\", message);\n  } catch (error) {\n    console.error(\"Error creating message:\", error);\n  }\n}\n\ncomposeEmailReply();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\nmessage_id = \"<MESSAGE_ID>\"\n\nmessage = nylas.messages.smart_compose.compose_message_reply(\n  grant_id,\n  message_id,\n  request_body={\n    \"prompt\": \"Respond to the email\",\n  }\n)\n\nprint(message)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  prompt: 'reply'\n}\n\nmessage, _ = nylas.messages.smart_compose.compose_message_reply(\n  identifier: \"<NYLAS_GRANT_ID>\",\n  message_id: \"<MESSAGE_ID>\",\n  request_body: request_body\n)\n\nputs message[:suggestion]\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class SmartCompose {\n    public static void main(String[] args) throws\n            NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        ComposeMessageRequest requestBody = new ComposeMessageRequest(\"Reply\");\n\n        Response<ComposeMessageResponse> message = \n        nylas.messages().smartCompose().composeMessageReply(\"<NYLAS_GRANT_ID>\", \n        \"<MESSAGE_ID>\", requestBody);\n        System.out.println(message.getData().getSuggestion());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.ComposeMessageRequest\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val requestBody : ComposeMessageRequest = \n    ComposeMessageRequest(\"Reply\")\n    val message = nylas.messages().smartCompose().composeMessageReply(\"<NYLAS_GRANT_ID>\", \n    \"<MESSAGE_ID>\", requestBody)\n    print(message.data.suggestion)\n\n}\n"
+components:
+  requestBodies:
+    smart_compose:
+      content:
+        application/json:
+          schema:
+            title: Smart Compose
+            type: object
+            description: A Smart Compose request.
+            properties:
+              prompt:
+                title: Prompt
+                description: The prompt that Smart Compose uses to generate a message suggestion.
+                maxLength: 1000
+                type: string
+                example: Reply to John Doe about the upcoming project.
+  responses:
+    smart_compose_422:
+      description: Validation Error
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request
+              error:
+                type: object
+                description: Response error object.
+                properties:
+                  type:
+                    type: string
+                    description: Error Type
+                  message:
+                    type: string
+                    description: Error Message
+                  details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        loc:
+                          title: Location
+                          type: array
+                          items:
+                            anyOf:
+                            - type: string
+                            - type: integer
+                        msg:
+                          title: Message
+                          type: string
+                        type:
+                          title: Error Type
+                          type: string
+          examples:
+            Validation Error:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: validation_error
+                  message: validation error
+                  details:
+                  - loc:
+                    - path
+                    - item_id
+                    msg: value is not a valid integer
+                    type: type_error.integer
+    smart_compose_400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request
+              error:
+                type: object
+                description: Response error object.
+                properties:
+                  type:
+                    type: string
+                    description: Error Type
+                  message:
+                    type: string
+                    description: Error Message
+          examples:
+            Invalid Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: invalid request
+            Prompt Required:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: prompt_required_error
+                  message: prompt is required
+            Prompt Not Allowed:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: prompt_not_allowed_error
+                  message: prompt is not allowed
+            Message ID Required:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: message_id_required_error
+                  message: message ID is required
+            Grant ID Required:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: grant_id_required_error
+                  message: grant ID is required
+            Unknown Message Sender Error:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unknown_message_sender_error
+                  message: could not determine message sender
+    smart_compose_500:
+      description: Unexpected Error
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request
+              error:
+                type: object
+                description: Response error object.
+                properties:
+                  type:
+                    type: string
+                    description: Error Type
+                  message:
+                    type: string
+                    description: Error Message
+          examples:
+            Unexpected Error:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unexpected_error
+                  message: an unexepcted error has occurred
+    smart_compose_200:
+      description: Returns a suggestion for a message
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/smart_compose_suggestion'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              suggestion: 'Dear John,
+
+
+                I hope this email finds you well. I wanted to reach out and inform you about an exciting upcoming project that we will be working on together. This project has the potential to be a game-changer for our company, and I believe your expertise and skills will be invaluable to its success. I look forward to discussing the project with you further and hearing your input and ideas. Let''s make this project a resounding success!
+
+
+                Best regards,
+
+                [Your Name]'
+        text/event-stream:
+          schema:
+            type: object
+            format: event-stream
+            properties:
+              suggestion:
+                type: string
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+  schemas:
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    smart_compose_suggestion:
+      title: PromptSuggestion
+      required:
+      - suggestion
+      type: object
+      properties:
+        suggestion:
+          title: Suggestion
+          type: string
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

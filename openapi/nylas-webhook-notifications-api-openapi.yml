@@ -1,0 +1,1134 @@
+openapi: 3.2.0
+info:
+  title: Nylas Webhook Notifications API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Webhook Notifications
+  description: Your application receives information about changes to user accounts and data through Nylas webhooks.
+paths:
+  /v3/webhooks:
+    post:
+      tags:
+      - Webhook Notifications
+      summary: Create a webhook destination
+      operationId: post-webhook-destinations
+      description: 'Creates a webhook destination with the specified URL and list of trigger types.
+
+
+        ### Webhook destinations and retry logic
+
+
+        You should limit the number of webhook destinations you have for each trigger type. When Nylas
+
+        retries a webhook, the retry goes to all the destinations for that trigger type. This can result
+
+        in _a lot_ of notifications.
+
+
+        Some webhook testing tools rate-limit or block you if your endpoint generates too much traffic.
+
+        Nylas blocks Ngrok connections for this reason.
+
+
+        ### Webhook notification header
+
+
+        Every webhook notification Nylas sends includes the `x-nylas-signature` header. If you''re using
+
+        the Nylas SDKs, you might see `X-Nylas-Signature` instead.'
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/create_200'
+          description: Returns the new Destination
+        '400':
+          $ref: '#/components/responses/create_400'
+      requestBody:
+        required: true
+        description: Destination definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/destination_input_payload'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/webhooks/' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data-raw '{\n    \"trigger_types\": [\n      \"grant.created\",\n      \"grant.deleted\",\n      \"grant.expired\"\n    ],\n    \"description\": \"local\",\n    \"webhook_url\": \"<WEBHOOK_URL>\",\n    \"notification_email_addresses\": [\n      \"leyah@example.com\",\n      \"nyla@example.com\"\n    ]\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas, { WebhookTriggers } from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst createWebhook = async () => {\n  try {\n    const webhook = await nylas.webhooks.create({\n      requestBody: {\n        triggerTypes: [WebhookTriggers.EventCreated],\n        webhookUrl: \"<WEBHOOK_URL>\",\n        description: \"My first webhook\",\n        notificationEmailAddresses: [\"<EMAIL_ADDRESS>\"],\n      },\n    });\n\n    console.log(\"Webhook created:\", webhook);\n  } catch (error) {\n    console.error(\"Error creating webhook:\", error);\n  }\n};\n\ncreateWebhook();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\nfrom nylas.models.webhooks import WebhookTriggers\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nwebhook = nylas.webhooks.create(\n    request_body={\n        \"trigger_types\": [WebhookTriggers.EVENT_CREATED],\n        \"webhook_url\": \"<WEBHOOK_URL>\",\n        \"description\": \"My first webhook\",\n        \"notification_email_addresses\": [\"<EMAIL_ADDRESS>\"],\n    }\n)\n\nprint(webhook)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(api_key: \"<NYLAS_API_KEY>\")\n\nrequest_body = {\n  trigger_types: [Nylas::WebhookTrigger::EVENT_CREATED],\n  webhook_url: \"<WEBHOOK_URL>\",\n  description: 'My first webhook',\n  notification_email_addresses: [\"<EMAIL_ADDRESS>\"]\n}\n\nbegin\n  webhook, _request_id = nylas.webhooks.create(request_body: request_body)\n\n  puts \"Webhook created: #{webhook}\"\nrescue Nylas::NylasApiError => e\n  puts \"Error creating webhook: #{e.message}\"\nend\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class webhooks {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    List<WebhookTriggers> triggers = new ArrayList<>();\n    triggers.add(WebhookTriggers.EVENT_CREATED);\n\n    CreateWebhookRequest webhookRequest = new CreateWebhookRequest(\n        triggers,\n        \"<WEBHOOK_URL>\",\n        \"My first webhook\",\n        List.of(\"<EMAIL_ADDRESS>\"));\n\n    try {\n      Response<WebhookWithSecret> webhook = nylas.webhooks().create(webhookRequest);\n\n      System.out.println(webhook.getData());\n    } catch (Exception e) {\n      System.out.println(\"Error: \" + e);\n    }\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.*\n\nfun main(args: Array<String>){\n  val nylas: NylasClient = NylasClient(apiKey = \"<NYLAS_API_KEY>\")\n  val triggersList: List<WebhookTriggers> = listOf(WebhookTriggers.EVENT_CREATED)\n\n  val webhookRequest: CreateWebhookRequest = CreateWebhookRequest(\n      triggersList,\n      \"<WEBHOOK_URL>\",\n      \"My first webhook\",\n      listOf(\"<EMAIL_ADDRESS>\"))\n\n  try {\n    val webhook: Response<WebhookWithSecret> = nylas.webhooks().create(webhookRequest)\n\n    println(webhook.data)\n  } catch(exception : Exception) {\n    println(\"Error :$exception\")\n  }\n}\n"
+    get:
+      tags:
+      - Webhook Notifications
+      summary: Get destinations for an application
+      operationId: get-webhook-destinations-application
+      description: Get a list of all webhook destinations for an application id.
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/get_200'
+          description: List of destinations for an application.
+        '400':
+          $ref: '#/components/responses/get_400'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/webhooks' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst listWebhooks = async () => {\n  try {\n    const webhooks = await nylas.webhooks.list({});\n\n    console.log(\"webhooks:\", webhooks);\n  } catch (error) {\n    console.error(\"Error fetching webhooks:\", error);\n  }\n};\n\nlistWebhooks();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nwebhooks = nylas.webhooks.list()\n\nprint(\"webhooks:\", webhooks)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nwebhooks = nylas.webhooks.list()\nputs webhooks\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class webhooks {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        ListResponse<Webhook> webhooks = nylas.webhooks().list();\n        System.out.println(webhooks.getData());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>){\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val webhooks = nylas.webhooks().list()\n    println(webhooks.data)\n}\n"
+  /v3/webhooks/{id}:
+    get:
+      operationId: get-webhook-by-id
+      tags:
+      - Webhook Notifications
+      summary: Get the destinations for an application by webhook ID
+      description: Get the webhook destinations for an application ID by webhook ID
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/get_by_id_200'
+          description: The destinations matching the query
+        '400':
+          $ref: '#/components/responses/get_400'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/webhooks/<WEBHOOK_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function fetchWebhookById() {\n  try {\n    const webhook = await nylas.webhooks.find({\n      webhookId: \"<WEBHOOK_ID>\",\n    });\n\n    console.log(\"webhook:\", webhook);\n  } catch (error) {\n    console.error(\"Error fetching webhook:\", error);\n  }\n}\n\nfetchWebhookById();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nmessage = nylas.webhooks.find(\n    \"<WEBHOOK_ID>\",\n)\n\nprint(message)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nwebhook = nylas.webhooks.find(webhook_id: \"<WEBHOOK_ID>\")\nputs webhook\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class webhooks {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        Response<Webhook> webhook = nylas.webhooks().find(\"<WEBHOOK_ID>\");\n        System.out.println(webhook.getData());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>){\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val webhooks = nylas.webhooks().find(\"<WEBHOOK_ID>\")\n    println(webhooks.data)\n}\n"
+    put:
+      operationId: put-webhook-by-id
+      tags:
+      - Webhook Notifications
+      summary: Update a webhook destination
+      description: 'Update the values in a specific webhook destination.
+
+
+        ### Limitations
+
+
+        - You only need to specify fields that need to change when you make a request to this endpoint.
+
+        Empty fields in the request do not overwrite existing fields.
+
+        - You should limit how many webhook destinations you have for each trigger type. When Nylas retries
+
+        a webhook, the retry goes to _all destinations for the specific trigger type_. This can result in
+
+        a lot of notifications.
+
+        - Some webhook testing tools rate-limit or block you if your webhook destination endpoint generates
+
+        too much traffic. Nylas blocks Ngrok connections for this reason.'
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/update_200'
+        '400':
+          $ref: '#/components/responses/update_400'
+      requestBody:
+        required: true
+        description: Destination definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/destination_update_payload'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PUT \\\n  --url 'https://api.us.nylas.com/v3/webhooks/<WEBHOOK_ID>' \\  \n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"notification_email_addresses\": [\"leyah@example.com\"]\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function updateWebhook() {\n  try {\n    const webhook = await nylas.webhooks.update({\n      webhookId: \"<WEBHOOK_ID>\",\n      requestBody: {\n        notificationEmailAddresses: [\"<EMAIL_ADDRESS>\"],\n      },\n    });\n\n    console.log(\"Updated Webhook:\", webhook);\n  } catch (error) {\n    console.error(\"Error updating webhook:\", error);\n  }\n}\n\nupdateWebhook();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nwebhook = nylas.webhooks.update(\n    \"<WEBHOOK_ID>\",\n    request_body={\n        \"notification_email_addresses\": [\"<EMAIL_ADDRESS>\"],\n    }\n)\n\nprint(webhook)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n    description: 'My updated webhook'\n}\n\nwebhooks = nylas.webhooks.update(webhook_id: \"<WEBHOOK_ID>\", \nrequest_body: request_body)\nputs webhooks\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class webhooks {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        UpdateWebhookRequest webhookRequest = new\n                UpdateWebhookRequest.Builder().\n                description(\"My updated webhook\").\n                build();\n\n        Response<Webhook> webhook = nylas.webhooks().update(\"<WEBHOOK_ID>\", \n        webhookRequest);\n        System.out.println(webhook.getData());\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.UpdateWebhookRequest\n\nfun main(args: Array<String>){\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val webhookRequest : UpdateWebhookRequest =\n        UpdateWebhookRequest.Builder().\n        description(\"My updated webhook\").\n        build()\n\n    val webhooks = nylas.webhooks().update(\"<WEBHOOK_ID>\", \n    webhookRequest)\n    println(webhooks.data)\n}\n"
+    delete:
+      operationId: delete-webhook-by-id
+      tags:
+      - Webhook Notifications
+      summary: Delete a webhook destination
+      description: Delete a webhook destination record.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/delete_200'
+          description: Returns a success message.
+        '400':
+          $ref: '#/components/responses/delete_400'
+          description: Returns an error message.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/webhooks/<WEBHOOK_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst deleteWebhook = async () => {\n  try {\n    await nylas.webhooks.destroy({ webhookId: \"<WEBHOOK_ID>\" });\n    console.log(\"Webhook deleted successfully.\");\n  } catch (error) {\n    console.error(\"Error deleting webhook:\", error);\n  }\n};\n\ndeleteWebhook();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nrequest = nylas.webhooks.destroy(\n    \"<WEBHOOK_ID>\",\n)\n\nprint(request)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nstatus = nylas.webhooks.destroy(webhook_id: \"<WEBHOOK_ID>\")\nputs status\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class webhooks {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        WebhookDeleteResponse deleteResponse = \n        nylas.webhooks().destroy(\"<WEBHOOK_ID>\");\n        System.out.println(deleteResponse);\n    }\n}\n"
+      - lang: kotlin
+        label: Kotllin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>){\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val webhooks = nylas.webhooks().destroy(\"<WEBHOOK_ID>\")\n    println(webhooks.data)\n}\n"
+  /v3/webhooks/rotate-secret/{id}:
+    post:
+      operationId: post-new-secret
+      tags:
+      - Webhook Notifications
+      summary: Rotate a webhook secret
+      description: 'Update the webhook secret value for a destination. The previous value will immediately stop being used and the new value will take over.
+
+
+        ### Webhook notification header
+
+
+        Every webhook notification Nylas sends includes the `x-nylas-signature` header. Depending on the SDK you''re using, you might see `X-Nylas-Signature` instead.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/webhooks/rotate-secret/<WEBHOOK_ID>' \\  \n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst rotated = await nylas.webhooks.rotateSecret({\n  webhookId: \"<WEBHOOK_ID>\",\n});\n\nconsole.log(\"Rotated webhook secret:\", rotated);\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nwebhook = nylas.webhooks.rotate_secret(\n    \"<WEBHOOK_ID>\"\n)\n\nprint(webhook)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "# frozen_string_literal: true\n\n# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n    api_key: '<NYLAS_API_KEY>'\n)\n\nsecret, _ = nylas.webhooks.rotate_secret(webhook_id: \"<WEBHOOK_ID>\")\n\nputs secret\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport java.util.List;\n\npublic class read_grants {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n    Response<WebhookWithSecret> secret = nylas.webhooks().rotateSecret(\"<WEBHOOK_ID>\");\n    \n    System.out.println(secret);\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.UpdateGrantRequest\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val secret = nylas.webhooks().rotateSecret(\"<WEBHOOK_ID>\")\n  \n  print(secret)\n}\n"
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/rotate_secret_200'
+          description: Returns the updated Destination.
+        '400':
+          $ref: '#/components/responses/delete_400'
+  /v3/webhooks/mock-payload:
+    post:
+      operationId: get_mock_webhook_payload
+      tags:
+      - Webhook Notifications
+      summary: Get mock notification payload
+      description: 'Use this endpoint to see example notification payloads for the different Nylas events you specify,
+
+        to the webhook URL you specify.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/webhooks/mock-payload' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"trigger_type\": \"calendar.created\",\n    \"webhook_url\": \"<WEBHOOK_URL>\"\n  }'"
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/get_mock_payload_200'
+          description: Returns the mock payload for corresponding trigger type.
+        '400':
+          $ref: '#/components/responses/400'
+      requestBody:
+        required: true
+        description: Destination definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/get_mock_payload_input'
+  /v3/webhooks/send-test-event:
+    post:
+      operationId: send_test_event
+      tags:
+      - Webhook Notifications
+      summary: Send test event
+      description: 'Use this endpoint to check if your project''s webhook destination is configured correctly. Nylas
+
+        sends a test webhook payload to the webhook URL you specify, and listens for a success
+
+        acknowledgement.
+
+
+        The secret used is `mock-webhook-secret`.'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/webhooks/send-test-event' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"trigger_type\": \"calendar.created\",\n    \"webhook_url\": \"<WEBHOOK_URL>\"\n  }'"
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/send_test_event_200'
+          description: Returns the mock payload for corresponding trigger type.
+        '400':
+          $ref: '#/components/responses/400'
+      requestBody:
+        required: true
+        description: Destination definition
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/send_test_event_input'
+components:
+  responses:
+    get_mock_payload_200:
+      description: Webhook Payload Returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: This object is an example payload that Nylas sends to your webhook destination
+              request_id:
+                type: string
+                description: The ID for each request.
+    create_400:
+      description: Destination not created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70005'
+                  message:
+                    type: string
+                    description: A human-readable message with details about the error.
+                    example: 'unable.verify.webhook_url : status is not ok, got 404'
+              request_id:
+                type: string
+                description: The ID of the request.
+    delete_400:
+      description: Notification channel not deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'destination.id.not.found : record not found'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    delete_200:
+      description: Destination Deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - success
+              request_id:
+                type: string
+                description: The ID for each request.
+    get_400:
+      description: Destination not returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70001'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: application_id.required
+              request_id:
+                type: string
+                description: The ID for each request.
+    get_by_id_200:
+      description: Destinations Returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the webhook destination.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the webhook destination.
+                    example: Production webhook destination
+                  trigger_types:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                      - calendar.created
+                      - calendar.updated
+                      - calendar.deleted
+                      - event.created
+                      - event.updated
+                      - event.deleted
+                      - grant.created
+                      - grant.updated
+                      - grant.deleted
+                      - grant.expired
+                      - message.send_success
+                      - message.send_failed
+                      - message.bounce_detected
+                      - message.created
+                      - message.updated
+                      - contact.updated
+                      - contact.deleted
+                      - folder.created
+                      - folder.updated
+                      - folder.deleted
+                      - message.opened
+                      - message.link_clicked
+                      - thread.replied
+                    description: 'The event that triggers the webhook notification. See the
+
+                      [notification schemas](/docs/reference/notifications/) for details about
+
+                      each trigger type.
+
+
+                      See the [Grants](/docs/reference/api/manage-grants/),
+
+                      [Calendar](/docs/reference/api/calendar/), [Events](/docs/reference/api/events/), and
+
+                      [Messages](/docs/reference/api/messages/) references for information on how to trigger
+
+                      each event type.'
+                  webhook_url:
+                    type: string
+                    description: The URL to send webhooks to.
+                    example: https://example.com/webhooks
+                  status:
+                    type: string
+                    description: The status of the new destination.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                      details.'
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the webhook destination was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the webhook destination was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The ID for each request.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    get_200:
+      description: Destinations Returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: A unique identifier for the webhook destination.
+                      example: UMWjAjMeWQ4D8gYF2moonK4486
+                    description:
+                      type: string
+                      description: A human-readable description of the webhook destination.
+                      example: Production webhook destination
+                    trigger_types:
+                      $ref: '#/components/schemas/trigger_types'
+                    webhook_url:
+                      type: string
+                      description: The URL to send webhooks to.
+                      example: https://example.com/webhooks
+                    status:
+                      type: string
+                      description: The status of the new destination.
+                      enum:
+                      - active
+                      - pause
+                      - failing
+                      - failed
+                    notification_email_addresses:
+                      type: array
+                      items:
+                        type: string
+                      description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                        [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                        details.'
+                      example:
+                      - jane@example.com
+                      - joe@example.com
+                    compressed_delivery:
+                      type: boolean
+                      description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                      example: false
+              request_id:
+                type: string
+                description: The ID for each request.
+    create_200:
+      description: Webhook Destination Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the webhook destination.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the webhook destination.
+                    example: Production webhook destination
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  webhook_url:
+                    type: string
+                    description: The URL to send webhooks to.
+                    example: https://example.com/webhooks
+                  webhook_secret:
+                    type: string
+                    description: A secret value used to encode the `x-nylas-signature` header on webhook requests.
+                    example: 41dD3-nXTUfebYuk81Gr
+                  status:
+                    type: string
+                    description: The status of the new destination. This will always be "active" if Nylas successfully created the destination. If you need to pause the destination, use the [Update webhook destination](#put-/v3/webhooks/-id-) method to change the status to `pause`.
+                    enum:
+                    - active
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                      details.'
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                    example: false
+              request_id:
+                type: string
+                description: The request ID for each request.
+    update_200:
+      description: Destination Updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the webhook destination.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the webhook destination.
+                    example: Production webhook destination
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  webhook_url:
+                    type: string
+                    description: The URL to send webhooks to.
+                    example: https://example.com/webhooks
+                  status:
+                    type: string
+                    description: The status of the new destination.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                      details.'
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                    example: false
+                  status_updated_at:
+                    type: integer
+                    description: The time the `status` field was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  created_at:
+                    type: integer
+                    description: The time the webhook destination was created, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+                  updated_at:
+                    type: integer
+                    description: The time the webhook destination was last updated, represented as a Unix timestamp in seconds.
+                    example: 1234567890
+              request_id:
+                type: string
+                description: The ID for each request.
+    send_test_event_200:
+      description: Test event sent
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: string
+                description: Indicates if the test event succeeded or failed.
+                example: success
+              request_id:
+                type: string
+                description: The ID for each request.
+    rotate_secret_200:
+      description: Webhook Secret Updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the webhook destination.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the webhook destination.
+                    example: Production webhook destination
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  webhook_url:
+                    type: string
+                    description: The URL to send webhooks to.
+                    example: https://example.com/webhooks
+                  webhook_secret:
+                    type: string
+                    description: A secret value used to encode the `x-nylas-signature` header on webhook requests.
+                    example: 41dD3-nXTUfebYuk81Gr
+                  status:
+                    type: string
+                    description: The status of the new destination.
+                    enum:
+                    - active
+                    - pause
+                    - failing
+                    - failed
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                      details.'
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+              request_id:
+                type: string
+                description: The request ID for each request.
+    update_400:
+      description: Unable to update Pub/Sub channel
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'destination.id.not.found : record not found'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+  schemas:
+    destination_update_payload:
+      title: Destination Update Payload
+      properties:
+        description:
+          type: string
+          description: A human-readable description of the webhook destination.
+          example: Production webhook destination
+        trigger_types:
+          $ref: '#/components/schemas/trigger_types'
+        webhook_url:
+          type: string
+          description: The URL to send webhooks to.
+          example: https://example.com/webhooks
+        status:
+          type: string
+          description: The new status of the destination.
+          enum:
+          - active
+          - pause
+        notification_email_addresses:
+          type: array
+          items:
+            type: string
+          description: The email addresses that Nylas notifies when a webhook is down for a while. See the [rate limit documentation](/docs/dev-guide/best-practices/rate-limits/) for details.
+          example:
+          - abc@example.com
+          - def@example.com
+        compressed_delivery:
+          type: boolean
+          description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds the `Content-Encoding: gzip` header to the request.'
+          example: true
+    send_test_event_input:
+      title: Input Payload
+      type: object
+      required:
+      - trigger_type
+      - webhook_url
+      properties:
+        trigger_type:
+          type: string
+          enum:
+          - calendar.created
+          - calendar.updated
+          - calendar.deleted
+          - event.created
+          - event.updated
+          - event.deleted
+          - grant.created
+          - grant.updated
+          - grant.deleted
+          - grant.expired
+          - message.send_success
+          - message.send_failed
+          - message.bounce_detected
+          - message.created
+          - message.created.truncated
+          - message.created.cleaned
+          - message.updated
+          - message.updated.truncated
+          - contact.updated
+          - contact.deleted
+          - folder.created
+          - folder.updated
+          - folder.deleted
+          - message.opened
+          - message.link_clicked
+          - thread.replied
+          description: 'Select the type of event that will trigger the webhook. See the
+
+            [notification schemas](/docs/reference/notifications/) for details about each
+
+            trigger type.
+
+
+            See the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),
+
+            [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
+
+            for information on how to trigger each event type.
+
+
+            You can test `message.created.truncated` and `message.updated.truncated` notifications using this
+
+            endpoint. For more information, see
+
+            [Truncated webhooks](/docs/v3/notifications/#truncated-webhooks).'
+        webhook_url:
+          type: string
+          description: The URL to send webhooks to.
+          example: https://example.com/webhooks
+    destination_input_payload:
+      title: Destination Payload
+      required:
+      - trigger_types
+      - webhook_url
+      type: object
+      properties:
+        description:
+          type: string
+          description: A human-readable description of the webhook destination.
+          example: Production webhook destination
+        trigger_types:
+          $ref: '#/components/schemas/trigger_types'
+        webhook_url:
+          type: string
+          description: The URL to send webhooks to.
+          example: https://example.com/webhooks
+        notification_email_addresses:
+          type: array
+          items:
+            type: string
+          description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+            [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for details.'
+          example:
+          - jane@example.com
+          - joe@example.com
+        compressed_delivery:
+          type: boolean
+          description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds the `Content-Encoding: gzip` header to the request. Default is `false`.'
+          default: false
+          example: true
+    get_mock_payload_input:
+      title: Input Payload
+      type: object
+      required:
+      - trigger_type
+      - webhook_url
+      properties:
+        trigger_type:
+          type: string
+          enum:
+          - calendar.created
+          - calendar.updated
+          - calendar.deleted
+          - event.created
+          - event.updated
+          - event.deleted
+          - grant.created
+          - grant.updated
+          - grant.deleted
+          - grant.expired
+          - message.send_success
+          - message.send_failed
+          - message.bounce_detected
+          - message.created
+          - message.created.truncated
+          - message.created.cleaned
+          - message.updated
+          - message.updated.truncated
+          - contact.updated
+          - contact.deleted
+          - folder.created
+          - folder.updated
+          - folder.deleted
+          - message.opened
+          - message.link_clicked
+          - thread.replied
+          description: 'The event that will trigger the mock notification. See the
+
+            [notification schemas](/docs/reference/notifications/) for details about each
+
+            trigger type.
+
+
+            See the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),
+
+            [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
+
+            for information on how to trigger each event type.
+
+
+            You can test `message.created.truncated` and `message.updated.truncated` notifications using this
+
+            endpoint. For more information, see
+
+            [Truncated webhooks](/docs/v3/notifications/#truncated-webhooks).'
+    trigger_types:
+      type: array
+      items:
+        type: string
+        enum:
+        - calendar.created
+        - calendar.updated
+        - calendar.deleted
+        - event.created
+        - event.updated
+        - event.deleted
+        - grant.created
+        - grant.updated
+        - grant.deleted
+        - grant.expired
+        - grant.imap_sync_completed
+        - message.send_success
+        - message.send_failed
+        - message.bounce_detected
+        - message.created
+        - message.created.cleaned
+        - message.opened
+        - message.opened.legacy
+        - message.updated
+        - message.link_clicked
+        - message.link_clicked.legacy
+        - thread.replied
+        - thread.replied.legacy
+        - contact.updated
+        - contact.deleted
+        - folder.created
+        - folder.updated
+        - folder.deleted
+        - booking.created
+        - booking.pending
+        - booking.rescheduled
+        - booking.cancelled
+        - booking.reminder
+        - message.deleted
+        - message.transactional.bounced
+        - message.transactional.complaint
+        - message.transactional.delivered
+        - message.transactional.rejected
+        - message.bounced
+        - message.complaint
+        - message.delivered
+        - message.rejected
+        - notetaker.created
+        - notetaker.updated
+        - notetaker.deleted
+        - notetaker.meeting_state
+        - notetaker.media
+      description: 'The event that triggers the notification. See the
+
+        [notification schemas](/docs/reference/notifications/) for details about each trigger
+
+        type.
+
+
+        See the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),
+
+        [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
+
+        for information on how to trigger each event type.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

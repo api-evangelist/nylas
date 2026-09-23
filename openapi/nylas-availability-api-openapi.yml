@@ -1,0 +1,431 @@
+openapi: 3.2.0
+info:
+  title: Nylas Availability API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Availability
+  description: Nylas Scheduler uses the `/v3/scheduling/availability` endpoint to retrieve availability information.
+paths:
+  /v3/scheduling/availability:
+    parameters:
+    - schema:
+        type: string
+      name: start_time
+      in: query
+      required: true
+      description: The time from which to check availability, in seconds using the Unix timestamp format.
+    - schema:
+        type: string
+      name: end_time
+      in: query
+      required: true
+      description: The time until which to check availability, in seconds using the Unix timestamp format.
+    - schema:
+        type: string
+      name: configuration_id
+      in: query
+      required: false
+      description: 'The ID of the Configuration object used for calculating availability. If you''re using session
+
+        authentication (`requires_session_auth: true`), the `configuration_id` isn''t required.'
+    - schema:
+        type: string
+      name: slug
+      in: query
+      required: false
+      description: 'The Configuration object slug. You can use this with the `client_id` instead of using the
+
+        `configuration_id`. If you''re using session authentication (`requires_session_auth: true`) or
+
+        using the `configuration_id`, `slug` isn''t required.'
+    - schema:
+        type: string
+      name: client_id
+      in: query
+      required: false
+      description: 'The client ID that was used to create the Configuration object. Required only if you''re using
+
+        `slug`.'
+    - schema:
+        type: string
+      name: booking_id
+      in: query
+      required: false
+      description: 'The ID of the booking to reschedule, if you''re checking availability to reschedule a round-robin
+
+        booking. Required only if `availability_method` is `max-fairness` or `max-availability`. See
+
+        [Retrieve booking IDs](/docs/v3/scheduler/retrieve-booking-ids/) for more information.'
+    get:
+      summary: Get availability
+      tags:
+      - Availability
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/calendar.readonly
+          others: https://www.googleapis.com/auth/calendar
+        microsoft:
+          min: https://graph.microsoft.com/Calendars.Read
+          others: https://graph.microsoft.com/Calendars.ReadWrite
+      operationId: get-availability
+      description: 'Gets available time slots within the given time range, using the rules defined in the specified
+
+        Configuration object. If the Configuration `type` is `group`, Nylas returns only valid group events
+
+        within the time range, including recurring events.
+
+
+        Nylas validates the provided session ID and uses it to retrieve the related
+
+        Configuration object. If you created a public
+
+        Configuration, you don''t need to include the `Authorization` request header with a session ID, but
+
+        you do need to pass the Configuration object ID as a query parameter.'
+      x-code-samples:
+      - lang: bash
+        label: cURL (Public)
+        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/scheduling/availability?start_time=1709643600&end_time=1709665200&configuration_id=<SCHEDULER_CONFIG_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json'"
+      - lang: bash
+        label: cURL (Private)
+        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/scheduling/availability?start_time=1709643600&end_time=1709665200' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <SCHEDULER_SESSION_ID>' \\\n  --header 'Content-Type: application/json' "
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function getAvailability() {\n  try {\n    const availability = await nylas.scheduler.availability.get({\n      queryParams: {\n        configurationId: \"<CONFIGURATION_ID>\",\n        startTime: 1748908800,\n        endTime: 1748995200,\n      },\n    });\n\n    console.log(\"Availability:\", availability);\n  } catch (error) {\n    console.error(\"Error getting availability:\", error);\n  }\n}\n\ngetAvailability();\n"
+      responses:
+        '200':
+          $ref: '#/components/responses/availability'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - SCHEDULER_SESSION_TOKEN: []
+components:
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    availability:
+      description: Return availability
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/availability_response'
+          examples:
+            Return round-robin scheduling:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                data:
+                  order:
+                  - nyla@example.com
+                  - leyah@example.com
+                  time_slots:
+                  - emails:
+                    - leyah@example.com
+                    - nyla@example.com
+                    start_time: 1659367800
+                    end_time: 1659369600
+                  - emails:
+                    - nyla@example.com
+                    start_time: 1659376800
+                    end_time: 1659378600
+            Return group Configuration availability:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                data:
+                  time_slots:
+                  - emails:
+                    - leyah@example.com
+                    - nyla@example.com
+                    start_time: 1659367800
+                    end_time: 1659369600
+                    capacity: 100
+                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
+                    calendar_id: primary
+                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA
+                  - emails:
+                    - nyla@example.com
+                    start_time: 1659376800
+                    end_time: 1659378600
+                    capacity: 100
+                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EtegrfdsczUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
+                    calendar_id: primary
+                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EfsrgdfeasECYNfAbiKd_mQABCjy6hAAA
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  schemas:
+    availability_time_slot:
+      title: TimeSlot
+      type: object
+      properties:
+        emails:
+          type:
+          - array
+          - 'null'
+          description: A list of participant email addresses for this time slot. This field may be `null`. Treat `null` the same as an empty array.
+          items:
+            type: string
+        start_time:
+          type: integer
+          description: The start of a time slot, in seconds using the Unix timestamp format.
+        end_time:
+          type: integer
+          description: The end of a time slot, in seconds using the Unix timestamp format.
+        event_id:
+          type: string
+          description: (Group Events Only). The event ID of the group event
+        master_id:
+          type: string
+          description: (Group Events Only). The master ID of the recurring group event
+        calendar_id:
+          type: string
+          description: (Group Events Only). The calendar ID of the group event
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    availability_response:
+      description: The response to a successful request to get availability for a participant.
+      type: object
+      properties:
+        order:
+          type: array
+          items:
+            type: string
+          description: (Round-robin events only) The order of participants in line to attend the proposed meeting.
+        time_slots:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/availability_time_slot'
+          description: 'An array of the available time slots when you can create a meeting using the requested settings.
+
+            This field may be `null` if no time slots are available. Treat `null` the same as an empty array.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

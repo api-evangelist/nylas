@@ -1,0 +1,900 @@
+openapi: 3.2.0
+info:
+  title: Nylas Attachments API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Attachments
+  description: You can use the `attachments` schema in a Send Message request to send attachments, regardless of the email provider.
+paths:
+  /v3/grants/{grant_id}/attachments/{attachment_id}:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    - schema:
+        type: string
+      name: attachment_id
+      in: path
+      required: true
+      description: 'ID of the attachment to access. Nylas recommends you URL-encode this field, or you might receive
+
+        a [`404` error](/docs/api/errors/400-response/) if the ID contains special characters (for
+
+        example, `#`).'
+    - schema:
+        type: string
+      name: message_id
+      in: query
+      required: true
+      description: ID of the message the specified attachment belongs to.
+    - $ref: '#/components/parameters/field_selection'
+    - $ref: '#/components/parameters/query_imap_get_by_id'
+    get:
+      summary: Return Attachment metadata
+      tags:
+      - Attachments
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.readonly
+          others: https://www.googleapis.com/auth/gmail.modify
+        microsoft:
+          min: https://graph.microsoft.com/Mail.Read
+          others:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.ReadWrite.Shared
+          - https://graph.microsoft.com/Mail.Read.Shared
+        yahoo:
+          min: email, mail-r
+      responses:
+        '200':
+          $ref: '#/components/responses/attachment'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: get-attachments-id
+      description: Returns the metadata of the specified attachment.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/attachments/<ATTACHMENT_ID>?message_id=<MESSAGE_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function fetchAttachmentById() {\n  try {\n    const attachment = await nylas.attachments.find({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      attachmentId: \"<ATTACHMENT_ID>\",\n      queryParams: {\n        messageId: \"<MESSAGE_ID>\",\n      },\n    });\n\n    console.log(\"Attachment:\", attachment);\n  } catch (error) {\n    console.error(\"Error fetching attachment:\", error);\n  }\n}\n\nfetchAttachmentById();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\nfolder_id = \"<FOLDER_ID>\"\nattachment_id = \"<ATTACHMENT_ID>\"\n\nattachment = nylas.attachments.find(\n  grant_id,\n  attachment_id,\n  query_params= {\n    \"message_id\": \"<MESSAGE_ID>\",\n  }\n)\n\nprint(attachment)"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n    api_key: \"<NYLAS_API_KEY>\"\n)\n\nquery_params = {\n  message_id: \"<MESSAGE_ID>\"\n}\n\nattachment = nylas.attachments.find(identifier: \"<NYLAS_GRANT_ID>\",  \nattachment_id: \"<ATTACHMENT_ID>\", query_params: query_params)\n\nputs attachment"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class attachment {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError, NylasOAuthError {\n    NylasClient nylas = new NylasClient.Builder(\"NYLAS_API_KEY\").build();\n    FindAttachmentQueryParams queryParams = new FindAttachmentQueryParams(\"<MESSAGE_ID>\");\n    Attachment attachment = nylas.attachments().find(\"<NYLAS_GRANT_ID>\", \"<ATTACHMENT_ID>\", queryParams).getData();\n\n    System.out.println(attachment);\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.FindAttachmentQueryParams\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val queryParams = FindAttachmentQueryParams(\"<MESSAGE_ID>\")\n  val attachment = nylas.attachments().find(\"<NYLAS_GRANT_ID>\", \"<ATTACHMENT_ID>\", queryParams)\n  \n  print(attachment)\n}"
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+  /v3/grants/{grant_id}/attachments/{attachment_id}/download:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    - schema:
+        type: string
+      name: attachment_id
+      in: path
+      required: true
+      description: 'ID of the attachment to access. Nylas recommends you URL-encode this field, or you might receive
+
+        a [`404` error](/docs/api/errors/400-response/) if the ID contains special characters (for
+
+        example, `#`).'
+    - schema:
+        type: string
+      name: message_id
+      in: query
+      required: true
+      description: ID of the message the specified attachment belongs to.
+    get:
+      summary: Download an Attachment
+      tags:
+      - Attachments
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/gmail.readonly
+          others: https://www.googleapis.com/auth/gmail.modify
+        microsoft:
+          min: https://graph.microsoft.com/Mail.Read
+          others:
+          - https://graph.microsoft.com/Mail.ReadWrite
+          - https://graph.microsoft.com/Mail.ReadWrite.Shared
+          - https://graph.microsoft.com/Mail.Read.Shared
+      responses:
+        '200':
+          $ref: '#/components/responses/attachment_file'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: get-attachments-id-download
+      parameters:
+      - name: query_imap
+        schema:
+          type: boolean
+          default: false
+        in: query
+        required: false
+        description: '(IMAP, Yahoo, and iCloud only) When `true`, Nylas downloads the attachment directly from the
+
+          IMAP server instead of the Nylas database.'
+      description: Returns and downloads the specified attachment.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/attachments/<ATTACHMENT_ID>/download?message_id=<MESSAGE_ID>' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import fs from \"fs\";\nimport Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function downloadAttachment() {\n  try {\n    const attachmentBytes = await nylas.attachments.downloadBytes({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      attachmentId: \"<ATTACHMENT_ID>\",\n      queryParams: {\n        messageId: \"<MESSAGE_ID>\",\n      },\n    });\n\n    const fileName = \"attachment\";\n    await fs.promises.writeFile(fileName, attachmentBytes);\n    console.log(`File saved as ${fileName}`);\n  } catch (error) {\n    console.error(\"Error fetching attachment:\", error);\n  }\n}\n\ndownloadAttachment();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\"\n)\n\ngrant_id = \"<NYLAS_GRANT_ID>\"\nattachment_id = \"<ATTACHMENT_ID>\"\n\nattachment = nylas.attachments.download(\n  grant_id,\n  attachment_id,\n  query_params= {\n    \"message_id\": \"<MESSAGE_ID>\",\n  }\n)\n\nwith open(\"attachment\", 'wb') as f:\n  f.write(attachment.content)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n    api_key: \"<NYLAS_API_KEY>\"\n)\n\nquery_params = {\n  message_id: \"<MESSAGE_ID>\"\n}\n\nattachment = nylas.attachments.download(identifier: \"<NYLAS_GRANT_ID>\", \n    attachment_id: \"<ATTACHMENT_ID>\", query_params: query_params)\n\nFile.open(\"./image.png\", \"wb\") do |file|\n  file.write(attachment)\nend"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport okhttp3.ResponseBody;\nimport java.io.FileNotFoundException;\nimport java.io.FileOutputStream;\nimport java.io.IOException;\n\npublic class attachment_download {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasOAuthError, IOException {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n    FindAttachmentQueryParams queryParams = new FindAttachmentQueryParams(\"<MESSAGE_ID>\");\n    ResponseBody attachment = nylas.attachments().download(\"<NYLAS_GRANT_ID>\", \"<ATTACHMENT_ID>\", queryParams);\n\n    try {\n      FileOutputStream out = new FileOutputStream(\"src/main/resources/image.png\");\n      \n      out.write(attachment.bytes());\n      out.close();\n    } catch (FileNotFoundException e) {\n      System.out.println(\"File not found\");\n    }\n  }\n}"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.FindAttachmentQueryParams\nimport java.io.File\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val queryParams = FindAttachmentQueryParams(\"<MESSAGE_ID>\")\n  val attachment = nylas.attachments().download(\"<NYLAS_GRANT_ID>\", \"<ATTACHMENT_ID>\", queryParams)\n  \n  File(\"src/main/resources/Image.png\").writeBytes(attachment.bytes())\n}"
+      security:
+      - NYLAS_API_KEY: []
+      - ACCESS_TOKEN: []
+  /v3/grants/{grant_id}/attachment-uploads:
+    post:
+      summary: Create an attachment upload session
+      tags:
+      - Attachments
+      operationId: create-attachment-upload-session
+      x-beta: true
+      description: 'Create a resumable upload session for a large attachment (up to 150 MB). Returns a pre-signed URL
+
+        where you upload the file bytes directly using `PUT`.
+
+
+        Upload sessions expire **one hour** after creation. Once you upload the file to the returned URL,
+
+        call the complete endpoint
+
+        to finalize the upload. After completion, reference the `attachment_id` in a send or draft request.
+
+
+        **Supported providers:** Microsoft (Outlook / Exchange via Graph) only. Grants for Google, IMAP,
+
+        Yahoo, iCloud, and EWS are rejected with a `401 Unauthorized` error.
+
+
+        **Required Microsoft scopes** (at least one): `Mail.Send`, `Mail.ReadWrite`, or `Mail.ReadWrite.Shared`.
+
+
+        For the full flow, prerequisites, and error handling, see
+
+        Send large attachments.'
+      security:
+      - ACCESS_TOKEN: []
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: grant_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The ID of the grant to create the upload session for.
+      requestBody:
+        required: true
+        description: Attachment upload session details.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - filename
+              - content_type
+              properties:
+                filename:
+                  type: string
+                  description: The name of the file as it will appear in the email. No allowlist or sanitization is applied.
+                  example: quarterly-report.pdf
+                content_type:
+                  type: string
+                  description: The MIME type of the file (for example, `application/pdf`, `image/png`). No MIME allowlist is applied — any non-empty string is accepted and passed through to storage.
+                  example: application/pdf
+                size:
+                  type: integer
+                  format: int64
+                  description: 'Expected file size in bytes. Recommended — when provided, Nylas validates that the
+
+                    uploaded object matches this size at completion. If omitted, the size-match check
+
+                    is skipped and any non-zero upload is accepted. Maximum: `157286400` (150 MB).'
+                  example: 5242880
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<GRANT_ID>/attachment-uploads' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY_OR_ACCESS_TOKEN>' \\\n  --data-raw '{\n    \"filename\": \"document.pdf\",\n    \"content_type\": \"application/pdf\",\n    \"size\": 1048576\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function createUploadSession() {\n  try {\n    const session = await nylas.attachments.createUploadSession({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      requestBody: {\n        filename: \"quarterly-report.pdf\",\n        contentType: \"application/pdf\",\n        size: 5242880,\n      },\n    });\n\n    console.log(\"Upload session:\", session);\n  } catch (error) {\n    console.error(\"Error creating upload session:\", error);\n  }\n}\n\ncreateUploadSession();\n"
+      responses:
+        '201':
+          description: Upload session created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                  data:
+                    type: object
+                    properties:
+                      attachment_id:
+                        type: string
+                        description: Unique identifier for the upload session (UUID v4). Use this value when completing the session and when referencing the attachment in a send or draft.
+                        example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                      method:
+                        type: string
+                        description: The HTTP method to use when uploading the file to `url`. Always `PUT`.
+                        example: PUT
+                      url:
+                        type: string
+                        description: Google Cloud Storage resumable upload URL. `PUT` the file bytes directly here — no Nylas authorization header is required, because this is a GCS-signed URL.
+                        example: https://storage.googleapis.com/upload/storage/v1/b/BUCKET/o?uploadType=resumable&upload_id=...
+                      headers:
+                        type: object
+                        description: Headers to include when uploading to `url`.
+                        additionalProperties:
+                          type: string
+                        example:
+                          Content-Type: application/pdf
+                      expires_at:
+                        type: string
+                        format: date-time
+                        description: When the upload session expires (RFC 3339). One hour from creation by default.
+                        example: '2026-04-22T19:00:00Z'
+                      max_size:
+                        type: integer
+                        format: int64
+                        description: Maximum allowed file size in bytes.
+                        example: 157286400
+                      size:
+                        type: integer
+                        format: int64
+                        description: Expected file size in bytes, echoing the request. `0` if `size` was not provided on session creation.
+                        example: 5242880
+                      content_type:
+                        type: string
+                        description: MIME type of the file.
+                        example: application/pdf
+                      filename:
+                        type: string
+                        description: Name of the file.
+                        example: quarterly-report.pdf
+                      grant_id:
+                        type: string
+                        description: The grant ID the upload session belongs to.
+              example:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                data:
+                  attachment_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                  method: PUT
+                  url: https://storage.googleapis.com/upload/storage/v1/b/BUCKET/o?uploadType=resumable&upload_id=...
+                  headers:
+                    Content-Type: application/pdf
+                  expires_at: '2026-04-22T19:00:00Z'
+                  max_size: 157286400
+                  size: 5242880
+                  content_type: application/pdf
+                  filename: quarterly-report.pdf
+                  grant_id: abc123
+        '400':
+          description: 'Bad request. Returned when `filename` or `content_type` is missing, when `size` is
+
+            negative or zero, when `size` exceeds the 150 MB maximum, or when the request body is not valid JSON.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: invalid_request
+                      message:
+                        type: string
+                        example: file_size exceeds maximum allowed size of 157286400 bytes
+        '401':
+          description: 'Unauthorized. Returned when the grant cannot be resolved, the provider is not Microsoft,
+
+            or the grant lacks the required scopes (`Mail.Send`, `Mail.ReadWrite`, or `Mail.ReadWrite.Shared`).'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: unauthorized
+                      message:
+                        type: string
+                        example: unauthorized
+        '500':
+          description: Internal error. Returned on storage or database failures (for example, the GCS resumable upload URL could not be initiated).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: internal_error
+                      message:
+                        type: string
+  /v3/grants/{grant_id}/attachment-uploads/{attachment_id}/complete:
+    post:
+      summary: Complete an attachment upload session
+      tags:
+      - Attachments
+      operationId: complete-attachment-upload-session
+      x-beta: true
+      description: 'Finalize an attachment upload session after the file has been uploaded to the pre-signed URL.
+
+        Nylas verifies that the upload succeeded in storage and, if `size` was declared on session
+
+        creation, that the uploaded byte count matches the declared size.
+
+
+        After completion, reference the attachment in a send
+
+        or draft request by passing
+
+        `{ "id": "" }` in the `attachments` array.
+
+
+        **Retention note:** By default, the uploaded file is deleted from storage when `expires_at`
+
+        passes (one hour after session creation). Plan your send to occur inside this window. The
+
+        attachment metadata row is retained for 60 days for observability.
+
+
+        For the full upload flow, see
+
+        Send large attachments.'
+      security:
+      - ACCESS_TOKEN: []
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: grant_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The ID of the grant the upload session belongs to.
+      - name: attachment_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The ID of the attachment upload session to complete.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/grants/<GRANT_ID>/attachment-uploads/<ATTACHMENT_ID>/complete' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY_OR_ACCESS_TOKEN>'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function completeUploadSession() {\n  try {\n    const result = await nylas.attachments.completeUploadSession({\n      identifier: \"<NYLAS_GRANT_ID>\",\n      attachmentId: \"<ATTACHMENT_ID>\",\n    });\n\n    console.log(\"Completed:\", result);\n  } catch (error) {\n    console.error(\"Error completing upload session:\", error);\n  }\n}\n\ncompleteUploadSession();\n"
+      responses:
+        '200':
+          description: Upload session completed successfully. The attachment is now ready to use in a send or draft.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      attachment_id:
+                        type: string
+                        description: 'The attachment ID. Pass this value as `{ "id": "<attachment_id>" }` in the `attachments` array of a send or draft request.'
+                        example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                      grant_id:
+                        type: string
+                      status:
+                        type: string
+                        description: Upload session status. Always `ready` on success.
+                        enum:
+                        - ready
+                        example: ready
+              example:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                data:
+                  attachment_id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                  grant_id: abc123
+                  status: ready
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          description: The `attachment_id` does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: not_found
+                      message:
+                        type: string
+        '409':
+          description: 'The upload session has already been completed (`status: ready`) or has failed (`status: failed`).'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: invalid_request
+                      message:
+                        type: string
+                        example: upload session is already complete
+        '410':
+          description: 'The upload session has expired. Returned when the session was previously marked `expired`
+
+            by the cleanup job, or when `expires_at` has already passed at the time `/complete` is called.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: invalid_request
+                      message:
+                        type: string
+                        example: upload session has expired
+        '422':
+          description: 'Upload verification failed. Returned when the file is not found in storage,
+
+            when the uploaded size does not match the `size` declared on session creation, or
+
+            when no `size` was declared and the uploaded object is empty.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: invalid_request
+                      message:
+                        type: string
+                        example: uploaded object not found in storage
+        '500':
+          description: Internal error. Returned on storage or database failures during verification.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: internal_error
+                      message:
+                        type: string
+components:
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    attachment_file:
+      description: 'The attached file as a binary stream (`application/octet-stream`). Use the
+
+        [Return Attachment Metadata endpoint](/docs/reference/api/attachments/get-attachments-id/)
+
+        to get the MIME type of the file.'
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+          example: some binary data
+    attachment:
+      description: Attachment metadata
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/attachment_metadata'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              content_type: image/png; name="pic.png"
+              content_disposition: inline; filename="pic.png"
+              filename: pic.png
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              id: 185e56cb50e12e82
+              is_inline: true
+              size: 13068
+              content_id: <ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  schemas:
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    attachment_metadata:
+      description: Metadata for a file attached to an email message.
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        content_type:
+          type: string
+          minLength: 1
+          description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don''t provide a type, Nylas infers it from the file name.
+
+            The value of this field is exactly the same as the email attachment''s `Content-Type` header.
+
+            The provider might set additional parameters, such as `name` and `charset`.
+
+
+            Nylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can''t detect its content type.'
+          example: image/png; name="pic.png"
+        filename:
+          type: string
+          minLength: 1
+          description: The file name of the attachment.
+          example: pic.png
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        content_id:
+          type: string
+          description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s HTML. For
+
+            example, you might see something like `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in
+
+            the message body.'
+          example: 1234567890
+        content_disposition:
+          type: string
+          description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
+          example: inline; filename="pic.png"
+        is_inline:
+          type: boolean
+          description: Whether the attachment is inline (embedded in the message body, such as an image).
+          example: true
+        size:
+          type: integer
+          description: The size of the attachment, in bytes.
+          example: 13068
+    id:
+      title: ID
+      type: string
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
+  parameters:
+    query_imap_get_by_id:
+      name: query_imap
+      schema:
+        type: boolean
+        default: false
+      in: query
+      required: false
+      description: '(IMAP, iCloud, and Yahoo only) When `true`, Nylas queries from the IMAP server directly instead of
+
+        the Nylas database.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

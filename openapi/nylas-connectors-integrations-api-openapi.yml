@@ -1,0 +1,853 @@
+openapi: 3.2.0
+info:
+  title: Nylas Connectors (Integrations) API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Connectors (Integrations)
+  description: In Nylas, a connector (formerly called an "integration") stores information that allows your Nylas application to connect to a third party services, such as a provider auth application from Google (GCP), Microsoft (Azure), or to an IMAP provider.
+paths:
+  /v3/connectors:
+    post:
+      operationId: create_connector
+      tags:
+      - Connectors (Integrations)
+      summary: Create a connector
+      description: 'Create a connector in your Nylas application.
+
+
+        Connectors are how your Nylas application stores information it needs to connect to external
+
+        services. Creating a connector is the first step in setting up authentication for your project.
+
+        See Supported providers for more information.'
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        required: true
+        description: ''
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+                title: Google
+                description: Google connector. Requires GCP OAuth app credentials.
+                required:
+                - provider
+                properties:
+                  provider:
+                    type: string
+                    description: The provider type. For Google providers, set to `google`.
+                    example: google
+                  settings:
+                    type: object
+                    description: GCP provider auth app credentials and settings.
+                    required:
+                    - client_id
+                    - client_secret
+                    properties:
+                      client_id:
+                        type: string
+                        description: The GCP app's client ID.
+                        example: abc-def
+                      client_secret:
+                        type: string
+                        description: The GCP app's client secret.
+                        example: xyz-abc-def
+                      topic_name:
+                        type: string
+                        description: Google Pub/Sub topic name. Required if using Email webhooks.
+                        example: topic-123
+                  scope:
+                    type: array
+                    items:
+                      type: string
+                    description: Set the default scopes for each connector. These scopes are overridden by scopes set on the specific grant.
+                    example:
+                    - https://www.googleapis.com/auth/userinfo.email
+                    - https://www.googleapis.com/auth/userinfo.profile
+                    - https://www.googleapis.com/auth/gmail.readonly
+              - type: object
+                title: Microsoft
+                description: Microsoft connector. Requires Azure OAuth app credentials.
+                required:
+                - provider
+                properties:
+                  provider:
+                    type: string
+                    description: The provider type. For Microsoft providers, set to `microsoft`.
+                    example: microsoft
+                  settings:
+                    type: object
+                    description: Your Azure provider auth app credentials and settings, as stored in Entra ID.
+                    required:
+                    - client_id
+                    - client_secret
+                    properties:
+                      client_id:
+                        type: string
+                        description: The Azure auth app's client ID.
+                        example: abc-def
+                      client_secret:
+                        type: string
+                        description: The Azure auth app's client secret.
+                        example: xyz-abc-def
+                      tenant:
+                        type: string
+                        description: Microsoft tenant ID.
+                        example: abc-123-def-456
+                  scope:
+                    type: array
+                    items:
+                      type: string
+                    description: 'Set the default scopes for each connector. Scopes set on individual grants override these scopes.
+
+                      For Microsoft Graph connectors, the Nylas API accepts both the full URI version of a scope name (for example, `https://graph.microsoft.com/Calendars.Read`), as well as the short form (for example, `Calendars.Read`).'
+                    example:
+                    - User.Read
+                    - Mail.Read
+              - type: object
+                title: Zoom
+                description: Zoom connector for managing meetings on behalf of users.
+                required:
+                - provider
+                properties:
+                  provider:
+                    type: string
+                    description: The provider type. For Zoom providers, set to `zoom`.
+                    example: zoom
+                  settings:
+                    type: object
+                    description: 'Zoom provider credentials and settings. You can copy them from your [Zoom App](https://developers.zoom.us/docs/zoom-apps/) in [Zoom Developer Platform](https://developers.zoom.us/docs/). The Zoom Nylas connector does not support default scopes, so do not include them in the connector request.
+
+
+                      However, you must configure the required [granular scopes](https://developers.zoom.us/docs/integrations/oauth-scopes-granular/) directly on your Zoom OAuth app. To use Zoom conferencing with Nylas events, your Zoom app needs: `meeting:write:meeting` (create), `meeting:update:meeting` (update), and `meeting:delete:meeting` (delete).'
+                    required:
+                    - client_id
+                    - client_secret
+                    properties:
+                      client_id:
+                        type: string
+                        description: The Zoom app's client ID.
+                        example: abc-def
+                      client_secret:
+                        type: string
+                        description: The Zoom app's client secret.
+                        example: xyz-abc-def
+              - type: object
+                title: iCloud
+                description: iCloud connector. No app credentials required.
+                required:
+                - provider
+                properties:
+                  provider:
+                    type: string
+                    description: 'The provider type, in this case `icloud`. See
+
+                      [Authenticating iCloud accounts](/docs/provider-guides/icloud/) for more
+
+                      information.'
+                    example: icloud
+              - type: object
+                title: IMAP
+                description: IMAP connector for generic IMAP/SMTP mail servers.
+                required:
+                - provider
+                properties:
+                  provider:
+                    type: string
+                    description: 'The provider type, in this case `imap`. See
+
+                      [Using IMAP accounts and data](/docs/provider-guides/imap/) for more information.'
+                    example: imap
+              - type: object
+                title: EWS
+                description: EWS connector for Exchange on-premises servers.
+                required:
+                - provider
+                - settings
+                properties:
+                  provider:
+                    type: string
+                    description: 'The provider type (in this case, `ews`). See
+
+                      [Authenticating Exchange on-premises accounts](/docs/provider-guides/exchange-on-prem/)
+
+                      for more information.'
+                    example: ews
+                  scopes:
+                    type: string
+                    description: Scopes settings tell Nylas to request specific data objects from the provider.
+                    enum:
+                    - ews.messages
+                    - ews.calendar
+                    - ews.contacts
+                    examples:
+                    - ews.messages
+                    - ews.calendar
+                    - ews.contacts
+              - type: object
+                title: Virtual calendars
+                description: Nylas-managed virtual calendar. No external provider.
+                required:
+                - provider
+                properties:
+                  provider:
+                    type: string
+                    description: The provider type. For virtual calendars, set to `virtual-calendar`.
+                    example: virtual-calendar
+              - type: object
+                title: Yahoo
+                description: Yahoo connector. Requires Yahoo OAuth app credentials.
+                required:
+                - provider
+                properties:
+                  provider:
+                    type: string
+                    description: 'The provider type (in this case, `yahoo`). See
+
+                      [Authenticating Yahoo accounts](/docs/provider-guides/yahoo/) for more information.'
+                    example: yahoo
+                  settings:
+                    type: object
+                    description: Yahoo provider credentials.
+                    required:
+                    - client_id
+                    - client_secret
+                    properties:
+                      client_id:
+                        type: string
+                        description: The Yahoo app's client ID.
+                        example: abc-def
+                      client_secret:
+                        type: string
+                        description: The Yahoo app's client secret.
+                        example: xyz-abc-def
+                  scope:
+                    type: array
+                    items:
+                      type: string
+                    description: Set the default scopes for each connector. These scopes are overridden by scopes set on the specific grant.
+                    example:
+                    - email
+                    - profile
+                    - mail-w
+              - type: object
+                title: Nylas (Agent Account)
+                description: Connector for Nylas-hosted [Agent Account](/docs/v3/agent-accounts/) email and calendar mailboxes. Agent Account connectors don't support the `scope` field.
+                required:
+                - provider
+                properties:
+                  provider:
+                    type: string
+                    description: The provider type (in this case, `nylas`).
+                    example: nylas
+      responses:
+        '201':
+          description: Connector Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/ConnectorObject'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/connectors' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"provider\": \"google\",\n    \"settings\": {\n      \"client_id\": \"<NYLAS_CLIENT_ID>\",\n      \"client_secret\": \"<NYLAS_CLIENT_SECRET>\",\n      \"topic_name\": \"<TOPIC_NAME>\"\n    },\n    \"scope\": [\n      \"https://www.googleapis.com/auth/userinfo.email\",\n      \"https://www.googleapis.com/auth/userinfo.profile\"\n    ]\n  }'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function createConnector() {\n  try {\n    const connector = await nylas.connectors.create({\n      requestBody: {\n        name: \"google\",\n        provider: \"google\",\n        settings: {\n          clientId: \"<GCP_CLIENT_ID>\",\n          clientSecret: \"<GCP_CLIENT_SECRET>\",\n        },\n        scope: [\n          \"openid\",\n          \"https://www.googleapis.com/auth/userinfo.email\",\n          \"https://www.googleapis.com/auth/gmail.modify\",\n          \"https://www.googleapis.com/auth/calendar\",\n          \"https://www.googleapis.com/auth/contacts\",\n        ],\n      },\n    });\n\n    console.log(\"Connector created:\", connector);\n  } catch (error) {\n    console.error(\"Error creating connector:\", error);\n  }\n}\n\ncreateConnector();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nconnector = nylas.connectors.create(\n    request_body={\n        \"provider\": \"google\",\n        \"settings\": {\n            \"client_id\": \"<GCP_CLIENT_ID>\",\n            \"client_secret\": \"<GCP_CLIENT_SECRET>\",\n        },\n        \"scopes\": [\n            \"openid\",\n            \"https://www.googleapis.com/auth/userinfo.email\",\n            \"https://www.googleapis.com/auth/gmail.modify\",\n            \"https://www.googleapis.com/auth/calendar\",\n            \"https://www.googleapis.com/auth/contacts\",\n        ],\n    }\n)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n    api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  provider: \"google\",\n  settings: {\n    clientId: \"<GCP_CLIENT_ID>\",\n    clientSecret: \"<GCP_CLIENT_SECRET>\",\n  },\n  scope: [\n    'openid',\n    'https://www.googleapis.com/auth/userinfo.email',\n    'https://www.googleapis.com/auth/gmail.modify',\n    'https://www.googleapis.com/auth/calendar',\n    'https://www.googleapis.com/auth/contacts',\n  ]\n}\n\nnylas.connectors.create(request_body: request_body)"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class connector {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    List<String> scope = new ArrayList<>();\n    scope.add(\"openid\");\n    scope.add(\"https://www.googleapis.com/auth/userinfo.email\");\n    scope.add(\"https://www.googleapis.com/auth/gmail.modify\");\n    scope.add(\"https://www.googleapis.com/auth/calendar\");\n    scope.add(\"https://www.googleapis.com/auth/contacts\");\n\n    GoogleCreateConnectorSettings settings = new GoogleCreateConnectorSettings(\n        \"<GCP_CLIENT_ID>\",\n        \"<GCP_CLIENT_SECRET>\",\n        \"\"\n    );\n\n    CreateConnectorRequest request = new CreateConnectorRequest.Google(settings, scope);\n\n    nylas.connectors().create(request);\n  }\n}  "
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.CreateConnectorRequest\nimport com.nylas.models.GoogleCreateConnectorSettings\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  var scope = listOf(\n      \"openid\",\n      \"https://www.googleapis.com/auth/userinfo.email\",\n      \"https://www.googleapis.com/auth/gmail.modify\",\n      \"https://www.googleapis.com/auth/calendar\",\n      \"https://www.googleapis.com/auth/contacts\"\n  )\n\n  val settings : GoogleCreateConnectorSettings = GoogleCreateConnectorSettings(\n      \"<GCP_CLIENT_ID>\",\n      \"<GCP_CLIENT_SECRET>\",\n      \"\"\n  )\n\n  val request : CreateConnectorRequest = CreateConnectorRequest.Google(settings, scope)\n  \n  nylas.connectors().create(request)\n}"
+    get:
+      operationId: get_connector_all
+      tags:
+      - Connectors (Integrations)
+      summary: List connectors
+      description: List the connectors in your Nylas application.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+        required: false
+        description: Limit the number of results in a connector list.
+      - name: offset
+        in: query
+        schema:
+          type: integer
+        required: false
+        description: Offset the list of results in a connector list.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConnectorObject'
+                  limit:
+                    type: integer
+                    example: 10
+                  offset:
+                    type: integer
+                    example: 0
+          description: Returns an array of Connector objects.
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/connectors' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst listConnectors = async () => {\n  try {\n    const connectors = await nylas.connectors.list({});\n\n    console.log(\"Connectors:\", connectors);\n  } catch (error) {\n    console.error(\"Error fetching connectors:\", error);\n  }\n};\n\nlistConnectors();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nconnectors = nylas.connectors.list\n\nprint(\"Connectors:\", connectors)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n    api_key: \"<NYLAS_API_KEY>\",\n)\n\nconnectors = nylas.connectors.list()\n\nputs connectors\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class ListDraft {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n        NylasClient nylas = \n        new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        ListResponse<Connector> connectors =\n        nylas.connectors().list();\n        System.out.println(connectors);\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n    \n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val connectors = nylas.connectors().list()\n    println(connectors)\n}\n"
+  /v3/connectors/{provider}:
+    get:
+      operationId: get_connector_by_provider
+      tags:
+      - Connectors (Integrations)
+      summary: Get connector
+      description: Returns a connector for the specified provider.
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - $ref: '#/components/parameters/provider'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/ConnectorObject'
+          description: Returns a connector object
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/connectors/<PROVIDER>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst getConnector = async () => {\n  try {\n    const connector = await nylas.connectors.find({\n      provider: \"google\",\n    });\n\n    console.log(\"Connector\", connector);\n  } catch (error) {\n    console.error(\"Error fetching connector:\", error);\n  }\n};\n\ngetConnector();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nconnector = nylas.connectors.find(\n    provider=\"google\"\n)\n\nprint(\"Connector:\", connector)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n    api_key: \"<NYLAS_API_KEY>\",\n)\n\nconnectors = nylas.connectors.find(provider: \"google\")\n\nputs connectors\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class ListDraft {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n        NylasClient nylas = \n        new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        Response<Connector> connector = \n        nylas.connectors().find(AuthProvider.GOOGLE);\n        System.out.println(connector);\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.AuthProvider\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val connector = \n    nylas.connectors().find(AuthProvider.GOOGLE)\n    println(connector)\n}\n"
+    patch:
+      operationId: update_connector_by_provider
+      tags:
+      - Connectors (Integrations)
+      summary: Update a connector
+      description: 'Update the connector for the specified provider.
+
+
+        When you make a `PATCH` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        Updating objects.'
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - $ref: '#/components/parameters/provider'
+      requestBody:
+        required: true
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: object
+                  description: Oauth provider credentials and settings
+                  example:
+                    tenant: common
+                scope:
+                  type: array
+                  description: Oauth "scope" parameter
+                  example:
+                  - Mail.Read
+                  - User.Read
+                  - offline_access
+                  items:
+                    type: string
+                active_credential_id:
+                  type: string
+                  description: (Optional) The ID of the "default" credential record of this Connector. This credential will be used as a default for communication with the provider.
+                  example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/ConnectorObject'
+          description: Returns the connector object (previously called an integration) for the provider you specify.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PATCH \\\n  --url 'https://api.us.nylas.com/v3/connectors/<PROVIDER>' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"name\": \"google\"\n  }'"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nconnector = nylas.connectors.update(\n    provider=\"google\",\n    request_body={\n        \"name\": \"google\"\n    }\n)\n\nprint(\"Connector:\", connector)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n    api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  scope: [\n    'https://www.googleapis.com/auth/contacts'\n  ]\n}\n\nconnector = nylas.connectors.update(provider: \"google\", request_body: request_body)\n\nputs connector\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class ListDraft {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n\n        NylasClient nylas = \n        new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        List<String> scope = new ArrayList<>();\n        scope.add(\"https://www.googleapis.com/auth/contacts\");\n\n        GoogleConnectorSettings settings = new GoogleConnectorSettings();\n\n        UpdateConnectorRequest.Google request = new UpdateConnectorRequest.Google.Builder()\n            .settings(settings)\n            .scope(scope)\n            .build();\n\n        nylas.connectors().update(AuthProvider.GOOGLE, request);\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.AuthProvider\nimport com.nylas.models.GoogleConnectorSettings\nimport com.nylas.models.UpdateConnectorRequest\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val settings : GoogleConnectorSettings = \n    GoogleConnectorSettings()\n\n    val request = \n    UpdateConnectorRequest.Google(settings)\n\n    val connector = \n    nylas.connectors().update(AuthProvider.GOOGLE, \n    request)\n    println(connector)\n}\n"
+    delete:
+      operationId: delete_connector_by_provider
+      tags:
+      - Connectors (Integrations)
+      summary: Delete a connector
+      description: 'Deletes the connector for the provider you specify. All grants on the connector stop working right away, and its credentials are deleted too.
+
+
+        To learn what gets removed and when, see Deleting resources and data.'
+      parameters:
+      - $ref: '#/components/parameters/provider'
+      security:
+      - NYLAS_API_KEY: []
+      responses:
+        '200':
+          $ref: '#/components/responses/200-delete'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/connectors/<PROVIDER>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst provider = \"google\";\n\ntry {\n  await nylas.connectors.destroy({ provider });\n  console.log(`Connector with ID ${provider} removed successfully.`);\n} catch (error) {\n  console.error(\"Error removing connector:\", error);\n}\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nprovider = \"google\"\n\nrequest = nylas.connectors.destroy(\n    provider,\n)\n\nprint(request)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n    api_key: \"<NYLAS_API_KEY>\",\n)\n\nconnector = nylas.connectors.destroy(provider: \"google\")\n\nputs connector\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class ListDraft {\n    public static void main(String[] args) throws \n    NylasSdkTimeoutError, NylasApiError {\n        NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n        DeleteResponse connector = \n        nylas.connectors().destroy(AuthProvider.GOOGLE);\n        System.out.println(connector);\n    }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.AuthProvider\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val connector = \n    nylas.connectors().destroy(AuthProvider.GOOGLE)\n    println(connector)\n}\n"
+  /v3/providers/detect:
+    post:
+      operationId: detect_provider_by_email
+      tags:
+      - Connectors (Integrations)
+      summary: Detect provider
+      description: Returns the provider if one is detected. This operation is rate limited to 20 calls per minute for each Nylas application ID.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/providers/detect?email=<EMAIL>&all_provider_types=false' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\"
+      - lang: javascript
+        label: Node.js SDK
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nconst detectProvider = async () => {\n  try {\n    const response = await nylas.auth.detectProvider({\n      email: \"<EMAIL>\",\n    });\n\n    console.log(\"Detected provider:\", response);\n  } catch (error) {\n    console.error(\"Error detecting provider:\", error);\n  }\n};\n\ndetectProvider();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.auth.detect_provider({\n    \"email\": \"<EMAIL>\",\n})\n\nprint(\"Detected provider:\", response)\n"
+      - lang: ruby
+        label: Ruby SDK
+        source: "require 'nylas'\n\nnylas = Nylas::Client.new(\n    api_key: \"<NYLAS_API_KEY>\"\n)\n\nprovider, _ = nylas.auth.detect_provider({ email: \"<EMAIL>\" })\n\nputs provider\n"
+      - lang: java
+        label: Java SDK
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.*;\n\npublic class detect_provider {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n    ProviderDetectParams params = new ProviderDetectParams.Builder(\"<EMAIL>\").build();\n    Response<ProviderDetectResponse> provider = nylas.auth().detectProvider(params);\n\n    System.out.println(provider);\n  }\n}"
+      - lang: kotlin
+        label: Kotlin SDK
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.ProviderDetectParams\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val params = ProviderDetectParams(\"<EMAIL>\")\n  val provider = nylas.auth().detectProvider(params)\n\n  print(provider)\n}"
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - in: query
+        name: email
+        description: Email for detection
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: all_provider_types
+        description: Search by all providers regardless of if they have an existing connector
+        schema:
+          default: false
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/AutodetectObject'
+          description: Returns the autodetected provider
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+components:
+  parameters:
+    provider:
+      name: provider
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - google
+        - microsoft
+        - imap
+        - icloud
+        - yahoo
+        - ews
+        - virtual-calendar
+        - zoom
+        - nylas
+        example: google
+  schemas:
+    '401':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: invalid_request_error
+            message:
+              description: Informative error message
+              default: Authentication error
+              type: string
+              example: Authentication error
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    '404':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: xyz.not_found_error
+            message:
+              description: Informative error message
+              default: Resource not found
+              type: string
+              example: Resource not found
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    AutodetectObject:
+      type: object
+      additionalProperties: false
+      required:
+      - email_address
+      - detected
+      properties:
+        provider:
+          type: string
+          description: Provider detected.
+          example: google
+        type:
+          type: string
+          description: Provider type. Returned only when IMAP detected displays the IMAP provider.
+          example: icloud
+        email_address:
+          type: string
+          description: Email provided for autodetection.
+          example: test@example.com
+        detected:
+          type: boolean
+          description: Whether Nylas detected a provider for the given email address.
+          example: true
+    ConnectorObject:
+      type: object
+      additionalProperties: false
+      required:
+      - provider
+      - name
+      properties:
+        name:
+          type: string
+          description: The name of the connector.
+          example: Google Connector
+        provider:
+          type: string
+          description: Provider type
+          enum:
+          - google
+          - microsoft
+          - imap
+          - icloud
+          - yahoo
+          - virtual-calendar
+          - ews
+          - zoom
+          - nylas
+          example: google
+        settings:
+          description: Optional settings from provider
+          example:
+            topic_name: abc123
+          type: object
+        scope:
+          type: array
+          items:
+            type: string
+          description: (Not used for Zoom connectors.) Optional default scopes for the connector. For Zoom, configure scopes directly on your Zoom OAuth app. See [Zoom granular scopes](https://developers.zoom.us/docs/integrations/oauth-scopes-granular/).
+          example:
+          - https://www.googleapis.com/auth/userinfo.email
+          - https://www.googleapis.com/auth/userinfo.profile
+        active_credential_id:
+          type: string
+          description: The ID of the "default" credential record of this Connector. This credential will be used as a default for communication with the provider.
+          example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+  responses:
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

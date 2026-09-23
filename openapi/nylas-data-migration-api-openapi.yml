@@ -1,0 +1,276 @@
+openapi: 3.2.0
+info:
+  title: Nylas Data migration API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Data Migration
+  description: In Nylas v2, you used the unique Nylas ID to locate data and objects in Nylas's synced data.
+paths:
+  /v3/migration-tools/translate:
+    post:
+      operationId: translate_v2id_to_provider_id
+      tags:
+      - Data Migration
+      summary: Translate v2 Nylas ID into v3 Provider ID
+      description: 'Use the connected account ID and a resource type, with an optional list of specific Nylas IDs, to get a response that contains a list of of Nylas IDs and their v3 Provider ID equivalents. Use this API as a one-time operation to translate v2 IDs into v3 Provider IDs. Do not use this API in your code logic as it very data intensive.
+
+
+        To use this endpoint, your v2 Nylas application needs to be linked to the equivalent v3 Nylas application. This endpoint does not work for objects in v2 accounts that have the provider set to `Outlook`.
+
+
+        By default, the API returns up to 3000 records for the requested resource type related to the v2 connected account, sorted by `created_at` date. If you specify a list of v2 Nylas IDs, the API returns the v3 Provider IDs for those specific IDs only.
+
+
+        Results are paginated, with a page size of 3000 results. If the response includes a `next_page_number` field, you can use that number in a request to get the next set of results.
+
+
+        Also, there is a possibility to search results created only after certain Unix timestamp, in Nylas v2 database. To use this, add to body payload `start_from_timestamp` valid Unix timestamp.
+
+
+        The API is rate limited to 20 requests per second per Nylas application ID.
+
+
+        ### IMAP folder resource ID
+
+
+        When you make a Translate ID request for an IMAP folder (`resource_type: folders`), Nylas returns its name in the `v3_resource_id` field. To get the resource ID for a specific folder, Base64 encode the folder name using the following format: `v0::`.'
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        required: true
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - resource_type
+              - v2_account_id
+              properties:
+                resource_type:
+                  example: messages
+                  type: string
+                  description: The resourece(s) to get translations for.
+                  enum:
+                  - messages
+                  - drafts
+                  - threads
+                  - contacts
+                  - contactgroups
+                  - events
+                  - calendars
+                  - folders
+                v2_account_id:
+                  example: 1kb392012l0mr39hmla2exnxu
+                  type: string
+                  description: The v2 connected account ID to get translations for.
+                nylas_ids:
+                  type: array
+                  description: (Optional) The list of v2 IDs to translate. If omitted, Nylas returns up to 3000 IDs for the requested resource types related to that v2 connected account. Results are returned sorted by creation date, ascending.
+                  items:
+                    type: string
+                  example:
+                  - 4ro91k0t3ofvzs3b3lij6iqa2
+                  - 5ro92l1t4pfwzt4c4mijk7jb3
+                  - 6ro93m2u5qgxzu5d5nijl8kc4
+                start_from_timestamp:
+                  example: 1727172308
+                  type: integer
+                  description: (Optional) The Unix timestamp to search for results created after that timestamp.
+                next_page_number:
+                  example: 2
+                  type: integer
+                  description: (Optional) The page number for the next set of results. This appears in the response only if there are more results available.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/translate_v2v3_id'
+          description: Returns a JSON list of translated objects, with mapped v2 and translated v3 ids.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Not Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/translate' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"resource_type\": \"messages\",\n    \"v2_account_id\": \"<NYLAS_ACCOUNT_ID>\",\n    \"nylas_ids\": [\n      \"<NYLAS_ACCOUNT_ID>\",\n      \"<NYLAS_ACCOUNT_ID>\"\n    ]\n  }'"
+components:
+  schemas:
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    '401':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: invalid_request_error
+            message:
+              description: Informative error message
+              default: Authentication error
+              type: string
+              example: Authentication error
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    translate_v2v3_id:
+      type: object
+      additionalProperties: false
+      required:
+      - v2_application_id
+      - v2_account_id
+      - resource_type
+      - ids
+      properties:
+        v2_application_id:
+          type: string
+          description: The ID of the v2 Nylas application the connected account belongs to.
+          example: defg12342l0mr39hmla2eabcd
+        v2_account_id:
+          type: string
+          description: The ID of v2 connected account you are requesting translations for.
+          example: 1kb392012l0mr39hmla2exnxu
+        resource_type:
+          type: string
+          description: 'The names of the v2 resources you''re requesting translations for.
+
+
+            To request Gmail''s "labels", include `folders`. (Nylas v3 consolidates folders and labels into
+
+            one resource.)'
+          example: message
+          enum:
+          - messages
+          - drafts
+          - threads
+          - contacts
+          - contactgroups
+          - events
+          - calendars
+          - folders
+        translations:
+          type: array
+          description: 'A list of v2 Nylas IDs and their v3 Provider ID counterparts, according to the requested resource
+
+            type and v2 connected account.'
+          items:
+            type: object
+            properties:
+              v2_resource_id:
+                type: string
+                description: The v2 Nylas ID.
+                example: 1kb392012l0mr39hmla2exnxu
+              v3_resource_id:
+                type: string
+                description: The v3 Provider ID.
+                example: 175ade7f22b0a2f4
+        next_page_number:
+          type: integer
+          description: A page number for next set of results, if more results are available. This field does not appear if there are no more results.
+          example: 2
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

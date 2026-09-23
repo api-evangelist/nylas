@@ -1,0 +1,999 @@
+openapi: 3.2.0
+info:
+  title: Nylas Bookings API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Bookings
+  description: Nylas Scheduler uses the `/v3/scheduling/bookings` endpoint to manage bookings.
+paths:
+  /v3/scheduling/bookings:
+    parameters:
+    - schema:
+        type: string
+      name: timezone
+      in: query
+      required: false
+      description: The timezone to use for the booking. If not provided, Nylas uses the timezone from the Configuration object.
+    - schema:
+        type: string
+      name: configuration_id
+      in: query
+      required: false
+      description: The ID of the Configuration object whose settings are used for calculating availability. If you're using session authentication (`requires_session_auth` is set to `true`), `configuration_id` is not required.
+    - schema:
+        type: string
+      name: slug
+      in: query
+      required: false
+      description: The slug of the Configuration object. You can use this with the `client_id` instead of using the `configuration_id`. If you're using session authentication (`requires_session_auth` is set to `true`) or using the `configuration_id`, `slug` is not required.
+    - schema:
+        type: string
+      name: client_id
+      in: query
+      required: false
+      description: The client ID that was used to create the Configuration object. `client_id` is required only if you're using `slug`.
+    post:
+      summary: Book an event
+      tags:
+      - Bookings
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/calendar.events
+          others: https://www.googleapis.com/auth/calendar
+        microsoft:
+          min: https://graph.microsoft.com/Calendars.ReadWrite
+          others: ''
+      requestBody:
+        $ref: '#/components/requestBodies/booking_create'
+      responses:
+        '200':
+          $ref: '#/components/responses/booking_create'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      operationId: post-bookings
+      description: 'Books an event with the participants listed in the session''s
+
+        Configuration object, using the details from the
+
+        Configuration. The `start_time` and `end_time` must correspond to a valid time slot returned by
+
+        the
+
+        Scheduling Availability endpoint
+
+        using the same Configuration.
+
+
+        Nylas validates the session ID and uses it to retrieve the related Configuration object. If you
+
+        created a public Configuration, you don''t need to include the `Authorization` request header with
+
+        a session ID, but you do need to pass the Configuration object ID as a query parameter.'
+      x-code-samples:
+      - lang: bash
+        label: cURL (Public)
+        source: "curl --compressed --request POST \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings?configuration_id=<SCHEDULER_CONFIG_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"start_time\": 1709643600,\n    \"end_time\": 1709645400,\n    \"participants\": [],\n    \"guest\": {\n      \"name\": \"Jane Doe\",\n      \"email\": \"jane.doe@example.com\"\n    }\n  }'"
+      - lang: bash
+        label: cURL (Private)
+        source: "curl --compressed --request POST \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <SCHEDULER_SESSION_ID>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"start_time\": 1709643600,\n    \"end_time\": 1709645400,\n    \"participants\": [],\n    \"guest\": {\n      \"name\": \"Jane Doe\",\n      \"email\": \"jane.doe@example.com\"\n    }\n  }'"
+      - lang: javascript
+        label: Node.js SDK (Public)
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function createBooking() {\n  try {\n    const booking = await nylas.scheduler.bookings.create({\n      queryParams: {\n        configurationId: \"<SCHEDULER_CONFIG_ID>\",\n      },\n      requestBody: {\n        startTime: 1763119800,\n        endTime: 1763121600,\n        guest: {\n          name: \"Jane Doe\",\n          email: \"jane.doe@example.com\",\n        },\n      },\n    });\n    console.log(\"Created Booking\", booking);\n  } catch (error) {\n    console.error(\"Error creating booking\", error);\n  }\n}\ncreateBooking();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nbooking = nylas.scheduler.bookings.create(\n    request_body={\n        \"start_time\": 1763119800,\n        \"end_time\": 1763121600,\n        \"guest\": {\n            \"name\": \"Jane Doe\",\n            \"email\": \"jane.doe@example.com\",\n        },\n    },\n    query_params={\n        \"configuration_id\": \"<SCHEDULER_CONFIG_ID>\",\n    },\n)\n\nprint(\"Created booking:\", booking)\n"
+      - lang: javascript
+        label: Node.js SDK (Private)
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function createBooking() {\n  try {\n    const booking = await nylas.scheduler.bookings.create({\n      requestBody: {\n        startTime: 1763119800,\n        endTime: 1763121600,\n        guest: {\n          name: \"Jane Doe\",\n          email: \"jane.doe@example.com\",\n        },\n      },\n    });\n    console.log(\"Created Booking\", booking);\n  } catch (error) {\n    console.error(\"Error creating booking\", error);\n  }\n}\ncreateBooking();\n"
+      - lang: ruby
+        label: Ruby SDK (Public)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  \"start_time\": 1709643600,\n  \"end_time\": 1709645400,\n  \"participants\": [],\n  \"guest\": {\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane.doe@example.com\"\n  }\n}\n\nbooking, _request_ids = nylas.scheduler.bookings.create(request_body: request_body, query_params: { configuration_id: \"<SCHEDULER_CONFIG_ID>\" })\n\nputs booking"
+      - lang: ruby
+        label: Ruby SDK (Private)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<SCHEDULER_SESSION_ID>\"\n)\n\nrequest_body = {\n  \"start_time\": 1709643600,\n  \"end_time\": 1709645400,\n  \"participants\": [],\n  \"guest\": {\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane.doe@example.com\"\n  }\n}\n\nbooking, _request_ids = nylas.scheduler.bookings.create(request_body: request_body)\n\nputs booking"
+      - lang: java
+        label: Java SDK (Public)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Booking;\nimport com.nylas.models.BookingGuest;\nimport com.nylas.models.CreateBookingQueryParams;\nimport com.nylas.models.CreateBookingRequest;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class CreateBookingPublic {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    BookingGuest guest = new BookingGuest(\"jane.doe@example.com\", \"Jane Doe\");\n\n    CreateBookingRequest requestBody = new CreateBookingRequest.Builder()\n        .startTime(\"1763119800\")\n        .endTime(\"1763121600\")\n        .guest(guest)\n        .build();\n\n    // Public Configuration objects need the configuration ID as a query parameter.\n    CreateBookingQueryParams queryParams = new CreateBookingQueryParams.Builder()\n        .configurationId(\"<SCHEDULER_CONFIG_ID>\")\n        .build();\n\n    Response<Booking> booking = nylas.scheduler().bookings().create(requestBody, queryParams);\n\n    System.out.println(\"Created booking: \" + booking.getData());\n  }\n}\n"
+      - lang: java
+        label: Java SDK (Private)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Booking;\nimport com.nylas.models.BookingGuest;\nimport com.nylas.models.CreateBookingRequest;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class CreateBooking {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    // Use a Scheduler session ID as the API key for session-authenticated bookings.\n    NylasClient nylas = new NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build();\n\n    BookingGuest guest = new BookingGuest(\"jane.doe@example.com\", \"Jane Doe\");\n\n    CreateBookingRequest requestBody = new CreateBookingRequest.Builder()\n        .startTime(\"1763119800\")\n        .endTime(\"1763121600\")\n        .guest(guest)\n        .build();\n\n    Response<Booking> booking = nylas.scheduler().bookings().create(requestBody);\n\n    System.out.println(\"Created booking: \" + booking.getData());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Public)
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.BookingGuest\nimport com.nylas.models.CreateBookingQueryParams\nimport com.nylas.models.CreateBookingRequest\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val guest = BookingGuest(email = \"jane.doe@example.com\", name = \"Jane Doe\")\n\n  val requestBody = CreateBookingRequest.Builder()\n      .startTime(\"1763119800\")\n      .endTime(\"1763121600\")\n      .guest(guest)\n      .build()\n\n  // Public Configuration objects need the configuration ID as a query parameter.\n  val queryParams = CreateBookingQueryParams.Builder()\n      .configurationId(\"<SCHEDULER_CONFIG_ID>\")\n      .build()\n\n  val booking = nylas.scheduler().bookings().create(requestBody, queryParams)\n\n  println(\"Created booking: ${booking.data}\")\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Private)
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.BookingGuest\nimport com.nylas.models.CreateBookingRequest\n\nfun main() {\n  // Use a Scheduler session ID as the API key for session-authenticated bookings.\n  val nylas = NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build()\n\n  val guest = BookingGuest(email = \"jane.doe@example.com\", name = \"Jane Doe\")\n\n  val requestBody = CreateBookingRequest.Builder()\n      .startTime(\"1763119800\")\n      .endTime(\"1763121600\")\n      .guest(guest)\n      .build()\n\n  val booking = nylas.scheduler().bookings().create(requestBody)\n\n  println(\"Created booking: ${booking.data}\")\n}\n"
+      security:
+      - SCHEDULER_SESSION_TOKEN: []
+  /v3/scheduling/bookings/{booking_id}:
+    parameters:
+    - schema:
+        type: string
+      name: booking_id
+      in: path
+      required: true
+      description: The ID of the booking object to access.
+    - schema:
+        type: string
+      name: configuration_id
+      in: query
+      required: false
+      description: 'The ID of the Configuration object used for calculating availability. If you''re using session
+
+        authentication (`requires_session_auth: true`), the `configuration_id` isn''t required.'
+    - schema:
+        type: string
+      name: slug
+      in: query
+      required: false
+      description: 'The Configuration object slug. You can use this with the `client_id` instead of using the
+
+        `configuration_id`. If you''re using session authentication (`requires_session_auth: true`) or
+
+        using the `configuration_id`, `slug` isn''t required.'
+    - schema:
+        type: string
+      name: client_id
+      in: query
+      required: false
+      description: 'The client ID that was used to create the Configuration object. Required only if you''re using
+
+        `slug`.'
+    get:
+      summary: Return a booking
+      tags:
+      - Bookings
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/calendar.events
+          others: https://www.googleapis.com/auth/calendar
+        microsoft:
+          min: https://graph.microsoft.com/Calendars.ReadWrite
+          others: ''
+      operationId: get-bookings-id
+      description: 'Returns the specified Booking object.
+
+
+        Nylas validates the provided session ID and uses it to retrieve the related
+
+        Configuration object. If you created a public
+
+        Configuration, you don''t need to include the `Authorization` request header with a session ID, but
+
+        you do need to pass the Configuration object ID as a query parameter.'
+      x-code-samples:
+      - lang: bash
+        label: cURL (Public)
+        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings/<BOOKING_ID>?configuration_id=<SCHEDULER_CONFIG_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json'"
+      - lang: bash
+        label: cURL (Private)
+        source: "curl --compressed --request GET \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings/<BOOKING_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <SCHEDULER_SESSION_ID>' \\\n  --header 'Content-Type: application/json'"
+      - lang: javascript
+        label: Node.js SDK (Public)
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function fetchBookingById() {\n  try {\n    const booking = await nylas.scheduler.bookings.find({\n      queryParams: {\n        configurationId: \"<SCHEDULER_CONFIG_ID>\",\n      },\n      bookingId: \"<BOOKING_ID>\",\n    });\n    console.log(\"Booking\", booking);\n  } catch (error) {\n    console.error(\"Error fetching booking\", error);\n  }\n}\n\nfetchBookingById();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nbooking = nylas.scheduler.bookings.find(\n    booking_id=\"<BOOKING_ID>\",\n    query_params={\n        \"configuration_id\": \"<SCHEDULER_CONFIG_ID>\",\n    },\n)\n\nprint(\"Booking:\", booking)\n"
+      - lang: javascript
+        label: Node.js SDK (Private)
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<SCHEDULER_SESSION_ID>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function fetchBookingById() {\n  try {\n    const booking = await nylas.scheduler.bookings.find({\n      bookingId: \"<BOOKING_ID>\",\n    });\n    console.log(\"Booking\", booking);\n  } catch (error) {\n    console.error(\"Error fetching booking\", error);\n  }\n}\n\nfetchBookingById();\n"
+      - lang: ruby
+        label: Ruby SDK (Public)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nbooking, _request_ids = nylas.scheduler.bookings.find(booking_id: \"<SCHEDULER_BOOKING_ID>\", query_params: { configuration_id: \"<SCHEDULER_CONFIG_ID>\" })\n\nputs booking"
+      - lang: ruby
+        label: Ruby SDK (Private)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<SCHEDULER_SESSION_ID>\"\n)\n\nbooking, _request_ids = nylas.scheduler.bookings.find(booking_id: \"<SCHEDULER_BOOKING_ID>\")\n\nputs booking"
+      - lang: java
+        label: Java SDK (Public)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Booking;\nimport com.nylas.models.FindBookingQueryParams;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class FindBookingPublic {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    FindBookingQueryParams queryParams = new FindBookingQueryParams.Builder()\n        .configurationId(\"<SCHEDULER_CONFIG_ID>\")\n        .build();\n\n    Response<Booking> booking = nylas.scheduler().bookings().find(\"<BOOKING_ID>\", queryParams);\n\n    System.out.println(\"Booking: \" + booking.getData());\n  }\n}\n"
+      - lang: java
+        label: Java SDK (Private)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Booking;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class FindBooking {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build();\n\n    Response<Booking> booking = nylas.scheduler().bookings().find(\"<BOOKING_ID>\");\n\n    System.out.println(\"Booking: \" + booking.getData());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Public)
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.FindBookingQueryParams\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val queryParams = FindBookingQueryParams.Builder()\n      .configurationId(\"<SCHEDULER_CONFIG_ID>\")\n      .build()\n\n  val booking = nylas.scheduler().bookings().find(\"<BOOKING_ID>\", queryParams)\n\n  println(\"Booking: ${booking.data}\")\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Private)
+        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build()\n\n  val booking = nylas.scheduler().bookings().find(\"<BOOKING_ID>\")\n\n  println(\"Booking: ${booking.data}\")\n}\n"
+      responses:
+        '200':
+          $ref: '#/components/responses/booking_create'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - SCHEDULER_SESSION_TOKEN: []
+    patch:
+      summary: Reschedule a booking
+      tags:
+      - Bookings
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/calendar.events
+          others: https://www.googleapis.com/auth/calendar
+        microsoft:
+          min: https://graph.microsoft.com/Calendars.ReadWrite
+          others: ''
+      operationId: patch-bookings-id
+      description: 'Reschedules the specified booking. Nylas also updates the associated event on the provider.
+
+
+        Nylas recommends against changing participants'' email addresses while updating a booking, to avoid
+
+        confusion.
+
+
+        Nylas validates the provided session ID and uses it to retrieve the related
+
+        Configuration object. If you created a public
+
+        Configuration, you don''t need to include the `Authorization` request header with a session ID, but
+
+        you do need to pass the Configuration object ID as a query parameter.
+
+
+        When you make a `PATCH` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        Updating objects.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/booking_update'
+                title: Reschedule standard booking
+              - $ref: '#/components/schemas/booking_update_group'
+                title: Reschedule group booking
+      x-code-samples:
+      - lang: bash
+        label: cURL (Public)
+        source: "curl --compressed --request PATCH \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings/<BOOKING_ID>?configuration_id=<SCHEDULER_CONFIG_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"start_time\": 1708714800,\n    \"end_time\": 1708722000\n  }'"
+      - lang: bash
+        label: cURL (Private)
+        source: "curl --compressed --request PATCH \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings/<BOOKING_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <SCHEDULER_SESSION_ID>' \\\n  --header 'Content-Type: application/json' \\ \n  --data '{\n    \"start_time\": 1708714800,\n    \"end_time\": 1708722000\n  }'"
+      - lang: javascript
+        label: Node.js SDK (Public)
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function rescheduleBooking() {\n  try {\n    const booking = await nylas.scheduler.bookings.reschedule({\n      queryParams: {\n        configurationId: \"<SCHEDULER_CONFIG_ID>\",\n      },\n      bookingId: \"booking-id\",\n      requestBody: {\n        startTime: 1763292600,\n        endTime: 1763294400,\n      },\n    });\n    console.log(\"Rescheduled Booking\", booking);\n  } catch (error) {\n    console.error(\"Error rescheduling booking\", error);\n  }\n}\n\nrescheduleBooking();\n"
+      - lang: python
+        label: Python SDK
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nbooking = nylas.scheduler.bookings.confirm(\n    booking_id=\"<BOOKING_ID>\",\n    request_body={\n        \"salt\": \"<SALT>\",\n        \"status\": \"confirmed\",\n    },\n    query_params={\n        \"configuration_id\": \"<SCHEDULER_CONFIG_ID>\",\n    },\n)\n\nprint(\"Confirmed booking:\", booking)\n"
+      - lang: javascript
+        label: Node.js SDK (Private)
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<SCHEDULER_SESSION_ID>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function rescheduleBooking() {\n  try {\n    const booking = await nylas.scheduler.bookings.reschedule({\n      bookingId: \"booking-id\",\n      requestBody: {\n        startTime: 1763292600,\n        endTime: 1763294400,\n      },\n    });\n    console.log(\"Rescheduled Booking\", booking);\n  } catch (error) {\n    console.error(\"Error rescheduling booking\", error);\n  }\n}\n\nrescheduleBooking();\n"
+      - lang: ruby
+        label: Ruby SDK (Public)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  \"start_time\": 1794828600,\n  \"end_time\": 1794830400,\n}\nbooking, _request_ids = nylas.scheduler.bookings.update(booking_id: \"<BOOKING_ID>\", request_body: request_body, query_params: {\"configuration_id\": \"<CONFIGURATION_ID>\"})\n\nputs booking"
+      - lang: ruby
+        label: Ruby SDK (Private)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<SCHEDULER_SESSION_ID>\"\n)\n  \nrequest_body = {\n  \"start_time\": 1794828600,\n  \"end_time\": 1794830400,\n}\nbooking, _request_ids = nylas.scheduler.bookings.update(booking_id: \"<BOOKING_ID>\", request_body: request_body)\n\nputs booking"
+      - lang: java
+        label: Java SDK (Public)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Booking;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.RescheduleBookingQueryParams;\nimport com.nylas.models.RescheduleBookingRequest;\nimport com.nylas.models.Response;\n\npublic class RescheduleBookingPublic {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    RescheduleBookingRequest requestBody = new RescheduleBookingRequest.Builder()\n        .startTime(1763292600)\n        .endTime(1763294400)\n        .build();\n\n    RescheduleBookingQueryParams queryParams = new RescheduleBookingQueryParams(\n        \"<SCHEDULER_CONFIG_ID>\", \"<SCHEDULER_CONFIG_SLUG>\", \"<NYLAS_CLIENT_ID>\");\n\n    Response<Booking> booking = nylas.scheduler().bookings().reschedule(\n        \"<BOOKING_ID>\", requestBody, queryParams);\n\n    System.out.println(\"Rescheduled booking: \" + booking.getData());\n  }\n}\n"
+      - lang: java
+        label: Java SDK (Private)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Booking;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.RescheduleBookingRequest;\nimport com.nylas.models.Response;\n\npublic class RescheduleBooking {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build();\n\n    RescheduleBookingRequest requestBody = new RescheduleBookingRequest.Builder()\n        .startTime(1763292600)\n        .endTime(1763294400)\n        .build();\n\n    Response<Booking> booking = nylas.scheduler().bookings().reschedule(\"<BOOKING_ID>\", requestBody);\n\n    System.out.println(\"Rescheduled booking: \" + booking.getData());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Public)
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.RescheduleBookingQueryParams\nimport com.nylas.models.RescheduleBookingRequest\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val requestBody = RescheduleBookingRequest.Builder()\n      .startTime(1763292600)\n      .endTime(1763294400)\n      .build()\n\n  val queryParams = RescheduleBookingQueryParams(\n      configurationId = \"<SCHEDULER_CONFIG_ID>\",\n      slug = \"<SCHEDULER_CONFIG_SLUG>\",\n      clientId = \"<NYLAS_CLIENT_ID>\")\n\n  val booking = nylas.scheduler().bookings().reschedule(\"<BOOKING_ID>\", requestBody, queryParams)\n\n  println(\"Rescheduled booking: ${booking.data}\")\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Private)
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.RescheduleBookingRequest\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build()\n\n  val requestBody = RescheduleBookingRequest.Builder()\n      .startTime(1763292600)\n      .endTime(1763294400)\n      .build()\n\n  val booking = nylas.scheduler().bookings().reschedule(\"<BOOKING_ID>\", requestBody)\n\n  println(\"Rescheduled booking: ${booking.data}\")\n}\n"
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - SCHEDULER_SESSION_TOKEN: []
+    put:
+      summary: Confirm a booking
+      tags:
+      - Bookings
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/calendar.events
+          others: https://www.googleapis.com/auth/calendar
+        microsoft:
+          min: https://graph.microsoft.com/Calendars.ReadWrite
+          others: ''
+      operationId: put-bookings-id
+      description: 'Confirms or cancels the specified pending booking. Nylas also updates the associated event on the
+
+        provider.
+
+
+        Nylas validates the provided session ID and uses it to retrieve the related
+
+        Configuration object. If you created a public
+
+        Configuration, you don''t need to include the `Authorization` request header with a session ID, but
+
+        you do need to pass the Configuration object ID as a query parameter.
+
+
+        When you make a `PUT` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        Updating objects.'
+      requestBody:
+        $ref: '#/components/requestBodies/booking_confirm'
+      x-code-samples:
+      - lang: bash
+        label: cURL (Public)
+        source: "curl --compressed --request PUT \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings/<BOOKING_ID>?configuration_id=<SCHEDULER_CONFIG_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"salt\": -zgLLAuk_qtcsw,\n    \"status\": \"cancelled\",\n    \"cancellation_reason\": \"I am no longer available at this time.\"\n  }'"
+      - lang: bash
+        label: cURL (Private)
+        source: "curl --compressed --request PUT \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings/<BOOKING_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <SCHEDULER_SESSION_ID>' \\\n  --header 'Content-Type: application/json' \\ \n  --data '{\n    \"salt\": -zgLLAuk_qtcsw,\n    \"status\": \"cancelled\",\n    \"cancellation_reason\": \"I am no longer available at this time.\"\n  }'"
+      - lang: javascript
+        label: Node.js SDK (Public)
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<NYLAS_API_KEY>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function confirmBooking() {\n  try {\n    const booking = await nylas.scheduler.bookings.confirm({\n      queryParams: {\n        configurationId: \"<SCHEDULER_CONFIG_ID>\",\n      },\n      bookingId: \"booking-id\",\n      requestBody: {\n        salt: \"-zgLLAuk_qtcsw\",\n        status: \"cancelled\",\n        cancellationReason: \"I am no longer available at this time.\",\n      },\n    });\n    console.log(\"Confirmed Booking\", booking);\n  } catch (error) {\n    console.error(\"Error confirming booking\", error);\n  }\n}\n\nconfirmBooking();\n"
+      - lang: javascript
+        label: Node.js SDK (Private)
+        source: "import Nylas from \"nylas\";\n\nconst nylas = new Nylas({\n  apiKey: \"<SCHEDULER_SESSION_ID>\",\n  apiUri: \"<NYLAS_API_URI>\",\n});\n\nasync function confirmBooking() {\n  try {\n    const booking = await nylas.scheduler.bookings.confirm({\n      bookingId: \"booking-id\",\n      requestBody: {\n        salt: \"-zgLLAuk_qtcsw\",\n        status: \"cancelled\",\n        cancellationReason: \"I am no longer available at this time.\",\n      },\n    });\n    console.log(\"Confirmed Booking\", booking);\n  } catch (error) {\n    console.error(\"Error confirming booking\", error);\n  }\n}\n\nconfirmBooking();\n"
+      - lang: ruby
+        label: Ruby SDK (Public)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nrequest_body = {\n  \"salt\": \"-zgLLAuk_qtcsw\",\n  \"status\": \"cancelled\",\n  \"cancellation_reason\": \"I am no longer available at this time.\"\n}\nbooking, _request_ids = nylas.scheduler.bookings.confirm(booking_id: \"<BOOKING_ID>\", request_body: request_body, query_params: {\"configuration_id\": \"<CONFIGURATION_ID>\"})\n\nputs booking"
+      - lang: ruby
+        label: Ruby SDK (Private)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<SCHEDULER_SESSION_ID>\"\n)\n\nrequest_body = {\n  \"salt\": \"-zgLLAuk_qtcsw\",\n  \"status\": \"cancelled\",\n  \"cancellation_reason\": \"I am no longer available at this time.\"\n}\nbooking, _request_ids = nylas.scheduler.bookings.confirm(booking_id: \"<BOOKING_ID>\", request_body: request_body)\n\nputs booking"
+      - lang: java
+        label: Java SDK (Public)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Booking;\nimport com.nylas.models.ConfirmBookingQueryParams;\nimport com.nylas.models.ConfirmBookingRequest;\nimport com.nylas.models.ConfirmBookingStatus;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class ConfirmBookingPublic {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    ConfirmBookingRequest requestBody = new ConfirmBookingRequest.Builder()\n        .salt(\"-zgLLAuk_qtcsw\")\n        .status(ConfirmBookingStatus.CANCELLED)\n        .cancellationReason(\"I am no longer available at this time.\")\n        .build();\n\n    ConfirmBookingQueryParams queryParams = new ConfirmBookingQueryParams.Builder()\n        .configurationId(\"<SCHEDULER_CONFIG_ID>\")\n        .build();\n\n    Response<Booking> booking = nylas.scheduler().bookings().confirm(\n        \"<BOOKING_ID>\", requestBody, queryParams);\n\n    System.out.println(\"Confirmed booking: \" + booking.getData());\n  }\n}\n"
+      - lang: java
+        label: Java SDK (Private)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.Booking;\nimport com.nylas.models.ConfirmBookingRequest;\nimport com.nylas.models.ConfirmBookingStatus;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\nimport com.nylas.models.Response;\n\npublic class ConfirmBooking {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build();\n\n    ConfirmBookingRequest requestBody = new ConfirmBookingRequest.Builder()\n        .salt(\"-zgLLAuk_qtcsw\")\n        .status(ConfirmBookingStatus.CANCELLED)\n        .cancellationReason(\"I am no longer available at this time.\")\n        .build();\n\n    Response<Booking> booking = nylas.scheduler().bookings().confirm(\"<BOOKING_ID>\", requestBody);\n\n    System.out.println(\"Confirmed booking: \" + booking.getData());\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Public)
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.ConfirmBookingQueryParams\nimport com.nylas.models.ConfirmBookingRequest\nimport com.nylas.models.ConfirmBookingStatus\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val requestBody = ConfirmBookingRequest.Builder()\n      .salt(\"-zgLLAuk_qtcsw\")\n      .status(ConfirmBookingStatus.CANCELLED)\n      .cancellationReason(\"I am no longer available at this time.\")\n      .build()\n\n  val queryParams = ConfirmBookingQueryParams.Builder()\n      .configurationId(\"<SCHEDULER_CONFIG_ID>\")\n      .build()\n\n  val booking = nylas.scheduler().bookings().confirm(\"<BOOKING_ID>\", requestBody, queryParams)\n\n  println(\"Confirmed booking: ${booking.data}\")\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Private)
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.ConfirmBookingRequest\nimport com.nylas.models.ConfirmBookingStatus\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build()\n\n  val requestBody = ConfirmBookingRequest.Builder()\n      .salt(\"-zgLLAuk_qtcsw\")\n      .status(ConfirmBookingStatus.CANCELLED)\n      .cancellationReason(\"I am no longer available at this time.\")\n      .build()\n\n  val booking = nylas.scheduler().bookings().confirm(\"<BOOKING_ID>\", requestBody)\n\n  println(\"Confirmed booking: ${booking.data}\")\n}\n"
+      responses:
+        '200':
+          $ref: '#/components/responses/booking_confirm'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - SCHEDULER_SESSION_TOKEN: []
+    delete:
+      summary: Delete a booking
+      tags:
+      - Bookings
+      x-scopes:
+        google:
+          min: https://www.googleapis.com/auth/calendar.events
+          others: https://www.googleapis.com/auth/calendar
+        microsoft:
+          min: https://graph.microsoft.com/Calendars.ReadWrite
+          others: ''
+      operationId: delete-bookings-id
+      description: 'Deletes the specified booking. Nylas also cancels the associated event on the provider.
+
+
+        Nylas validates the provided session ID and uses it to retrieve the related
+
+        Configuration object. If you created a public
+
+        Configuration, you don''t need to include the `Authorization` request header with a session ID, but
+
+        you do need to pass the Configuration object ID as a query parameter.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cancellation_reason:
+                  type: string
+                  description: The reason that the booking is being cancelled.
+            example:
+              cancellation_reason: I am no longer available at this time.
+      x-code-samples:
+      - lang: bash
+        label: cURL (Public)
+        source: "curl --compressed --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings/<BOOKING_ID>?configuration_id=<SCHEDULER_CONFIG_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Content-Type: application/json'"
+      - lang: bash
+        label: cURL (Private)
+        source: "curl --compressed --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/scheduling/bookings/<BOOKING_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <SCHEDULER_SESSION_ID>' \\\n  --header 'Content-Type: application/json'"
+      - lang: python
+        label: Python SDK (Private)
+        source: "from nylas import Client\n\nnylas = Client(\n    \"<NYLAS_API_KEY>\",\n    \"<NYLAS_API_URI>\",\n)\n\nresponse = nylas.scheduler.bookings.destroy(\n    booking_id=\"<BOOKING_ID>\",\n    request_body={\n        \"cancellation_reason\": \"Plans changed.\",\n    },\n    query_params={\n        \"configuration_id\": \"<SCHEDULER_CONFIG_ID>\",\n    },\n)\n\nprint(\"Booking cancelled:\", response)\n"
+      - lang: ruby
+        label: Ruby SDK (Public)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<NYLAS_API_KEY>\"\n)\n\nbooking, _request_ids = nylas.scheduler.bookings.destroy(booking_id: \"<BOOKING_ID>\", query_params: {\"configuration_id\": \"<CONFIGURATION_ID>\"})\n\nputs booking"
+      - lang: ruby
+        label: Ruby SDK (Private)
+        source: "# Load gems\nrequire 'nylas'\n\n# Initialize Nylas client\nnylas = Nylas::Client.new(\n  api_key: \"<SCHEDULER_SESSION_ID>\"\n)\n\nbooking, _request_ids = nylas.scheduler.bookings.destroy(booking_id: \"<BOOKING_ID>\")\n\nputs booking"
+      - lang: java
+        label: Java SDK (Public)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.DeleteResponse;\nimport com.nylas.models.DestroyBookingQueryParams;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\n\npublic class DeleteBookingPublic {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<NYLAS_API_KEY>\").build();\n\n    DestroyBookingQueryParams queryParams = new DestroyBookingQueryParams.Builder()\n        .configurationId(\"<SCHEDULER_CONFIG_ID>\")\n        .build();\n\n    DeleteResponse result = nylas.scheduler().bookings().destroy(\"<BOOKING_ID>\", queryParams, null);\n\n    System.out.println(\"Deleted booking: \" + result);\n  }\n}\n"
+      - lang: java
+        label: Java SDK (Private)
+        source: "import com.nylas.NylasClient;\nimport com.nylas.models.DeleteResponse;\nimport com.nylas.models.NylasApiError;\nimport com.nylas.models.NylasSdkTimeoutError;\n\npublic class DeleteBooking {\n  public static void main(String[] args) throws NylasSdkTimeoutError, NylasApiError {\n    NylasClient nylas = new NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build();\n\n    DeleteResponse result = nylas.scheduler().bookings().destroy(\"<BOOKING_ID>\", null, null);\n\n    System.out.println(\"Deleted booking: \" + result);\n  }\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Public)
+        source: "import com.nylas.NylasClient\nimport com.nylas.models.DestroyBookingQueryParams\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<NYLAS_API_KEY>\").build()\n\n  val queryParams = DestroyBookingQueryParams.Builder()\n      .configurationId(\"<SCHEDULER_CONFIG_ID>\")\n      .build()\n\n  val result = nylas.scheduler().bookings().destroy(\"<BOOKING_ID>\", queryParams)\n\n  println(\"Deleted booking: $result\")\n}\n"
+      - lang: kotlin
+        label: Kotlin SDK (Private)
+        source: "import com.nylas.NylasClient\n\nfun main() {\n  val nylas = NylasClient.Builder(\"<SCHEDULER_SESSION_ID>\").build()\n\n  val result = nylas.scheduler().bookings().destroy(\"<BOOKING_ID>\")\n\n  println(\"Deleted booking: $result\")\n}\n"
+      responses:
+        '200':
+          description: Delete Succeeded
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - request_id
+                properties:
+                  request_id:
+                    type: string
+                    description: ID of the request.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - SCHEDULER_SESSION_TOKEN: []
+components:
+  schemas:
+    booking_update:
+      type: object
+      required:
+      - start_time
+      - end_time
+      properties:
+        start_time:
+          type: string
+          description: The event's start time, in seconds using the Unix timestamp format.
+        end_time:
+          type: string
+          description: The event's end time, in seconds using the Unix timestamp format.
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    booking_confirm:
+      type: object
+      required:
+      - salt
+      - status
+      properties:
+        salt:
+          type: string
+          description: The salt extracted from the booking reference embedded in the organizer confirmation link, encoded as a URL-safe base64 string (without padding).
+        status:
+          type: string
+          description: The action to take on the pending booking.
+          enum:
+          - confirmed
+          - cancelled
+        cancellation_reason:
+          type: string
+          description: The reason that the booking is being cancelled.
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    booking_update_group:
+      type: object
+      required:
+      - calendar_id
+      - end_time
+      - event_id
+      - start_time
+      properties:
+        calendar_id:
+          type: string
+          description: The ID of the calendar to access.
+          example: 7d93zl2palhxqdy6e5qinsakt
+        end_time:
+          type: integer
+          description: The event's end time, in seconds using the Unix timestamp format.\
+          example: 1661877792
+        event_id:
+          type: string
+          description: The ID of the event to update.
+          example: 5d3qmne77v32r8l4phyuksl2x
+        master_event_id:
+          type: string
+          description: (Recurring events only) The ID of the master event.
+          example: 5d3qmne77v32r8l4phyuksl2x
+        start_time:
+          type: integer
+          description: The event's start time, in seconds using the Unix timestamp format.
+          example: 1661874192
+    booking_create:
+      type: object
+      required:
+      - start_time
+      - end_time
+      - guest
+      properties:
+        start_time:
+          type: integer
+          description: The event's start time, in seconds using the Unix timestamp format.
+        end_time:
+          type: integer
+          description: The event's end time, in seconds using the Unix timestamp format.
+        participants:
+          type: array
+          description: An array of objects that include a list of participant email addresses from the Configuration object to include in the booking. If not provided, Nylas includes all participants from the Configuration object.
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+                description: The participant's email address.
+        guest:
+          type: object
+          description: Details about the guest that is creating the booking. The guest `name` and `email` are required.
+          properties:
+            email:
+              type: string
+              description: The guest's email address.
+            name:
+              type: string
+              description: The guest's name.
+        timezone:
+          type: string
+          description: 'The guest''s timezone, used in email notifications. If not provided, Nylas uses the timezone from
+
+            the [Configuration object](/docs/reference/api/configurations/).'
+        email_language:
+          type: string
+          description: The language of the guest email notifications.
+          enum:
+          - en
+          - fr
+          - de
+          - es
+          - nl
+          - sv
+          - ja
+          - zh
+          default: en
+        additional_guests:
+          type: array
+          description: An array of objects that include a list of additional guest email addresses to include in the booking.
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+                description: The additional guest's email address.
+              name:
+                type: string
+                description: The additional guest's name.
+        additional_fields:
+          type: object
+          description: A dictionary of additional field keys mapped to the values populated by the guest in the booking form.
+          additionalProperties:
+            type: string
+          example:
+            name: Dorothy Vaughan
+            email_address: dorothy@example.com
+    booking:
+      type: object
+      required:
+      - booking_id
+      - event_id
+      - title
+      - organizer
+      - status
+      properties:
+        booking_id:
+          type: string
+          description: The unique ID of the booking.
+        event_id:
+          type: string
+          description: The unique ID of the event object associated with the booking.
+        title:
+          type: string
+          description: The title of the event.
+        organizer:
+          type: object
+          description: The participant that is designated as the organizer of the event.
+          properties:
+            email:
+              type: string
+              description: The organizer's email address.
+            name:
+              type: string
+              description: The organizer's name.
+        status:
+          type: string
+          description: The current status of the booking.
+          enum:
+          - booked
+          - pending
+          - cancelled
+        description:
+          type: string
+          description: The description of the event.
+  responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    booking_create:
+      description: Create a new booking
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/booking'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              booking_id: AAAA-BBBB-1111-2222
+              event_id: CCCC-DDDD-3333-4444
+              title: My test event
+              organizer:
+                name: John Doe
+                email: user@example.com
+              status: booked
+              description: This is an example of a description.
+    booking_confirm:
+      description: Booking confirmed or cancelled
+      content:
+        application/json:
+          schema:
+            oneOf:
+            - title: Booking confirmed
+              type: object
+              description: Returned when the booking was confirmed.
+              properties:
+                request_id:
+                  type: string
+                  description: The ID of the request.
+                  example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                data:
+                  type: object
+                  properties:
+                    booking_id:
+                      type: string
+                      description: The unique ID of the booking.
+                      example: xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
+                    description:
+                      type: string
+                      description: A brief description of the event.
+                      example: Come ready to talk philosophy!
+                    event_id:
+                      type: string
+                      description: The event ID associated with the booking.
+                      example: 5d3qmne77v32r8l4phyuksl2x
+                    organizer:
+                      type: object
+                      description: The participant designated as the organizer of the event.
+                      properties:
+                        email:
+                          type: string
+                          description: The organizer's email address.
+                          example: leyah@example.com
+                        name:
+                          type: string
+                          description: The organizer's name.
+                          example: Leyah Miller
+                    status:
+                      type: string
+                      description: The status of the booking.
+                      enum:
+                      - booked
+                      - cancelled
+                      - pending
+                      example: booked
+                    title:
+                      type: string
+                      description: The title of the event.
+                      example: Annual Philosophy Club Meeting
+            - title: Booking cancelled
+              type: object
+              $ref: '#/components/schemas/200-delete'
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+          examples:
+            OK:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+  requestBodies:
+    booking_confirm:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/booking_confirm'
+          example:
+            salt: -zgLLAuk_qtcsw
+            status: cancelled
+            cancellation_reason: I am no longer available at this time.
+    booking_create:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/booking_create'
+          example:
+            start_time: '1708714800'
+            end_time: '1708722000'
+            participants:
+            - email: user@example.com
+            guest:
+              name: Guest
+              email: guest@example.com
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

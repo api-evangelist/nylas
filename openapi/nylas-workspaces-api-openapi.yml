@@ -1,0 +1,701 @@
+openapi: 3.2.0
+info:
+  title: Nylas Workspaces API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Workspaces
+  description: Workspaces group and organize grants in a Nylas application by a common attribute, such as the email address domain (for example, `nylas.com`).
+paths:
+  /v3/workspaces:
+    get:
+      summary: Return all workspaces
+      tags:
+      - Workspaces
+      operationId: get-all-workspaces
+      description: 'Returns all workspaces in your Nylas application. The application queried is determined based on
+
+        the API key you use to authorize your request.'
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/workspaces\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          description: Success. Returns a list of Workspace objects.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkspaceObject'
+        '401':
+          description: 'Error: Not authenticated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: 'Error: Not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+    post:
+      summary: Create a workspace
+      tags:
+      - Workspaces
+      operationId: create-workspace
+      description: Creates a workspace.
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - domain
+              - name
+              properties:
+                auto_group:
+                  type: boolean
+                  description: 'When `true`, specifies that newly created grants in the application are automatically
+
+                    assigned to the workspace if their email address'' domain matches the `domain`.'
+                  default: true
+                  example: true
+                domain:
+                  type: string
+                  description: 'The top-level domain associated with the workspace. You can''t change the domain after
+
+                    the workspace is created.'
+                  example: nylas.com
+                name:
+                  type: string
+                  description: A short, descriptive name for the workspace.
+                  example: The Nylas Workspace
+                policy_id:
+                  type: string
+                  description: 'The ID of the [policy](/docs/v3/agent-accounts/policies-rules-lists/) to attach to the
+
+                    workspace.'
+                  example: 6dcc5d92-8a55-4ce8-85a8-2f4275f8f0a0
+                rule_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: 'The IDs of any [rules](/docs/v3/agent-accounts/policies-rules-lists/#rules) to attach to
+
+                    the workspace.'
+                  example:
+                  - 3f2504e0-4f89-41d3-9a0c-0305e82c3301
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/workspaces\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"name\": \"The Nylas Workspace\",\n    \"domain\": \"nylas.com\",\n    \"auto_group\": true,\n    \"policy_id\": \"<POLICY_ID>\",\n    \"rule_ids\": [\"<RULE_ID>\"]\n  }'\n"
+      responses:
+        '200':
+          description: Success. Returns new Workspace object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/WorkspaceObject'
+        '400':
+          description: 'Error: Bad request. For example, the request body was invalid, or a workspace already exists
+
+            for the application and domain.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: 'Error: Not authenticated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: 'Error: Not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+  /v3/workspaces/{workspace_id}:
+    parameters:
+    - name: workspace_id
+      in: path
+      schema:
+        type: string
+      required: true
+      description: ID of the workspace to access.
+      example: 123e4567-e89b-12d3-a456-426614174000
+    get:
+      summary: Return a workspace
+      tags:
+      - Workspaces
+      operationId: get-workspace
+      description: Returns the specified workspace.
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request GET \\\n  --url \"https://api.us.nylas.com/v3/workspaces/<WORKSPACE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          description: Success. Returns Workspace object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/WorkspaceObject'
+        '401':
+          description: 'Error: Not authenticated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: 'Error: Not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+    patch:
+      summary: Update a workspace
+      tags:
+      - Workspaces
+      operationId: update-workspace
+      description: 'Updates the specified workspace. You cannot change a workspace''s `domain` after it''s created.
+
+
+        On the application''s default workspace, you can update only the `policy_id` and `rule_ids` values.'
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                auto_group:
+                  type: boolean
+                  description: 'When `true`, specifies that newly created grants in the application are automatically
+
+                    assigned to the workspace if their email address'' domain matches the `domain`.'
+                  example: true
+                name:
+                  type: string
+                  description: A short, descriptive name for the workspace.
+                  example: The Nylas Workspace
+                policy_id:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'The ID of the [policy](/docs/v3/agent-accounts/policies-rules-lists/) to attach to the
+
+                    workspace. Set a policy ID to attach the policy, set `null` to detach the current policy,
+
+                    or omit the field to keep the current value. The policy must belong to your application.'
+                  example: 6dcc5d92-8a55-4ce8-85a8-2f4275f8f0a0
+                rule_ids:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+                  description: 'The IDs of any [rules](/docs/v3/agent-accounts/policies-rules-lists/#rules) to attach to
+
+                    the workspace. Set an array to replace the current rules, set `null` or an empty array to
+
+                    detach all rules, or omit the field to keep the current value. Each rule must belong to
+
+                    your application.'
+                  example:
+                  - 3f2504e0-4f89-41d3-9a0c-0305e82c3301
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request PATCH \\\n  --url \"https://api.us.nylas.com/v3/workspaces/<WORKSPACE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"policy_id\": \"<POLICY_ID>\",\n    \"rule_ids\": [\"<RULE_ID>\"]\n  }'\n"
+      responses:
+        '200':
+          description: Success. Returns updated Workspace object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    $ref: '#/components/schemas/WorkspaceObject'
+        '400':
+          description: 'Error: Bad request. For example, the request tried to change the workspace''s `domain`, modify a
+
+            value other than `policy_id` or `rule_ids` on the application''s default workspace, or set a
+
+            `policy_id` or `rule_ids` value that doesn''t belong to the application.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: 'Error: Not authenticated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: 'Error: Not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+    delete:
+      summary: Delete a workspace
+      tags:
+      - Workspaces
+      operationId: delete-workspace
+      description: 'Deletes the specified workspace. You can''t delete the application''s default workspace. The workspace''s grants keep working and move to the default workspace, or become unassigned if there isn''t one.
+
+
+        To learn what gets removed and when, see Deleting resources and data.'
+      security:
+      - NYLAS_API_KEY: []
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/workspaces/<WORKSPACE_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          description: Success. Workspace deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200-delete'
+        '400':
+          description: 'Error: Bad request. The workspace is the application''s default workspace, which can''t be deleted.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: 'Error: Not authenticated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: 'Error: Not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+  /v3/workspaces/auto-group:
+    post:
+      summary: Automatically group grants into workspace
+      tags:
+      - Workspaces
+      operationId: autogroup-workspace
+      description: 'Configures automatic grouping settings for new or existing workspaces, depending on the filters
+
+        set. If you don''t set any filters, Nylas considers all grants.'
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                after_created_at:
+                  type: number
+                  description: 'Applies automatic grouping settings to grants created at or after the specified time,
+
+                    in seconds using the Unix timestamp format.'
+                  example: 1622548800
+                invalid_also:
+                  type: boolean
+                  description: 'When `true`, applies automatic grouping settings to both invalid and valid grants. When
+
+                    `false`, applies settings to valid grants only.'
+                  default: false
+                  example: false
+                specific_domain:
+                  type: string
+                  description: Applies automatic grouping settings to grants with the specified email domain only.
+                  example: nylas.com
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/workspaces/auto-group\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"after_created_at\": 1725273600,\n    \"invalid_also\": true,\n    \"specific_domain\": \"nylas.com\"\n  }'"
+      responses:
+        '200':
+          description: Success. Returns a information about automatic grouping job.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    type: object
+                    properties:
+                      job_id:
+                        type: string
+                        description: The ID of the automatic grouping job.
+                        example: 52e61713-ab00-4d70-8974-73cf541c5db9
+                      message:
+                        type: string
+                        description: Information about the background automatic grouping job.
+                        example: Auto-grouping started successfully under JobID '52e61713-ab00-4d70-8974-73cf541c5db9', please wait for the process to complete. It may take some time.
+        '401':
+          description: 'Error: Not authenticated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: 'Error: Not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+  /v3/workspaces/{workspace_id}/manual-assign:
+    parameters:
+    - name: workspace_id
+      in: path
+      schema:
+        type: string
+      required: true
+      description: ID of the workspace to access.
+      example: 123e4567-e89b-12d3-a456-426614174000
+    post:
+      summary: Update workspace assignments
+      tags:
+      - Workspaces
+      operationId: manually-assign-workspace
+      description: 'Manually assigns or removes specified grants to or from a specific workspace. You must specify at
+
+        least one grant ID in either `assign_grants` or `remove_grants`. You can include up to 500 grants
+
+        per list.'
+      security:
+      - NYLAS_API_KEY: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assign_grants:
+                  type: array
+                  items:
+                    type: string
+                  description: A list of grant IDs to be assigned to the workspace.
+                  example:
+                  - 123e4567-e89b-12d3-a456-426614174001
+                remove_grants:
+                  type: array
+                  items:
+                    type: string
+                  description: A list of grant IDs to be removed from the workspace.
+                  example:
+                  - 123e4567-e89b-12d3-a456-426614174001
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --request POST \\\n  --url \"https://api.us.nylas.com/v3/workspaces/<WORKSPACE_ID>/manual-assign\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"assign_grants\": [\n      \"10726e7c-89c3-4a1d-9f4a-5f3f37f6f2d9\",\n      \"3b9f5c1a-21d4-46c1-b84f-0e8d1f9eaa42\"\n    ],\n    \"remove_grants\": [\n      \"5f1a2c9e-739b-4c66-9a3d-2c88a0c6d123\",\n      \"9c6e4b7d-2e4a-4ef0-a1b8-badf5a76a555\"\n    ]\n  }'"
+      responses:
+        '200':
+          description: Success. Returns updated grant information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The request ID.
+                    example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                  data:
+                    type: object
+                    properties:
+                      application_id:
+                        type: string
+                        description: The ID of the Nylas application associated with the workspace.
+                        example: 123e4567-e89b-12d3-a456-426614174000
+                      domain:
+                        type: string
+                        description: The top-level domain associated with the workspace.
+                        example: nylas.com
+                      grants_assigned:
+                        type: array
+                        items:
+                          type: string
+                        description: A list of grant IDs assigned to the workspace.
+                        example:
+                        - 123e4567-e89b-12d3-a456-426614174001
+                        - 123e4567-e89b-12d3-a456-426614174003
+                      grants_removed:
+                        type: array
+                        items:
+                          type: string
+                        description: A list of grant IDs removed from the workspace.
+                        example:
+                        - 123e4567-e89b-12d3-a456-426614174002
+                      workspace_id:
+                        type: string
+                        description: The ID of the workspace that was updated.
+                        example: 123e4567-e89b-12d3-a456-426614174000
+        '401':
+          description: 'Error: Not authenticated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: 'Error: Not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+components:
+  schemas:
+    '401':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: invalid_request_error
+            message:
+              description: Informative error message
+              default: Authentication error
+              type: string
+              example: Authentication error
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    '404':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: xyz.not_found_error
+            message:
+              description: Informative error message
+              default: Resource not found
+              type: string
+              example: Resource not found
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    WorkspaceObject:
+      type: object
+      properties:
+        application_id:
+          type: string
+          description: The ID of the application the workspace is associated with.
+          example: ad410018-d306-43f9-8361-fa5d7b2172e0
+        auto_group:
+          type: boolean
+          description: 'When `true`, specifies that newly created grants in the application are automatically assigned
+
+            to the workspace if their email address'' domain matches the `domain`.'
+          example: true
+        created_at:
+          type: integer
+          description: When the workspace was created, in seconds using the Unix timestamp format.
+          example: 1756379932
+        default:
+          type: boolean
+          description: 'When `true`, the workspace is the application''s default workspace, which Nylas creates and
+
+            manages. Nylas includes this field when you retrieve workspaces. For more information, see
+
+            the [Workspaces overview](/docs/reference/api/workspaces/).'
+          example: false
+        domain:
+          type: string
+          description: The top-level domain associated with the workspace.
+          example: nylas.com
+        name:
+          type: string
+          description: The name of the workspace.
+          example: The Nylas Workspace
+        policy_id:
+          type: string
+          description: 'The ID of the [policy](/docs/v3/agent-accounts/policies-rules-lists/) attached to the workspace.
+
+            The policy applies to Agent Accounts in the workspace.'
+          example: 6dcc5d92-8a55-4ce8-85a8-2f4275f8f0a0
+        rule_ids:
+          type: array
+          items:
+            type: string
+          description: 'The IDs of any [rules](/docs/v3/agent-accounts/policies-rules-lists/#rules) attached to the
+
+            workspace. The rules apply to Agent Accounts in the workspace.'
+          example:
+          - 3f2504e0-4f89-41d3-9a0c-0305e82c3301
+        updated_at:
+          type: integer
+          description: 'When the workspace was last updated, in seconds using the Unix timestamp format. Initially, this
+
+            value is the same as `created_at`.'
+          example: 1756379932
+        workspace_id:
+          type: string
+          description: The workspace ID.
+          example: abf6ff99-05ad-4c0a-aaf8-400aacf2470a
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.

@@ -1,0 +1,1313 @@
+openapi: 3.2.0
+info:
+  title: Nylas Group Events API
+  version: v3
+  summary: The complete Nylas v3 API — Email, Calendar, Contacts, Notetaker, Scheduling, Administration, and Migration.
+  description: The Nylas API is designed using the REST ideology to provide simple and predictable URIs to access and modify objects.
+  contact:
+    url: https://www.nylas.com/
+  x-provenance:
+    method: harvested
+    first_party: true
+    publisher: Nylas
+    source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    harvested: '2026-08-21'
+    sha256: 7ff001d571e163b1ffe22178741b59f813d8208ec878157a839a33dc2c13fd35
+    bytes: 1666223
+    note: 'Published by Nylas as the unified contract for the Nylas v3 API and stored verbatim; API Evangelist added only this provenance block. Submitted by the provider in api-evangelist/nylas#1 and verified against the live URL before harvest: OpenAPI 3.1.0, 118 paths, 208 operations, 174 component schemas, 100% of operations carrying summary, description, tag and a unique operationId, x-code-samples on 208 of 208. This document REPLACES a 22-operation scaffold API Evangelist derived from reading the documentation, now quarantined under openapi/_scaffold/.'
+  x-evidence:
+  - url: https://developer.nylas.com/_spec-files/nylas-api.yaml
+    what: the published unified contract, harvested verbatim 2026-08-21 (200, text/yaml, 1,666,223 bytes)
+  - url: https://developer.nylas.com/.well-known/api-catalog
+    what: RFC 9727 linkset advertising that URL as service-desc for api.us.nylas.com and api.eu.nylas.com (200, application/linkset+json)
+servers:
+- url: https://api.us.nylas.com
+  description: U.S.
+- url: https://api.eu.nylas.com
+  description: E.U.
+security:
+- ACCESS_TOKEN: []
+- NYLAS_API_KEY: []
+tags:
+- name: Group Events
+  description: Group meetings let you host events with multiple participants. Unlike one-on-one meetings, group events are designed for collaborative scheduling where multiple attendees are invited to the same event.
+paths:
+  /v3/grants/{grant_id}/scheduling/configurations/{configuration_id}/group-events:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: The ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    - schema:
+        type: string
+      name: configuration_id
+      in: path
+      required: true
+      description: The ID of the Configuration object to access.
+    get:
+      summary: Get all group events
+      tags:
+      - Group Events
+      operationId: get-group-events
+      description: Returns all group events within the given time range, from the specified Configuration.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request GET \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/scheduling/configurations/<SCHEDULER_CONFIG_ID>/group-events\"?calendar_id=<CALENDAR_ID>&start_time=<TIMESTAMP>&end_time=<TIMESTAMP>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/group_events'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - NYLAS_API_KEY: []
+      parameters:
+      - $ref: '#/components/parameters/calendar_id'
+      - $ref: '#/components/parameters/start_time'
+      - $ref: '#/components/parameters/end_time'
+    post:
+      summary: Create group event
+      tags:
+      - Group Events
+      operationId: create-group-event
+      description: Creates a group event in the specified Configuration.
+      requestBody:
+        $ref: '#/components/requestBodies/group_event_create'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request POST \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/scheduling/configurations/<SCHEDULER_CONFIG_ID>/group-events\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"title\": \"Annual Philosophy Club Meeting\",\n    \"busy\": true,\n    \"participants\": [\n      {\n        \"name\": \"Leyah Miller\",\n        \"email\": \"leyah@example.com\",\n        \"is_organizer\": true\n      },\n      {\n        \"name\": \"Nyla\",\n        \"email\": \"nyla@example.com\",\n        \"is_organizer\": false\n      }\n    ],\n    \"description\": \"Come ready to talk philosophy!\",\n    \"when\": {\n      \"start_time\": 1674604800,\n      \"end_time\": 1722382420,\n      \"start_timezone\": \"America/New_York\",\n      \"end_timezone\": \"America/New_York\"\n    },\n    \"location\": \"New York Public Library, Cave room\",\n    \"recurrence\": [\n      \"RRULE:FREQ=WEEKLY;BYDAY=MO\",\n      \"EXDATE:20211011T000000Z\"\n    ],\n    \"capacity\": 100\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/group_event'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - NYLAS_API_KEY: []
+  /v3/grants/{grant_id}/scheduling/configurations/{configuration_id}/group-events/{event_id}:
+    parameters:
+    - schema:
+        type: string
+      name: grant_id
+      in: path
+      required: true
+      description: The ID of the grant to access. Use `/me/` to refer to the grant associated with an access token.
+    - schema:
+        type: string
+      name: configuration_id
+      in: path
+      required: true
+      description: The ID of the Configuration object to access.
+    - schema:
+        type: string
+      name: event_id
+      in: path
+      required: true
+      description: The ID of the group event to access.
+    put:
+      summary: Update a group event
+      tags:
+      - Group Events
+      operationId: put-group-event
+      description: 'Updates the specified group event.
+
+
+        When you make a `PUT` request, Nylas replaces all data in the nested object with the information
+
+        included in your request. For more information, see
+
+        Updating objects.'
+      requestBody:
+        $ref: '#/components/requestBodies/group_event_update'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request PUT \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/scheduling/configurations/<SCHEDULER_CONFIGURATION_ID>/group-events/<EVENT_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"scheduler\": {\n      \"rescheduling_url\": \"<RESCHEDULING_PAGE_URL>\",\n      \"cancellation_url\": \"<CANCELLATION_PAGE_URL>\" \n    }\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/group_event'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - NYLAS_API_KEY: []
+    delete:
+      summary: Delete a group event
+      tags:
+      - Group Events
+      operationId: delete-group-event
+      description: Deletes the specified group event.
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request DELETE \\\n  --url \"https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/scheduling/configurations/<SCHEDULER_CONFIG_ID>/group-events/<EVENT_ID>\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
+      responses:
+        '200':
+          $ref: '#/components/responses/200-delete'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '429':
+          $ref: '#/components/responses/429'
+        '504':
+          $ref: '#/components/responses/504'
+      security:
+      - NYLAS_API_KEY: []
+  /v3/scheduling/configurations/{configuration_id}/import-group-events:
+    parameters:
+    - schema:
+        type: string
+      name: configuration_id
+      in: path
+      required: true
+      description: The ID of the Configuration object to access.
+    post:
+      summary: Import group events
+      tags:
+      - Group Events
+      operationId: import-group-events
+      description: 'Imports existing events to your group events Configuration. You can import up to 20 events per
+
+        request.'
+      requestBody:
+        $ref: '#/components/requestBodies/import_group_event'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request POST \\\n  --url \"https://api.us.nylas.com/v3/scheduling/configurations/<SCHEDULER_CONFIG_ID>/import-group-events\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"calendar_id\": \"<CALENDAR_ID>\",\n    \"event_id\": \"<EVENT_ID>\",\n    \"capacity\": 10,\n    \"exceptions\": [{\n      \"event_id\": \"<EVENT_ID>\",\n      \"capacity\": 5\n    }],\n    \"participants\": [{\n      \"name\": \"Leyah Miller\",\n      \"email\": \"leyah@example.com\"\n    }]\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/import-group-event'
+      security:
+      - NYLAS_API_KEY: []
+  /v3/scheduling/configurations/{configuration_id}/group-events/validate-timeslot:
+    parameters:
+    - schema:
+        type: string
+      name: configuration_id
+      in: path
+      required: true
+      description: The ID of the Configuration object to access.
+    post:
+      summary: Validate time slot
+      tags:
+      - Group Events
+      operationId: validate-time-slot
+      description: 'Validates whether the selected group event or time slot has changed, and is invalid. This can happen
+
+        because...
+
+
+        - The group event was deleted.
+
+        - The group event was updated (for example, the start time was changed).
+
+        - The `capacity` for the event was changed.'
+      requestBody:
+        $ref: '#/components/requestBodies/validate_timeslot'
+      x-code-samples:
+      - lang: bash
+        label: cURL
+        source: "curl --compressed --request POST \\\n  --url \"https://api.us.nylas.com/v3/scheduling/configurations/<SCHEDULER_CONFIG_ID>/group-events/validate-timeslot\" \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json' \\\n  --data '{\n    \"calendar_id\": \"<CALENDAR_ID>\",\n    \"event_id\": \"<EVENT_ID>\",\n    \"capacity\": 10,\n    \"end_time\": 1738156200,\n    \"start_time\": 1738155600,\n    \"emails\": [\n      \"email\": \"leyah@example.com\"\n    ]\n  }'"
+      responses:
+        '200':
+          $ref: '#/components/responses/validate-timeslot'
+      security:
+      - NYLAS_API_KEY: []
+components:
+  schemas:
+    group_event_participants:
+      title: Group event participants
+      type: object
+      description: 'An array of participants to include in the event booking. If you don''t specify at least
+
+        one participant, Nylas uses the event organizer instead.'
+      required:
+      - email
+      properties:
+        name:
+          type: string
+          description: The participant's name.
+          example: Leyah Miller
+        email:
+          type: string
+          description: The participant's email address.
+          example: leyah@example.com
+        is_organizer:
+          type: boolean
+          description: When `true`, indicates that the participant is the event organizer.
+          default: false
+          example: true
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    group_event_recurrence:
+      title: Group event recurrence settings
+      type: array
+      items:
+        type: string
+      description: "An array of `RRULE` and `EXDATE` strings. Nylas includes this field only if the event is the main\n(master) event. See [RFC-5545](https://tools.ietf.org/html/rfc5545#section-3.8.5) for more details.\nYou can use [this tool](https://jkbrzt.github.io/rrule/) to learn more about the `RRULE` spec.\n\nEvents inherit their timezone from the `when` object. Nylas recommends that you use the `when`\nobject to specify the event's start and end time.\n\nProvider specifics:\n  - Virtual calendars don't support `DTSTART` or `TZID`.\n  - iCloud accounts do _not_ support recurring events for group events\n  - Microsoft Graph adds one day to the `UNTIL` date."
+      example:
+      - RRULE:FREQ=WEEKLY;BYDAY=MO
+      - EXDATE:20210405T000000Z
+    event_conferencing_request:
+      title: Event with conferencing
+      type: object
+      description: 'An object that lets you automatically create a conference, or enter conferencing details manually.
+
+
+        You can''t use `autocreate` and `details` in the same request. If you do, Nylas returns an error.
+
+
+        Nylas stores conference information in the event description. To remove conference details, set
+
+        `conferencing` to `{}` and remove the corresponding conference information from the description in
+
+        the same request.'
+      oneOf:
+      - title: Auto-conferencing
+        type: object
+        description: Let Nylas autocreate the conference link.
+        properties:
+          provider:
+            type: string
+            description: The conferencing provider that Nylas uses to create the conference.
+            enum:
+            - Google Meet
+            - Zoom Meeting
+            - Microsoft Teams
+          autocreate:
+            type: object
+            description: 'When you include `autocreate` in your request, Nylas automatically creates the conference
+
+              for the event and appends the conferencing details to the event description.
+
+
+              If the `provider` is `Zoom Meeting`, your Zoom OAuth app must include the following
+
+              [granular scopes](https://developers.zoom.us/docs/integrations/oauth-scopes-granular/)
+
+              for Nylas to manage meetings on behalf of the user:
+
+
+              - `meeting:write:meeting` — required to **create** Zoom meetings.
+
+              - `meeting:update:meeting` — required to **update** Zoom meetings (for example, when event time or title changes).
+
+              - `meeting:delete:meeting` — required to **delete** Zoom meetings (when events are removed).
+
+
+              If any of these scopes are missing, the Zoom API rejects the request. After adding scopes
+
+              to your Zoom app, affected users must re-authenticate their grant so their access tokens
+
+              include the new scopes.'
+            properties:
+              conf_grant_id:
+                type: string
+                description: 'The grant ID of the account that hosts the conference. The user that belongs to this
+
+                  grant acts as the conference host: they join the conference at the scheduled time and
+
+                  admit other participants during the meeting.
+
+
+                  Include `conf_grant_id` when the conferencing `provider` isn''t available on the user''s
+
+                  own account — for example, when the `provider` is `Google Meet` but the user
+
+                  authenticated with a Microsoft account (cross-provider autocreation). When the
+
+                  `provider` is `Zoom Meeting`, `conf_grant_id` is always required.'
+              conf_settings:
+                type: object
+                additionalProperties: true
+                description: 'Optional provider-specific settings that Nylas passes through when it creates the
+
+                  conference. For `Zoom Meeting`, each key is sent as a top-level parameter to
+
+                  [Zoom''s Create a Meeting API](https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetingCreate)
+
+                  — for example, `agenda`, `password`, or Zoom''s own `settings` object. Nylas does _not_
+
+                  validate these values. They can make your Zoom integration more accessible but
+
+                  potentially less secure, so review your organization''s security requirements.'
+      - title: Google Meet
+        type: object
+        description: Manually attach Google Meet details to the event.
+        properties:
+          provider:
+            type: string
+            enum:
+            - Google Meet
+            description: The conferencing provider for the event.
+          details:
+            type: object
+            description: An object that contains Google Meet conferencing details.
+            required:
+            - url
+            properties:
+              url:
+                type: string
+                description: The URL for the Google Meet conference.
+              phone:
+                type: array
+                items:
+                  type: string
+                description: 'The phone number associated with the Google Meet conference. This array accepts only
+
+                  one phone number.'
+              pin:
+                type: string
+                description: The PIN associated with the Google Meet conference, if applicable.
+      - title: Zoom Meeting
+        type: object
+        description: Manually attach Zoom Meeting details to the event.
+        properties:
+          provider:
+            type: string
+            enum:
+            - Zoom Meeting
+            description: The conferencing provider for the event.
+          details:
+            type: object
+            description: An object that contains Zoom conferencing details.
+            required:
+            - url
+            properties:
+              url:
+                type: string
+                description: The URL for the Zoom conference.
+              meeting_code:
+                type:
+                - string
+                - 'null'
+                description: A unique ID associated with the Zoom conference.
+              password:
+                type:
+                - string
+                - 'null'
+                description: The password for the Zoom conference, if applicable.
+      - title: Microsoft Teams
+        type: object
+        description: Manually attach Microsoft Teams details to the event.
+        properties:
+          provider:
+            type: string
+            enum:
+            - Microsoft Teams
+            description: The conferencing provider for the event.
+          details:
+            type: object
+            description: An object that contains Microsoft Teams conferencing details.
+            required:
+            - url
+            properties:
+              url:
+                type: string
+                description: The URL for the Microsoft Teams conference.
+      - title: Teams for Business
+        type: object
+        description: Manually attach Teams for Business details to the event.
+        properties:
+          provider:
+            type: string
+            enum:
+            - Teams for Business
+            description: The conferencing provider for the event.
+          details:
+            type: object
+            description: An object that contains Microsoft Teams for Enterprise conferencing details.
+            required:
+            - url
+            properties:
+              url:
+                type: string
+                description: The URL for the Microsoft Teams for Enterprise conference.
+      - title: Skype for Consumer
+        type: object
+        description: Manually attach Skype for Consumer details to the event.
+        properties:
+          provider:
+            type: string
+            enum:
+            - Skype for Consumer
+            description: The conferencing provider for the event.
+          details:
+            type: object
+            description: An object that contains Skype for Consumer conferencing details.
+            required:
+            - url
+            properties:
+              url:
+                type: string
+                description: The URL for the Skype for Consumer conference.
+      - title: Skype for Business
+        type: object
+        description: Manually attach Skype for Business details to the event.
+        properties:
+          provider:
+            type: string
+            enum:
+            - Skype for Business
+            description: The conferencing provider for the event.
+          details:
+            type: object
+            description: An object that contains Skype for Business conferencing details.
+            required:
+            - url
+            properties:
+              url:
+                type: string
+                description: The URL for the Skype for Business conference.
+      - title: WebEx
+        type: object
+        description: Manually attach WebEx details to the event.
+        properties:
+          provider:
+            type: string
+            enum:
+            - WebEx
+            description: The conferencing provider for the event.
+          details:
+            type: object
+            description: An object that contains WebEx conferencing details.
+            required:
+            - url
+            properties:
+              url:
+                type: string
+                description: The URL for the WebEx conference.
+              password:
+                type: string
+                description: The password for the WebEx conference, if applicable.
+              pin:
+                type: string
+                description: The PIN for the WebEx conference, if applicable.
+              phone:
+                type: array
+                items:
+                  type: string
+                description: The phone number associated with the WebEx conference.
+      - title: GoToMeeting
+        type: object
+        description: Manually attach GoToMeeting details to the event.
+        properties:
+          provider:
+            type: string
+            enum:
+            - GoToMeeting
+            description: The conferencing provider for the event.
+          details:
+            type: object
+            description: An object that contains GoToMeeting conferencing details.
+            required:
+            - url
+            properties:
+              url:
+                type: string
+                description: The URL for the GoToMeeting conference.
+              meeting_code:
+                type: string
+                description: A unique ID associated with the GoToMeeting conference.
+              password:
+                type: string
+                description: The password for the GoToMeeting conference, if applicable.
+              phone:
+                type: array
+                items:
+                  type: string
+                description: The phone number associated with the GoToMeeting conference.
+    import-group-event-response:
+      type: object
+      properties:
+        imported_events:
+          type: array
+          description: A list of event IDs representing successfully imported group events.
+          items:
+            type: object
+            properties:
+              event_id:
+                type: string
+                description: The group event ID.
+                example: 5d3qmne77v32r8l4phyuksl2x
+        import_failed:
+          type: array
+          description: A list of event IDs representing group events that Nylas couldn't import.
+          items:
+            type: object
+            properties:
+              event_id:
+                type: string
+                description: The group event ID.
+                example: 5d3qmne77v32r8l4phyuksl2x
+              reason:
+                type: string
+                description: The reason the event wasn't imported.
+    event_timespan:
+      title: Timespan
+      type: object
+      description: A period of time with a specified beginning and end (for example, an hour-long lunch meeting).
+      properties:
+        start_time:
+          type: integer
+          description: The event's start time, in seconds using the Unix timestamp format.
+          example: 1409594400
+        end_time:
+          type: integer
+          example: 1409598000
+          description: The event's end time, in seconds using the Unix timestamp format.
+        start_timezone:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          example: America/New_York
+          description: 'The timezone of the event''s `start_time` as an
+
+            [IANA-formatted](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) string.
+
+
+            If you define `start_timezone` in your request, you must also define `end_timezone`.'
+        end_timezone:
+          type:
+          - string
+          - 'null'
+          minLength: 1
+          example: America/New_York
+          description: 'The timezone of the event''s `end_time` as an
+
+            [IANA-formatted](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) string.
+
+
+            If you define `end_timezone` in your request, you must also define `start_timezone`.'
+    group_event:
+      type: object
+      required:
+      - availability
+      - event_booking
+      - participants
+      - when
+      properties:
+        capacity:
+          type: integer
+          description: (Not supported for EWS events) The maximum number of attendees allowed in the event.
+          minimum: 1
+          maximum: 500
+          default: 10
+          example: 50
+        conferencing:
+          $ref: '#/components/schemas/event_conferencing_request'
+        description:
+          type: string
+          description: 'A brief description of the group event (for example, its agenda). Nylas might return the
+
+            description as an HTML string, depending on how the provider formats it.
+
+
+            For Google accounts, this field accepts a maximum of 8,192 characters.'
+          example: Come ready to talk philosophy!
+        location:
+          type: string
+          description: 'The location of the group event (for example, a physical address or the name of a meeting
+
+            room).'
+          maxLength: 255
+          example: New York Public Library, Cave Room
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/group_event_participants'
+        recurrence:
+          $ref: '#/components/schemas/group_event_recurrence'
+        reminders:
+          type: array
+          required:
+          - type
+          - minutes_before_event
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                description: The reminder type.
+                enum:
+                - email
+                - webhook
+                example: email
+              minutes_before_event:
+                type: integer
+                description: The number of minutes before the event to send the reminder.
+                minimum: 1
+                example: 30
+              recipient:
+                type: string
+                description: (Email reminders only) Who should receive the reminder.
+                enum:
+                - host
+                - guest
+                example: host
+              email_subject:
+                type: string
+                description: (Email reminders only) The subject line of the email reminder.
+                example: 'Reminder: Annual Philosophy Club Meeting'
+        title:
+          type: string
+          description: The name of the event.
+          maxLength: 1024
+          example: Annual Philosophy Club Meeting
+        when:
+          type: object
+          description: The time and duration of the event.
+          oneOf:
+          - $ref: '#/components/schemas/event_timespan'
+          - title: Read-only object
+            type: object
+            description: Read-only placeholder. Returned only in responses.
+            readOnly: true
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+  responses:
+    import-group-event:
+      description: Group events imported
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/import-group-event-response'
+          example:
+            Events imported:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+                imported_events:
+                - event_id: 6oouub093fhj54se2rlp1ogjg56
+                import_failed:
+                - event_id: 6oouub093fhj54se2rlp1ogjg56
+                  reason: Event already imported
+    validate-timeslot:
+      description: Time slot validated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    group_events:
+      description: Group events returned
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/group_event'
+          example:
+            List group events:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+              - calendar_id: 7d93zl2palhxqdy6e5qinsakt
+                conferencing: null
+                provider: Zoom Meeting
+                details:
+                  meeting_code: code-123456
+                  password: password-123456
+                  url: https://zoom.us/j/1234567890?pwd=1234567890
+                created_at: 1661874192
+                description: Description of my new group event
+                html_link: https://www.google.com/calendar/event?eid=bTMzcGJrNW4yYjk4bjk3OWE4Ef3feD2VuM29fMjAyMjA2MjdUMjIwMDAwWiBoYWxsYUBueWxhcy5jb20
+                id: 5d3qmne77v32r8l4phyuksl2x
+                participants:
+                - comment: Leyah Miller
+                  email: leyah@example.com
+                  name: Leyah Miller
+                  phone_number: +1 23456778
+                  status: maybe
+                status: confirmed
+                title: Birthday Party
+                updated_at: 1661874192
+                when:
+                  start_time: 1661874192
+                  end_time: 1661877792
+                  start_timezone: America/New_York
+                  end_timezone: America/New_York
+              next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    group_event:
+      description: Group event returned
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    ID:
+                      type: string
+                      description: The Configuration object ID.
+                    $ref: '#/components/schemas/group_event'
+          example:
+            Return group event:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+                ID: AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUldasZYNfAbiKd_mQABCjz8fgAA
+                participants:
+                - name: Nyla
+                  email: nyla@example.com
+                  is_organizer: true
+                calendar_id: primary
+                capacity: 50
+                when:
+                - start_timezone: America/New_York
+                  end_timezone: America/New_York
+                  start_time: 1744286400
+                  end_time: 1744290000
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+  requestBodies:
+    import_group_event:
+      description: Import group event
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+              - calendar_id
+              - event_id
+              properties:
+                calendar_id:
+                  type: string
+                  description: The ID of the calendar to access.
+                  example: primary
+                capacity:
+                  type: number
+                  description: 'The maximum number of attendees allowed in the event. If not specified, Nylas uses the
+
+                    default capacity for your Configuration.'
+                  minimum: 1
+                  maximum: 500
+                  default: 10
+                  example: 50
+                event_id:
+                  type: string
+                  description: ID of the event to import.
+                  example: 5d3qmne77v32r8l4phyuksl2x
+                exceptions:
+                  type: array
+                  description: An array of events to create exceptions for.
+                  items:
+                    type: object
+                    properties:
+                      capacity:
+                        type: number
+                        description: 'The maximum number of attendees allowed in the event. You must specify a `capacity`
+
+                          for all events in `exceptions`.'
+                        example: 5
+                      event_id:
+                        type: string
+                        description: ID of the to create an exception for.
+                        example: 5d3qmne77v32r8l4phyuksl2x
+                participants:
+                  type: array
+                  description: 'An array of participants to include in the event booking. If you don''t specify at least
+
+                    one participant, Nylas uses the event organizer instead.'
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: The participant's full name.
+                        example: Leyah Miller
+                      email:
+                        type: string
+                        description: The participant's email address.
+                        example: leyah@example.com
+    group_event_update:
+      description: Update a group event
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              calendar_id:
+                type: string
+                description: The ID of the calendar to access.
+                example: primary
+              capacity:
+                type: integer
+                description: The maximum number of attendees allowed in the event.
+                minimum: 1
+                maximum: 500
+                default: 10
+                example: 50
+              conferencing:
+                type: object
+                description: 'An object that lets you automatically create a conference, or enter conferencing details
+
+                  manually.'
+                oneOf:
+                - $ref: '#/components/schemas/event_conferencing_request'
+                - title: Read-only object
+                  type: object
+                  description: Read-only placeholder. Returned only in responses.
+                  readOnly: true
+              description:
+                type: string
+                description: 'A brief description of the group event (for example, its agenda). Nylas might return the
+
+                  description as an HTML string, depending on how the provider formats it.'
+                example: Come ready to talk philosophy today!
+              location:
+                type: string
+                description: 'The location of the group event (for example, a physical address or the name of a meeting
+
+                  room).'
+                maxLength: 255
+                example: New York Public Library, Cave Room
+              participants:
+                type: object
+                description: A list of participants to be included in the group event.
+                properties:
+                  name:
+                    type: string
+                    description: The participant's name.
+                    example: Leyah Miller
+                  email:
+                    type: string
+                    description: The participant's email address.
+                    example: leyah@example.com
+                  is_organizer:
+                    type: boolean
+                    description: When `true`, indicates that the participant is the organizer for the event.
+                    example: true
+                  recurrence:
+                    $ref: '#/components/schemas/group_event_recurrence'
+              title:
+                type: string
+                description: The name of the event.
+                maxLength: 1024
+                example: Annual Philosophy Club Meeting
+              when:
+                type: object
+                description: An object representing the time and duration of the group event.
+                oneOf:
+                - $ref: '#/components/schemas/event_timespan'
+                - title: Read-only object
+                  type: object
+                  description: Read-only placeholder. Returned only in responses.
+                  readOnly: true
+    group_event_create:
+      description: Create a group event
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - calendar_id
+            - capacity
+            - participants
+            - title
+            - when
+            properties:
+              calendar_id:
+                type: string
+                description: The ID of the calendar to access.
+                example: primary
+              capacity:
+                type: integer
+                description: The maximum number of attendees allowed in the event.
+                minimum: 1
+                maximum: 500
+                default: 10
+                example: 50
+              conferencing:
+                type: object
+                description: 'An object that lets you automatically create a conference, or enter conferencing details
+
+                  manually.'
+                oneOf:
+                - $ref: '#/components/schemas/event_conferencing_request'
+                - title: Read-only object
+                  type: object
+                  description: Read-only placeholder. Returned only in responses.
+                  readOnly: true
+              description:
+                type: string
+                description: 'A brief description of the group event (for example, its agenda). Nylas might return the
+
+                  description as an HTML string, depending on how the provider formats it.'
+                example: Come ready to talk philosophy today!
+              location:
+                type: string
+                description: 'The location of the group event (for example, a physical address or the name of a meeting
+
+                  room).'
+                maxLength: 255
+                example: New York Public Library, Cave Room
+              participants:
+                type: object
+                description: A list of participants to be included in the group event.
+                properties:
+                  name:
+                    type: string
+                    description: The participant's name.
+                    example: Leyah Miller
+                  email:
+                    type: string
+                    description: The participant's email address.
+                    example: leyah@example.com
+                  is_organizer:
+                    type: boolean
+                    description: When `true`, indicates that the participant is the organizer for the event.
+                    example: true
+              recurrence:
+                $ref: '#/components/schemas/group_event_recurrence'
+              title:
+                type: string
+                description: The name of the group event.
+                maxLength: 1024
+                example: Annual Philosophy Club Meeting
+              when:
+                type: object
+                description: An object representing the time and duration of the group event.
+                oneOf:
+                - $ref: '#/components/schemas/event_timespan'
+                - title: Read-only object
+                  type: object
+                  description: Read-only placeholder. Returned only in responses.
+                  readOnly: true
+    validate_timeslot:
+      description: Validate time slot
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - calendar_id
+            - start_time
+            - end_time
+            - event_id
+            properties:
+              calendar_id:
+                type: string
+                description: ID of the calendar to access.
+                example: primary
+              capacity:
+                type: number
+                description: 'The maximum number of attendees for the event. If not specified, Nylas uses the default
+
+                  capacity for your Configuration.'
+                minimum: 1
+                maximum: 500
+                default: 10
+                example: 50
+              emails:
+                type: array
+                items:
+                  type: string
+                description: A list of email addresses associated with the event's participants.
+                example:
+                - nyla@example.com
+                - leyah@example.com
+              event_id:
+                type: string
+                description: ID of the event to validate.
+                example: 5d3qmne77v32r8l4phyuksl2x
+              master_id:
+                type: string
+                description: The master event ID. Required when working with recurring events.
+                example: 5d3qmne77v32r8l4phyuksl2x
+  parameters:
+    start_time:
+      name: start_time
+      in: query
+      required: true
+      schema:
+        type: integer
+      description: 'Filter for events that start at or after the specified time, in seconds using the Unix timestamp format. For example,
+
+        if you filter for events that start at 9:00a.m. and the calendar includes an event that runs from
+
+        8:30–9:30a.m., Nylas returns that event.'
+    calendar_id:
+      name: calendar_id
+      in: query
+      required: true
+      schema:
+        type: string
+      description: 'Filter for the specified calendar ID.
+
+
+        (Not supported for iCloud) You can use `primary` to query the user''s primary calendar.'
+    end_time:
+      name: end_time
+      in: query
+      required: true
+      schema:
+        type: integer
+      description: 'Filter for events that end at or before the specified time, in seconds using the Unix timestamp format. For example,
+
+        if you filter for events that end at 5:00p.m. and the calendar includes an event that runs from
+
+        4:30–5:30p.m., Nylas returns that event.'
+  securitySchemes:
+    ACCESS_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_ACCESS_TOKEN
+      description: 'The Nylas **access token** for a specific grant. Issued as part of OAuth 2.1 flow token
+
+        exchange.'
+    NYLAS_API_KEY:
+      scheme: bearer
+      type: http
+      bearerFormat: NYLAS_API_KEY
+      description: 'The Nylas **API key** provides application-level access to APIs and all grants. You can
+
+        generate these from the Dashboard. Learn more about [authorizing requests](/docs/v3/auth/).'
+    SCHEDULER_SESSION_TOKEN:
+      scheme: bearer
+      type: http
+      bearerFormat: Session ID
+      description: The Nylas Scheduler **session ID** that Scheduler UI Components use to authorize API requests.
