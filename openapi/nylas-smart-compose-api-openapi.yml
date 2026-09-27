@@ -165,22 +165,64 @@ paths:
         label: Kotlin SDK
         source: "import com.nylas.NylasClient\nimport com.nylas.models.ComposeMessageRequest\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val requestBody : ComposeMessageRequest = \n    ComposeMessageRequest(\"Reply\")\n    val message = nylas.messages().smartCompose().composeMessageReply(\"<NYLAS_GRANT_ID>\", \n    \"<MESSAGE_ID>\", requestBody)\n    print(message.data.suggestion)\n\n}\n"
 components:
-  requestBodies:
-    smart_compose:
+  responses:
+    smart_compose_500:
+      description: Unexpected Error
       content:
         application/json:
           schema:
-            title: Smart Compose
+            title: error
             type: object
-            description: A Smart Compose request.
             properties:
-              prompt:
-                title: Prompt
-                description: The prompt that Smart Compose uses to generate a message suggestion.
-                maxLength: 1000
+              request_id:
                 type: string
-                example: Reply to John Doe about the upcoming project.
-  responses:
+                description: ID of the request
+              error:
+                type: object
+                description: Response error object.
+                properties:
+                  type:
+                    type: string
+                    description: Error Type
+                  message:
+                    type: string
+                    description: Error Message
+          examples:
+            Unexpected Error:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unexpected_error
+                  message: an unexepcted error has occurred
+    smart_compose_200:
+      description: Returns a suggestion for a message
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/smart_compose_suggestion'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              suggestion: 'Dear John,
+
+
+                I hope this email finds you well. I wanted to reach out and inform you about an exciting upcoming project that we will be working on together. This project has the potential to be a game-changer for our company, and I believe your expertise and skills will be invaluable to its success. I look forward to discussing the project with you further and hearing your input and ideas. Let''s make this project a resounding success!
+
+
+                Best regards,
+
+                [Your Name]'
+        text/event-stream:
+          schema:
+            type: object
+            format: event-stream
+            properties:
+              suggestion:
+                type: string
     smart_compose_422:
       description: Validation Error
       content:
@@ -291,63 +333,6 @@ components:
                 error:
                   type: unknown_message_sender_error
                   message: could not determine message sender
-    smart_compose_500:
-      description: Unexpected Error
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: ID of the request
-              error:
-                type: object
-                description: Response error object.
-                properties:
-                  type:
-                    type: string
-                    description: Error Type
-                  message:
-                    type: string
-                    description: Error Message
-          examples:
-            Unexpected Error:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unexpected_error
-                  message: an unexepcted error has occurred
-    smart_compose_200:
-      description: Returns a suggestion for a message
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/smart_compose_suggestion'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-              suggestion: 'Dear John,
-
-
-                I hope this email finds you well. I wanted to reach out and inform you about an exciting upcoming project that we will be working on together. This project has the potential to be a game-changer for our company, and I believe your expertise and skills will be invaluable to its success. I look forward to discussing the project with you further and hearing your input and ideas. Let''s make this project a resounding success!
-
-
-                Best regards,
-
-                [Your Name]'
-        text/event-stream:
-          schema:
-            type: object
-            format: event-stream
-            properties:
-              suggestion:
-                type: string
     '401':
       description: Unauthorized
       content:
@@ -382,6 +367,21 @@ components:
                   provider_error:
                     code: 401
                     message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+  requestBodies:
+    smart_compose:
+      content:
+        application/json:
+          schema:
+            title: Smart Compose
+            type: object
+            description: A Smart Compose request.
+            properties:
+              prompt:
+                title: Prompt
+                description: The prompt that Smart Compose uses to generate a message suggestion.
+                maxLength: 1000
+                type: string
+                example: Reply to John Doe about the upcoming project.
   schemas:
     common_response:
       properties:

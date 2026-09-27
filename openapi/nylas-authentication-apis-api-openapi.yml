@@ -1146,66 +1146,6 @@ paths:
                 $ref: '#/components/schemas/401'
 components:
   schemas:
-    '400':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: bad_request
-            message:
-              description: Informative error message
-              default: Bad request
-              type: string
-              example: Bad request
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
-    '401':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: invalid_request_error
-            message:
-              description: Informative error message
-              default: Authentication error
-              type: string
-              example: Authentication error
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
     GrantObject:
       type: object
       required:
@@ -1333,6 +1273,66 @@ components:
           type: string
           description: The ID of the Credential the grant is associated with. Grant will use this Credential for provider communication.
           example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+    '401':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: invalid_request_error
+            message:
+              description: Informative error message
+              default: Authentication error
+              type: string
+              example: Authentication error
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
   responses:
     '400':
       description: Bad Request

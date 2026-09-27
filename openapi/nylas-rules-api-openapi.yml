@@ -581,68 +581,6 @@ paths:
       - NYLAS_API_KEY: []
 components:
   responses:
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
     '404':
       description: Not Found
       content:
@@ -722,7 +660,235 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
   schemas:
+    GrantRuleEvaluationObject:
+      title: GrantRuleEvaluation
+      type: object
+      description: 'An audit record of a single rule-engine evaluation against an inbound message, SMTP envelope, or
+
+        outbound send for a grant. Rule evaluations are created automatically during inbound processing and
+
+        outbound send handling and can be listed to trace which rules matched, what input was considered,
+
+        and which actions were applied.'
+      properties:
+        id:
+          type: string
+          description: Globally unique identifier for this evaluation record (UUID).
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        grant_id:
+          type: string
+          description: The grant this evaluation belongs to (UUID).
+          example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+        message_id:
+          type: string
+          nullable: true
+          description: 'The inbound message or stored sent copy associated with this evaluation (UUID). `null` when the
+
+            evaluation happened before a message record existed, such as `smtp_rcpt`, or when an outbound
+
+            evaluation did not persist a sent copy.'
+          example: e8b5a51d-3c2f-4a1e-9d7b-6f8c2e1a4b3d
+        evaluated_at:
+          type: integer
+          description: When the evaluation occurred, in seconds using the Unix timestamp format.
+          example: 1713000000
+        evaluation_stage:
+          type: string
+          enum:
+          - smtp_rcpt
+          - inbox_processing
+          - outbound_send
+          description: 'Where in the processing pipeline the evaluation happened. `smtp_rcpt` means the evaluation ran
+
+            during SMTP RCPT TO processing (before the message was accepted) — `message_id` is `null` in
+
+            this case. `inbox_processing` means the evaluation ran after the message was accepted and
+
+            during inbox processing — `message_id` is populated. `outbound_send` means the evaluation ran
+
+            for an outbound send; `message_id` is populated when a sent copy was stored, and `null` when
+
+            the send was blocked before storage or no sent copy was persisted.'
+          example: inbox_processing
+        evaluation_input:
+          type: object
+          description: The normalized sender, recipient, and send-type data that rules were matched against.
+          properties:
+            from_address:
+              type: string
+              description: The normalized sender email address.
+              example: sender@example.com
+            from_domain:
+              type: string
+              description: The normalized domain portion of the sender address.
+              example: example.com
+            from_tld:
+              type: string
+              description: The normalized top-level domain of the sender address.
+              example: com
+            recipient_addresses:
+              type: array
+              description: Outbound recipient email addresses considered during rule evaluation.
+              items:
+                type: string
+              example:
+              - recipient@example.com
+              - bcc@example.net
+            recipient_domains:
+              type: array
+              description: Outbound recipient domains considered during rule evaluation.
+              items:
+                type: string
+              example:
+              - example.com
+              - example.net
+            recipient_tlds:
+              type: array
+              description: Outbound recipient top-level domains considered during rule evaluation.
+              items:
+                type: string
+              example:
+              - com
+              - net
+            outbound_type:
+              type: string
+              enum:
+              - compose
+              - reply
+              description: Outbound send classification used during rule evaluation.
+              example: reply
+        applied_actions:
+          type: object
+          description: 'The actions that were applied as a result of matching rules. Only populated fields are returned —
+
+            fields are **omitted** (not set to `false`) when the corresponding action was not applied.'
+          properties:
+            blocked:
+              type: boolean
+              description: The inbound message or outbound send was blocked and not delivered. Terminal action.
+              example: true
+            marked_as_spam:
+              type: boolean
+              description: The message or stored sent copy was moved to the junk/spam folder.
+            marked_as_read:
+              type: boolean
+              description: The message or stored sent copy was automatically marked as read.
+            marked_starred:
+              type: boolean
+              description: The message or stored sent copy was automatically starred.
+            archived:
+              type: boolean
+              description: The message or stored sent copy was archived.
+            trashed:
+              type: boolean
+              description: The message or stored sent copy was moved to trash.
+            folder_ids:
+              type: array
+              description: IDs of the custom folders the message or stored sent copy was assigned to.
+              items:
+                type: string
+              example:
+              - 4f2e1a0d-c3b2-4a5e-8d9c-6f8b2e1a4b3d
+        matched_rule_ids:
+          type: array
+          description: 'IDs of the rules that matched during this evaluation. Empty when no rules matched (for example,
+
+            when rule execution ran but nothing applied).'
+          items:
+            type: string
+          example:
+          - a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        application_id:
+          type: string
+          description: The application this evaluation belongs to (UUID). Read-only; derived from the authenticated API key.
+          example: 5f37fe8d-c4ba-4898-bc18-aad5bb34735e
+        organization_id:
+          type: string
+          description: The Nylas organization this evaluation belongs to (UUID). Read-only; derived from the authenticated API key.
+          example: 9a8b7c6d-5e4f-3a2b-1c0d-ef9876543210
+        created_at:
+          type: integer
+          description: When the evaluation record was created, in seconds using the Unix timestamp format.
+          example: 1713000000
+        updated_at:
+          type: integer
+          description: When the evaluation record was last updated, in seconds using the Unix timestamp format.
+          example: 1713000000
     RuleObject:
       title: Rule
       type: object
@@ -895,172 +1061,6 @@ components:
           type: integer
           description: When the rule was last updated, in seconds using the Unix timestamp format.
           example: 1742932766
-    GrantRuleEvaluationObject:
-      title: GrantRuleEvaluation
-      type: object
-      description: 'An audit record of a single rule-engine evaluation against an inbound message, SMTP envelope, or
-
-        outbound send for a grant. Rule evaluations are created automatically during inbound processing and
-
-        outbound send handling and can be listed to trace which rules matched, what input was considered,
-
-        and which actions were applied.'
-      properties:
-        id:
-          type: string
-          description: Globally unique identifier for this evaluation record (UUID).
-          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
-        grant_id:
-          type: string
-          description: The grant this evaluation belongs to (UUID).
-          example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-        message_id:
-          type: string
-          nullable: true
-          description: 'The inbound message or stored sent copy associated with this evaluation (UUID). `null` when the
-
-            evaluation happened before a message record existed, such as `smtp_rcpt`, or when an outbound
-
-            evaluation did not persist a sent copy.'
-          example: e8b5a51d-3c2f-4a1e-9d7b-6f8c2e1a4b3d
-        evaluated_at:
-          type: integer
-          description: When the evaluation occurred, in seconds using the Unix timestamp format.
-          example: 1713000000
-        evaluation_stage:
-          type: string
-          enum:
-          - smtp_rcpt
-          - inbox_processing
-          - outbound_send
-          description: 'Where in the processing pipeline the evaluation happened. `smtp_rcpt` means the evaluation ran
-
-            during SMTP RCPT TO processing (before the message was accepted) — `message_id` is `null` in
-
-            this case. `inbox_processing` means the evaluation ran after the message was accepted and
-
-            during inbox processing — `message_id` is populated. `outbound_send` means the evaluation ran
-
-            for an outbound send; `message_id` is populated when a sent copy was stored, and `null` when
-
-            the send was blocked before storage or no sent copy was persisted.'
-          example: inbox_processing
-        evaluation_input:
-          type: object
-          description: The normalized sender, recipient, and send-type data that rules were matched against.
-          properties:
-            from_address:
-              type: string
-              description: The normalized sender email address.
-              example: sender@example.com
-            from_domain:
-              type: string
-              description: The normalized domain portion of the sender address.
-              example: example.com
-            from_tld:
-              type: string
-              description: The normalized top-level domain of the sender address.
-              example: com
-            recipient_addresses:
-              type: array
-              description: Outbound recipient email addresses considered during rule evaluation.
-              items:
-                type: string
-              example:
-              - recipient@example.com
-              - bcc@example.net
-            recipient_domains:
-              type: array
-              description: Outbound recipient domains considered during rule evaluation.
-              items:
-                type: string
-              example:
-              - example.com
-              - example.net
-            recipient_tlds:
-              type: array
-              description: Outbound recipient top-level domains considered during rule evaluation.
-              items:
-                type: string
-              example:
-              - com
-              - net
-            outbound_type:
-              type: string
-              enum:
-              - compose
-              - reply
-              description: Outbound send classification used during rule evaluation.
-              example: reply
-        applied_actions:
-          type: object
-          description: 'The actions that were applied as a result of matching rules. Only populated fields are returned —
-
-            fields are **omitted** (not set to `false`) when the corresponding action was not applied.'
-          properties:
-            blocked:
-              type: boolean
-              description: The inbound message or outbound send was blocked and not delivered. Terminal action.
-              example: true
-            marked_as_spam:
-              type: boolean
-              description: The message or stored sent copy was moved to the junk/spam folder.
-            marked_as_read:
-              type: boolean
-              description: The message or stored sent copy was automatically marked as read.
-            marked_starred:
-              type: boolean
-              description: The message or stored sent copy was automatically starred.
-            archived:
-              type: boolean
-              description: The message or stored sent copy was archived.
-            trashed:
-              type: boolean
-              description: The message or stored sent copy was moved to trash.
-            folder_ids:
-              type: array
-              description: IDs of the custom folders the message or stored sent copy was assigned to.
-              items:
-                type: string
-              example:
-              - 4f2e1a0d-c3b2-4a5e-8d9c-6f8b2e1a4b3d
-        matched_rule_ids:
-          type: array
-          description: 'IDs of the rules that matched during this evaluation. Empty when no rules matched (for example,
-
-            when rule execution ran but nothing applied).'
-          items:
-            type: string
-          example:
-          - a1b2c3d4-e5f6-7890-abcd-ef1234567890
-        application_id:
-          type: string
-          description: The application this evaluation belongs to (UUID). Read-only; derived from the authenticated API key.
-          example: 5f37fe8d-c4ba-4898-bc18-aad5bb34735e
-        organization_id:
-          type: string
-          description: The Nylas organization this evaluation belongs to (UUID). Read-only; derived from the authenticated API key.
-          example: 9a8b7c6d-5e4f-3a2b-1c0d-ef9876543210
-        created_at:
-          type: integer
-          description: When the evaluation record was created, in seconds using the Unix timestamp format.
-          example: 1713000000
-        updated_at:
-          type: integer
-          description: When the evaluation record was last updated, in seconds using the Unix timestamp format.
-          example: 1713000000
-  parameters:
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

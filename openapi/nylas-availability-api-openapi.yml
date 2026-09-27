@@ -134,119 +134,62 @@ paths:
       security:
       - SCHEDULER_SESSION_TOKEN: []
 components:
+  schemas:
+    availability_response:
+      description: The response to a successful request to get availability for a participant.
+      type: object
+      properties:
+        order:
+          type: array
+          items:
+            type: string
+          description: (Round-robin events only) The order of participants in line to attend the proposed meeting.
+        time_slots:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/availability_time_slot'
+          description: 'An array of the available time slots when you can create a meeting using the requested settings.
+
+            This field may be `null` if no time slots are available. Treat `null` the same as an empty array.'
+    availability_time_slot:
+      title: TimeSlot
+      type: object
+      properties:
+        emails:
+          type:
+          - array
+          - 'null'
+          description: A list of participant email addresses for this time slot. This field may be `null`. Treat `null` the same as an empty array.
+          items:
+            type: string
+        start_time:
+          type: integer
+          description: The start of a time slot, in seconds using the Unix timestamp format.
+        end_time:
+          type: integer
+          description: The end of a time slot, in seconds using the Unix timestamp format.
+        event_id:
+          type: string
+          description: (Group Events Only). The event ID of the group event
+        master_id:
+          type: string
+          description: (Group Events Only). The master ID of the recurring group event
+        calendar_id:
+          type: string
+          description: (Group Events Only). The calendar ID of the group event
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
   responses:
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    availability:
-      description: Return availability
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/availability_response'
-          examples:
-            Return round-robin scheduling:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                data:
-                  order:
-                  - nyla@example.com
-                  - leyah@example.com
-                  time_slots:
-                  - emails:
-                    - leyah@example.com
-                    - nyla@example.com
-                    start_time: 1659367800
-                    end_time: 1659369600
-                  - emails:
-                    - nyla@example.com
-                    start_time: 1659376800
-                    end_time: 1659378600
-            Return group Configuration availability:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                data:
-                  time_slots:
-                  - emails:
-                    - leyah@example.com
-                    - nyla@example.com
-                    start_time: 1659367800
-                    end_time: 1659369600
-                    capacity: 100
-                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
-                    calendar_id: primary
-                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA
-                  - emails:
-                    - nyla@example.com
-                    start_time: 1659376800
-                    end_time: 1659378600
-                    capacity: 100
-                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EtegrfdsczUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
-                    calendar_id: primary
-                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EfsrgdfeasECYNfAbiKd_mQABCjy6hAAA
     '404':
       description: Not Found
       content:
@@ -354,61 +297,118 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-  schemas:
-    availability_time_slot:
-      title: TimeSlot
-      type: object
-      properties:
-        emails:
-          type:
-          - array
-          - 'null'
-          description: A list of participant email addresses for this time slot. This field may be `null`. Treat `null` the same as an empty array.
-          items:
-            type: string
-        start_time:
-          type: integer
-          description: The start of a time slot, in seconds using the Unix timestamp format.
-        end_time:
-          type: integer
-          description: The end of a time slot, in seconds using the Unix timestamp format.
-        event_id:
-          type: string
-          description: (Group Events Only). The event ID of the group event
-        master_id:
-          type: string
-          description: (Group Events Only). The master ID of the recurring group event
-        calendar_id:
-          type: string
-          description: (Group Events Only). The calendar ID of the group event
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    availability_response:
-      description: The response to a successful request to get availability for a participant.
-      type: object
-      properties:
-        order:
-          type: array
-          items:
-            type: string
-          description: (Round-robin events only) The order of participants in line to attend the proposed meeting.
-        time_slots:
-          type:
-          - array
-          - 'null'
-          items:
-            $ref: '#/components/schemas/availability_time_slot'
-          description: 'An array of the available time slots when you can create a meeting using the requested settings.
-
-            This field may be `null` if no time slots are available. Treat `null` the same as an empty array.'
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    availability:
+      description: Return availability
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/availability_response'
+          examples:
+            Return round-robin scheduling:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                data:
+                  order:
+                  - nyla@example.com
+                  - leyah@example.com
+                  time_slots:
+                  - emails:
+                    - leyah@example.com
+                    - nyla@example.com
+                    start_time: 1659367800
+                    end_time: 1659369600
+                  - emails:
+                    - nyla@example.com
+                    start_time: 1659376800
+                    end_time: 1659378600
+            Return group Configuration availability:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                data:
+                  time_slots:
+                  - emails:
+                    - leyah@example.com
+                    - nyla@example.com
+                    start_time: 1659367800
+                    end_time: 1659369600
+                    capacity: 100
+                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
+                    calendar_id: primary
+                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AeRryRUlhMECYNfAbiKd_mQABCjy6hAAA
+                  - emails:
+                    - nyla@example.com
+                    start_time: 1659376800
+                    end_time: 1659378600
+                    capacity: 100
+                    event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EtegrfdsczUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
+                    calendar_id: primary
+                    master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EfsrgdfeasECYNfAbiKd_mQABCjy6hAAA
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

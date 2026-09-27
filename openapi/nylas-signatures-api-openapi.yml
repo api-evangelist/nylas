@@ -210,77 +210,6 @@ paths:
         source: "curl --request DELETE \\\n  --url 'https://api.us.nylas.com/v3/grants/<NYLAS_GRANT_ID>/signatures/<SIGNATURE_ID>' \\\n  --header 'Accept: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>'\n"
 components:
   responses:
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    200-delete:
-      description: Delete Succeeded
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-    signatures:
-      description: Signatures
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response_with_cursor'
-            - properties:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/signature'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-            - id: sig_abc123
-              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              name: Work Signature
-              body: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p></div>
-              object: signature
-              created_at: 1706367600
-              updated_at: 1706367600
-            - id: sig_def456
-              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              name: Personal Signature
-              body: <div><p>Nick B.</p><p>Sent from my phone</p></div>
-              object: signature
-              created_at: 1706367700
-              updated_at: 1706367700
-            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
     signature:
       description: Signature
       content:
@@ -301,40 +230,6 @@ components:
               object: signature
               created_at: 1706367600
               updated_at: 1706367600
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
     '404':
       description: Not Found
       content:
@@ -402,6 +297,36 @@ components:
                 error:
                   type: provider_error
                   message: Provider request timed out.
+    signatures:
+      description: Signatures
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/signature'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+            - id: sig_abc123
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              name: Work Signature
+              body: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p></div>
+              object: signature
+              created_at: 1706367600
+              updated_at: 1706367600
+            - id: sig_def456
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              name: Personal Signature
+              body: <div><p>Nick B.</p><p>Sent from my phone</p></div>
+              object: signature
+              created_at: 1706367700
+              updated_at: 1706367700
+            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
     '400':
       description: Bad Request
       content:
@@ -442,69 +367,82 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-  requestBodies:
-    signature_create:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    200-delete:
+      description: Delete Succeeded
       content:
         application/json:
           schema:
             type: object
             required:
-            - name
-            - body
+            - request_id
             properties:
-              name:
+              request_id:
                 type: string
-                description: A label for the signature (for example, "Work", "Personal", or "Mobile").
-                example: Work Signature
-              body:
-                type: string
-                description: 'The HTML content of the signature. Maximum 100 KB. Images must use externally hosted URLs
-
-                  (base64 inline images are not supported). Nylas sanitizes the HTML on input to prevent
-
-                  malicious content.'
-                example: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p><p><a href="mailto:nick@nylas.com">nick@nylas.com</a></p></div>
-          example:
-            name: Work Signature
-            body: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p><p><a href="mailto:nick@nylas.com">nick@nylas.com</a></p></div>
-    signature_update:
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    '401':
+      description: Unauthorized
       content:
         application/json:
           schema:
+            title: error
             type: object
             properties:
-              name:
+              request_id:
                 type: string
-                description: Updated label for the signature.
-                example: Updated Work Signature
-              body:
-                type: string
-                description: 'Updated HTML content for the signature. Maximum 100 KB. Images must use externally hosted
-
-                  URLs (base64 inline images are not supported). Nylas sanitizes the HTML on input to prevent
-
-                  malicious content.'
-                example: <div><p><strong>Nick Barraclough</strong></p><p>Senior Product Manager | Nylas</p></div>
-          example:
-            name: Updated Work Signature
-            body: <div><p><strong>Nick Barraclough</strong></p><p>Senior Product Manager | Nylas</p></div>
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
   schemas:
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    grant_id:
-      title: Grant ID
-      type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
     common_response_with_cursor:
       properties:
         request_id:
@@ -555,7 +493,82 @@ components:
           description: Unix timestamp when the signature was last modified.
           readOnly: true
           example: 1706367600
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+  requestBodies:
+    signature_create:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - name
+            - body
+            properties:
+              name:
+                type: string
+                description: A label for the signature (for example, "Work", "Personal", or "Mobile").
+                example: Work Signature
+              body:
+                type: string
+                description: 'The HTML content of the signature. Maximum 100 KB. Images must use externally hosted URLs
+
+                  (base64 inline images are not supported). Nylas sanitizes the HTML on input to prevent
+
+                  malicious content.'
+                example: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p><p><a href="mailto:nick@nylas.com">nick@nylas.com</a></p></div>
+          example:
+            name: Work Signature
+            body: <div><p><strong>Nick Barraclough</strong></p><p>Product Manager | Nylas</p><p><a href="mailto:nick@nylas.com">nick@nylas.com</a></p></div>
+    signature_update:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Updated label for the signature.
+                example: Updated Work Signature
+              body:
+                type: string
+                description: 'Updated HTML content for the signature. Maximum 100 KB. Images must use externally hosted
+
+                  URLs (base64 inline images are not supported). Nylas sanitizes the HTML on input to prevent
+
+                  malicious content.'
+                example: <div><p><strong>Nick Barraclough</strong></p><p>Senior Product Manager | Nylas</p></div>
+          example:
+            name: Updated Work Signature
+            body: <div><p><strong>Nick Barraclough</strong></p><p>Senior Product Manager | Nylas</p></div>
   parameters:
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
     limit:
       name: limit
       in: query
@@ -578,19 +591,6 @@ components:
         `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
 
         information.'
-    field_selection:
-      name: select
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
-
-        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
-
-        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
-
-        to only the information that you need.'
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

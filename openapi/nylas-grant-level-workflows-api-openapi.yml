@@ -208,47 +208,6 @@ paths:
           $ref: '#/components/responses/400'
 components:
   responses:
-    workflow_400:
-      description: 'Error: Bad request'
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - error
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
-              error:
-                type: object
-                required:
-                - message
-                - type
-                properties:
-                  type:
-                    type: string
-                    description: The type of error that occurred.
-                    example: api.invalid_request_error
-                  message:
-                    type: string
-                    description: A human-readable message describing the error.
-                    example: invalid_event is not a valid option
-    delete_200_simple:
-      description: 'Success: Object deleted'
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 3906564297-48e7fb5b-f220-427b-a4de-255736adba08
     workflows_list:
       description: Success. Returns list of workflows.
       content:
@@ -300,6 +259,47 @@ components:
                 type: string
                 description: A cursor pointing to the next page of results for the request.
                 example: eyJjdXJzb3IiOiJub3RpZmljYXRpb25fd29ya2Zsb3dfYjc5YzgyYjIifQ==
+    delete_200_simple:
+      description: 'Success: Object deleted'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3906564297-48e7fb5b-f220-427b-a4de-255736adba08
+    workflow_400:
+      description: 'Error: Bad request'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.invalid_request_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: invalid_event is not a valid option
     workflow:
       description: Success. Returns workflow.
       content:
@@ -398,29 +398,6 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-  parameters:
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
   schemas:
     workflow:
       type: object
@@ -500,29 +477,58 @@ components:
               type: string
               description: The name of the sender.
               example: Support
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
   requestBodies:
-    workflow_update:
-      description: Update workflow request
+    workflow_create:
+      description: Create workflow request
       required: true
       content:
         application/json:
           schema:
             type: object
+            required:
+            - name
+            - template_id
+            - trigger_event
             properties:
               delay:
                 type: integer
                 description: 'The number of minutes between a `trigger_event` being met and the workflow
 
                   sending a message.'
-                example: 1
+                default: 0
+                example: 5
               is_enabled:
                 type: boolean
                 description: When `true`, indicates that the workflow is enabled.
-                example: false
+                default: true
+                example: true
               name:
                 type: string
                 description: The name of the workflow.
-                example: Updated booking confirmation workflow
+                example: New booking confirmation workflow
               template_id:
                 type: string
                 description: The ID of the email template the workflow uses.
@@ -553,34 +559,28 @@ components:
                     type: string
                     description: The name of the sender.
                     example: Support
-    workflow_create:
-      description: Create workflow request
+    workflow_update:
+      description: Update workflow request
       required: true
       content:
         application/json:
           schema:
             type: object
-            required:
-            - name
-            - template_id
-            - trigger_event
             properties:
               delay:
                 type: integer
                 description: 'The number of minutes between a `trigger_event` being met and the workflow
 
                   sending a message.'
-                default: 0
-                example: 5
+                example: 1
               is_enabled:
                 type: boolean
                 description: When `true`, indicates that the workflow is enabled.
-                default: true
-                example: true
+                example: false
               name:
                 type: string
                 description: The name of the workflow.
-                example: New booking confirmation workflow
+                example: Updated booking confirmation workflow
               template_id:
                 type: string
                 description: The ID of the email template the workflow uses.

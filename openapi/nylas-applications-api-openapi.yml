@@ -495,85 +495,6 @@ paths:
                 $ref: '#/components/schemas/404'
 components:
   schemas:
-    '401':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: invalid_request_error
-            message:
-              description: Informative error message
-              default: Authentication error
-              type: string
-              example: Authentication error
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
-    '404':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: xyz.not_found_error
-            message:
-              description: Informative error message
-              default: Resource not found
-              type: string
-              example: Resource not found
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
-    webDesktopCallbackNoSettings:
-      title: Web or Desktop
-      properties:
-        platform:
-          type: string
-          description: Platform identifier
-          enum:
-          - web
-          - desktop
-        id:
-          type: string
-          description: The callback URI ID. This must be a universally unique ID (UUID).
-          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
-        url:
-          type: string
-          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development
-
-            _only_. Otherwise, you need to use HTTPS.'
-          example: https://yourapp.com/callback
     '400':
       type: object
       required:
@@ -604,123 +525,55 @@ components:
               example:
                 error: invalid_grant
                 provider_error: Bad Request
-    RedirectURIObject:
-      oneOf:
-      - $ref: '#/components/schemas/webDesktopCallbackNoSettings'
-      - $ref: '#/components/schemas/JsCallbackwSettings'
-      - $ref: '#/components/schemas/iosCallbackwSettings'
-      - $ref: '#/components/schemas/AndroidCallbackwSettings'
-      discriminator:
-        propertyName: platform
-        mapping:
-          web: '#/components/schemas/webDesktopCallbackNoSettings'
-          desktop: '#/components/schemas/webDesktopCallbackNoSettings'
-          js: '#/components/schemas/JsCallbackwSettings'
-          ios: '#/components/schemas/iosCallbackwSettings'
-          android: '#/components/schemas/AndroidCallbackwSettings'
-    AndroidCallbackwSettings:
-      title: Android
+    '401':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: invalid_request_error
+            message:
+              description: Informative error message
+              default: Authentication error
+              type: string
+              example: Authentication error
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    webDesktopCallbackNoSettings:
+      title: Web or Desktop
       properties:
         platform:
           type: string
           description: Platform identifier
           enum:
-          - android
+          - web
+          - desktop
         id:
           type: string
           description: The callback URI ID. This must be a universally unique ID (UUID).
           example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
         url:
           type: string
-          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development
 
-            `<package/bundle-name>://<deeplink>`).
-
-
-            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+            _only_. Otherwise, you need to use HTTPS.'
           example: https://yourapp.com/callback
-        settings:
-          description: Additional platform settings and configurations for the Android callback URI.
-          type: object
-          required:
-          - package_name
-          - sha1_certificate_fingerprint
-          properties:
-            package_name:
-              type: string
-              description: Find your app's Package Name in the Android Manifest. It's a unique identifier that distinguishes your app on the Google Play Store and on the device. It follows a reverse domain name notation, such as `com.example.myapp`.
-              example: com.example.myapp
-            sha1_certificate_fingerprint:
-              type: string
-              description: A SHA-1 hash of the app's signing certificate. This ensures that only the _signed_ version of your app can use the redirect URI.
-              example: AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12
-    JsCallbackwSettings:
-      title: JS
-      properties:
-        platform:
-          type: string
-          description: Platform identifier
-          enum:
-          - js
-        id:
-          type: string
-          description: The callback URI ID. This must be a universally unique ID (UUID).
-          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
-        url:
-          type: string
-          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development _only_.
-
-            Otherwise, you must use HTTPS.'
-          example: https://yourapp.com/callback
-        settings:
-          description: Additional platform settings and configurations for the Javascript callback URI.
-          type: object
-          required:
-          - origin
-          properties:
-            origin:
-              type: string
-              description: The `origin` is the base URL from which your project or app is served. It is required because it's a critical part of defining your app's trust boundaries to prevent cross-origin issues. Set this when you set up OAuth redirect URIs and other security settings.
-              example: yourapp.com
-    iosCallbackwSettings:
-      title: iOS
-      properties:
-        platform:
-          type: string
-          description: Platform identifier
-          enum:
-          - ios
-        id:
-          type: string
-          description: The callback URI ID. This must be a universally unique ID (UUID).
-          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
-        url:
-          type: string
-          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
-
-            `<package/bundle-name>://<deeplink>`).
-
-
-            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
-          example: https://yourapp.com/callback
-        settings:
-          description: Additional platform settings and configurations for the iOS callback URI.
-          type: object
-          required:
-          - bundle_id
-          properties:
-            bundle_id:
-              type: string
-              description: The `bundle_id` (Bundle Identifier) is a unique identifier for an iOS app. It's set in the Xcode project and follows a reverse domain name style.
-              example: com.example.myapp
-            app_store_id:
-              type: string
-              description: Unique identifier for your app on the Apple App Store. This ID is assigned to your app when you submit it to the App Store and it is approved.
-              example: 1234567890
-            team_id:
-              type: string
-              example: ABCDE12345
-              description: Unique identifier for your Apple Developer Account or team.
     ApplicationObject:
       type: object
       properties:
@@ -825,6 +678,153 @@ components:
                 js: '#/components/schemas/JsCallbackwSettings'
                 ios: '#/components/schemas/iosCallbackwSettings'
                 android: '#/components/schemas/AndroidCallbackwSettings'
+    '404':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: xyz.not_found_error
+            message:
+              description: Informative error message
+              default: Resource not found
+              type: string
+              example: Resource not found
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    RedirectURIObject:
+      oneOf:
+      - $ref: '#/components/schemas/webDesktopCallbackNoSettings'
+      - $ref: '#/components/schemas/JsCallbackwSettings'
+      - $ref: '#/components/schemas/iosCallbackwSettings'
+      - $ref: '#/components/schemas/AndroidCallbackwSettings'
+      discriminator:
+        propertyName: platform
+        mapping:
+          web: '#/components/schemas/webDesktopCallbackNoSettings'
+          desktop: '#/components/schemas/webDesktopCallbackNoSettings'
+          js: '#/components/schemas/JsCallbackwSettings'
+          ios: '#/components/schemas/iosCallbackwSettings'
+          android: '#/components/schemas/AndroidCallbackwSettings'
+    JsCallbackwSettings:
+      title: JS
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - js
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development _only_.
+
+            Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the Javascript callback URI.
+          type: object
+          required:
+          - origin
+          properties:
+            origin:
+              type: string
+              description: The `origin` is the base URL from which your project or app is served. It is required because it's a critical part of defining your app's trust boundaries to prevent cross-origin issues. Set this when you set up OAuth redirect URIs and other security settings.
+              example: yourapp.com
+    iosCallbackwSettings:
+      title: iOS
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - ios
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+
+            `<package/bundle-name>://<deeplink>`).
+
+
+            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the iOS callback URI.
+          type: object
+          required:
+          - bundle_id
+          properties:
+            bundle_id:
+              type: string
+              description: The `bundle_id` (Bundle Identifier) is a unique identifier for an iOS app. It's set in the Xcode project and follows a reverse domain name style.
+              example: com.example.myapp
+            app_store_id:
+              type: string
+              description: Unique identifier for your app on the Apple App Store. This ID is assigned to your app when you submit it to the App Store and it is approved.
+              example: 1234567890
+            team_id:
+              type: string
+              example: ABCDE12345
+              description: Unique identifier for your Apple Developer Account or team.
+    AndroidCallbackwSettings:
+      title: Android
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - android
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+
+            `<package/bundle-name>://<deeplink>`).
+
+
+            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the Android callback URI.
+          type: object
+          required:
+          - package_name
+          - sha1_certificate_fingerprint
+          properties:
+            package_name:
+              type: string
+              description: Find your app's Package Name in the Android Manifest. It's a unique identifier that distinguishes your app on the Google Play Store and on the device. It follows a reverse domain name notation, such as `com.example.myapp`.
+              example: com.example.myapp
+            sha1_certificate_fingerprint:
+              type: string
+              description: A SHA-1 hash of the app's signing certificate. This ensures that only the _signed_ version of your app can use the redirect URI.
+              example: AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12
   responses:
     200-delete:
       description: Delete Succeeded

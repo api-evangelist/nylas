@@ -344,45 +344,6 @@ paths:
         source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val folder = nylas.folders().destroy(\"<NYLAS_GRANT_ID>\", \n    \"<FOLDER_ID>\")\n\n    print(folder)\n}\n"
 components:
   schemas:
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    object:
-      type: string
-      description: The type of object.
-    update_folder:
-      title: update_folder
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the folder to be updated.
-        parent_id:
-          type: string
-          description: (Microsoft and EWS only) The ID of the parent folder.
-        text_color:
-          type: string
-          description: '(Google only) The text color of the folder, in hexadecimal format (for example, `#0099EE`). See
-
-            [Google''s reference documentation](https://developers.google.com/gmail/api/reference/rest/v1/users.labels#color)
-
-            for a list of accepted values.'
-        background_color:
-          type: string
-          description: '(Google only) The background color of the folder, in hexadecimal format (for example, `#0099EE`).
-
-            See
-
-            [Google''s reference documentation](https://developers.google.com/gmail/api/reference/rest/v1/users.labels#color)
-
-            for a list of accepted values.'
     folder:
       title: Folder
       type: object
@@ -457,12 +418,67 @@ components:
           items:
             type: string
             minItems: 0
-    id:
-      title: ID
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    grant_id:
+      title: Grant ID
       type: string
-      minLength: 1
-      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
-      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    update_folder:
+      title: update_folder
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the folder to be updated.
+        parent_id:
+          type: string
+          description: (Microsoft and EWS only) The ID of the parent folder.
+        text_color:
+          type: string
+          description: '(Google only) The text color of the folder, in hexadecimal format (for example, `#0099EE`). See
+
+            [Google''s reference documentation](https://developers.google.com/gmail/api/reference/rest/v1/users.labels#color)
+
+            for a list of accepted values.'
+        background_color:
+          type: string
+          description: '(Google only) The background color of the folder, in hexadecimal format (for example, `#0099EE`).
+
+            See
+
+            [Google''s reference documentation](https://developers.google.com/gmail/api/reference/rest/v1/users.labels#color)
+
+            for a list of accepted values.'
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    object:
+      type: string
+      description: The type of object.
     create_folder:
       title: create_folder
       type: object
@@ -483,47 +499,13 @@ components:
         background_color:
           type: string
           description: (Google only) The background color of the folder, in hexadecimal format (for example, `#0099EE`). See the [list of Google-defined values](https://developers.google.com/gmail/api/reference/rest/v1/users.labels#color) for more information.
-    grant_id:
-      title: Grant ID
+    id:
+      title: ID
       type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
-    common_response_with_cursor:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-        next_cursor:
-          type:
-          - string
-          - 'null'
-          description: A cursor pointing to the next page of results for the request.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
   parameters:
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
-    include_hidden_folders:
-      name: include_hidden_folders
-      in: query
-      schema:
-        type: boolean
-        default: false
-      description: (Microsoft only) When `true`, Nylas includes hidden folders in its response.
     field_selection:
       name: select
       in: query
@@ -537,12 +519,41 @@ components:
         interested in. You can use `select` to optimize response size and reduce latency by limiting queries
 
         to only the information that you need.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
     parent_id:
       name: parent_id
       in: query
       schema:
         type: string
       description: (Microsoft and EWS only) Use the ID of a folder to find all child folders it contains.
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+    include_hidden_folders:
+      name: include_hidden_folders
+      in: query
+      schema:
+        type: boolean
+        default: false
+      description: (Microsoft only) When `true`, Nylas includes hidden folders in its response.
     shared_from:
       name: shared_from
       in: query
@@ -555,17 +566,6 @@ components:
         This parameter only accepts single email address or grant ID.
 
         Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
     single_level:
       name: single_level
       schema:
@@ -575,6 +575,183 @@ components:
       required: false
       description: (Microsoft only) If `true`, retrieves folders from a single-level hierarchy only. If `false`, retrieves folders across a multi-level hierarchy.
   responses:
+    folder:
+      description: Folder
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/folder'
+          example:
+            Folder response example:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+                id: SENT
+                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+                name: SENT
+                system_folder: true
+                attributes:
+                - \Sent
+    folders:
+      description: Returned all folders
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/folder'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+            - id: SENT
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              name: SENT
+              system_folder: true
+            - id: INBOX
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              name: INBOX
+              system_folder: true
+            - id: Label_2
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              name: New Label with Color
+              system_folder: false
+            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
     '400':
       description: Bad Request
       content:
@@ -615,135 +792,6 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The raw error from the provider, if available
-                    properties:
-                      code:
-                        type: string
-                      message:
-                        type: string
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: not_found_error
-                  message: requested object not found
-                  provider_error:
-                    code: MailboxNotEnabledForRESTAPI
-                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    '504':
-      description: Provider Failure
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Provider Failure:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: provider_error
-                  message: Provider request timed out.
     200-delete:
       description: Delete Succeeded
       content:
@@ -757,54 +805,6 @@ components:
                 type: string
                 description: ID of the request.
                 example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-    folders:
-      description: Returned all folders
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response_with_cursor'
-            - properties:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/folder'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-            - id: SENT
-              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              name: SENT
-              system_folder: true
-            - id: INBOX
-              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              name: INBOX
-              system_folder: true
-            - id: Label_2
-              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              name: New Label with Color
-              system_folder: false
-            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    folder:
-      description: Folder
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/folder'
-          example:
-            Folder response example:
-              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-              data:
-                id: SENT
-                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-                name: SENT
-                system_folder: true
-                attributes:
-                - \Sent
   requestBodies:
     folder_update:
       content:

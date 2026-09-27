@@ -299,84 +299,6 @@ paths:
       - ACCESS_TOKEN: []
 components:
   responses:
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    get-api-key-200:
-      description: OK
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  type: object
-                  properties:
-                    application_id:
-                      type: string
-                      description: The ID of the application the API key is associated with.
-                    created_at:
-                      type: number
-                      description: When the API key was created, in seconds using the Unix timestamp format.
-                    expires_at:
-                      type: number
-                      description: When the API key will expire, in seconds using the Unix timestamp format.
-                    expires_in:
-                      type: number
-                      description: How long the API key is valid, in seconds.
-                    id:
-                      type: string
-                      description: The API key ID.
-                    name:
-                      type: string
-                      description: The name of the API key.
-                    permissions:
-                      type: array
-                      descriptions: An array of permissions associated with the API key.
-                    status:
-                      type: string
-                      description: The status of the API key.
-                    updated_at:
-                      type: number
-                      description: When the API key was last updated, in seconds using the Unix timestamp format.
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-              application_id: ad410018-d306-43f9-8361-fa5d7b2172e0
-              created_at: 1617817109
-              expires_at: 1619385186
-              expires_in: 3600
-              name: Leyah's API key
-              permissions:
-              - all
-              status: active
-              updated_at: 1617817109
     get-api-keys-200:
       description: OK
       content:
@@ -432,40 +354,56 @@ components:
                 - all
                 status: active
                 updated_at: 1617817109
-    '401':
-      description: Unauthorized
+    get-api-key-200:
+      description: OK
       content:
         application/json:
           schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    application_id:
+                      type: string
+                      description: The ID of the application the API key is associated with.
+                    created_at:
+                      type: number
+                      description: When the API key was created, in seconds using the Unix timestamp format.
+                    expires_at:
+                      type: number
+                      description: When the API key will expire, in seconds using the Unix timestamp format.
+                    expires_in:
+                      type: number
+                      description: How long the API key is valid, in seconds.
+                    id:
+                      type: string
+                      description: The API key ID.
+                    name:
+                      type: string
+                      description: The name of the API key.
+                    permissions:
+                      type: array
+                      descriptions: An array of permissions associated with the API key.
+                    status:
+                      type: string
+                      description: The status of the API key.
+                    updated_at:
+                      type: number
+                      description: When the API key was last updated, in seconds using the Unix timestamp format.
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              application_id: ad410018-d306-43f9-8361-fa5d7b2172e0
+              created_at: 1617817109
+              expires_at: 1619385186
+              expires_in: 3600
+              name: Leyah's API key
+              permissions:
+              - all
+              status: active
+              updated_at: 1617817109
     '400':
       description: Bad Request
       content:
@@ -506,6 +444,68 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
   schemas:
     common_response:
       properties:

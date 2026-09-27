@@ -643,25 +643,79 @@ paths:
               schema:
                 $ref: '#/components/schemas/401'
 components:
-  parameters:
-    provider:
-      name: provider
-      in: path
-      required: true
-      schema:
-        type: string
-        enum:
-        - google
-        - microsoft
-        - imap
-        - icloud
-        - yahoo
-        - ews
-        - virtual-calendar
-        - zoom
-        - nylas
-        example: google
   schemas:
+    ConnectorObject:
+      type: object
+      additionalProperties: false
+      required:
+      - provider
+      - name
+      properties:
+        name:
+          type: string
+          description: The name of the connector.
+          example: Google Connector
+        provider:
+          type: string
+          description: Provider type
+          enum:
+          - google
+          - microsoft
+          - imap
+          - icloud
+          - yahoo
+          - virtual-calendar
+          - ews
+          - zoom
+          - nylas
+          example: google
+        settings:
+          description: Optional settings from provider
+          example:
+            topic_name: abc123
+          type: object
+        scope:
+          type: array
+          items:
+            type: string
+          description: (Not used for Zoom connectors.) Optional default scopes for the connector. For Zoom, configure scopes directly on your Zoom OAuth app. See [Zoom granular scopes](https://developers.zoom.us/docs/integrations/oauth-scopes-granular/).
+          example:
+          - https://www.googleapis.com/auth/userinfo.email
+          - https://www.googleapis.com/auth/userinfo.profile
+        active_credential_id:
+          type: string
+          description: The ID of the "default" credential record of this Connector. This credential will be used as a default for communication with the provider.
+          example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
     '401':
       type: object
       required:
@@ -722,36 +776,6 @@ components:
               example:
                 error: invalid_grant
                 provider_error: Bad Request
-    '400':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: bad_request
-            message:
-              description: Informative error message
-              default: Bad request
-              type: string
-              example: Bad request
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
     AutodetectObject:
       type: object
       additionalProperties: false
@@ -775,48 +799,24 @@ components:
           type: boolean
           description: Whether Nylas detected a provider for the given email address.
           example: true
-    ConnectorObject:
-      type: object
-      additionalProperties: false
-      required:
-      - provider
-      - name
-      properties:
-        name:
-          type: string
-          description: The name of the connector.
-          example: Google Connector
-        provider:
-          type: string
-          description: Provider type
-          enum:
-          - google
-          - microsoft
-          - imap
-          - icloud
-          - yahoo
-          - virtual-calendar
-          - ews
-          - zoom
-          - nylas
-          example: google
-        settings:
-          description: Optional settings from provider
-          example:
-            topic_name: abc123
-          type: object
-        scope:
-          type: array
-          items:
-            type: string
-          description: (Not used for Zoom connectors.) Optional default scopes for the connector. For Zoom, configure scopes directly on your Zoom OAuth app. See [Zoom granular scopes](https://developers.zoom.us/docs/integrations/oauth-scopes-granular/).
-          example:
-          - https://www.googleapis.com/auth/userinfo.email
-          - https://www.googleapis.com/auth/userinfo.profile
-        active_credential_id:
-          type: string
-          description: The ID of the "default" credential record of this Connector. This credential will be used as a default for communication with the provider.
-          example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+  parameters:
+    provider:
+      name: provider
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - google
+        - microsoft
+        - imap
+        - icloud
+        - yahoo
+        - ews
+        - virtual-calendar
+        - zoom
+        - nylas
+        example: google
   responses:
     200-delete:
       description: Delete Succeeded
