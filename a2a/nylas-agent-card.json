@@ -1,6 +1,6 @@
 {
   "name": "Nylas",
-  "description": "Agent-callable access to email, calendar and contacts across Gmail, Outlook, Exchange, iCloud, Yahoo and any IMAP provider. A grant represents one authenticated mailbox and calendar; Agent Accounts provision a Nylas-hosted mailbox and calendar for an autonomous agent without an OAuth flow.",
+  "description": "Agent-callable access to email, calendar, contacts and meeting notetaking across Gmail, Outlook, Exchange, iCloud, Yahoo and any IMAP provider. A grant represents one authenticated mailbox and calendar; Agent Accounts provision a Nylas-hosted mailbox and calendar for an autonomous agent without an OAuth flow.",
   "version": "1.0.0",
   "url": "https://mcp.us.nylas.com",
   "preferredTransport": "STREAMABLE_HTTP",
@@ -52,7 +52,7 @@
     {
       "id": "email",
       "name": "Email",
-      "description": "List, search, read and send email messages and threads. Create, edit and send drafts. Sending requires a preceding confirmation call over MCP.",
+      "description": "List, search, read and send email messages and threads, list folders, and download attachments. Create, edit, send and delete drafts. Sending requires a preceding confirmation call over MCP.",
       "tags": ["mcp", "rest", "email"],
       "examples": [
         "Find the most recent email from the finance team and summarise it.",
@@ -62,7 +62,7 @@
     {
       "id": "calendar",
       "name": "Calendar",
-      "description": "List calendars, list events, and create or update events on a connected calendar.",
+      "description": "List calendars, and list, read, create, update and delete events on a connected calendar.",
       "tags": ["mcp", "rest", "calendar"],
       "examples": ["Put a 30 minute review on my calendar tomorrow afternoon."]
     },
@@ -75,14 +75,14 @@
     {
       "id": "contacts",
       "name": "Contacts",
-      "description": "Read and manage contacts and contact groups for a grant.",
-      "tags": ["rest", "contacts"]
+      "description": "Read contacts for a grant over MCP or REST. Create, update and delete contacts and manage contact groups over REST.",
+      "tags": ["mcp", "rest", "contacts"]
     },
     {
       "id": "notetaker",
       "name": "Notetaker",
-      "description": "Send a notetaker to a meeting and retrieve recordings, transcripts and summaries.",
-      "tags": ["rest", "notetaker"]
+      "description": "Send or schedule a notetaker for a meeting, for a grant or standalone without a connected mailbox, and retrieve recordings, transcripts and summaries.",
+      "tags": ["mcp", "rest", "notetaker"]
     },
     {
       "id": "scheduling",
@@ -99,7 +99,7 @@
     {
       "id": "api-contract",
       "name": "OpenAPI contract",
-      "description": "OpenAPI 3.1 description of the full Nylas v3 REST surface: 118 paths, 208 operations, 174 component schemas. Served as JSON at /openapi.json and as YAML at /openapi.yaml.",
+      "description": "OpenAPI 3.1 description of the full Nylas v3 REST surface: 120 paths, 213 operations, 178 component schemas. Served as JSON at /openapi.json and as YAML at /openapi.yaml.",
       "tags": ["contract", "openapi"],
       "endpoint": "https://developer.nylas.com/openapi.json"
     },

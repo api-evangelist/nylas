@@ -14,8 +14,7 @@ description: >-
   server card at /.well-known/mcp/server-card.json on its developer host and
   advertises it from a Link header on every page. The tool list below is
   transcribed from the "Available tools" table on the Nylas MCP documentation
-  page, which documents 38 tools; the live server card lists only 17 (see
-  note).
+  page, which documents 38 tools. The server card lists the same 38.
 server:
   name: nylas
   transport: streamable-http
@@ -134,13 +133,12 @@ timeouts: >-
   stateless, so each request is independent; clients should handle timeouts
   gracefully and retry as needed.
 note: >-
-  Upstream discrepancy, checked 2026-09-28: the documentation page at
-  https://developer.nylas.com/docs/dev-guide/mcp/ lists 38 tools, including
-  Notetaker, contacts, folder, attachment and delete tools, but the live server
-  card at https://developer.nylas.com/.well-known/mcp/server-card.json still
-  lists the original 17 tools and describes the server as email, calendar and
-  contacts only (no Notetaker). The server card needs updating by Nylas to
-  match the documented tool set. credential_source above is taken from the
+  Checked 2026-09-28: the documentation page at
+  https://developer.nylas.com/docs/dev-guide/mcp/ and the server card at
+  https://developer.nylas.com/.well-known/mcp/server-card.json both list the
+  same 38 tools, matching the tools the hosted server registers (api-v3
+  src/mcp/server.go). The server card was updated in
+  nylas/developer.nylas.com#742. credential_source above is taken from the
   server card's authentication.obtainedFrom value.
 deployment:
   mode: remote

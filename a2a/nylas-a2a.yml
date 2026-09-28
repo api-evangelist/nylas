@@ -41,7 +41,7 @@ conformance:
 card:
   name: Nylas
   description: >-
-    Agent-callable access to email, calendar and contacts across Gmail, Outlook,
+    Agent-callable access to email, calendar, contacts and meeting notetaking across Gmail, Outlook,
     Exchange, iCloud, Yahoo and any IMAP provider. A grant represents one
     authenticated mailbox and calendar; Agent Accounts provision a Nylas-hosted
     mailbox and calendar for an autonomous agent without an OAuth flow.
@@ -73,9 +73,9 @@ skills:
 - id: availability
   interfaces: [mcp, rest]
 - id: contacts
-  interfaces: [rest]
+  interfaces: [mcp, rest]
 - id: notetaker
-  interfaces: [rest]
+  interfaces: [mcp, rest]
 - id: scheduling
   interfaces: [rest]
 - id: notifications
@@ -103,9 +103,7 @@ x-evidence:
     declared in the card resolves. The api-contract skill now points at
     https://developer.nylas.com/openapi.json (also served as YAML at
     /openapi.yaml), and the API key is generated at https://dashboard.nylas.com/.
-    Upstream discrepancy: the api-contract skill description still says 118
-    paths, 208 operations and 174 component schemas, while the live contract
-    has 120 paths, 213 operations and 178 component schemas.
-    The contacts and notetaker skills are tagged rest only, although the MCP
-    documentation now lists contacts and Notetaker tools; the skill interfaces
-    above follow the card as published.
+    The api-contract skill describes the live contract: 120 paths, 213
+    operations and 178 component schemas. The contacts and notetaker skills
+    are available over MCP and REST, matching the MCP server's tools. The card
+    was brought up to date in nylas/developer.nylas.com#743.
