@@ -1,8 +1,9 @@
-generated: '2026-08-20'
-method: provider-published
+generated: '2026-09-28'
+method: authored
+publisher: Nylas
 authored_by: Nylas
 url: https://trust.nylas.com/public
-source: https://www.nylas.com/security/
+source: https://trust.nylas.com/public
 sources:
 - https://www.nylas.com/security/
 - https://trust.nylas.com/public
@@ -44,6 +45,9 @@ certifications:
   status: compliant
 - name: ADA Tier 2 CASA Verified
   status: verified
+- name: CASA Tier 3 (Shared GCP Application)
+  status: letter of validation
+  access: listed on the Trust Center; document available on request
 questionnaires:
 - CAIQ
 - SIG Lite
@@ -54,6 +58,43 @@ assurance:
   cadence: annual
   reports_available: true
   access: via the Trust Center
+  reports:
+  - Nylas Dashboard External Pentest - 2025
+  - Nylas API External Pentest 2025
+documents:
+  source: https://trust.nylas.com/public
+  checked: '2026-09-28'
+  note: >-
+    Document titles are listed on the public Trust Center page; none is marked
+    for public view, so contents are available on request.
+  items:
+  - title: Nylas_Inc._SOC 2 Type II-2026.pdf
+    category: Audits & Certifications
+    uploaded: '2026-09-28'
+  - title: 2026 - Bridge Letter SOC 2 - signed.pdf
+    category: Audits & Certifications
+    uploaded: '2026-09-24'
+  - title: 2026 - Nylas ISO_IEC 27001-2022 Certificate.pdf
+    uploaded: '2026-09-23'
+  - title: 2026 - Nylas ISO_IEC 27701-2019 Certificate.pdf
+    uploaded: '2026-09-23'
+  - title: Nylas HIPAA Report 2025.pdf
+    uploaded: '2025-09-12'
+  - title: Nylas-CASA-Tier3-LetterOfValidation.pdf
+    folder: CASA Tier 3 - Shared GCP Application
+    uploaded: '2026-04-23'
+  - title: Nylas Dashboard External Pentest - 2025.pdf
+    folder: External Penetration Test Reports
+    uploaded: '2025-08-25'
+  - title: Nylas_API_ External Pentest 2025.pdf
+    folder: External Penetration Test Reports
+    uploaded: '2025-10-02'
+  - title: Nylas-PCI-DSS-v4-0-1-SAQ-A_Dec24.pdf
+    folder: PCI-DSS SAQ A
+    uploaded: '2025-04-23'
+  - title: Nylas Responsible Disclosure Policy.pdf
+    folder: Nylas Security Policies and Procedures
+    uploaded: '2026-08-14'
 controls:
   encryption_at_rest: AES-256 or equivalent
   encryption_in_transit: TLS 1.2+

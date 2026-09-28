@@ -14,7 +14,7 @@ capability_model:
 edge_count: 1
 edges:
 - tag: Notifications
-  spec_file: nylas-notifications-api-openapi.yml
+  spec_file: nylas-webhook-notifications-api-openapi.yml
   capability_id: BC-4270.80
   capability_id_l1: BC-4270
   capability_name: Webhook & Event Subscription Management

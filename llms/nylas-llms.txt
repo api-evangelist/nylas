@@ -1,25 +1,167 @@
 # Nylas Developer Documentation
 
-> Nylas is an API platform for email, calendar, and contacts integration. This documentation covers the Nylas v3 APIs, SDKs, authentication, and provider-specific guides.
+> Nylas offers three developer products: Nylas Connect (the Email, Calendar, and Contacts APIs plus Scheduler and authentication), Nylas Notetaker (meeting recording and transcription), and Nylas Agent Accounts (hosted mailboxes for AI agents). This documentation covers the Nylas v3 APIs, SDKs, authentication, and provider-specific guides.
 
 Docs site: https://developer.nylas.com
 API base URL: https://api.us.nylas.com (US) / https://api.eu.nylas.com (EU)
+OpenAPI contract (v3, OpenAPI 3.1): https://developer.nylas.com/openapi.json (YAML: https://developer.nylas.com/openapi.yaml)
 Full documentation (all pages, inlined): https://developer.nylas.com/llms-full.txt
 Sitemap (full URL index): https://developer.nylas.com/sitemap-index.xml
 
 ## Instructions for LLM Agents
 
-Key facts about the Nylas platform that help you give accurate answers:
+Key facts about Nylas that help you give accurate answers:
+
+- **Nylas Connect** is the core platform: the Email, Calendar, and Contacts APIs, plus Scheduler and the authentication that connects user accounts. **Notetaker** (meeting transcription) and **Agent Accounts** (hosted mailboxes for AI agents) are separate products. Webhooks and the Dashboard are shared infrastructure across all three. "Nylas Connect" is the platform; the JavaScript auth library is always written `@nylas/connect`.
 
 - Always use the **Nylas v3 API**. The v2 API is deprecated and should not be referenced.
-- A **grant** represents an authenticated user account (Gmail, Outlook, etc.) connected through Nylas.
+- A **grant** represents a single mailbox and calendar Nylas can act on. Every Email, Calendar, and Contacts call takes a grant ID in the path.
+- **There are two ways to get a grant.** Pick the right one before you write any code:
+  1. **Agent Accounts** create a Nylas-hosted `agent@yourdomain.com` mailbox and calendar. Needs an API key and a registered domain, no OAuth. This is the only path a script can complete on its own. Create one with `POST /v3/connect/custom` and `"provider": "nylas"`.
+  2. **Connected accounts** grant access to a user's existing Gmail, Outlook, iCloud, Yahoo, or IMAP mailbox. Needs a person to complete OAuth in a browser. Use this when your product acts on your users' own inboxes.
+- **If you have only an API key and no browser** (automated script, coding agent, CI job), do this in order and stop at the first success:
+  1. `GET /v3/grants?grant_status=valid` with the API key. If it returns a grant, send with `POST /v3/grants/<GRANT_ID>/messages/send`.
+  2. If no grant exists, create an Agent Account with `POST /v3/connect/custom` and `"provider": "nylas"`, using an address on a domain registered to your organization. The response contains a `grant_id`.
+  3. If no domain is registered, register one. Domains belong to the Dashboard organization, not the application, so an API key can't create them. The CLI can: `nylas dashboard login --email --user <user> --password <password>` then `nylas dashboard domains create <subdomain>.nylas.email --region us`. `*.nylas.email` subdomains are free and usable immediately. The Dashboard UI and the Manage Domains API (with a Service Account) also work. Every send needs either a connected mailbox or a domain you control.
 - **API base URLs**: `https://api.us.nylas.com` (US region) and `https://api.eu.nylas.com` (EU region). All API paths are prefixed with `/v3/`.
 - **Authentication** requires a Nylas API key (as a Bearer token) and a grant ID in the URL path.
 - **SDKs** are available for Node.js, Python, Ruby, and Kotlin/Java.
 - Use `search_query_native` to pass provider-specific search syntax (e.g., Gmail search operators, Microsoft KQL).
 - For scheduling features, prefer the **Scheduler API** over building custom availability logic.
 - Every page on this site is available as clean markdown by requesting it with the `Accept: text/markdown` header.
-- The interactive API references are at `/docs/api/v3/ecc/` (Email/Calendar/Contacts/Notetaker), `/docs/api/v3/admin/` (Admin), and `/docs/api/v3/scheduler/` (Scheduler).
+- The API reference is at https://developer.nylas.com/docs/reference/api/. For field-level detail, fetch the `.md` version of a reference page by replacing the trailing slash with `.md` (for example, https://developer.nylas.com/docs/reference/api/notetaker-configurations/create-notetaker-config.md). It lists every request and response field, including nested objects like `notetaker_settings`, with validation limits (min, max, allowed values, defaults). Prefer it over the `Accept: text/markdown` version for reference pages, because it's generated straight from the OpenAPI spec.
+
+## Constraints and Requirements
+
+Prerequisites, limits, and compatibility rules for every integration.
+
+**Prerequisites**
+
+- A Nylas account and an application. Create both with `nylas init` (CLI) or at https://dashboard.nylas.com.
+- An API key, passed as `Authorization: Bearer <NYLAS_API_KEY>`. API keys are server-side only. Never ship one to a browser or mobile client.
+- A grant ID. Get one by creating an Agent Account (https://developer.nylas.com/docs/v3/getting-started/agent-accounts/) or by connecting a user account through OAuth (https://developer.nylas.com/docs/v3/auth/). To find grants that already exist, call `GET /v3/grants`: https://developer.nylas.com/docs/reference/api/manage-grants/get-all-grants/
+- To create Agent Accounts, a domain registered to your Dashboard organization. Register one with `nylas dashboard domains create <domain> --region us`, in the Dashboard, or through the Manage Domains API. `*.nylas.email` subdomains are usable immediately; custom domains need TXT and MX records. Setup guide: https://developer.nylas.com/docs/v3/agent-accounts/dns-provider-setup/
+- To connect Google or Microsoft accounts in production, your own OAuth credentials configured as a connector: https://developer.nylas.com/docs/v3/auth/
+
+**Versioning and compatibility**
+
+- Only the **v3 API** is supported. v2 is deprecated; its endpoints, request shapes, and SDK versions are not interchangeable with v3.
+- SDK major versions track the API version. For v3, use `nylas` v7 or later (Node.js, currently v8), `nylas` v6 or later (Python), `nylas` v6 or later (Ruby), and `nylas-java` / `nylas-kotlin` v2 or later. Earlier majors target the deprecated v2 API.
+- Regions are separate deployments with separate data. A grant created in the US region is not reachable from `api.eu.nylas.com`.
+
+**Rate limits** (full detail: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/)
+
+- Grant-scoped endpoints (Messages, Threads, Calendar, Contacts, JSON Send): 200 requests per second, per grant.
+- Application-scoped endpoints (Applications, Authentication, Connectors, Grants, Webhooks): 50 requests per second, per application.
+- Multipart Send (`multipart/form-data`, used for attachments): 10 requests per second, per grant.
+- Exceeding a limit returns `429`. Nylas doesn't retry throttled reads for you. Wait the number of seconds in the `Retry-After` header when it's present, otherwise retry with exponential backoff and jitter. The Nylas SDKs don't retry 429s either.
+- Provider limits apply on top of Nylas limits. Gmail allows 2,000 sent messages per day and 600 requests per minute per user; Microsoft throttles per mailbox. Agent Accounts have their own send limits: https://developer.nylas.com/docs/v3/agent-accounts/send-limits/
+
+**Other operational limits**
+
+- List endpoints return 50 items by default, `limit` caps at 200, and the response carries a `next_cursor`. Pass that value as the `page_token` query parameter to get the next page.
+- Attachments: base64 inline in a JSON body caps the whole request at 3 MB; `multipart/form-data` raises that to 25 MB; files up to 150 MB need the attachment-uploads API. See https://developer.nylas.com/docs/v3/email/send-large-attachments/
+- `GET /v3/grants/<GRANT_ID>/threads` makes many provider calls per request and is a common source of 429s. Always narrow it with query parameters: https://developer.nylas.com/docs/reference/api/threads/get-threads/
+- Webhook endpoints must echo the `challenge` value on registration, respond `200` within 10 seconds, and verify the `X-Nylas-Signature` header. See https://developer.nylas.com/docs/v3/notifications/
+
+## Examples
+
+All paths are prefixed with `/v3/` and require `Authorization: Bearer <NYLAS_API_KEY>`.
+
+List the grants that already exist on your application. Needs only an API key:
+
+```bash
+curl "https://api.us.nylas.com/v3/grants" \
+  -H "Authorization: Bearer $NYLAS_API_KEY"
+```
+
+Create an Agent Account and get a grant ID, with no OAuth:
+
+```bash
+curl -X POST "https://api.us.nylas.com/v3/connect/custom" \
+  -H "Authorization: Bearer $NYLAS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "provider": "nylas",
+    "name": "Support Agent",
+    "settings": { "email": "support@your-application.nylas.email" }
+  }'
+```
+
+List the 10 most recent unread messages:
+
+```bash
+curl "https://api.us.nylas.com/v3/grants/$GRANT_ID/messages?limit=10&unread=true" \
+  -H "Authorization: Bearer $NYLAS_API_KEY"
+```
+
+Send an email:
+
+```bash
+curl -X POST "https://api.us.nylas.com/v3/grants/$GRANT_ID/messages/send" \
+  -H "Authorization: Bearer $NYLAS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subject": "Order 4815 has shipped",
+    "to": [{ "name": "Dana Whitfield", "email": "dana.whitfield@example.com" }],
+    "body": "Your order is on its way. Tracking details are attached."
+  }'
+```
+
+Same call with the Node.js SDK:
+
+```javascript
+import Nylas from "nylas";
+
+const nylas = new Nylas({ apiKey: process.env.NYLAS_API_KEY });
+
+const sent = await nylas.messages.send({
+  identifier: process.env.GRANT_ID,
+  requestBody: {
+    subject: "Order 4815 has shipped",
+    to: [{ name: "Dana Whitfield", email: "dana.whitfield@example.com" }],
+    body: "Your order is on its way. Tracking details are attached.",
+  },
+});
+```
+
+Same call with the Python SDK:
+
+```python
+import os
+from nylas import Client
+
+nylas = Client(os.environ["NYLAS_API_KEY"])
+
+sent = nylas.messages.send(
+    os.environ["GRANT_ID"],
+    request_body={
+        "subject": "Order 4815 has shipped",
+        "to": [{"name": "Dana Whitfield", "email": "dana.whitfield@example.com"}],
+        "body": "Your order is on its way. Tracking details are attached.",
+    },
+)
+```
+
+Create a calendar event:
+
+```bash
+curl -X POST "https://api.us.nylas.com/v3/grants/$GRANT_ID/events?calendar_id=$CALENDAR_ID" \
+  -H "Authorization: Bearer $NYLAS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Design review",
+    "when": { "start_time": 1789000000, "end_time": 1789003600 },
+    "participants": [{ "email": "dana.whitfield@example.com" }]
+  }'
+```
+
+Reference pages for the endpoints above:
+- List grants: https://developer.nylas.com/docs/reference/api/manage-grants/get-all-grants/
+- Create an Agent Account (custom auth): https://developer.nylas.com/docs/reference/api/manage-grants/byo_auth/
+- List messages: https://developer.nylas.com/docs/reference/api/messages/get-messages/
+- Send a message: https://developer.nylas.com/docs/reference/api/messages/send-message/
+- Full API reference, with samples in every supported SDK: https://developer.nylas.com/docs/reference/api/
 
 ## Getting Started
 
@@ -38,10 +180,10 @@ Quickstart guides for integrating Nylas APIs into your application using SDKs.
 - [Calendar & Events API Quickstart](https://developer.nylas.com/docs/v3/getting-started/calendar/): Schedule meetings, check availability, and RSVP to events
 - [Notetaker API Quickstart](https://developer.nylas.com/docs/v3/getting-started/notetaker/): Record meetings and get transcripts with the Notetaker API
 - [Scheduler Quickstart](https://developer.nylas.com/docs/v3/getting-started/scheduler/): Embed scheduling pages in your app
-- [Contacts API Quickstart](https://developer.nylas.com/docs/v3/getting-started/contacts/): List, search, and create contacts across providers
+- [Contacts API Quickstart](https://developer.nylas.com/docs/v3/getting-started/contacts/): List, search, and create contacts across Google, Microsoft, EWS, hosted IMAP, native iCloud, and native Yahoo
 - [Transactional Send Quickstart](https://developer.nylas.com/docs/v3/getting-started/transactional-send/): Send transactional emails from a verified domain (beta)
 - [Agent Accounts Quickstart](https://developer.nylas.com/docs/v3/getting-started/agent-accounts/): Create a fully functional, Nylas-hosted email and calendar mailbox programmatically
-- [Agent Accounts overview](https://developer.nylas.com/docs/v3/agent-accounts/): What Agent Accounts are, how they fit the Nylas platform, and when to use them
+- [Agent Accounts overview](https://developer.nylas.com/docs/v3/agent-accounts/): What Agent Accounts are, how they relate to the rest of Nylas, and when to use them
 - [Provisioning Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/provisioning/): Create Agent Accounts on a verified domain from the CLI, Dashboard, or API
 - [Set up domains for Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/dns-provider-setup/): Register a custom domain and add the TXT and MX records at Cloudflare, Route 53, GoDaddy, or Namecheap
 - [Supported endpoints for Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/supported-endpoints/): Full reference of endpoints and webhook triggers that work with Agent Account grants
@@ -52,6 +194,7 @@ Quickstart guides for integrating Nylas APIs into your application using SDKs.
 - [Email Threading for Agents](https://developer.nylas.com/docs/v3/agent-accounts/email-threading/): How Message-ID, In-Reply-To, and References headers work, threading via the Threads API, and mapping threads to agent state
 - [Email search for Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/email-search/): Search messages and threads with Nylas full-text syntax, Boolean operators, phrases, filters, and relevance ranking
 - [Agent Account contacts](https://developer.nylas.com/docs/v3/agent-accounts/contacts/): Store, list, filter, create, and update contacts on an Agent Account and react to contact webhooks
+- [Scheduler with Agent Accounts](https://developer.nylas.com/docs/v3/scheduler/agent-accounts/): Run a Scheduler Configuration with an Agent Account as the organizer
 
 ## Nylas for AI Agents
 
@@ -74,14 +217,18 @@ Connect user accounts via OAuth, service accounts, or custom auth flows.
 - [Authentication Overview](https://developer.nylas.com/docs/v3/auth/): How Nylas authentication works (grants, OAuth, connectors)
 - [Hosted OAuth with API Key](https://developer.nylas.com/docs/v3/auth/hosted-oauth-apikey/): Authenticate users with Hosted OAuth using an API key
 - [Hosted OAuth with Access Token](https://developer.nylas.com/docs/v3/auth/hosted-oauth-accesstoken/): Authenticate users with Hosted OAuth using access tokens
-- [Nylas Connect Overview](https://developer.nylas.com/docs/v3/getting-started/nylas-connect/): Add email, calendar, and contacts to your app with minimal OAuth complexity
-- [Nylas Connect JS](https://developer.nylas.com/docs/v3/auth/nylas-connect/): JavaScript SDK for embedding authentication
-- [Nylas Connect React](https://developer.nylas.com/docs/v3/auth/nylas-connect-react/): React components for Nylas Connect
+- [Quickstart: auth with @nylas/connect](https://developer.nylas.com/docs/v3/getting-started/nylas-connect/): Drop-in OAuth for a user's mailbox, and reuse your own user IDs instead of storing grant IDs
+- [@nylas/connect library](https://developer.nylas.com/docs/v3/auth/nylas-connect/): Install, configure, and run the JavaScript OAuth client
+- [Backend callback handling](https://developer.nylas.com/docs/v3/auth/nylas-connect/backend-oauth/): Exchange the OAuth code on your own server and keep tokens out of the browser
+- [Use your own user IDs instead of grant IDs](https://developer.nylas.com/docs/cookbook/use-cases/build/reuse-your-user-ids/): Link a grant to your existing user ID and call /v3/grants/me, with no grant_id column
+- [@nylas/react](https://developer.nylas.com/docs/v3/auth/nylas-connect-react/): The useNylasConnect hook and NylasConnectButton component
 - [Bring Your Own Authentication](https://developer.nylas.com/docs/v3/auth/bring-your-own-authentication/): Use your own OAuth tokens with Nylas
 - [IMAP Authentication](https://developer.nylas.com/docs/v3/auth/imap/): Authenticate IMAP accounts
 - [Bulk Authentication](https://developer.nylas.com/docs/v3/auth/bulk-auth-grants/): Authenticate multiple accounts at once
 - [Nylas Service Account Auth](https://developer.nylas.com/docs/v3/auth/nylas-service-account/): Authenticate with RSA-signed requests for admin APIs (beta)
+- [Whitelabel Hosted Authentication](https://developer.nylas.com/docs/v3/auth/whitelabeling/): Replace the Nylas logo and domain in the Hosted Authentication flow with a custom hostname
 - [OAuth Scopes](https://developer.nylas.com/docs/dev-guide/scopes/): Available OAuth scopes for Nylas APIs
+- [Metadata](https://developer.nylas.com/docs/dev-guide/metadata/): Attach up to 50 key-value pairs to events, bookings, and contacts, and query them with metadata_pair
 
 ## Email API
 
@@ -111,7 +258,6 @@ Manage calendars, events, availability, free/busy, and conferencing.
 - [Calendar Overview](https://developer.nylas.com/docs/v3/calendar/): Manage calendars, events, and availability
 - [Events API](https://developer.nylas.com/docs/v3/calendar/using-the-events-api/): Create, read, update, and delete calendar events
 - [Recurring Events](https://developer.nylas.com/docs/v3/calendar/recurring-events/): Work with recurring calendar events
-- [Virtual Calendars](https://developer.nylas.com/docs/v3/calendar/virtual-calendars/): Create and manage virtual calendars
 - [Availability](https://developer.nylas.com/docs/v3/calendar/calendar-availability/): Check calendar availability
 - [Free/Busy](https://developer.nylas.com/docs/v3/calendar/check-free-busy/): Check free/busy status
 - [Conferencing](https://developer.nylas.com/docs/v3/calendar/add-conferencing/): Add video conferencing to events
@@ -127,6 +273,7 @@ Embeddable scheduling UI and API for booking meetings.
 - [Scheduler Editor](https://developer.nylas.com/docs/v3/scheduler/using-scheduler-editor-component/): Embed the configuration editor
 - [Meeting Types](https://developer.nylas.com/docs/v3/scheduler/meeting-types/): Configure meeting types and durations
 - [Availability](https://developer.nylas.com/docs/v3/scheduler/managing-availability/): Set scheduling availability rules
+- [Scheduler with Agent Accounts](https://developer.nylas.com/docs/v3/scheduler/agent-accounts/): Give an Agent Account its own booking page, with the primary-calendar and round-robin limits
 - [Customize Scheduler](https://developer.nylas.com/docs/v3/scheduler/customize-scheduler/): Customize styling and behavior
 - [Booking Flows](https://developer.nylas.com/docs/v3/scheduler/customize-booking-flows/): Customize the booking experience
 - [Components Reference](https://developer.nylas.com/docs/reference/ui/): Pre-built Scheduler UI components
@@ -135,9 +282,19 @@ Embeddable scheduling UI and API for booking meetings.
 
 AI meeting notetaker API for recording and transcription.
 
-- [Notetaker Overview](https://developer.nylas.com/docs/v3/notetaker/): AI meeting notetaker and transcription API
-- [Media Handling](https://developer.nylas.com/docs/v3/notetaker/media-handling/): Recording and media output
-- [Calendar Sync](https://developer.nylas.com/docs/v3/notetaker/calendar-sync/): Sync notetaker with calendar events
+- [Notetaker Overview](https://developer.nylas.com/docs/v3/notetaker/): Invite Notetaker to Meet, Teams, and Zoom meetings; notetaker_settings, list, cancel, delete, and leave
+- [Calendar Sync](https://developer.nylas.com/docs/v3/notetaker/calendar-sync/): Rules that schedule Notetakers from a calendar; event selection, participant filters, per-event overrides
+- [Media Handling](https://developer.nylas.com/docs/v3/notetaker/media-handling/): Download URLs that expire after 60 minutes, regenerating them, storing files, and deleting media
+- [Media Formats](https://developer.nylas.com/docs/v3/notetaker/media-formats/): MP4 or MP3 recording, PNG thumbnail, speaker-labelled JSON transcript, and JSON summary and action items
+- [Notetaker Configurations](https://developer.nylas.com/docs/v3/notetaker/configurations/): Reusable Notetaker defaults and the configuration hierarchy
+- [Transcription Settings](https://developer.nylas.com/docs/v3/notetaker/transcription-settings/): expected_languages, fallback_language, keyword hints, and the supported language codes
+- [Notetaker Custom Announcements](https://developer.nylas.com/docs/v3/notetaker/custom-announcements/): Configure messages the Notetaker bot posts to meeting chat on join and on participant join
+- [Notetaker Custom Video Output](https://developer.nylas.com/docs/v3/notetaker/custom-video-output/): Upload a static image the bot shows as its camera feed on Meet, Teams, and Zoom (the bot avatar)
+- [Notetaker Deduplication](https://developer.nylas.com/docs/v3/notetaker/deduplication/): Consolidate multiple scheduled Notetakers into a single parent bot per meeting
+- [Notetaker Retention Policies](https://developer.nylas.com/docs/v3/notetaker/retention-policies/): Set how long Nylas keeps media before automatic deletion; extend, shrink, or immediately delete
+- [Pause Notetaker Dispatch](https://developer.nylas.com/docs/v3/notetaker/dispatch-suppression/): Temporarily stop Notetakers from joining meetings with dispatch_disabled_until, per grant, workspace, or application
+- [Troubleshoot Notetaker](https://developer.nylas.com/docs/v3/notetaker/troubleshooting/): History endpoint, lobby timeouts and failed_entry, early leaves, and missing media (404 and 410)
+- [Migrate to notetaker_settings](https://developer.nylas.com/docs/v3/notetaker/migrate-from-legacy-settings/): Swap the deprecated name and meeting_settings fields for notetaker_settings
 
 ## Notifications and Webhooks
 
@@ -254,6 +411,7 @@ Long-form AI agent workflows.
 - [Extract OTPs in an agent loop](https://developer.nylas.com/docs/cookbook/agent-accounts/extract-otp-code/): Receive an OTP, parse with regex or LLM fallback, return to caller
 - [Migrate from transactional email](https://developer.nylas.com/docs/cookbook/agent-accounts/migrate-from-transactional-email/): Move from SendGrid / Resend / Postmark to a two-way agent mailbox
 - [Import email signatures](https://developer.nylas.com/docs/cookbook/agent-accounts/import-email-signatures/): Pull signatures from inbound mail and reuse on outbound replies
+- [Add video conferencing to Agent Account events](https://developer.nylas.com/docs/cookbook/agent-accounts/add-conferencing/): Auto-create Zoom, Google Meet, or Microsoft Teams links on agent events and Scheduler bookings with conf_grant_id
 - [Scheduling agent with a dedicated identity](https://developer.nylas.com/docs/cookbook/use-cases/act/scheduling-agent-with-dedicated-identity/): Agent with its own mailbox that books meetings on your behalf
 - [Support agent over multi-day threads](https://developer.nylas.com/docs/cookbook/use-cases/act/support-agent-multi-day-threads/): Maintain conversation context across days of back-and-forth
 - [Connect an LLM to a user's inbox](https://developer.nylas.com/docs/cookbook/ai/connect-llm-to-inbox/): Fetch messages as model context and act through the mailbox over raw REST, no MCP or CLI
@@ -275,6 +433,7 @@ Provider-specific tasks for working with email messages and threads.
 - [List Google messages](https://developer.nylas.com/docs/cookbook/email/messages/list-messages-google/): List emails from Gmail and Google Workspace
 - [List Microsoft messages](https://developer.nylas.com/docs/cookbook/email/messages/list-messages-microsoft/): List emails from Microsoft 365 and Outlook
 - [Microsoft Graph API alternative](https://developer.nylas.com/docs/cookbook/email/microsoft-graph-api-alternative/): Compare the Microsoft Graph API with a unified alternative for Outlook email and calendar: Azure setup, admin consent, throttling, and when to switch
+- [Microsoft Graph rate limits for Outlook mail](https://developer.nylas.com/docs/cookbook/email/microsoft-graph-rate-limits/): Graph throttles each app ID and mailbox pair at 4 concurrent requests and 10,000 per 10 minutes. Why MailboxConcurrency 429s appear at low send volume and how a per-grant queue prevents them
 - [Search email messages](https://developer.nylas.com/docs/cookbook/email/search-messages/): Search email by subject, sender, recipient, or full text: Gmail, Microsoft, and IMAP native query operators and their limits
 - [How to forward an email](https://developer.nylas.com/docs/cookbook/email/forward-email/): Compose a new message that quotes the original body, re-attaches files, and prefixes the subject with Fwd
 - [Sync Gmail, Outlook, and Exchange email](https://developer.nylas.com/docs/cookbook/email/sync-multiple-providers/): Multi-provider sync with one grant per account, an initial backfill, and webhook-driven incremental updates
@@ -341,7 +500,7 @@ Provider-specific tasks for working with calendar events.
 - [Update and delete calendar events](https://developer.nylas.com/docs/cookbook/calendar/update-delete-events/): Edit event details or remove an event across providers, with calendar_id required and participant notifications handled
 - [Create and list calendars](https://developer.nylas.com/docs/cookbook/calendar/manage-calendars/): List calendars to get IDs, create calendars on Google/Microsoft, and read is_primary/read_only flags
 - [Add conferencing to calendar events](https://developer.nylas.com/docs/cookbook/calendar/add-conferencing/): Auto-create a Google Meet, Zoom, or Teams link on an event, or attach your own conferencing details
-- [Schedule rooms with virtual calendars](https://developer.nylas.com/docs/cookbook/calendar/virtual-calendars/): Host calendars for rooms, equipment, and resources with no email account, booked via the Events API
+- [Schedule rooms and resources with Agent Accounts](https://developer.nylas.com/docs/cookbook/calendar/schedule-resources-with-agent-accounts/): Give rooms, equipment, and resources a Nylas-hosted calendar that accepts invitations and RSVPs, booked via the Events API
 - [Import calendar events into your app](https://developer.nylas.com/docs/cookbook/calendar/import-events/): Bulk-import events for a date range via the read-only events/import endpoint, built for storage not browsing
 - [Check calendar availability](https://developer.nylas.com/docs/cookbook/calendar/check-availability/): Return open meeting slots with the availability API: working hours, time zones, methods, buffers, rounding
 - [Create recurring events](https://developer.nylas.com/docs/cookbook/calendar/create-recurring-events/): Create repeating events with RRULE: time-zone handling, and editing one instance versus the whole series
@@ -414,6 +573,18 @@ Add a booking page to your app and customize the flow.
 - [Embed a scheduling page](https://developer.nylas.com/docs/cookbook/scheduler/embed-scheduling-page/): Add a Calendly-style booking page: create a configuration, embed the component, capture bookings
 - [Customize the booking flow](https://developer.nylas.com/docs/cookbook/scheduler/customize-booking-flow/): Add booking-form fields, set confirmation and redirect, enable reschedule and cancel, and theme the page
 - [Prevent double-booking](https://developer.nylas.com/docs/cookbook/scheduler/prevent-double-booking/): Prevent double-booking with the managed Scheduler path or a DIY Calendar API path plus an app-side lock
+- [Using templates and workflows](https://developer.nylas.com/docs/v3/email/templates-workflows/): Send email automatically when an event fires anywhere in Nylas, using templates and workflows
+- [Automate email with Nylas Workflows](https://developer.nylas.com/docs/cookbook/workflows/): Send branded email automatically when something happens in Nylas, with the 34 triggers workflows accept
+- [Customize Scheduler email for your app](https://developer.nylas.com/docs/cookbook/workflows/scheduler-booking-email/): Replace the built-in Scheduler booking email with one branded template for every user
+- [Customize Scheduler email for each user](https://developer.nylas.com/docs/cookbook/workflows/scheduler-email-per-user/): Give each customer their own branded booking email with grant-level workflows and templates
+- [Email attendees when a meeting is booked](https://developer.nylas.com/docs/cookbook/workflows/event-booked-email/): Send your own confirmation when a meeting is created through the Events API
+- [Tell Scheduler attendees a meeting is recorded](https://developer.nylas.com/docs/cookbook/workflows/recording-notice-scheduler/): Email everyone on a booking that the meeting will be recorded and transcribed
+- [Tell Events API attendees a meeting is recorded](https://developer.nylas.com/docs/cookbook/workflows/recording-notice-events/): Send a recording disclosure for meetings created through the Events API
+- [Send the recording when Notetaker is ready](https://developer.nylas.com/docs/cookbook/workflows/notetaker-media-ready/): Email the recording and transcript as soon as Notetaker finishes processing
+- [Tell the host when Notetaker can't join](https://developer.nylas.com/docs/cookbook/workflows/notetaker-failed-to-join/): Email the host when a waiting room blocks the notetaker from a meeting
+- [Welcome users when they connect](https://developer.nylas.com/docs/cookbook/workflows/welcome-connected-account/): Confirm which permissions a user granted the moment they connect an account
+- [Reduce churn by catching dead accounts](https://developer.nylas.com/docs/cookbook/workflows/reduce-churn-inactive-accounts/): Recover users before they churn by emailing them when a grant expires
+- [Why isn't my workflow sending email?](https://developer.nylas.com/docs/cookbook/workflows/workflow-not-sending/): Debug a workflow that fires but sends nothing, starting with strict template rendering
 - [Calendly API alternative for scheduling](https://developer.nylas.com/docs/cookbook/scheduler/calendly-api-alternative/): Compare embedding Calendly with building your own scheduling on the Nylas Scheduler API and availability endpoint. See the tradeoffs, real endpoints, and when Calendly is enough.
 - [Employee shift scheduling via API](https://developer.nylas.com/docs/cookbook/scheduler/shift-scheduling-api/): Build employee shift scheduling with an API: check team availability, create shifts as calendar events, push them to worker calendars, and send shift reminders.
 - [Healthcare appointment booking API](https://developer.nylas.com/docs/cookbook/scheduler/healthcare-appointment-booking/): Build patient appointment booking with the Nylas scheduling API: real-time provider availability, double-booking prevention, reminders, and HIPAA-aware compliance notes.
@@ -425,19 +596,19 @@ Add a booking page to your app and customize the flow.
 
 Tasks for reading and syncing contacts across providers.
 
-- [Nylas Contacts API guide](https://developer.nylas.com/docs/cookbook/contacts/contacts-api-guide/): Overview of the Contacts API across Google and Microsoft, with the unified schema and a recipe per task
+- [Nylas Contacts API guide](https://developer.nylas.com/docs/cookbook/contacts/contacts-api-guide/): Compare the Contacts API across Google, Microsoft, EWS, hosted IMAP, and native iCloud and Yahoo CardDAV grants
 - [List Google contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-google/): Fetch Gmail/Workspace contacts (the People API alternative), with groups, photos, and rate limits
 - [List Microsoft contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-microsoft/): Fetch Outlook/Microsoft 365 contacts (the Graph alternative), with contact folders and throttling notes
-- [List iCloud contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-icloud/): Fetch iCloud contacts in one call: CardDAV, app-specific passwords, the source filter, and sync behavior
-- [List Yahoo contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-yahoo/): Fetch Yahoo contacts: OAuth and app-password auth, the source filter, the 90-day cache, and IMAP sync
-- [List IMAP contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-imap/): Fetch IMAP contacts: app-password auth, the source field, compound source filters, and grant limits
+- [List iCloud contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-icloud/): List and manage native iCloud CardDAV contacts: sources, opaque IDs, groups, metadata, pagination, and notifications
+- [List Yahoo contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-yahoo/): List and manage native Yahoo CardDAV contacts: sources, IDs, groups, metadata, pagination, and limitations
+- [List IMAP contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-imap/): List generic hosted IMAP contacts, including mailbox-derived sources and the boundary from native iCloud and Yahoo CardDAV
 - [List Exchange contacts](https://developer.nylas.com/docs/cookbook/contacts/list-contacts-ews/): Fetch on-premises Exchange (EWS) contacts: the EWS connector, the source parameter, and enterprise gotchas
 - [List directory contacts](https://developer.nylas.com/docs/cookbook/contacts/list-directory-contacts/): Fetch organization directory contacts via the source parameter (address_book, domain, inbox) and required scopes
-- [Create and update contacts](https://developer.nylas.com/docs/cookbook/contacts/create-and-update-contacts/): Create, update, and delete contacts, with writable fields/sources per provider and required scopes
-- [Search contacts](https://developer.nylas.com/docs/cookbook/contacts/search-contacts/): Filter by exact email, phone, group, or source, and match names client-side for fuzzy search
+- [Create and update contacts](https://developer.nylas.com/docs/cookbook/contacts/create-and-update-contacts/): Create, update, and delete contacts across providers, including native iCloud and Yahoo CardDAV write behavior
+- [Search contacts](https://developer.nylas.com/docs/cookbook/contacts/search-contacts/): Filter by email, phone, group, source, or Nylas metadata, with native iCloud and Yahoo CardDAV query behavior
 - [Build recipient autocomplete](https://developer.nylas.com/docs/cookbook/contacts/recipient-autocomplete/): Gmail-style To-field suggestions: fetch and cache contacts, filter on the client, include unsaved senders
 - [List and sync contacts from Google and Outlook](https://developer.nylas.com/docs/cookbook/contacts/list-and-sync-contacts/): One Contacts API call across providers, inbox-source autocomplete, contact.updated/deleted webhooks
-- [Organize contacts with groups](https://developer.nylas.com/docs/cookbook/contacts/contact-groups/): List Gmail groups / Outlook categories and filter contacts by group (not supported on EWS)
+- [Organize contacts with groups](https://developer.nylas.com/docs/cookbook/contacts/contact-groups/): List explicit contact groups, filter members, and update membership on Google, Microsoft, native iCloud, native Yahoo, and IMAP (not supported on EWS)
 - [Sync Google Contacts to a CRM](https://developer.nylas.com/docs/cookbook/contacts/sync-google-contacts-crm/): Push a user's Google Contacts into Salesforce or HubSpot with the Contacts API, then keep both sides in sync
 - [Google Contacts API JavaScript example](https://developer.nylas.com/docs/cookbook/contacts/google-contacts-api-javascript/): Display Google Contacts in a JavaScript app with a server route that keeps your API key private
 - [Google Contacts API PHP example](https://developer.nylas.com/docs/cookbook/contacts/google-contacts-api-php/): Fetch and display Google Contacts from PHP using REST requests, cursor pagination, and source filters
@@ -495,10 +666,11 @@ Recommendations for building reliable integrations with Nylas.
 
 ## Platform
 
-Nylas platform features, infrastructure, and integrations.
+Nylas infrastructure shared across Connect, Notetaker, and Agent Accounts.
 
-- [Platform Overview](https://developer.nylas.com/docs/dev-guide/platform/): Nylas platform features and infrastructure
+- [Platform Overview](https://developer.nylas.com/docs/dev-guide/platform/): Nylas architecture, performance metrics, and infrastructure
 - [Data Residency](https://developer.nylas.com/docs/dev-guide/platform/data-residency/): US and EU data residency options
+- [Workspaces](https://developer.nylas.com/docs/dev-guide/platform/workspaces/): How workspaces group grants by email domain, how grants are assigned, and how to move and filter them
 - [Deleting resources and data](https://developer.nylas.com/docs/dev-guide/platform/deleting-resources/): What happens to grants and data when you delete a connector, credential, workspace, or application
 - [Nylas MCP Server](https://developer.nylas.com/docs/dev-guide/mcp/): Connect AI agents to Nylas via Model Context Protocol
 - [AI Prompts for Building with Nylas](https://developer.nylas.com/docs/v3/getting-started/ai-prompts/): System prompts and context files for Claude Code, Cursor, Copilot, and other AI coding tools
@@ -512,10 +684,10 @@ The following sections provide supplementary context. LLM agents with limited co
 Step-by-step setup guides for connecting each email provider to Nylas.
 
 - [Google Provider Guide](https://developer.nylas.com/docs/provider-guides/google/): Google OAuth setup, scopes, and verification
-- [Shared GCP App](https://developer.nylas.com/docs/provider-guides/google/shared-gcp-app/): Skip Google's OAuth verification by using the Nylas Shared GCP project
+- [Google Shared App](https://developer.nylas.com/docs/provider-guides/google/shared-gcp-app/): Build on the Nylas verified OAuth application and avoid the CASA assessment
 - [Microsoft Provider Guide](https://developer.nylas.com/docs/provider-guides/microsoft/): Azure AD app setup and admin consent
-- [Yahoo Authentication](https://developer.nylas.com/docs/provider-guides/yahoo-authentication/): Yahoo OAuth and IMAP setup
-- [iCloud Provider Guide](https://developer.nylas.com/docs/provider-guides/icloud/): iCloud app-specific passwords and setup
+- [Yahoo Authentication](https://developer.nylas.com/docs/provider-guides/yahoo-authentication/): Yahoo OAuth and IMAP setup, plus what Yahoo requires before Contacts API access works
+- [iCloud Provider Guide](https://developer.nylas.com/docs/provider-guides/icloud/): iCloud app-specific passwords, setup, and access to iCloud CardDAV contacts
 - [IMAP Provider Guide](https://developer.nylas.com/docs/provider-guides/imap/): Generic IMAP configuration
 - [Exchange On-Premises](https://developer.nylas.com/docs/provider-guides/exchange-on-prem/): Exchange EWS setup
 - [App Passwords](https://developer.nylas.com/docs/provider-guides/app-passwords/): Provider-specific app password instructions

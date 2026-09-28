@@ -4,9 +4,11 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Nylas
 providerId: nylas
 created: '2026-05-04'
-method: provider-published
+method: authored
+publisher: Nylas
 authored_by: Nylas
-modified: '2026-08-20'
+modified: '2026-09-28'
+generated: '2026-09-28'
 source: https://developer.nylas.com/docs/dev-guide/platform/rate-limits/
 best_practices: https://developer.nylas.com/docs/dev-guide/best-practices/rate-limits/
 tags:
@@ -35,11 +37,21 @@ headers:
   gmailQuotaUsage: Nylas-Gmail-Quota-Usage
 headerNotes: >-
   Nylas does not currently emit X-RateLimit-Limit, X-RateLimit-Remaining,
-  X-RateLimit-Reset or RateLimit-Policy. Retry-After is returned when an
-  upstream provider (Microsoft, EWS) throttles a request.
+  X-RateLimit-Reset or RateLimit-Policy. When a provider throttles a request
+  the API returns 429; on reads, error.type is rate_limit_error and the
+  provider's own error is in provider_error, and Nylas does not retry throttled
+  reads. If the provider says how long to wait, a read response includes a
+  Retry-After header with that number of seconds, rounded up. This covers every
+  Email, Calendar and Contacts endpoint except send, for Google, Microsoft, EWS,
+  iCloud and Zoom grants. A 429 without Retry-After, as IMAP rate limits always
+  are, calls for the client's own backoff schedule. Send endpoints can behave
+  differently from reads; the provider 429 table at
+  https://developer.nylas.com/docs/api/errors/400-response/#429-rate-limit-errors-by-provider
+  lists message and Retry-After behavior per provider.
   Nylas-Provider-Request-Count reports how many upstream provider calls a single
-  Nylas request consumed. Nylas-Gmail-Quota-Usage reports Google API quota
-  consumed, on the Drafts, Messages, Threads, Folders and Attachments endpoints.
+  Nylas request consumed (Google and Microsoft Graph). Nylas-Gmail-Quota-Usage
+  reports Google API quota consumed, on the Drafts, Messages, Threads, Folders
+  and Attachments endpoints.
 responseCodes:
   throttled: 429
 limits:
@@ -132,17 +144,25 @@ provider_limits:
       calculated over a one-minute sliding window. Sending is capped at 2,000
       messages per day. Gmail API projects created on or after 2026-05-01 carry a
       per-project limit of 1,200,000 quota units per minute and a per-user limit
-      of 6,000 quota units per minute.
+      of 6,000 quota units per minute. Projects that used the Gmail API between
+      November 2025 and April 2026 keep their previously set quotas.
   - provider: Microsoft
     notes: >-
-      10,000 requests per 10-minute period, a maximum of 4 concurrent requests,
-      and a maximum of 150 MB uploaded per 5-minute period. Sending is capped at
-      30 messages per minute.
+      Microsoft Graph applies its limits to each app ID and mailbox
+      combination. 10,000 requests per 10-minute period, a maximum of 4
+      concurrent requests, and a maximum of 150 MB uploaded per 5-minute
+      period, each per app ID and mailbox. Sending is capped at 30 messages per
+      minute and 10,000 recipients per 24 hours, per mailbox. The concurrency
+      limit is the one most integrations hit: a 429 with the message
+      "Application is over its MailboxConcurrency limit" means 4 Graph requests
+      were already in flight against that mailbox, and 2 or 3 parallel sends to
+      the same grant can fill all 4, so send to each grant one request at a
+      time.
   - provider: EWS
     notes: >-
       Configured by the customer's own Exchange administrator, so Nylas cannot
-      know the server's limits. Nylas returns Retry-After when the server
-      throttles a request.
+      know the server's limits. If the server rate-limits a read request, the
+      response includes the server's Retry-After value.
   - provider: iCloud
     notes: Apple caps sending at 1,000 messages per day.
 policies:

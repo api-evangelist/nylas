@@ -1,0 +1,3448 @@
+# Nylas Notifications — AsyncAPI 3.1. Authored by Nylas; see info.x-provenance.
+asyncapi: 3.1.0
+id: urn:com:nylas:v3:notifications
+info:
+  title: Nylas Notifications
+  version: v3
+  description: 'Change notifications Nylas pushes for grants, messages, message tracking, folders, calendars, events,
+    contacts, Scheduler bookings, Notetaker, ExtractAI, Transactional Email and Agent Accounts. Every notification
+    is a CloudEvents 1.0 envelope whose `data.object` carries the affected resource. The same payloads are delivered
+    over three interchangeable transports: an HTTPS webhook to an endpoint you register, a Google Cloud Pub/Sub
+    topic in your project, or an Amazon SNS topic in your AWS account. Nylas guarantees at-least-once delivery,
+    so deduplicate on the envelope `id`. Payloads over 1 MB are truncated for `message.*` triggers and carry a `.truncated`
+    suffix on `type`; `.cleaned` and `.transformed` suffixes can also combine. Subscribe to triggers with POST /v3/webhooks,
+    POST /v3/channels/pubsub or POST /v3/channels/sns.'
+  contact:
+    name: Nylas Support
+    url: https://developer.nylas.com/docs/support/
+  license:
+    name: Nylas Terms of Service
+    url: https://www.nylas.com/legal/terms/
+  externalDocs:
+    description: Using webhooks with Nylas
+    url: https://developer.nylas.com/docs/v3/notifications/
+  tags:
+  - name: Grants
+    description: Notifications about grant lifecycle events including creation, updates, expiration, and deletion.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/grants/
+  - name: Messages
+    description: Notifications about email message events — new messages, updates, send results, bounces, and tracking.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/messages/
+  - name: Message Tracking
+    description: Notifications for tracked message opens, link clicks, and replies.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/message-tracking/
+  - name: Message Metadata
+    description: Limited notifications for Google accounts using the gmail.metadata scope.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/message-metadata/
+  - name: Folders and Labels
+    description: Notifications about email folder and label events.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/folders/
+  - name: Calendar
+    description: Notifications about calendar creation, modification, and deletion.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/calendar/
+  - name: Events
+    description: Notifications about calendar event creation, modification, and deletion.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/events/
+  - name: Contacts
+    description: Notifications about contact creation, modification, and deletion.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/contacts/
+  - name: Scheduler
+    description: Notifications about booking events from Nylas Scheduler.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/scheduler/
+  - name: Notetaker
+    description: Notifications about Notetaker bot lifecycle, meeting states, and media processing.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/notetaker/
+  - name: ExtractAI
+    description: Notifications when ExtractAI detects e-commerce orders, tracking, or returns in email messages.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/extractai/
+  - name: Transactional Email
+    description: Delivery status notifications for transactional emails.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/transactional-email/
+  - name: Agent Accounts
+    description: Delivery status notifications for email sent from Agent Accounts.
+    externalDocs:
+      url: https://developer.nylas.com/docs/reference/notifications/agent-accounts/
+  x-provenance:
+    method: authored
+    publisher: Nylas
+    source: https://developer.nylas.com/docs/reference/notifications/
+    derived_from: nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json
+    generated: '2026-09-28'
+    note: Authored by Nylas from the notification schemas that render developer.nylas.com/docs/reference/notifications/.
+      Delivery semantics are transcribed from docs/v3/notifications/, pubsub-channel and sns-channel.
+defaultContentType: application/json
+servers:
+  webhook:
+    host: '{webhookHost}'
+    pathname: '{webhookPath}'
+    protocol: https
+    title: Your webhook endpoint
+    description: 'The HTTPS endpoint you register with POST /v3/webhooks. Nylas verifies it once with a GET carrying
+      a `challenge` query parameter that must be echoed in a 200 response within 10 seconds, then POSTs each notification.
+      Respond 200; Nylas retries 408, 429 (honouring Retry-After), 502 and 503, marks the endpoint `failing` at
+      95% non-200 over 15 minutes, keeps delivering with exponential backoff for 72 hours, then marks it `failed`.
+      With `compressed_delivery: true` the body is gzip-compressed and sent with `Content-Encoding: gzip`.'
+    variables:
+      webhookHost:
+        description: Public host of the webhook endpoint you registered.
+      webhookPath:
+        default: /
+        description: Path of the webhook endpoint you registered.
+    security:
+    - $ref: '#/components/securitySchemes/nylasWebhookSignature'
+    bindings:
+      http: {}
+    externalDocs:
+      url: https://developer.nylas.com/docs/v3/notifications/
+  pubsub:
+    host: pubsub.googleapis.com
+    protocol: googlepubsub
+    title: Google Cloud Pub/Sub topic (your project)
+    description: 'A Pub/Sub topic in your Google Cloud project, registered with POST /v3/channels/pubsub. Grant
+      roles/pubsub.publisher on the topic to nylas-datapublisher@nylas-gma-mt.iam.gserviceaccount.com. Each message
+      carries a `trigger_type` attribute, plus `content_encoding: gzip` when compressed delivery is enabled. Up
+      to five Pub/Sub channels per application.'
+    bindings:
+      googlepubsub: {}
+    externalDocs:
+      url: https://developer.nylas.com/docs/v3/notifications/pubsub-channel/
+  sns:
+    host: sns.{region}.amazonaws.com
+    protocol: sns
+    title: Amazon SNS topic (your AWS account)
+    description: 'A Standard (not FIFO) SNS topic in your AWS account, registered with POST /v3/channels/sns. Nylas
+      assumes your IAM role with AWS STS AssumeRoleWithWebIdentity using a Google-issued OIDC token and publishes
+      with sns:Publish. Messages carry a `trigger_type` message attribute, plus `content_encoding: gzip+base64`
+      when compressed delivery is enabled. A `connector.verification` test event is published when the channel is
+      created. Up to five SNS channels per application.'
+    variables:
+      region:
+        description: AWS region of your SNS topic.
+    bindings:
+      sns: {}
+    externalDocs:
+      url: https://developer.nylas.com/docs/v3/notifications/sns-channel/
+channels:
+  webhookDelivery:
+    address: null
+    title: Webhook deliveries
+    description: HTTP POST deliveries to your registered webhook endpoint.
+    messages:
+      grant_created:
+        $ref: '#/components/messages/grant_created'
+      grant_updated:
+        $ref: '#/components/messages/grant_updated'
+      grant_deleted:
+        $ref: '#/components/messages/grant_deleted'
+      grant_expired:
+        $ref: '#/components/messages/grant_expired'
+      grant_imap_sync_completed:
+        $ref: '#/components/messages/grant_imap_sync_completed'
+      message_created:
+        $ref: '#/components/messages/message_created'
+      message_created_cleaned:
+        $ref: '#/components/messages/message_created_cleaned'
+      message_updated:
+        $ref: '#/components/messages/message_updated'
+      message_deleted:
+        $ref: '#/components/messages/message_deleted'
+      message_send_success:
+        $ref: '#/components/messages/message_send_success'
+      message_send_failed:
+        $ref: '#/components/messages/message_send_failed'
+      message_bounce_detected:
+        $ref: '#/components/messages/message_bounce_detected'
+      message_opened:
+        $ref: '#/components/messages/message_opened'
+      message_link_clicked:
+        $ref: '#/components/messages/message_link_clicked'
+      thread_replied:
+        $ref: '#/components/messages/thread_replied'
+      message_opened_legacy:
+        $ref: '#/components/messages/message_opened_legacy'
+      message_link_clicked_legacy:
+        $ref: '#/components/messages/message_link_clicked_legacy'
+      thread_replied_legacy:
+        $ref: '#/components/messages/thread_replied_legacy'
+      message_created_metadata:
+        $ref: '#/components/messages/message_created_metadata'
+      message_updated_metadata:
+        $ref: '#/components/messages/message_updated_metadata'
+      folder_created:
+        $ref: '#/components/messages/folder_created'
+      folder_updated:
+        $ref: '#/components/messages/folder_updated'
+      folder_deleted:
+        $ref: '#/components/messages/folder_deleted'
+      calendar_created:
+        $ref: '#/components/messages/calendar_created'
+      calendar_updated:
+        $ref: '#/components/messages/calendar_updated'
+      calendar_deleted:
+        $ref: '#/components/messages/calendar_deleted'
+      event_created:
+        $ref: '#/components/messages/event_created'
+      event_updated:
+        $ref: '#/components/messages/event_updated'
+      event_deleted:
+        $ref: '#/components/messages/event_deleted'
+      contact_updated:
+        $ref: '#/components/messages/contact_updated'
+      contact_deleted:
+        $ref: '#/components/messages/contact_deleted'
+      booking_created:
+        $ref: '#/components/messages/booking_created'
+      booking_pending:
+        $ref: '#/components/messages/booking_pending'
+      booking_rescheduled:
+        $ref: '#/components/messages/booking_rescheduled'
+      booking_cancelled:
+        $ref: '#/components/messages/booking_cancelled'
+      booking_reminder:
+        $ref: '#/components/messages/booking_reminder'
+      notetaker_created:
+        $ref: '#/components/messages/notetaker_created'
+      notetaker_updated:
+        $ref: '#/components/messages/notetaker_updated'
+      notetaker_deleted:
+        $ref: '#/components/messages/notetaker_deleted'
+      notetaker_meeting_state:
+        $ref: '#/components/messages/notetaker_meeting_state'
+      notetaker_media:
+        $ref: '#/components/messages/notetaker_media'
+      message_intelligence_order:
+        $ref: '#/components/messages/message_intelligence_order'
+      message_intelligence_tracking:
+        $ref: '#/components/messages/message_intelligence_tracking'
+      message_intelligence_return:
+        $ref: '#/components/messages/message_intelligence_return'
+      message_intelligence_travel:
+        $ref: '#/components/messages/message_intelligence_travel'
+      message_transactional_bounced:
+        $ref: '#/components/messages/message_transactional_bounced'
+      message_transactional_complaint:
+        $ref: '#/components/messages/message_transactional_complaint'
+      message_transactional_delivered:
+        $ref: '#/components/messages/message_transactional_delivered'
+      message_transactional_rejected:
+        $ref: '#/components/messages/message_transactional_rejected'
+      message_bounced:
+        $ref: '#/components/messages/message_bounced'
+      message_complaint:
+        $ref: '#/components/messages/message_complaint'
+      message_delivered:
+        $ref: '#/components/messages/message_delivered'
+      message_rejected:
+        $ref: '#/components/messages/message_rejected'
+    bindings:
+      http: {}
+    servers:
+    - $ref: '#/servers/webhook'
+  pubsubTopic:
+    address: '{topic}'
+    title: Pub/Sub topic
+    description: Messages published to your Pub/Sub topic; data is the JSON envelope.
+    messages:
+      grant_created:
+        $ref: '#/components/messages/grant_created'
+      grant_updated:
+        $ref: '#/components/messages/grant_updated'
+      grant_deleted:
+        $ref: '#/components/messages/grant_deleted'
+      grant_expired:
+        $ref: '#/components/messages/grant_expired'
+      grant_imap_sync_completed:
+        $ref: '#/components/messages/grant_imap_sync_completed'
+      message_created:
+        $ref: '#/components/messages/message_created'
+      message_created_cleaned:
+        $ref: '#/components/messages/message_created_cleaned'
+      message_updated:
+        $ref: '#/components/messages/message_updated'
+      message_deleted:
+        $ref: '#/components/messages/message_deleted'
+      message_send_success:
+        $ref: '#/components/messages/message_send_success'
+      message_send_failed:
+        $ref: '#/components/messages/message_send_failed'
+      message_bounce_detected:
+        $ref: '#/components/messages/message_bounce_detected'
+      message_opened:
+        $ref: '#/components/messages/message_opened'
+      message_link_clicked:
+        $ref: '#/components/messages/message_link_clicked'
+      thread_replied:
+        $ref: '#/components/messages/thread_replied'
+      message_opened_legacy:
+        $ref: '#/components/messages/message_opened_legacy'
+      message_link_clicked_legacy:
+        $ref: '#/components/messages/message_link_clicked_legacy'
+      thread_replied_legacy:
+        $ref: '#/components/messages/thread_replied_legacy'
+      message_created_metadata:
+        $ref: '#/components/messages/message_created_metadata'
+      message_updated_metadata:
+        $ref: '#/components/messages/message_updated_metadata'
+      folder_created:
+        $ref: '#/components/messages/folder_created'
+      folder_updated:
+        $ref: '#/components/messages/folder_updated'
+      folder_deleted:
+        $ref: '#/components/messages/folder_deleted'
+      calendar_created:
+        $ref: '#/components/messages/calendar_created'
+      calendar_updated:
+        $ref: '#/components/messages/calendar_updated'
+      calendar_deleted:
+        $ref: '#/components/messages/calendar_deleted'
+      event_created:
+        $ref: '#/components/messages/event_created'
+      event_updated:
+        $ref: '#/components/messages/event_updated'
+      event_deleted:
+        $ref: '#/components/messages/event_deleted'
+      contact_updated:
+        $ref: '#/components/messages/contact_updated'
+      contact_deleted:
+        $ref: '#/components/messages/contact_deleted'
+      booking_created:
+        $ref: '#/components/messages/booking_created'
+      booking_pending:
+        $ref: '#/components/messages/booking_pending'
+      booking_rescheduled:
+        $ref: '#/components/messages/booking_rescheduled'
+      booking_cancelled:
+        $ref: '#/components/messages/booking_cancelled'
+      booking_reminder:
+        $ref: '#/components/messages/booking_reminder'
+      notetaker_created:
+        $ref: '#/components/messages/notetaker_created'
+      notetaker_updated:
+        $ref: '#/components/messages/notetaker_updated'
+      notetaker_deleted:
+        $ref: '#/components/messages/notetaker_deleted'
+      notetaker_meeting_state:
+        $ref: '#/components/messages/notetaker_meeting_state'
+      notetaker_media:
+        $ref: '#/components/messages/notetaker_media'
+      message_intelligence_order:
+        $ref: '#/components/messages/message_intelligence_order'
+      message_intelligence_tracking:
+        $ref: '#/components/messages/message_intelligence_tracking'
+      message_intelligence_return:
+        $ref: '#/components/messages/message_intelligence_return'
+      message_intelligence_travel:
+        $ref: '#/components/messages/message_intelligence_travel'
+      message_transactional_bounced:
+        $ref: '#/components/messages/message_transactional_bounced'
+      message_transactional_complaint:
+        $ref: '#/components/messages/message_transactional_complaint'
+      message_transactional_delivered:
+        $ref: '#/components/messages/message_transactional_delivered'
+      message_transactional_rejected:
+        $ref: '#/components/messages/message_transactional_rejected'
+      message_bounced:
+        $ref: '#/components/messages/message_bounced'
+      message_complaint:
+        $ref: '#/components/messages/message_complaint'
+      message_delivered:
+        $ref: '#/components/messages/message_delivered'
+      message_rejected:
+        $ref: '#/components/messages/message_rejected'
+    parameters:
+      topic:
+        description: Full Pub/Sub topic name, projects/<project>/topics/<topic>.
+    servers:
+    - $ref: '#/servers/pubsub'
+  snsTopic:
+    address: '{topicArn}'
+    title: SNS topic
+    description: Messages published to your SNS topic; Message is the JSON envelope.
+    messages:
+      grant_created:
+        $ref: '#/components/messages/grant_created'
+      grant_updated:
+        $ref: '#/components/messages/grant_updated'
+      grant_deleted:
+        $ref: '#/components/messages/grant_deleted'
+      grant_expired:
+        $ref: '#/components/messages/grant_expired'
+      grant_imap_sync_completed:
+        $ref: '#/components/messages/grant_imap_sync_completed'
+      message_created:
+        $ref: '#/components/messages/message_created'
+      message_created_cleaned:
+        $ref: '#/components/messages/message_created_cleaned'
+      message_updated:
+        $ref: '#/components/messages/message_updated'
+      message_deleted:
+        $ref: '#/components/messages/message_deleted'
+      message_send_success:
+        $ref: '#/components/messages/message_send_success'
+      message_send_failed:
+        $ref: '#/components/messages/message_send_failed'
+      message_bounce_detected:
+        $ref: '#/components/messages/message_bounce_detected'
+      message_opened:
+        $ref: '#/components/messages/message_opened'
+      message_link_clicked:
+        $ref: '#/components/messages/message_link_clicked'
+      thread_replied:
+        $ref: '#/components/messages/thread_replied'
+      message_opened_legacy:
+        $ref: '#/components/messages/message_opened_legacy'
+      message_link_clicked_legacy:
+        $ref: '#/components/messages/message_link_clicked_legacy'
+      thread_replied_legacy:
+        $ref: '#/components/messages/thread_replied_legacy'
+      message_created_metadata:
+        $ref: '#/components/messages/message_created_metadata'
+      message_updated_metadata:
+        $ref: '#/components/messages/message_updated_metadata'
+      folder_created:
+        $ref: '#/components/messages/folder_created'
+      folder_updated:
+        $ref: '#/components/messages/folder_updated'
+      folder_deleted:
+        $ref: '#/components/messages/folder_deleted'
+      calendar_created:
+        $ref: '#/components/messages/calendar_created'
+      calendar_updated:
+        $ref: '#/components/messages/calendar_updated'
+      calendar_deleted:
+        $ref: '#/components/messages/calendar_deleted'
+      event_created:
+        $ref: '#/components/messages/event_created'
+      event_updated:
+        $ref: '#/components/messages/event_updated'
+      event_deleted:
+        $ref: '#/components/messages/event_deleted'
+      contact_updated:
+        $ref: '#/components/messages/contact_updated'
+      contact_deleted:
+        $ref: '#/components/messages/contact_deleted'
+      booking_created:
+        $ref: '#/components/messages/booking_created'
+      booking_pending:
+        $ref: '#/components/messages/booking_pending'
+      booking_rescheduled:
+        $ref: '#/components/messages/booking_rescheduled'
+      booking_cancelled:
+        $ref: '#/components/messages/booking_cancelled'
+      booking_reminder:
+        $ref: '#/components/messages/booking_reminder'
+      notetaker_created:
+        $ref: '#/components/messages/notetaker_created'
+      notetaker_updated:
+        $ref: '#/components/messages/notetaker_updated'
+      notetaker_deleted:
+        $ref: '#/components/messages/notetaker_deleted'
+      notetaker_meeting_state:
+        $ref: '#/components/messages/notetaker_meeting_state'
+      notetaker_media:
+        $ref: '#/components/messages/notetaker_media'
+      message_intelligence_order:
+        $ref: '#/components/messages/message_intelligence_order'
+      message_intelligence_tracking:
+        $ref: '#/components/messages/message_intelligence_tracking'
+      message_intelligence_return:
+        $ref: '#/components/messages/message_intelligence_return'
+      message_intelligence_travel:
+        $ref: '#/components/messages/message_intelligence_travel'
+      message_transactional_bounced:
+        $ref: '#/components/messages/message_transactional_bounced'
+      message_transactional_complaint:
+        $ref: '#/components/messages/message_transactional_complaint'
+      message_transactional_delivered:
+        $ref: '#/components/messages/message_transactional_delivered'
+      message_transactional_rejected:
+        $ref: '#/components/messages/message_transactional_rejected'
+      message_bounced:
+        $ref: '#/components/messages/message_bounced'
+      message_complaint:
+        $ref: '#/components/messages/message_complaint'
+      message_delivered:
+        $ref: '#/components/messages/message_delivered'
+      message_rejected:
+        $ref: '#/components/messages/message_rejected'
+    parameters:
+      topicArn:
+        description: SNS topic ARN, arn:aws:sns:<region>:<account-id>:<topic-name>.
+    servers:
+    - $ref: '#/servers/sns'
+operations:
+  deliverWebhookNotification:
+    action: send
+    title: Deliver a notification to your webhook
+    channel:
+      $ref: '#/channels/webhookDelivery'
+    messages:
+    - $ref: '#/channels/webhookDelivery/messages/grant_created'
+    - $ref: '#/channels/webhookDelivery/messages/grant_updated'
+    - $ref: '#/channels/webhookDelivery/messages/grant_deleted'
+    - $ref: '#/channels/webhookDelivery/messages/grant_expired'
+    - $ref: '#/channels/webhookDelivery/messages/grant_imap_sync_completed'
+    - $ref: '#/channels/webhookDelivery/messages/message_created'
+    - $ref: '#/channels/webhookDelivery/messages/message_created_cleaned'
+    - $ref: '#/channels/webhookDelivery/messages/message_updated'
+    - $ref: '#/channels/webhookDelivery/messages/message_deleted'
+    - $ref: '#/channels/webhookDelivery/messages/message_send_success'
+    - $ref: '#/channels/webhookDelivery/messages/message_send_failed'
+    - $ref: '#/channels/webhookDelivery/messages/message_bounce_detected'
+    - $ref: '#/channels/webhookDelivery/messages/message_opened'
+    - $ref: '#/channels/webhookDelivery/messages/message_link_clicked'
+    - $ref: '#/channels/webhookDelivery/messages/thread_replied'
+    - $ref: '#/channels/webhookDelivery/messages/message_opened_legacy'
+    - $ref: '#/channels/webhookDelivery/messages/message_link_clicked_legacy'
+    - $ref: '#/channels/webhookDelivery/messages/thread_replied_legacy'
+    - $ref: '#/channels/webhookDelivery/messages/message_created_metadata'
+    - $ref: '#/channels/webhookDelivery/messages/message_updated_metadata'
+    - $ref: '#/channels/webhookDelivery/messages/folder_created'
+    - $ref: '#/channels/webhookDelivery/messages/folder_updated'
+    - $ref: '#/channels/webhookDelivery/messages/folder_deleted'
+    - $ref: '#/channels/webhookDelivery/messages/calendar_created'
+    - $ref: '#/channels/webhookDelivery/messages/calendar_updated'
+    - $ref: '#/channels/webhookDelivery/messages/calendar_deleted'
+    - $ref: '#/channels/webhookDelivery/messages/event_created'
+    - $ref: '#/channels/webhookDelivery/messages/event_updated'
+    - $ref: '#/channels/webhookDelivery/messages/event_deleted'
+    - $ref: '#/channels/webhookDelivery/messages/contact_updated'
+    - $ref: '#/channels/webhookDelivery/messages/contact_deleted'
+    - $ref: '#/channels/webhookDelivery/messages/booking_created'
+    - $ref: '#/channels/webhookDelivery/messages/booking_pending'
+    - $ref: '#/channels/webhookDelivery/messages/booking_rescheduled'
+    - $ref: '#/channels/webhookDelivery/messages/booking_cancelled'
+    - $ref: '#/channels/webhookDelivery/messages/booking_reminder'
+    - $ref: '#/channels/webhookDelivery/messages/notetaker_created'
+    - $ref: '#/channels/webhookDelivery/messages/notetaker_updated'
+    - $ref: '#/channels/webhookDelivery/messages/notetaker_deleted'
+    - $ref: '#/channels/webhookDelivery/messages/notetaker_meeting_state'
+    - $ref: '#/channels/webhookDelivery/messages/notetaker_media'
+    - $ref: '#/channels/webhookDelivery/messages/message_intelligence_order'
+    - $ref: '#/channels/webhookDelivery/messages/message_intelligence_tracking'
+    - $ref: '#/channels/webhookDelivery/messages/message_intelligence_return'
+    - $ref: '#/channels/webhookDelivery/messages/message_intelligence_travel'
+    - $ref: '#/channels/webhookDelivery/messages/message_transactional_bounced'
+    - $ref: '#/channels/webhookDelivery/messages/message_transactional_complaint'
+    - $ref: '#/channels/webhookDelivery/messages/message_transactional_delivered'
+    - $ref: '#/channels/webhookDelivery/messages/message_transactional_rejected'
+    - $ref: '#/channels/webhookDelivery/messages/message_bounced'
+    - $ref: '#/channels/webhookDelivery/messages/message_complaint'
+    - $ref: '#/channels/webhookDelivery/messages/message_delivered'
+    - $ref: '#/channels/webhookDelivery/messages/message_rejected'
+  publishPubSubNotification:
+    action: send
+    title: Publish a notification to your Pub/Sub topic
+    channel:
+      $ref: '#/channels/pubsubTopic'
+    messages:
+    - $ref: '#/channels/pubsubTopic/messages/grant_created'
+    - $ref: '#/channels/pubsubTopic/messages/grant_updated'
+    - $ref: '#/channels/pubsubTopic/messages/grant_deleted'
+    - $ref: '#/channels/pubsubTopic/messages/grant_expired'
+    - $ref: '#/channels/pubsubTopic/messages/grant_imap_sync_completed'
+    - $ref: '#/channels/pubsubTopic/messages/message_created'
+    - $ref: '#/channels/pubsubTopic/messages/message_created_cleaned'
+    - $ref: '#/channels/pubsubTopic/messages/message_updated'
+    - $ref: '#/channels/pubsubTopic/messages/message_deleted'
+    - $ref: '#/channels/pubsubTopic/messages/message_send_success'
+    - $ref: '#/channels/pubsubTopic/messages/message_send_failed'
+    - $ref: '#/channels/pubsubTopic/messages/message_bounce_detected'
+    - $ref: '#/channels/pubsubTopic/messages/message_opened'
+    - $ref: '#/channels/pubsubTopic/messages/message_link_clicked'
+    - $ref: '#/channels/pubsubTopic/messages/thread_replied'
+    - $ref: '#/channels/pubsubTopic/messages/message_opened_legacy'
+    - $ref: '#/channels/pubsubTopic/messages/message_link_clicked_legacy'
+    - $ref: '#/channels/pubsubTopic/messages/thread_replied_legacy'
+    - $ref: '#/channels/pubsubTopic/messages/message_created_metadata'
+    - $ref: '#/channels/pubsubTopic/messages/message_updated_metadata'
+    - $ref: '#/channels/pubsubTopic/messages/folder_created'
+    - $ref: '#/channels/pubsubTopic/messages/folder_updated'
+    - $ref: '#/channels/pubsubTopic/messages/folder_deleted'
+    - $ref: '#/channels/pubsubTopic/messages/calendar_created'
+    - $ref: '#/channels/pubsubTopic/messages/calendar_updated'
+    - $ref: '#/channels/pubsubTopic/messages/calendar_deleted'
+    - $ref: '#/channels/pubsubTopic/messages/event_created'
+    - $ref: '#/channels/pubsubTopic/messages/event_updated'
+    - $ref: '#/channels/pubsubTopic/messages/event_deleted'
+    - $ref: '#/channels/pubsubTopic/messages/contact_updated'
+    - $ref: '#/channels/pubsubTopic/messages/contact_deleted'
+    - $ref: '#/channels/pubsubTopic/messages/booking_created'
+    - $ref: '#/channels/pubsubTopic/messages/booking_pending'
+    - $ref: '#/channels/pubsubTopic/messages/booking_rescheduled'
+    - $ref: '#/channels/pubsubTopic/messages/booking_cancelled'
+    - $ref: '#/channels/pubsubTopic/messages/booking_reminder'
+    - $ref: '#/channels/pubsubTopic/messages/notetaker_created'
+    - $ref: '#/channels/pubsubTopic/messages/notetaker_updated'
+    - $ref: '#/channels/pubsubTopic/messages/notetaker_deleted'
+    - $ref: '#/channels/pubsubTopic/messages/notetaker_meeting_state'
+    - $ref: '#/channels/pubsubTopic/messages/notetaker_media'
+    - $ref: '#/channels/pubsubTopic/messages/message_intelligence_order'
+    - $ref: '#/channels/pubsubTopic/messages/message_intelligence_tracking'
+    - $ref: '#/channels/pubsubTopic/messages/message_intelligence_return'
+    - $ref: '#/channels/pubsubTopic/messages/message_intelligence_travel'
+    - $ref: '#/channels/pubsubTopic/messages/message_transactional_bounced'
+    - $ref: '#/channels/pubsubTopic/messages/message_transactional_complaint'
+    - $ref: '#/channels/pubsubTopic/messages/message_transactional_delivered'
+    - $ref: '#/channels/pubsubTopic/messages/message_transactional_rejected'
+    - $ref: '#/channels/pubsubTopic/messages/message_bounced'
+    - $ref: '#/channels/pubsubTopic/messages/message_complaint'
+    - $ref: '#/channels/pubsubTopic/messages/message_delivered'
+    - $ref: '#/channels/pubsubTopic/messages/message_rejected'
+  publishSnsNotification:
+    action: send
+    title: Publish a notification to your SNS topic
+    channel:
+      $ref: '#/channels/snsTopic'
+    messages:
+    - $ref: '#/channels/snsTopic/messages/grant_created'
+    - $ref: '#/channels/snsTopic/messages/grant_updated'
+    - $ref: '#/channels/snsTopic/messages/grant_deleted'
+    - $ref: '#/channels/snsTopic/messages/grant_expired'
+    - $ref: '#/channels/snsTopic/messages/grant_imap_sync_completed'
+    - $ref: '#/channels/snsTopic/messages/message_created'
+    - $ref: '#/channels/snsTopic/messages/message_created_cleaned'
+    - $ref: '#/channels/snsTopic/messages/message_updated'
+    - $ref: '#/channels/snsTopic/messages/message_deleted'
+    - $ref: '#/channels/snsTopic/messages/message_send_success'
+    - $ref: '#/channels/snsTopic/messages/message_send_failed'
+    - $ref: '#/channels/snsTopic/messages/message_bounce_detected'
+    - $ref: '#/channels/snsTopic/messages/message_opened'
+    - $ref: '#/channels/snsTopic/messages/message_link_clicked'
+    - $ref: '#/channels/snsTopic/messages/thread_replied'
+    - $ref: '#/channels/snsTopic/messages/message_opened_legacy'
+    - $ref: '#/channels/snsTopic/messages/message_link_clicked_legacy'
+    - $ref: '#/channels/snsTopic/messages/thread_replied_legacy'
+    - $ref: '#/channels/snsTopic/messages/message_created_metadata'
+    - $ref: '#/channels/snsTopic/messages/message_updated_metadata'
+    - $ref: '#/channels/snsTopic/messages/folder_created'
+    - $ref: '#/channels/snsTopic/messages/folder_updated'
+    - $ref: '#/channels/snsTopic/messages/folder_deleted'
+    - $ref: '#/channels/snsTopic/messages/calendar_created'
+    - $ref: '#/channels/snsTopic/messages/calendar_updated'
+    - $ref: '#/channels/snsTopic/messages/calendar_deleted'
+    - $ref: '#/channels/snsTopic/messages/event_created'
+    - $ref: '#/channels/snsTopic/messages/event_updated'
+    - $ref: '#/channels/snsTopic/messages/event_deleted'
+    - $ref: '#/channels/snsTopic/messages/contact_updated'
+    - $ref: '#/channels/snsTopic/messages/contact_deleted'
+    - $ref: '#/channels/snsTopic/messages/booking_created'
+    - $ref: '#/channels/snsTopic/messages/booking_pending'
+    - $ref: '#/channels/snsTopic/messages/booking_rescheduled'
+    - $ref: '#/channels/snsTopic/messages/booking_cancelled'
+    - $ref: '#/channels/snsTopic/messages/booking_reminder'
+    - $ref: '#/channels/snsTopic/messages/notetaker_created'
+    - $ref: '#/channels/snsTopic/messages/notetaker_updated'
+    - $ref: '#/channels/snsTopic/messages/notetaker_deleted'
+    - $ref: '#/channels/snsTopic/messages/notetaker_meeting_state'
+    - $ref: '#/channels/snsTopic/messages/notetaker_media'
+    - $ref: '#/channels/snsTopic/messages/message_intelligence_order'
+    - $ref: '#/channels/snsTopic/messages/message_intelligence_tracking'
+    - $ref: '#/channels/snsTopic/messages/message_intelligence_return'
+    - $ref: '#/channels/snsTopic/messages/message_intelligence_travel'
+    - $ref: '#/channels/snsTopic/messages/message_transactional_bounced'
+    - $ref: '#/channels/snsTopic/messages/message_transactional_complaint'
+    - $ref: '#/channels/snsTopic/messages/message_transactional_delivered'
+    - $ref: '#/channels/snsTopic/messages/message_transactional_rejected'
+    - $ref: '#/channels/snsTopic/messages/message_bounced'
+    - $ref: '#/channels/snsTopic/messages/message_complaint'
+    - $ref: '#/channels/snsTopic/messages/message_delivered'
+    - $ref: '#/channels/snsTopic/messages/message_rejected'
+components:
+  schemas:
+    NotificationEnvelope:
+      $ref: ../json-schema/nylas-notification-envelope.schema.json
+  messages:
+    grant_created:
+      name: grant.created
+      title: grant.created
+      summary: Sent when a user successfully authenticates with your Nylas application for the first time.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: grant.created
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-grant-created.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/grants/grant-created/
+      tags:
+      - name: Grants
+      examples:
+      - name: grant_created
+        payload:
+          specversion: '1.0'
+          type: grant.created
+          source: /nylas/system
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              code: 25012
+              grant_id: <NYLAS_GRANT_ID>
+              integration_id: <NYLAS_INTEGRATION_ID>
+              login_id: <LOGIN_ID>
+              provider: google
+              email: user@example.com
+              name: John Doe
+              scope:
+              - https://www.googleapis.com/auth/gmail.readonly
+              - https://www.googleapis.com/auth/calendar
+          webhook_delivery_attempt: 1
+    grant_updated:
+      name: grant.updated
+      title: grant.updated
+      summary: Sent when a grant is modified, updated, or re-authenticated.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: grant.updated
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-grant-updated.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/grants/grant-updated/
+      tags:
+      - name: Grants
+      examples:
+      - name: grant_updated
+        payload:
+          specversion: '1.0'
+          type: grant.updated
+          source: /nylas/system
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              code: 25014
+              grant_id: <NYLAS_GRANT_ID>
+              integration_id: <NYLAS_INTEGRATION_ID>
+              provider: microsoft
+              reauthentication_flag: false
+              email: user@example.com
+          webhook_delivery_attempt: 1
+    grant_deleted:
+      name: grant.deleted
+      title: grant.deleted
+      summary: Sent when a grant is deleted because of a Delete Grant request.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: grant.deleted
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-grant-deleted.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/grants/grant-deleted/
+      tags:
+      - name: Grants
+      examples:
+      - name: grant_deleted
+        payload:
+          specversion: '1.0'
+          type: grant.deleted
+          source: /nylas/system
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              code: 25013
+              grant_id: <NYLAS_GRANT_ID>
+              integration_id: <NYLAS_INTEGRATION_ID>
+              provider: google
+              email: user@example.com
+          webhook_delivery_attempt: 1
+    grant_expired:
+      name: grant.expired
+      title: grant.expired
+      summary: Sent when a grant's credentials expire, typically due to a change in the user's password on the provider,
+        OAuth token expiration without successful refresh, the provider revoking access, or an admin revoking app
+        permissions.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: grant.expired
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-grant-expired.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/grants/grant-expired/
+      tags:
+      - name: Grants
+      description: The grant_updated_at timestamp indicates the last time the grant was successfully refreshed before
+        expiration.
+      examples:
+      - name: grant_expired
+        payload:
+          specversion: '1.0'
+          type: grant.expired
+          source: /nylas/system
+          id: <WEBHOOK_ID>
+          time: 1739223251
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              code: 25009
+              grant_id: <NYLAS_GRANT_ID>
+              integration_id: <NYLAS_INTEGRATION_ID>
+              provider: google
+              email: user@example.com
+              grant_updated_at: 1734200000
+    grant_imap_sync_completed:
+      name: grant.imap_sync_completed
+      title: grant.imap_sync_completed
+      summary: Sent when a grant is created for an IMAP account and the initial historic sync completes.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: grant.imap_sync_completed
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-grant-imap-sync-completed.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/grants/grant-imap_sync_completed/
+      tags:
+      - name: Grants
+      description: The notification code `25012` is shared with `grant.created`. Use the `type` field, not `code`,
+        for routing webhook payloads.
+      examples:
+      - name: grant_imap_sync_completed
+        payload:
+          specversion: '1.0'
+          type: grant.imap_sync_completed
+          source: /imap/emails/historic
+          id: <WEBHOOK_ID>
+          time: 1705315800
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              grant_id: <NYLAS_GRANT_ID>
+              code: 25012
+              integration_id: <INTEGRATION_ID>
+              provider: imap
+              type: grant.imap_sync_completed
+          webhook_delivery_attempt: 1
+    message_created:
+      name: message.created
+      title: message.created
+      summary: Sent when a new message arrives or is synced for a user.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.created
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-created.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/messages/message-created/
+      tags:
+      - name: Messages
+      description: 'Payloads exceeding 1 MB are truncated: the type becomes `message.created.truncated` and the
+        `body` field is removed. Re-query the [Messages API](/docs/reference/api/messages/get-messages-id/) to get
+        the full message. If you have [field customization](/docs/v3/notifications/#specify-fields-for-webhook-notifications)
+        enabled, the type will be `message.created.transformed`.'
+      examples:
+      - name: message_created
+        payload:
+          specversion: '1.0'
+          type: message.created
+          source: /google/emails/realtime
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              id: <MESSAGE_ID>
+              grant_id: <NYLAS_GRANT_ID>
+              object: message
+              thread_id: <THREAD_ID>
+              subject: Let's send an attachment
+              from:
+              - email: swag@example.com
+                name: Nylas Swag
+              to:
+              - email: nyla@example.com
+              cc:
+              - email: kaveh@example.com
+              bcc:
+              - email: leyah@example.com
+              reply_to: []
+              date: 1723821981
+              body: "<div dir=\"ltr\">Test with attachments</div>\r\n"
+              snippet: This message has an attachment.
+              starred: false
+              unread: false
+              folders:
+              - SENT
+              attachments:
+              - id: <ATTACHMENT_ID>
+                filename: image.jpg
+                content_type: image/jpeg; name="image.jpg"
+                size: 4860136
+                is_inline: false
+                content_id: <CID>
+                content_disposition: attachment; filename="image.jpg"
+                grant_id: <NYLAS_GRANT_ID>
+              metadata:
+                key1: all-meetings
+                key2: on-site
+    message_created_cleaned:
+      name: message.created.cleaned
+      title: message.created.cleaned
+      summary: Sent when a new message is synced and the [Clean Conversations](/docs/v3/email/parse-messages/) feature
+        is enabled for the application. The message `body` contains cleaned markdown content instead of the original
+        HTML.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.created.cleaned
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-created-cleaned.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/messages/message-created-cleaned/
+      tags:
+      - name: Messages
+      description: Cleaned notifications can also have `.transformed` and `.truncated` suffixes (for example, `message.created.cleaned.transformed`
+        or `message.created.cleaned.truncated`). When `cleaning_status` is `failed`, the `body` contains the original
+        uncleaned HTML.
+      examples:
+      - name: message_created_cleaned
+        payload:
+          specversion: '1.0'
+          type: message.created.cleaned
+          source: /google/emails/realtime
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              attachments:
+              - content_disposition: attachment; filename="image.jpg"
+                content_id: <CID>
+                content_type: image/jpeg; name="image.jpg"
+                filename: image.jpg
+                grant_id: <NYLAS_GRANT_ID>
+                id: <ATTACHMENT_ID>
+                is_inline: false
+                size: 4860136
+              bcc:
+              - email: leyah@example.com
+              body: '# Team Update
+
+
+                Hi everyone,
+
+
+                Here are the key updates from this week:
+
+
+                * Project Alpha launched successfully
+
+                * New API endpoints are live in staging
+
+                * Next sprint planning is on Monday
+
+
+                Let me know if you have questions.'
+              cc:
+              - email: kaveh@example.com
+              cleaning_status: success
+              date: 1723821981
+              folders:
+              - INBOX
+              from:
+              - email: swag@example.com
+                name: Nylas Swag
+              grant_id: <NYLAS_GRANT_ID>
+              id: <MESSAGE_ID>
+              metadata:
+                key1: all-meetings
+                key2: on-site
+              object: message
+              reply_to: []
+              snippet: Hi everyone, Here are the key updates from this week.
+              starred: false
+              subject: Team Update - Week of Aug 12
+              thread_id: <THREAD_ID>
+              to:
+              - email: nyla@example.com
+              unread: true
+    message_updated:
+      name: message.updated
+      title: message.updated
+      summary: Sent when a user modifies or updates a message.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.updated
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-updated.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/messages/message-updated/
+      tags:
+      - name: Messages
+      description: 'Payloads exceeding 1 MB are truncated: the type becomes `message.updated.truncated` and the
+        `body` field is removed. Re-query the [Messages API](/docs/reference/api/messages/get-messages-id/) to get
+        the full message. If you have [field customization](/docs/v3/notifications/#specify-fields-for-webhook-notifications)
+        enabled, the type will be `message.updated.transformed`.'
+      examples:
+      - name: message_updated
+        payload:
+          specversion: '1.0'
+          type: message.updated
+          source: /google/emails/realtime
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              body: "<div dir=\"ltr\">Test with attachments</div>\r\n"
+              cc:
+              - email: nyla@example.com
+                name: Nyla
+              date: 1234567890
+              folders:
+              - INBOX
+              from:
+              - email: leyah@example.com
+                name: Leyah Miller
+              grant_id: <NYLAS_GRANT_ID>
+              id: <MESSAGE_ID>
+              metadata:
+                key1: all-meetings
+                key2: on-site
+              object: message
+              snippet: This message has an attachment.
+              starred: false
+              subject: Let's send an attachment
+              thread_id: <THREAD_ID>
+              to:
+              - email: kaveh@example.com
+              unread: true
+    message_deleted:
+      name: message.deleted
+      title: message.deleted
+      summary: Sent when a message is deleted.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.deleted
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-deleted.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/messages/message-deleted/
+      tags:
+      - name: Messages
+      examples:
+      - name: message_deleted
+        payload:
+          specversion: '1.0'
+          type: message.deleted
+          source: /google/emails/realtime
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              grant_id: <NYLAS_GRANT_ID>
+              id: <WEBHOOK_ID>
+              object: message
+          webhook_delivery_attempt: 1
+    message_send_success:
+      name: message.send_success
+      title: message.send_success
+      summary: Sent when a message is sent and delivered successfully. Fires for scheduled sends (using `send_at`),
+        and for synchronous sends when you enable synchronous send webhooks in the Nylas Dashboard.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.send_success
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-send-success.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/messages/message-send_success/
+      tags:
+      - name: Messages
+      description: The `body` field is typically omitted or empty in the delivered payload. Use the `snippet` field
+        for a preview, or re-query the Messages API for the full body.
+    message_send_failed:
+      name: message.send_failed
+      title: message.send_failed
+      summary: Sent when a message fails to send or deliver. Fires for scheduled sends (using `send_at`), and for
+        synchronous sends when you enable synchronous send webhooks in the Nylas Dashboard.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.send_failed
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-send-failed.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/messages/message-send_failed/
+      tags:
+      - name: Messages
+      description: The `error` object contains detailed failure information including provider-specific error codes.
+    message_bounce_detected:
+      name: message.bounce_detected
+      title: message.bounce_detected
+      summary: Sent when Nylas detects a Non-Delivery Report (NDR) in the sender's inbox for a message sent via
+        Nylas. Requires the provider to generate an NDR. Available for Google, Microsoft Graph, iCloud, and Yahoo.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.bounce_detected
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-bounce-detected.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/messages/message-bounce_detected/
+      tags:
+      - name: Messages
+      examples:
+      - name: message_bounce_detected
+        payload:
+          specversion: '1.0'
+          type: message.bounce_detected
+          source: /nylas/send
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              bounce_reason: An example message describing the reason for the bounce.
+              bounce_date: Wed, 25 Jan 2023 10:18:39 -0800
+              bounced_addresses: this.address.bounced@example.com
+              type: mailbox_unavailable
+              code: '550'
+              grant_id: <NYLAS_GRANT_ID>
+              origin:
+                to:
+                - jdoe@example.com
+                from: sender@example.com
+                cc:
+                - sam.lee@example.com
+                bcc:
+                - alex.johnson@example.com
+                subject: example-subject
+                mime_id: SJ0PR16MB40611C92DE872E6FC5916859D4603@SJ0PR16MB4062.namprd16.prod.outlook.com
+                id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AVKoCBvx5pk2OWnx9GWNeIAABogwSJQAB
+                original_send_at: Mon, 16 Sep 2024 16:15:49 +0000
+    message_opened:
+      name: message.opened
+      title: message.opened
+      summary: Sent when a participant opens a tracked message.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.opened
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-opened.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/message-tracking/message-opened/
+      tags:
+      - name: Message Tracking
+      description: 'If your grant is expired, you''ll still receive `message.opened` notifications. If deleted,
+        notifications stop.
+
+        If open link was loaded multiple times within one minute, only the first open will be counted.'
+      examples:
+      - name: message_opened
+        payload:
+          specversion: '1.0'
+          type: message.opened
+          source: /com/nylas/tracking
+          id: <WEBHOOK_ID>
+          time: 1695480567
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              object: message
+              grant_id: <NYLAS_GRANT_ID>
+              message_data:
+                count: 1
+                timestamp: 1695480410
+              message_id: 18ac281f237c934b
+              label: Testing Nylas Messaged Opened Tracking
+              recents:
+              - ip: <IP ADDR>
+                opened_id: 0
+                timestamp: 1695480567
+                user_agent: Mozilla/5.0
+              - ip: <IP ADDR>
+                opened_id: 1
+                timestamp: 1695480567
+                user_agent: Mozilla/5.0
+              - ip: <IP ADDR>
+                opened_id: 2
+                timestamp: 1695480567
+                user_agent: Mozilla/5.0
+              sender_app_id: <app id>
+              timestamp: 1695480410
+          webhook_delivery_attempt: 1
+    message_link_clicked:
+      name: message.link_clicked
+      title: message.link_clicked
+      summary: Sent when a participant clicks a link in a tracked message.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.link_clicked
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-link-clicked.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/message-tracking/message-link_clicked/
+      tags:
+      - name: Message Tracking
+      examples:
+      - name: message_link_clicked
+        payload:
+          specversion: '1.0'
+          type: message.link_clicked
+          source: /com/nylas/tracking
+          id: <WEBHOOK_ID>
+          time: 1695480423
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              object: message
+              grant_id: <NYLAS_GRANT_ID>
+              link_data:
+              - count: 1
+                url: https://www.example.com
+              message_id: 18ac281f237c934b
+              label: Hey, just testing
+              recents:
+              - click_id: 0
+                ip: <IP ADDR>
+                link_index: '0'
+                timestamp: 1695480422
+                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)
+                  Chrome/117.0.0.0 Safari/537.36
+              - click_id: 1
+                ip: <IP ADDR>
+                link_index: '0'
+                timestamp: 1695480422
+                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)
+                  Chrome/117.0.0.0 Safari/537.36
+              - click_id: 2
+                ip: <IP ADDR>
+                link_index: '0'
+                timestamp: 1695480422
+                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)
+                  Chrome/117.0.0.0 Safari/537.36
+              sender_app_id: <app id>
+              timestamp: 1695480422
+          webhook_delivery_attempt: 1
+    thread_replied:
+      name: thread.replied
+      title: thread.replied
+      summary: Sent when a participant replies to a tracked email thread.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: thread.replied
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-thread-replied.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/message-tracking/thread-replied/
+      tags:
+      - name: Message Tracking
+      examples:
+      - name: thread_replied
+        payload:
+          specversion: '1.0'
+          type: thread.replied
+          source: /com/nylas/tracking
+          id: <WEBHOOK_ID>
+          time: 1696007157
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              object: thread
+              grant_id: <NYLAS_GRANT_ID>
+              message_id: <message-id-of-reply>
+              root_message_id: <message-id-of-original-tracked-message>
+              label: some-client-label
+              reply_data:
+                count: 1
+              reply_to_message_id: <message-id-of-original-tracked-message>
+              from_self: false
+              sender_app_id: <app-id>
+              thread_id: <thread-id-of-sent-message>
+              timestamp: 1696007157
+          webhook_delivery_attempt: 1
+    message_opened_legacy:
+      name: message.opened.legacy
+      title: message.opened.legacy
+      summary: Legacy format for message opened tracking notifications.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.opened.legacy
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-opened-legacy.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/message-tracking/message-opened-legacy/
+      tags:
+      - name: Message Tracking
+      description: The `deltas` array and nested `object_data` fields may be `null` rather than absent.
+      examples:
+      - name: message_opened_legacy
+        payload:
+          specversion: '1.0'
+          type: message.opened.legacy
+          source: /com/nylas/v2/webhooks
+          id: <WEBHOOK_ID>
+          time: 1733261181
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <V3_NYLAS_APPLICATION_ID>
+            grant_id: <V3_NYLAS_GRANT_ID>
+            object:
+              deltas:
+              - date: 1733261154
+                object: metadata
+                object_data:
+                  account_id: <V2_NYLAS_ACCOUNT_ID>
+                  id: <V2_WEBHOOK_ID>
+                  metadata:
+                    count: 1
+                    message_id: <V2_MESSAGE_ID>
+                    payload: Hello world
+                    recents:
+                    - id: 0
+                      ip: ip_address
+                      timestamp: 1733163186
+                      user_agent: Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)
+                    timestamp: 1733261154
+                  namespace_id: <V2_NAMESPACE_ID>
+                  object: metadata
+                type: message.opened
+              grant_id: <V3_NYLAS_GRANT_ID>
+              object: message
+    message_link_clicked_legacy:
+      name: message.link_clicked.legacy
+      title: message.link_clicked.legacy
+      summary: Legacy format for link clicked tracking notifications.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.link_clicked.legacy
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-link-clicked-legacy.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/message-tracking/message-link_clicked-legacy/
+      tags:
+      - name: Message Tracking
+      description: The `deltas` array and nested `object_data` fields may be `null` rather than absent.
+      examples:
+      - name: message_link_clicked_legacy
+        payload:
+          specversion: '1.0'
+          type: message.link_clicked.legacy
+          source: /com/nylas/v2/webhooks
+          id: <WEBHOOK_ID>
+          time: 1733261173
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <V3_NYLAS_APPLICATION_ID>
+            grant_id: <V3_NYLAS_GRANT_ID>
+            object:
+              deltas:
+              - date: 1733261158
+                object: metadata
+                object_data:
+                  account_id: <V2_NYLAS_ACCOUNT_ID>
+                  id: <V2_WEBHOOK_ID>
+                  metadata:
+                    link_data:
+                    - count: 8
+                      url: client_url
+                    message_id: <V2_MESSAGE_ID>
+                    payload: Hello world
+                    recents:
+                    - id: 0
+                      ip: ip_address
+                      link_index: 0
+                      timestamp: 1733163188
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like
+                        Gecko) Chrome/131.0.0.0 Safari/537.36
+                    timestamp: 1733163166
+                  namespace_id: <V2_NAMESPACE_ID>
+                  object: metadata
+                type: message.link_clicked
+              grant_id: <V3_NYLAS_GRANT_ID>
+              object: message
+    thread_replied_legacy:
+      name: thread.replied.legacy
+      title: thread.replied.legacy
+      summary: Legacy format for thread replied tracking notifications.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: thread.replied.legacy
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-thread-replied-legacy.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/message-tracking/thread-replied-legacy/
+      tags:
+      - name: Message Tracking
+      description: The `deltas` array and nested `object_data` fields may be `null` rather than absent.
+      examples:
+      - name: thread_replied_legacy
+        payload:
+          specversion: '1.0'
+          type: thread.replied.legacy
+          source: /com/nylas/v2/webhooks
+          id: <WEBHOOK_ID>
+          time: 1733180746
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <V3_NYLAS_APPLICATION_ID>
+            grant_id: <V3_NYLAS_GRANT_ID>
+            object:
+              deltas:
+              - date: 1733180719
+                object: message
+                object_data:
+                  account_id: <V2_NYLAS_ACCOUNT_ID>
+                  id: <V2_WEBHOOK_ID>
+                  metadata:
+                    from_self: true
+                    message_id: <V2_MESSAGE_ID>
+                    payload: Hello world
+                    reply_to_message_id: <V2_REPLY_TO_MESSAGE_ID>
+                    thread_id: <V2_THREAD_ID>
+                    timestamp: 1733180490
+                  namespace_id: <V2_NAMESPACE_ID>
+                  object: message
+                type: thread.replied
+              grant_id: <V3_NYLAS_GRANT_ID>
+              object: thread
+    message_created_metadata:
+      name: message.created.metadata
+      title: message.created.metadata
+      summary: Sent for Google grants using the `/gmail.metadata` scope. Does not include `body`, `snippet`, or
+        `attachment` fields.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.created.metadata
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-created-metadata.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/message-metadata/message-created-metadata/
+      tags:
+      - name: Message Metadata
+      description: You cannot subscribe to this trigger directly. Subscribe to `message.created` instead — if the
+        grant uses the Gmail metadata scope, the delivered notification type will be `message.created.metadata`.
+      examples:
+      - name: message_created_metadata
+        payload:
+          specversion: '1.0'
+          type: message.created.metadata
+          source: /google/emails/realtime
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              bcc:
+              - email: leyah@example.com
+              cc:
+              - email: kaveh@example.com
+              date: 1723821981
+              folders:
+              - SENT
+              from:
+              - email: swag@example.com
+                name: Nylas Swag
+              grant_id: <NYLAS_GRANT_ID>
+              headers:
+              - name: Delivered-To
+                value: nyla@example.com
+              - name: Return-Path
+                value: <swag@example.com>
+              - name: Received
+                value: Received Header Value
+              - name: MIME-Version
+                value: '1.0'
+              - name: From
+                value: Nylas Swag <swag@example.com>
+              - name: Date
+                value: Fri, 16 Aug 2024 9:26:21 -0600
+              - name: Message-ID
+                value: <MESSAGE_ID>
+              - name: Subject
+                value: Let's send an attachment
+              - name: To
+                value: <nyla@example.com>
+              - name: Content-Type
+                value: multipart/alternative
+              - name: Custom-Header
+                value: Custom header
+              id: <MESSAGE_ID>
+              metadata:
+                key1: all-meetings
+                key2: on-site
+              object: message
+              reply_to: []
+              starred: false
+              subject: Let's send an attachment
+              thread_id: <THREAD_ID>
+              to:
+              - email: nyla@example.com
+              unread: false
+    message_updated_metadata:
+      name: message.updated.metadata
+      title: message.updated.metadata
+      summary: Sent for Google grants using the `/gmail.metadata` scope when a message is updated. Limited field
+        set.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.updated.metadata
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-updated-metadata.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/message-metadata/message-updated-metadata/
+      tags:
+      - name: Message Metadata
+      description: You cannot subscribe to this trigger directly. Subscribe to `message.updated` instead — if the
+        grant uses the Gmail metadata scope, the delivered notification type will be `message.updated.metadata`.
+      examples:
+      - name: message_updated_metadata
+        payload:
+          specversion: '1.0'
+          type: message.updated.metadata
+          source: /google/emails/realtime
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              bcc:
+              - email: leyah@example.com
+              cc:
+              - email: kaveh@example.com
+              date: 1723821981
+              folders:
+              - SENT
+              from:
+              - email: swag@example.com
+                name: Nylas Swag
+              grant_id: <NYLAS_GRANT_ID>
+              headers:
+              - name: Delivered-To
+                value: nyla@example.com
+              - name: Return-Path
+                value: <swag@example.com>
+              - name: Received
+                value: Received Header Value
+              - name: MIME-Version
+                value: '1.0'
+              - name: From
+                value: Nylas Swag <swag@example.com>
+              - name: Date
+                value: Fri, 16 Aug 2024 9:26:21 -0600
+              - name: Message-ID
+                value: <MESSAGE_ID>
+              - name: Subject
+                value: Let's send an attachment
+              - name: To
+                value: <nyla@example.com>
+              - name: Content-Type
+                value: multipart/alternative
+              - name: Custom-Header
+                value: mock custom header
+              id: <MESSAGE_ID>
+              metadata:
+                key1: all-meetings
+                key2: on-site
+              object: message
+              reply_to: []
+              starred: false
+              subject: Let's send an attachment
+              thread_id: <THREAD_ID>
+              to:
+              - email: nyla@example.com
+              unread: false
+    folder_created:
+      name: folder.created
+      title: folder.created
+      summary: Sent when a user creates a folder.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: folder.created
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-folder-created.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/folders/folder-created/
+      tags:
+      - name: Folders and Labels
+      examples:
+      - name: folder_created
+        payload:
+          specversion: '1.0'
+          type: folder.created
+          source: /google/emails/incremental
+          id: <WEBHOOK_ID>
+          time: 1718210511
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              grant_id: <NYLAS_GRANT_ID>
+              id: <FOLDER_ID>
+              name: My test folder
+              object: folder
+              system_folder: false
+    folder_updated:
+      name: folder.updated
+      title: folder.updated
+      summary: Sent when a user updates a folder.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: folder.updated
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-folder-updated.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/folders/folder-updated/
+      tags:
+      - name: Folders and Labels
+      examples:
+      - name: folder_updated
+        payload:
+          specversion: '1.0'
+          type: folder.updated
+          source: /google/emails/incremental
+          id: <WEBHOOK_ID>
+          time: 1718210554
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              grant_id: <NYLAS_GRANT_ID>
+              id: <FOLDER_ID>
+              name: My updated test folder
+              object: folder
+              system_folder: false
+    folder_deleted:
+      name: folder.deleted
+      title: folder.deleted
+      summary: Sent when a user deletes a folder.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: folder.deleted
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-folder-deleted.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/folders/folder-deleted/
+      tags:
+      - name: Folders and Labels
+      examples:
+      - name: folder_deleted
+        payload:
+          specversion: '1.0'
+          type: folder.deleted
+          source: /google/emails/incremental
+          id: <WEBHOOK_ID>
+          time: 1718210588
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              grant_id: <NYLAS_GRANT_ID>
+              id: <FOLDER_ID>
+              name: My test folder
+              object: folder
+              system_folder: false
+    calendar_created:
+      name: calendar.created
+      title: calendar.created
+      summary: Sent when a user creates a calendar.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: calendar.created
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-calendar-created.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/calendar/calendar-created/
+      tags:
+      - name: Calendar
+    calendar_updated:
+      name: calendar.updated
+      title: calendar.updated
+      summary: Sent when the name, description, location, or timezone of a calendar changes.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: calendar.updated
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-calendar-updated.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/calendar/calendar-updated/
+      tags:
+      - name: Calendar
+    calendar_deleted:
+      name: calendar.deleted
+      title: calendar.deleted
+      summary: Sent when a user deletes a calendar.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: calendar.deleted
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-calendar-deleted.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/calendar/calendar-deleted/
+      tags:
+      - name: Calendar
+    event_created:
+      name: event.created
+      title: event.created
+      summary: Sent when an event is created on a user's calendar.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: event.created
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-event-created.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/events/event-created/
+      tags:
+      - name: Events
+      description: If you have field customization enabled, the notification type will include a `.transformed`
+        suffix (e.g. `event.created.transformed`). Your endpoint must handle both the standard and suffixed types.
+      examples:
+      - name: event_created
+        payload:
+          specversion: '1.0'
+          type: event.created
+          source: /google/events/realtime
+          id: <WEBHOOK_ID>
+          time: 1695415185
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              account_id: <NYLAS_V2_ACCOUNT_ID>
+              busy: true
+              calendar_id: <CALENDAR_ID>
+              conferencing:
+                details:
+                  meeting_code: <MEETING_CODE>
+                  phone:
+                  - <MEETING_PHONE_NUMBER>
+                  pin: <MEETING_PIN>
+                  url: <MEETING_URL>
+                provider: <PROVIDER>
+              created_at: 1545355476
+              creator:
+                email: leyah@example.com
+                name: Leyah Miller
+              description: <p>Weekly one-on-one.</p>
+              grant_id: <NYLAS_GRANT_ID>
+              hide_participants: true
+              html_link: <EVENT_LINK>
+              ical_uid: <ICAL_UID>
+              id: <EVENT_ID>
+              location: Room 103
+              metadata:
+                key1: all-meetings
+                key2: on-site
+              object: event
+              organizer:
+                email: leyah@example.com
+                name: Leyah Miller
+              participants:
+              - email: nyla@example.com
+                status: 'yes'
+              read_only: true
+              recurrence:
+              - RRULE:FREQ=WEEKLY;WKST=SU;UNTIL=20230420T065959Z;INTERVAL=2
+              reminders:
+                overrides: []
+                use_default: true
+              resources: []
+              sequence: 17
+              status: confirmed
+              title: One-on-one
+              updated_at: 1724359724
+              visibility: default
+              when:
+                end_time: 1680800100
+                end_timezone: America/Los_Angeles
+                object: timespan
+                start_time: 1680796800
+                start_timezone: America/Los_Angeles
+    event_updated:
+      name: event.updated
+      title: event.updated
+      summary: Sent when an event is modified or updated. Includes the `occurrences` parameter if the updated event
+        is a single occurrence of a recurring Google event.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: event.updated
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-event-updated.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/events/event-updated/
+      tags:
+      - name: Events
+      description: 'If you have field customization enabled, the notification type will include a `.transformed`
+        suffix (e.g. `event.updated.transformed`). Your endpoint must handle both the standard and suffixed types.
+
+
+        Events created by Nylas Scheduler carry Scheduler-stamped metadata. To tell Scheduler-driven changes apart
+        from edits made directly on the organizer''s calendar, compare the notification''s `when` times against
+        `metadata.scheduler_last_start` and `metadata.scheduler_last_end`: if the times match, the change came through
+        Scheduler (Nylas also sends a `booking.rescheduled` notification), and if they differ, the event was changed
+        directly on the calendar.'
+      examples:
+      - name: event_updated
+        payload:
+          specversion: '1.0'
+          type: event.updated
+          source: /google/events/realtime
+          id: <WEBHOOK_ID>
+          time: 1732575192
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              account_id: <NYLAS_V2_ACCOUNT_ID>
+              busy: true
+              calendar_id: <CALENDAR_ID>
+              cancelled_occurrences:
+              - <EVENT_ID>
+              conferencing:
+                details:
+                  url: <MEETING_URL>
+                provider: <PROVIDER>
+              created_at: 1732573232
+              description: Weekly one-on-one.
+              grant_id: <NYLAS_GRANT_ID>
+              hide_participants: false
+              html_link: <EVENT_LINK>
+              ical_uid: <ICAL_UID>
+              id: <EVENT_ID>
+              location: Room 103
+              object: event
+              metadata:
+                key1: all-meetings
+                key2: on-site
+              organizer:
+                email: nyla@example.com
+                name: Nyla
+              participants:
+              - email: leyahe@example.com
+                name: Leyah Miller
+                status: noreply
+              read_only: false
+              recurrence:
+              - RRULE:FREQ=WEEKLY;UNTIL=20241219T000000Z;BYDAY=TH
+              reminders:
+                overrides: []
+                use_default: true
+              resources: []
+              status: confirmed
+              title: One-on-one
+              updated_at: 1732575179
+              visibility: public
+              when:
+                end_time: 1732811400
+                end_timezone: EST5EDT
+                object: timespan
+                start_time: 1732809600
+                start_timezone: EST5EDT
+    event_deleted:
+      name: event.deleted
+      title: event.deleted
+      summary: Sent when an event is deleted from a user's calendar.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: event.deleted
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-event-deleted.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/events/event-deleted/
+      tags:
+      - name: Events
+    contact_updated:
+      name: contact.updated
+      title: contact.updated
+      summary: Sent when a user creates or updates a contact. Most providers don't differentiate between creating
+        and updating contacts.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: contact.updated
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-contact-updated.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/contacts/contact-updated/
+      tags:
+      - name: Contacts
+      description: This trigger fires for both new contacts and updates to existing contacts because most providers
+        report both as updates.
+    contact_deleted:
+      name: contact.deleted
+      title: contact.deleted
+      summary: Sent when a user deletes a contact.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: contact.deleted
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-contact-deleted.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/contacts/contact-deleted/
+      tags:
+      - name: Contacts
+      description: The deleted notification typically contains only the contact ID, grant_id, and object type.
+      examples:
+      - name: contact_deleted
+        payload:
+          specversion: '1.0'
+          type: contact.deleted
+          source: /google/contacts/incremental
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              grant_id: <NYLAS_GRANT_ID>
+              id: <CONTACT_ID>
+              object: contact
+    booking_created:
+      name: booking.created
+      title: booking.created
+      summary: Sent when a guest creates a booking.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: booking.created
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-booking-created.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/scheduler/booking-created/
+      tags:
+      - name: Scheduler
+      examples:
+      - name: booking_created
+        payload:
+          specversion: '1.0'
+          type: booking.created
+          source: /nylas/passthru
+          id: <WEBHOOK_ID>
+          time: 1725895310
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              booking_id: <BOOKING_ID>
+              booking_ref: <BOOKING_REFERENCE>
+              configuration_id: <CONFIGURATION_ID>
+              object: booking
+              booking_info:
+                event_id: <EVENT_ID>
+                start_time: 1719842400
+                end_time: 1719846000
+                participants:
+                - email: leyah@example.com
+                  name: Leyah Miller
+                - email: nyla@example.com
+                  name: Nyla
+                additional_fields:
+                  phone: +1-415-555-0137
+                  company: Nylas Inc.
+                hide_cancellation_options: false
+                hide_rescheduling_options: false
+                participant_rescheduling_url: https://example.com/reschedule/<BOOKING_REFERENCE>
+                participant_cancellation_url: https://example.com/cancel/<BOOKING_REFERENCE>
+                host_language: en
+                guest_language: en
+                title: Project sync with Leyah
+                duration: 60
+                location: https://meet.google.com/abc-defg-hij
+                organizer_timezone: America/Toronto
+                guest_timezone: America/Toronto
+                is_group_event: false
+                organizer_calendar_id: primary
+                event_description: Discuss Q3 roadmap and next steps
+                event_html_link: https://calendar.google.com/calendar/event?eid=abc123
+                ical_uid: 040000008200E00074C5B7101A82E0080000000000000000000000000000000000
+                host_confirmation_url: https://example.com/confirm/<BOOKING_REFERENCE>
+    booking_pending:
+      name: booking.pending
+      title: booking.pending
+      summary: Sent when a guest schedules a pending booking that requires confirmation.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: booking.pending
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-booking-pending.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/scheduler/booking-pending/
+      tags:
+      - name: Scheduler
+      examples:
+      - name: booking_pending
+        payload:
+          specversion: '1.0'
+          type: booking.pending
+          source: /nylas/passthru
+          id: <WEBHOOK_ID>
+          time: 1725895310
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              configuration_id: <CONFIGURATION_ID>
+              booking_id: <BOOKING_ID>
+              booking_ref: <BOOKING_REFERENCE>
+              booking_type: organizer-confirmation
+              booking_info:
+                event_id: <EVENT_ID>
+                start_time: 1719842400
+                end_time: 1719846000
+                participants:
+                - email: john.doe@example.com
+                  name: John Doe
+                - email: jane.smith@example.com
+                  name: Jane Smith
+                additional_fields:
+                  phone: +1-415-555-0199
+                  company: Acme Corp
+                hide_cancellation_options: false
+                hide_rescheduling_options: false
+                participant_rescheduling_url: https://example.com/reschedule/<BOOKING_REFERENCE>
+                participant_cancellation_url: https://example.com/cancel/<BOOKING_REFERENCE>
+                host_language: en
+                guest_language: en
+                title: '[PENDING] Project sync'
+                duration: 60
+                location: https://meet.google.com/abc-defg-hij
+                organizer_timezone: America/New_York
+                guest_timezone: America/New_York
+                is_group_event: false
+                organizer_calendar_id: primary
+                event_description: Let's discuss the project details
+                event_html_link: https://calendar.google.com/event?eid=abc123
+                ical_uid: 040000008200E00074C5B7101A82E0080000000000000000000000000000000000
+                host_confirmation_url: https://example.com/confirm/<BOOKING_REFERENCE>
+    booking_rescheduled:
+      name: booking.rescheduled
+      title: booking.rescheduled
+      summary: Sent when a guest reschedules a booking.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: booking.rescheduled
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-booking-rescheduled.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/scheduler/booking-rescheduled/
+      tags:
+      - name: Scheduler
+      examples:
+      - name: booking_rescheduled
+        payload:
+          specversion: '1.0'
+          type: booking.rescheduled
+          source: /nylas/passthru
+          id: <WEBHOOK_ID>
+          time: 1725895310
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              booking_id: <BOOKING_ID>
+              booking_ref: <BOOKING_REFERENCE>
+              configuration_id: <CONFIGURATION_ID>
+              object: booking
+              booking_info:
+                event_id: <EVENT_ID>
+                start_time: 1719842400
+                end_time: 1719846000
+                old_start_time: 1719839400
+                old_end_time: 1719843000
+                participants:
+                - email: john@example.com
+                  name: John Doe
+                - email: jane@example.com
+                  name: Jane Smith
+                additional_fields:
+                  phone: 555-123-4567
+                  company: Acme Corp
+                hide_cancellation_options: false
+                hide_rescheduling_options: false
+                participant_rescheduling_url: https://example.com/reschedule/<BOOKING_REFERENCE>
+                participant_cancellation_url: https://example.com/cancel/<BOOKING_REFERENCE>
+                host_language: en
+                guest_language: en
+                title: Meeting with John Doe
+                duration: 60
+                location: https://meet.google.com/abc-defg-hij
+                organizer_timezone: America/New_York
+                guest_timezone: America/New_York
+                is_group_event: false
+                organizer_calendar_id: primary
+    booking_cancelled:
+      name: booking.cancelled
+      title: booking.cancelled
+      summary: Sent when a guest cancels a booking.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: booking.cancelled
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-booking-cancelled.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/scheduler/booking-cancelled/
+      tags:
+      - name: Scheduler
+      description: The `booking_ref` field is not included in cancellation payloads. Only `booking.created`, `booking.pending`,
+        and `booking.rescheduled` include `booking_ref`.
+      examples:
+      - name: booking_cancelled
+        payload:
+          specversion: '1.0'
+          type: booking.cancelled
+          source: /nylas/passthru
+          id: <WEBHOOK_ID>
+          time: 1725895310
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              configuration_id: <CONFIGURATION_ID>
+              booking_id: <BOOKING_ID>
+              booking_info:
+                event_id: <EVENT_ID>
+                start_time: 1719842400
+                end_time: 1719846000
+                cancellation_reason: Conflicting appointment
+                participants:
+                - email: john.doe@example.com
+                  name: John Doe
+                - email: jane.smith@example.com
+                  name: Jane Smith
+                additional_fields:
+                  phone: +1-415-555-0199
+                  company: Acme Corp
+                hide_cancellation_options: false
+                hide_rescheduling_options: false
+                participant_rescheduling_url: https://example.com/reschedule/cfg_8a3d2b-bk_2f6c9a1b7d
+                participant_cancellation_url: https://example.com/cancel/cfg_8a3d2b-bk_2f6c9a1b7d
+                host_language: en
+                guest_language: en
+                title: Project sync with John Doe
+                duration: 60
+                location: https://meet.google.com/abc-defg-hij
+                organizer_timezone: America/New_York
+                guest_timezone: America/New_York
+                is_group_event: false
+                organizer_calendar_id: primary
+                event_description: Weekly sync to review project milestones
+                event_html_link: https://calendar.google.com/calendar/event?eid=abc123
+                ical_uid: <ICAL_UID>
+    booking_reminder:
+      name: booking.reminder
+      title: booking.reminder
+      summary: Sent at the scheduled reminder time before a booking.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: booking.reminder
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-booking-reminder.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/scheduler/booking-reminder/
+      tags:
+      - name: Scheduler
+      examples:
+      - name: booking_reminder
+        payload:
+          specversion: '1.0'
+          type: booking.reminder
+          source: /nylas/passthru
+          id: <WEBHOOK_ID>
+          time: 1725895310
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              configuration_id: <CONFIGURATION_ID>
+              booking_id: <BOOKING_ID>
+              booking_info:
+                event_id: <EVENT_ID>
+                start_time: 1719842400
+                end_time: 1719846000
+                time_until_event: 3600
+                participants:
+                - email: john.doe@example.com
+                  name: John Doe
+                - email: jane.smith@example.com
+                  name: Jane Smith
+                additional_fields:
+                  phone: +1-415-555-0199
+                  company: Acme Corp
+                hide_cancellation_options: false
+                hide_rescheduling_options: false
+                participant_rescheduling_url: https://example.com/reschedule/cfg_8a3d2b-bk_2f6c9a1b7d
+                participant_cancellation_url: https://example.com/cancel/cfg_8a3d2b-bk_2f6c9a1b7d
+                host_language: en
+                guest_language: en
+                title: Project sync with John Doe
+                duration: 60
+                location: https://meet.google.com/abc-defg-hij
+                organizer_timezone: America/New_York
+                guest_timezone: America/New_York
+                organizer_email: organizer@example.com
+                provider: google
+                is_group_event: false
+                organizer_calendar_id: primary
+    notetaker_created:
+      name: notetaker.created
+      title: notetaker.created
+      summary: Sent when you create or schedule a Notetaker bot. For ad-hoc meetings, `join_time`, `event.ical_uid`,
+        and `event.event_id` are omitted.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: notetaker.created
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-notetaker-created.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/notetaker/notetaker-created/
+      tags:
+      - name: Notetaker
+      examples:
+      - name: notetaker_created
+        payload:
+          specversion: '1.0'
+          type: notetaker.created
+          source: /nylas/notetaker
+          id: <WEBHOOK_ID>
+          time: 1737500936
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              id: <NOTETAKER_ID>
+              grant_id: <NYLAS_GRANT_ID>
+              meeting_settings:
+                video_recording: true
+                audio_recording: true
+                transcription: true
+                summary: true
+                summary_settings:
+                  custom_instructions: Focus on action items related to the product launch.
+                action_items: true
+                action_items_settings:
+                  custom_instructions: Group action items by team member.
+                deduplication_settings:
+                  scope: workspace
+                  key: ''
+                  workspace_id: <WORKSPACE_ID>
+                leave_after_silence_seconds: 300
+                messages:
+                  on_join:
+                  - type: text
+                    content: 👋 Hey team! I'm your AI notetaker — here to capture the key points.
+                    send_after_ms: 5000
+                  on_participant_join:
+                  - type: text
+                    content: 👋 Welcome! Recording and transcription are running.
+                    debounce_ms: 3000
+              meeting_provider: Google Meet
+              meeting_link: https://meet.google.com/abc-defg-hij
+              join_time: 1737500936
+              event:
+                ical_uid: <ICAL_UID>
+                event_id: <EVENT_ID>
+                master_event_id: <EVENT_ID>
+              object: notetaker
+              status: scheduled
+              state: scheduled
+          webhook_delivery_attempt: 1
+    notetaker_updated:
+      name: notetaker.updated
+      title: notetaker.updated
+      summary: Sent when you update a scheduled Notetaker bot's settings or join time. Only fires while in `scheduled`
+        state.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: notetaker.updated
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-notetaker-updated.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/notetaker/notetaker-updated/
+      tags:
+      - name: Notetaker
+      examples:
+      - name: notetaker_updated
+        payload:
+          specversion: '1.0'
+          type: notetaker.updated
+          source: /nylas/notetaker
+          id: <WEBHOOK_ID>
+          time: 1737500936
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              id: <NOTETAKER_ID>
+              grant_id: <NYLAS_GRANT_ID>
+              meeting_settings:
+                video_recording: true
+                audio_recording: true
+                transcription: true
+                summary: false
+                action_items: false
+                leave_after_silence_seconds: 600
+                messages:
+                  on_join:
+                  - type: text
+                    content: 👋 Hey team! I'm your AI notetaker — here to capture the key points.
+                    send_after_ms: 5000
+                  on_participant_join: []
+              meeting_provider: Google Meet
+              meeting_link: https://meet.google.com/abc-defg-hij
+              join_time: 1737500936
+              event:
+                ical_uid: <ICAL_UID>
+                event_id: <EVENT_ID>
+                master_event_id: <MASTER_EVENT_ID>
+              object: notetaker
+              status: scheduled
+              state: scheduled
+          webhook_delivery_attempt: 1
+    notetaker_deleted:
+      name: notetaker.deleted
+      title: notetaker.deleted
+      summary: Sent when a Notetaker bot is deleted, its associated event is cancelled, or its settings are set
+        to null.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: notetaker.deleted
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-notetaker-deleted.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/notetaker/notetaker-deleted/
+      tags:
+      - name: Notetaker
+      examples:
+      - name: notetaker_deleted
+        payload:
+          specversion: '1.0'
+          type: notetaker.deleted
+          source: /nylas/notetaker
+          id: <WEBHOOK_ID>
+          time: 1737500936
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              id: <NOTETAKER_ID>
+              grant_id: <NYLAS_GRANT_ID>
+              object: notetaker
+              event:
+                ical_uid: <ICAL_UID>
+                event_id: <EVENT_ID>
+                master_event_id: <EVENT_ID>
+          webhook_delivery_attempt: 1
+    notetaker_meeting_state:
+      name: notetaker.meeting_state
+      title: notetaker.meeting_state
+      summary: Sent when the Notetaker bot transitions between meeting lifecycle states. The notification includes
+        both a `state` field (the lifecycle phase) and a `meeting_state` field (the specific reason for the transition).
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: notetaker.meeting_state
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-notetaker-meeting-state.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/notetaker/notetaker-meeting_state/
+      tags:
+      - name: Notetaker
+      examples:
+      - name: notetaker_meeting_state
+        payload:
+          specversion: '1.0'
+          type: notetaker.meeting_state
+          source: /nylas/notetaker
+          id: <WEBHOOK_ID>
+          time: 1737500936
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              id: <NOTETAKER_ID>
+              grant_id: <NYLAS_GRANT_ID>
+              meeting_settings:
+                video_recording: true
+                audio_recording: true
+                transcription: true
+                summary: true
+                summary_settings:
+                  custom_instructions: Focus on action items related to the product launch.
+                action_items: true
+                action_items_settings:
+                  custom_instructions: Group action items by team member.
+                leave_after_silence_seconds: 300
+                messages:
+                  on_join:
+                  - type: text
+                    content: 👋 Hey team! I'm your AI notetaker — here to capture the key points.
+                    send_after_ms: 5000
+                  on_participant_join:
+                  - type: text
+                    content: 👋 Welcome! Recording and transcription are running.
+                    debounce_ms: 3000
+              meeting_provider: Google Meet
+              meeting_link: https://meet.google.com/abc-defg-hij
+              join_time: 1737500936
+              event:
+                ical_uid: <ICAL_UID>
+                event_id: <EVENT_ID>
+                master_event_id: <MASTER_EVENT_ID>
+              object: notetaker
+              status: connecting
+              state: connecting
+              meeting_state: waiting_for_entry
+          webhook_delivery_attempt: 1
+    notetaker_media:
+      name: notetaker.media
+      title: notetaker.media
+      summary: 'Sent when a recording or transcription is processing, available, or deleted. When the [retention
+        window](/docs/v3/notetaker/retention-policies/) elapses, Nylas sends a final `notetaker.media` notification
+        with `status: media_deleted` and no `media` object.'
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: notetaker.media
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-notetaker-media.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/notetaker/notetaker-media/
+      tags:
+      - name: Notetaker
+      description: When `status` is `processing`, `media_deleted`, or `media_error`, the `media` object is omitted
+        from the payload. The `media_deleted` status indicates the retention window has elapsed and the files are
+        permanently gone — subsequent calls to the media endpoint return `410 Gone`.
+      examples:
+      - name: notetaker_media
+        payload:
+          specversion: '1.0'
+          type: notetaker.media
+          source: /nylas/notetaker
+          id: <WEBHOOK_ID>
+          time: 1737500936
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              id: <NOTETAKER_ID>
+              grant_id: <NYLAS_GRANT_ID>
+              object: notetaker
+              meeting_settings:
+                video_recording: true
+                audio_recording: true
+                transcription: true
+                summary: true
+                summary_settings:
+                  custom_instructions: Focus on action items related to the product launch.
+                action_items: true
+                action_items_settings:
+                  custom_instructions: Group action items by team member.
+                leave_after_silence_seconds: 300
+                messages:
+                  on_join:
+                  - type: text
+                    content: 👋 Hey team! I'm your AI notetaker — here to capture the key points.
+                    send_after_ms: 5000
+                  on_participant_join:
+                  - type: text
+                    content: 👋 Welcome! Recording and transcription are running.
+                    debounce_ms: 3000
+              meeting_provider: Google Meet
+              meeting_link: https://meet.google.com/abc-defg-hij
+              join_time: 1737500936
+              event:
+                ical_uid: <ICAL_UID>
+                event_id: <EVENT_ID>
+                master_event_id: <MASTER_EVENT_ID>
+              status: available
+              state: available
+              media:
+                recording: <SIGNED_URL>
+                recording_duration: '1800'
+                recording_file_format: mp4
+                thumbnail: <SIGNED_URL>
+                transcript: <SIGNED_URL>
+                summary: <SIGNED_URL>
+                action_items: <SIGNED_URL>
+          webhook_delivery_attempt: 1
+    message_intelligence_order:
+      name: message.intelligence.order
+      title: message.intelligence.order
+      summary: Sent when a user receives a message with e-commerce order information.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.intelligence.order
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-intelligence-order.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/extractai/message-intelligence-order/
+      tags:
+      - name: ExtractAI
+      examples:
+      - name: message_intelligence_order
+        payload:
+          specversion: '1.0'
+          type: message.intelligence.order
+          source: /google/emails/historic
+          id: <WEBHOOK_ID>
+          time: 1716913463
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              confidence_score: 1
+              email_category: order_in_transit
+              email_timestamp: 1632877388
+              error: null
+              fetched_email_id: 18f9d4c513cbd00d
+              grant_id: <NYLAS_GRANT_ID>
+              merchant:
+                domain: example.com
+                name: Nyla's Natural Bath Products
+              metadata:
+                language: en
+                market: US
+                sender_domain: store.example.com
+              object: message
+              order_status: order_in_transit
+              orders:
+              - coupon: null
+                currency: USD
+                discount: null
+                gift_card: null
+                line_items:
+                - color: null
+                  name: So Sensitive Soap - Unscented Soap Bar For Sensitive Skin - 4 oz.
+                  product_id: null
+                  product_image_uri: https://imgcdn.example.com/img/1925bf51-82a3-49be-bfdb-01e0633195f8.jpeg
+                  quantity: 1
+                  size: null
+                  unit_price: 197
+                  url: null
+                order_date: '1632726000'
+                order_number: <MERCHANT_ORDER_NUMBER>
+                shipping_total: null
+                total_amount: 812
+                total_tax_amount: 16
+              status: SUCCESS
+    message_intelligence_tracking:
+      name: message.intelligence.tracking
+      title: message.intelligence.tracking
+      summary: Sent when a user receives a message with tracking information for an e-commerce order.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.intelligence.tracking
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-intelligence-tracking.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/extractai/message-intelligence-tracking/
+      tags:
+      - name: ExtractAI
+      examples:
+      - name: message_intelligence_tracking
+        payload:
+          specversion: '1.0'
+          type: message.intelligence.tracking
+          source: /google/emails/historic
+          id: <WEBHOOK_ID>
+          time: 1716558937
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              confidence_score: 1
+              email_category: order_in_transit
+              email_timestamp: 1714136753
+              error: null
+              fetched_email_id: 18f1a83273ee32e9
+              grant_id: <NYLAS_GRANT_ID>
+              merchant:
+                domain: example.com
+                name: null
+              metadata:
+                language: en
+                market: US
+                sender_domain: example.com
+              object: message
+              order_status: order_in_transit
+              shippings:
+              - carrier: Nyla Global Express Inc.
+                decoded_link: null
+                order_number: <CARRIER_ORDER_NUMBER>
+                tracking_link: <CARRIER_TRACKING_LINK>
+                tracking_number: <CARRIER_TRACKING_NUMBERx>
+              status: SUCCESS
+    message_intelligence_return:
+      name: message.intelligence.return
+      title: message.intelligence.return
+      summary: Sent when a user receives a message with return information for an e-commerce order.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.intelligence.return
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-intelligence-return.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/extractai/message-intelligence-return/
+      tags:
+      - name: ExtractAI
+      description: This trigger may not yet fire for all accounts. If you need return tracking, verify availability
+        with your Nylas account team.
+      examples:
+      - name: message_intelligence_return
+        payload:
+          specversion: '1.0'
+          type: message.intelligence.return
+          source: /google/emails/incremental
+          id: <WEBHOOK_ID>
+          time: 1734370841
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              confidence_score: 1
+              email_category: other
+              email_timestamp: 1734370631
+              fetched_email_id: <MESSAGE_ID>
+              grant_id: <NYLAS_GRANT_ID>
+              merchant:
+                domain: example.com
+                name: Nyla's Natural Bath Products
+              metadata:
+                language: en
+                market: US
+                sender_domain: example.com
+              object: message
+              order_status: other
+              returns:
+              - order_number: null
+                refund_total: null
+                returns_date: 1734370631
+              status: SUCCESS
+    message_intelligence_travel:
+      name: message.intelligence.travel
+      title: message.intelligence.travel
+      summary: Sent when a user receives a message with travel booking information such as flights, hotels, or car
+        rentals.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.intelligence.travel
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-intelligence-travel.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/extractai/message-intelligence-travel/
+      tags:
+      - name: ExtractAI
+      description: This trigger is subscribable but the payload schema is not yet finalized. Travel-specific fields
+        (flight details, hotel bookings, car rental information) are not yet included in the documented schema.
+        Contact your Nylas account team for the latest payload structure.
+      examples:
+      - name: message_intelligence_travel
+        payload:
+          specversion: '1.0'
+          type: message.intelligence.travel
+          source: /google/emails/historic
+          id: <WEBHOOK_ID>
+          time: 1716913463
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              confidence_score: 1
+              email_category: travel_booking
+              email_timestamp: 1632877388
+              fetched_email_id: <PROVIDER_MESSAGE_ID>
+              grant_id: <NYLAS_GRANT_ID>
+              object: message
+              status: SUCCESS
+    message_transactional_bounced:
+      name: message.transactional.bounced
+      title: message.transactional.bounced
+      summary: Sent when a transactional email was not delivered due to a hard bounce.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.transactional.bounced
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-transactional-bounced.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/transactional-email/message-transactional-bounced/
+      tags:
+      - name: Transactional Email
+      examples:
+      - name: message_transactional_bounced
+        payload:
+          specversion: '1.0'
+          type: message.transactional.bounced
+          source: /nylas/send
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              message:
+                id: <MESSAGE_ID>
+                subject: Your order has shipped
+                from: notifications@example.com
+                to:
+                - jordan.taylor@example.com
+                cc:
+                - sam.lee@example.com
+                bcc:
+                - alex.johnson@example.com
+                sent_at: 1234567890
+                metadata:
+                  campaign: welcome-email
+              bounce:
+                bounced_at: 1234567890
+                type: MailboxFull
+                recipients:
+                - email: john@example.com
+                - email: jane@example.com
+                  diagnostic_code: smtp; 550 user unknown
+    message_transactional_complaint:
+      name: message.transactional.complaint
+      title: message.transactional.complaint
+      summary: Sent when a transactional email was delivered but the recipient marked it as spam.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.transactional.complaint
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-transactional-complaint.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/transactional-email/message-transactional-complaint/
+      tags:
+      - name: Transactional Email
+      examples:
+      - name: message_transactional_complaint
+        payload:
+          specversion: '1.0'
+          type: message.transactional.complaint
+          source: /nylas/send
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              message:
+                id: <MESSAGE_ID>
+                subject: Your order has shipped
+                from: notifications@example.com
+                to:
+                - jordan.taylor@example.com
+                cc:
+                - sam.lee@example.com
+                bcc:
+                - alex.johnson@example.com
+                sent_at: 1234567890
+                metadata:
+                  campaign: welcome-email
+              complaint:
+                reported_at: 1234567890
+                type: abuse
+                complained_recipients:
+                - jordan.taylor@example.com
+    message_transactional_delivered:
+      name: message.transactional.delivered
+      title: message.transactional.delivered
+      summary: Sent when a transactional email was successfully delivered to the recipient's mail server.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.transactional.delivered
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-transactional-delivered.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/transactional-email/message-transactional-delivered/
+      tags:
+      - name: Transactional Email
+      examples:
+      - name: message_transactional_delivered
+        payload:
+          specversion: '1.0'
+          type: message.transactional.delivered
+          source: /nylas/send
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              message:
+                id: <MESSAGE_ID>
+                subject: Your order has shipped
+                from: notifications@example.com
+                to:
+                - jordan.taylor@example.com
+                cc:
+                - sam.lee@example.com
+                bcc:
+                - alex.johnson@example.com
+                sent_at: 1234567890
+                metadata:
+                  campaign: welcome-email
+              delivered:
+                delivered_at: 1234567890
+                recipients:
+                - jordan.taylor@example.com
+    message_transactional_rejected:
+      name: message.transactional.rejected
+      title: message.transactional.rejected
+      summary: Sent when a transactional email was rejected because one or more attachments contained a virus.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.transactional.rejected
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-transactional-rejected.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/transactional-email/message-transactional-rejected/
+      tags:
+      - name: Transactional Email
+      examples:
+      - name: message_transactional_rejected
+        payload:
+          specversion: '1.0'
+          type: message.transactional.rejected
+          source: /nylas/send
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            object:
+              message:
+                id: <MESSAGE_ID>
+                subject: Your order has shipped
+                from: notifications@example.com
+                to:
+                - jordan.taylor@example.com
+                cc:
+                - sam.lee@example.com
+                bcc:
+                - alex.johnson@example.com
+                sent_at: 1234567890
+                metadata:
+                  campaign: welcome-email
+              rejected_at: 1234567890
+    message_bounced:
+      name: message.bounced
+      title: message.bounced
+      summary: Sent when an email was not delivered due to a hard bounce.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.bounced
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-bounced.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/agent-accounts/message-bounced/
+      tags:
+      - name: Agent Accounts
+      description: 'This notification fires only for Agent Account grants (`provider: "nylas"`). For connected grants
+        on other email providers, watch [`message.bounce_detected`](/docs/reference/notifications/messages/message-bounce_detected/)
+        instead.'
+      examples:
+      - name: message_bounced
+        payload:
+          specversion: '1.0'
+          type: message.bounced
+          source: /nylas/send
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              message:
+                id: <MESSAGE_ID>
+                subject: Your order has shipped
+                from: notifications@example.com
+                to:
+                - jordan.taylor@example.com
+                cc:
+                - sam.lee@example.com
+                bcc:
+                - alex.johnson@example.com
+                sent_at: 1234567890
+                metadata:
+                  campaign: welcome-email
+              bounce:
+                bounced_at: 1234567890
+                type: MailboxFull
+                recipients:
+                - email: john@example.com
+                - email: jane@example.com
+                  diagnostic_code: smtp; 550 user unknown
+    message_complaint:
+      name: message.complaint
+      title: message.complaint
+      summary: Sent when an email was delivered but the recipient marked it as spam.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.complaint
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-complaint.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/agent-accounts/message-complaint/
+      tags:
+      - name: Agent Accounts
+      description: 'This notification fires only for Agent Account grants (`provider: "nylas"`). Connected grants
+        on other email providers do not emit it.'
+      examples:
+      - name: message_complaint
+        payload:
+          specversion: '1.0'
+          type: message.complaint
+          source: /nylas/send
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              message:
+                id: <MESSAGE_ID>
+                subject: Your order has shipped
+                from: notifications@example.com
+                to:
+                - jordan.taylor@example.com
+                cc:
+                - sam.lee@example.com
+                bcc:
+                - alex.johnson@example.com
+                sent_at: 1234567890
+                metadata:
+                  campaign: welcome-email
+              complaint:
+                reported_at: 1234567890
+                type: abuse
+                complained_recipients:
+                - jordan.taylor@example.com
+    message_delivered:
+      name: message.delivered
+      title: message.delivered
+      summary: Sent when an email was successfully delivered to the recipient's mail server.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.delivered
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-delivered.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/agent-accounts/message-delivered/
+      tags:
+      - name: Agent Accounts
+      description: 'This notification fires only for Agent Account grants (`provider: "nylas"`). Connected grants
+        on other email providers do not emit it.'
+      examples:
+      - name: message_delivered
+        payload:
+          specversion: '1.0'
+          type: message.delivered
+          source: /nylas/send
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              message:
+                id: <MESSAGE_ID>
+                subject: Your order has shipped
+                from: notifications@example.com
+                to:
+                - jordan.taylor@example.com
+                cc:
+                - sam.lee@example.com
+                bcc:
+                - alex.johnson@example.com
+                sent_at: 1234567890
+                metadata:
+                  campaign: welcome-email
+              delivered:
+                delivered_at: 1234567890
+                recipients:
+                - jordan.taylor@example.com
+    message_rejected:
+      name: message.rejected
+      title: message.rejected
+      summary: Sent when an email was rejected because one or more attachments contained a virus.
+      contentType: application/json
+      payload:
+        allOf:
+        - $ref: '#/components/schemas/NotificationEnvelope'
+        - type: object
+          properties:
+            type:
+              const: message.rejected
+            data:
+              type: object
+              properties:
+                object:
+                  $ref: ../json-schema/nylas-message-rejected.schema.json
+      externalDocs:
+        url: https://developer.nylas.com/docs/reference/notifications/agent-accounts/message-rejected/
+      tags:
+      - name: Agent Accounts
+      description: 'This notification fires only for Agent Account grants (`provider: "nylas"`). Connected grants
+        on other email providers do not emit it.'
+      examples:
+      - name: message_rejected
+        payload:
+          specversion: '1.0'
+          type: message.rejected
+          source: /nylas/send
+          id: <WEBHOOK_ID>
+          time: 1723821985
+          webhook_delivery_attempt: 1
+          data:
+            application_id: <NYLAS_APPLICATION_ID>
+            grant_id: <NYLAS_GRANT_ID>
+            object:
+              message:
+                id: <MESSAGE_ID>
+                subject: Your order has shipped
+                from: notifications@example.com
+                to:
+                - jordan.taylor@example.com
+                cc:
+                - sam.lee@example.com
+                bcc:
+                - alex.johnson@example.com
+                sent_at: 1234567890
+                metadata:
+                  campaign: welcome-email
+              rejected_at: 1234567890
+  securitySchemes:
+    nylasWebhookSignature:
+      type: httpApiKey
+      name: X-Nylas-Signature
+      in: header
+      description: Hex-encoded HMAC-SHA256 of the exact raw request body (the compressed bytes when compressed delivery
+        is on), keyed with the endpoint's `webhook_secret`, which Nylas generates when the endpoint is verified.
+        Recompute and compare before trusting a notification.

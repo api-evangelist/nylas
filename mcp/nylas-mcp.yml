@@ -1,18 +1,21 @@
-generated: '2026-08-20'
-method: provider-published
+generated: '2026-09-28'
+method: authored
+publisher: Nylas
 authored_by: Nylas
 status: published
 source: https://developer.nylas.com/docs/dev-guide/mcp/
 server_card: https://developer.nylas.com/.well-known/mcp/server-card.json
 description: >-
   Nylas operates an official remote MCP server fronting the Nylas v3 email,
-  calendar and contacts APIs, deployed per region at https://mcp.us.nylas.com
+  calendar, contacts and Notetaker APIs, deployed per region at https://mcp.us.nylas.com
   and https://mcp.eu.nylas.com. Transport is streamable HTTP. Authentication is
   a Nylas API key presented as a Bearer token, the same key used for direct REST
   calls, so no separate OAuth client registration is required. Nylas publishes a
   server card at /.well-known/mcp/server-card.json on its developer host and
-  advertises it from a Link header on every page. Tool list captured verbatim
-  from that server card.
+  advertises it from a Link header on every page. The tool list below is
+  transcribed from the "Available tools" table on the Nylas MCP documentation
+  page, which documents 38 tools; the live server card lists only 17 (see
+  note).
 server:
   name: nylas
   transport: streamable-http
@@ -20,7 +23,9 @@ server:
   auth: bearer
   auth_header: Authorization
   auth_scheme: Bearer
-  credential_source: https://dashboard-v3.nylas.com/
+  credential_source: https://dashboard.nylas.com/
+  timeout_seconds: 90
+  stateless: true
   regions:
     - region: us
       url: https://mcp.us.nylas.com
@@ -34,56 +39,119 @@ clients:
   - VS Code
   - Codex CLI
 tools:
-  - name: list_messages
-    description: List and search email messages.
-  - name: list_threads
-    description: List and search email threads.
-  - name: create_draft
-    description: Create a draft email.
-  - name: update_draft
-    description: Edit an existing draft.
+  - name: availability
+    description: Find available meeting times across one or more Nylas grants.
   - name: confirm_send_draft
-    description: Required before sending a draft (safety confirmation).
-  - name: send_draft
-    description: Send a previously created draft.
+    description: Generate the confirmation hash required before calling send_draft.
   - name: confirm_send_message
-    description: Required before sending a message (safety confirmation).
-  - name: send_message
-    description: Send an email directly.
-  - name: get_folder_by_id
-    description: Get folder details.
-  - name: list_calendars
-    description: List all calendars.
-  - name: list_events
-    description: List events in a calendar.
+    description: Generate the confirmation hash required before calling send_message.
+  - name: create_draft
+    description: Create a draft email using only the fields the user provided.
   - name: create_event
     description: Create a calendar event.
-  - name: update_event
-    description: Update an existing event.
-  - name: availability
-    description: Check availability across users.
+  - name: current_time
+    description: Get the current epoch time and ISO 8601 date for a timezone.
+  - name: datetime_to_epoch
+    description: Convert a date, time, and timezone to a Unix timestamp.
+  - name: delete_draft
+    description: Delete a draft email.
+  - name: delete_event
+    description: Delete a calendar event.
+  - name: download_attachment
+    description: Download an email message attachment with a maximum size of 10 MiB.
+  - name: epoch_to_datetime
+    description: Convert Unix timestamps to human-readable date and time values.
+  - name: get_contact
+    description: Get a single contact by ID.
+  - name: get_event
+    description: Get a single event by ID.
+  - name: get_folder_by_id
+    description: Get folder or label details by ID.
   - name: get_grant
     description: Look up a grant by email address.
-  - name: current_time
-    description: Get current Unix timestamp.
-  - name: epoch_to_datetime
-    description: Convert Unix timestamp to human-readable date.
+  - name: get_message
+    description: Get a single email message by ID, including full body content.
+  - name: get_notetaker
+    description: Get details for one grant-scoped Notetaker bot.
+  - name: get_notetaker_media
+    description: Get fresh media links for one grant-scoped Notetaker bot.
+  - name: get_notetaker_transcript
+    description: Download the transcript content for one grant-scoped Notetaker bot, up to 10 MiB.
+  - name: get_search_syntax
+    description: Get provider-specific native search syntax for messages and threads.
+  - name: get_standalone_notetaker
+    description: Get details for one standalone Notetaker bot.
+  - name: get_standalone_notetaker_media
+    description: Get fresh media links for one standalone Notetaker bot.
+  - name: list_calendars
+    description: List all calendars for a connected account.
+  - name: list_contacts
+    description: List contacts, with optional filters for email, phone number, source, or group.
+  - name: list_events
+    description: List events in a calendar.
+  - name: list_folders
+    description: List email folders or labels.
+  - name: list_messages
+    description: List and search email messages.
+  - name: list_notetakers
+    description: List grant-scoped Notetaker bots.
+  - name: list_standalone_notetakers
+    description: List standalone Notetaker bots for the application.
+  - name: list_threads
+    description: List and search email threads.
+  - name: schedule_notetaker
+    description: Schedule a grant-scoped Notetaker bot for a future meeting.
+  - name: schedule_standalone_notetaker
+    description: Schedule a standalone Notetaker bot for a future meeting.
+  - name: send_draft
+    description: Send a previously created draft.
+  - name: send_message
+    description: Send an email directly.
+  - name: send_notetaker
+    description: Send a grant-scoped Notetaker bot to an active meeting.
+  - name: send_standalone_notetaker
+    description: Send a standalone Notetaker bot to an active meeting.
+  - name: update_draft
+    description: Update an existing draft.
+  - name: update_event
+    description: Update an existing event.
 safety:
   requires_confirmation:
     - send_message
     - send_draft
+  irreversible:
+    - delete_draft
+    - delete_event
   notes: >-
     send_message and send_draft each require a preceding call to
-    confirm_send_message or confirm_send_draft. The two-step flow prevents an
-    agent from sending email without an explicit confirmation step.
+    confirm_send_message or confirm_send_draft, which generate the confirmation
+    hash the send tools need. The two-step flow prevents an agent from sending
+    email without an explicit confirmation step. delete_draft and delete_event
+    are irreversible, and the documentation says to confirm with the user
+    before calling them.
+timeouts: >-
+  The MCP server enforces a 90-second timeout per request. Connections are
+  stateless, so each request is independent; clients should handle timeouts
+  gracefully and retry as needed.
+note: >-
+  Upstream discrepancy, checked 2026-09-28: the documentation page at
+  https://developer.nylas.com/docs/dev-guide/mcp/ lists 38 tools, including
+  Notetaker, contacts, folder, attachment and delete tools, but the live server
+  card at https://developer.nylas.com/.well-known/mcp/server-card.json still
+  lists the original 17 tools and describes the server as email, calendar and
+  contacts only (no Notetaker). The server card needs updating by Nylas to
+  match the documented tool set. credential_source above is taken from the
+  server card's authentication.obtainedFrom value.
 deployment:
   mode: remote
   endpoint: https://mcp.us.nylas.com
   verified: probed
   probe: gated
   probe_detail: >-
-    All paths answer HTTP 401 application/json without a Bearer token, including
-    /.well-known/*. The endpoint is live and auth-gated; it does not serve an
+    On both https://mcp.us.nylas.com and https://mcp.eu.nylas.com, all probed
+    paths (/, /.well-known/oauth-protected-resource,
+    /.well-known/mcp/server-card.json) answer HTTP 401 application/json without
+    a Bearer token. The endpoints are live and auth-gated; they do not serve an
     anonymous discovery document.
-  checked: '2026-08-20'
+  checked: '2026-09-28'
   source: provider submission

@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-bounce-detected.schema.json",
+  "title": "Nylas message.bounce_detected notification object",
+  "description": "The `data` object includes `grant_id` at the top level alongside `object`.",
+  "type": "object",
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID associated with the bounced message."
+    },
+    "object": {
+      "type": "object",
+      "description": "Bounce details.",
+      "properties": {
+        "bounce_reason": {
+          "type": "string",
+          "description": "Human-readable reason for the bounce."
+        },
+        "bounce_date": {
+          "type": "string",
+          "description": "Date/time string when the bounce occurred."
+        },
+        "bounced_addresses": {
+          "type": "string",
+          "description": "The email address that bounced."
+        },
+        "type": {
+          "type": "string",
+          "description": "Bounce type (e.g. `mailbox_unavailable`)."
+        },
+        "code": {
+          "type": "string",
+          "description": "SMTP bounce status code (e.g. `\"550\"`). Note: this is a string, not an integer."
+        },
+        "grant_id": {
+          "type": "string",
+          "description": "The grant ID associated with the bounce."
+        },
+        "origin": {
+          "type": "object",
+          "description": "The original message that triggered the bounce.",
+          "properties": {
+            "to": {
+              "type": "array",
+              "description": "Original recipients.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "from": {
+              "type": "string",
+              "description": "Original sender email address."
+            },
+            "cc": {
+              "type": "array",
+              "description": "Original CC recipients.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "bcc": {
+              "type": "array",
+              "description": "Original BCC recipients.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "subject": {
+              "type": "string",
+              "description": "Subject of the original message."
+            },
+            "mime_id": {
+              "type": "string",
+              "description": "MIME message ID from the provider."
+            },
+            "id": {
+              "type": "string",
+              "description": "Provider message ID of the original message."
+            },
+            "original_send_at": {
+              "type": "string",
+              "description": "Date/time string when the original message was sent."
+            }
+          }
+        },
+        "message_id": {
+          "type": "string",
+          "description": "The Nylas message ID of the original message."
+        }
+      }
+    }
+  },
+  "x-nylas-trigger": "message.bounce_detected",
+  "x-nylas-category": "Messages",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/messages/message-bounce_detected/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "bounce_reason": "An example message describing the reason for the bounce.",
+      "bounce_date": "Wed, 25 Jan 2023 10:18:39 -0800",
+      "bounced_addresses": "this.address.bounced@example.com",
+      "type": "mailbox_unavailable",
+      "code": "550",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "origin": {
+        "to": [
+          "jdoe@example.com"
+        ],
+        "from": "sender@example.com",
+        "cc": [
+          "sam.lee@example.com"
+        ],
+        "bcc": [
+          "alex.johnson@example.com"
+        ],
+        "subject": "example-subject",
+        "mime_id": "SJ0PR16MB40611C92DE872E6FC5916859D4603@SJ0PR16MB4062.namprd16.prod.outlook.com",
+        "id": "AAkALgAAAAAAHYQDEapmEc2byACqAC-EWg0AVKoCBvx5pk2OWnx9GWNeIAABogwSJQAB",
+        "original_send_at": "Mon, 16 Sep 2024 16:15:49 +0000"
+      }
+    }
+  ]
+}

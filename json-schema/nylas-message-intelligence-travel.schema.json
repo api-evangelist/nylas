@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-intelligence-travel.schema.json",
+  "title": "Nylas message.intelligence.travel notification object",
+  "description": "Sent when a user receives a message with travel booking information such as flights, hotels, or car rentals. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "confidence_score": {
+      "type": "number",
+      "description": "Confidence score for the extraction (0 to 1)."
+    },
+    "email_category": {
+      "type": "string",
+      "description": "Category of the detected email."
+    },
+    "email_timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp of the original email."
+    },
+    "fetched_email_id": {
+      "type": "string",
+      "description": "The provider message ID."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns this message."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Extraction status.",
+      "enum": [
+        "SUCCESS",
+        "FAILED"
+      ]
+    }
+  },
+  "required": [
+    "grant_id",
+    "object",
+    "status"
+  ],
+  "x-nylas-trigger": "message.intelligence.travel",
+  "x-nylas-category": "ExtractAI",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/extractai/message-intelligence-travel/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "confidence_score": 1,
+      "email_category": "travel_booking",
+      "email_timestamp": 1632877388,
+      "fetched_email_id": "<PROVIDER_MESSAGE_ID>",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "object": "message",
+      "status": "SUCCESS"
+    }
+  ]
+}

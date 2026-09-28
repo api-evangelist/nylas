@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-folder-updated.schema.json",
+  "title": "Nylas folder.updated notification object",
+  "description": "Sent when a user updates a folder. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [
+    "id",
+    "name"
+  ],
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the grant that owns this folder."
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the folder."
+    },
+    "name": {
+      "type": "string",
+      "description": "Updated display name of the folder."
+    },
+    "object": {
+      "type": "string",
+      "description": "Object type identifier.",
+      "enum": [
+        "folder"
+      ]
+    },
+    "system_folder": {
+      "type": "boolean",
+      "description": "Whether this is a provider system folder (e.g. Inbox, Sent, Trash)."
+    }
+  },
+  "x-nylas-trigger": "folder.updated",
+  "x-nylas-category": "Folders and Labels",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/folders/folder-updated/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "id": "<FOLDER_ID>",
+      "name": "My updated test folder",
+      "object": "folder",
+      "system_folder": false
+    }
+  ]
+}

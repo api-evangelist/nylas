@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-grant-deleted.schema.json",
+  "title": "Nylas grant.deleted notification object",
+  "description": "Sent when a grant is deleted because of a Delete Grant request. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [],
+  "properties": {
+    "code": {
+      "type": "integer",
+      "description": "Nylas notification code."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the deleted grant."
+    },
+    "integration_id": {
+      "type": "string",
+      "description": "Identifier for the connector (integration) associated with this grant."
+    },
+    "provider": {
+      "type": "string",
+      "description": "Email provider for this grant.",
+      "enum": [
+        "google",
+        "microsoft",
+        "imap",
+        "yahoo",
+        "icloud",
+        "ews",
+        "eas"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address associated with the deleted grant."
+    }
+  },
+  "x-nylas-trigger": "grant.deleted",
+  "x-nylas-category": "Grants",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/grants/grant-deleted/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "code": 25013,
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "integration_id": "<NYLAS_INTEGRATION_ID>",
+      "provider": "google",
+      "email": "user@example.com"
+    }
+  ]
+}

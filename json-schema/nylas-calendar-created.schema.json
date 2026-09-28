@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-calendar-created.schema.json",
+  "title": "Nylas calendar.created notification object",
+  "description": "Sent when a user creates a calendar. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [
+    "id",
+    "object"
+  ],
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the grant that owns this calendar."
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the calendar."
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the calendar."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Key-value pairs of custom metadata attached to the calendar.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "is_primary": {
+      "type": "boolean",
+      "description": "Whether this is the user's primary calendar."
+    },
+    "location": {
+      "type": "string",
+      "description": "Geographic location associated with the calendar."
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the calendar."
+    },
+    "object": {
+      "type": "string",
+      "description": "Object type identifier.",
+      "enum": [
+        "calendar"
+      ]
+    },
+    "read_only": {
+      "type": "boolean",
+      "description": "Whether the calendar is read-only for the authenticated user."
+    },
+    "timezone": {
+      "type": "string",
+      "description": "IANA timezone of the calendar (e.g. America/New_York)."
+    },
+    "is_owned_by_user": {
+      "type": "boolean",
+      "description": "Whether the authenticated user owns this calendar."
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email address of the account that owns the calendar. Microsoft grants only; omitted for other providers."
+    },
+    "hex_color": {
+      "type": "string",
+      "description": "Background color of the calendar in hex format. May be omitted if not set by the provider."
+    },
+    "hex_foreground_color": {
+      "type": "string",
+      "description": "Foreground (text) color of the calendar in hex format. May be omitted if not set by the provider."
+    }
+  },
+  "x-nylas-trigger": "calendar.created",
+  "x-nylas-category": "Calendar",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/calendar/calendar-created/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "description": "Personal calendar",
+      "id": "<CALENDAR_ID>",
+      "metadata": {
+        "key1": "all-meetings",
+        "key2": "on-site"
+      },
+      "is_primary": false,
+      "location": "New York",
+      "name": "Personal",
+      "object": "calendar",
+      "read_only": false,
+      "timezone": "America/New_York",
+      "is_owned_by_user": false
+    }
+  ]
+}

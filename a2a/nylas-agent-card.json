@@ -22,7 +22,7 @@
       "type": "http",
       "scheme": "bearer",
       "bearerFormat": "NYLAS_API_KEY",
-      "description": "A Nylas API key presented as a Bearer token. The same key used for direct REST calls. Generate one at https://dashboard-v3.nylas.com/."
+      "description": "A Nylas API key presented as a Bearer token. The same key used for direct REST calls. Generate one at https://dashboard.nylas.com/."
     }
   },
   "security": [{ "nylasApiKey": [] }],
@@ -99,9 +99,9 @@
     {
       "id": "api-contract",
       "name": "OpenAPI contract",
-      "description": "OpenAPI 3.1 description of the full Nylas v3 REST surface: 118 paths, 208 operations, 174 component schemas.",
+      "description": "OpenAPI 3.1 description of the full Nylas v3 REST surface: 118 paths, 208 operations, 174 component schemas. Served as JSON at /openapi.json and as YAML at /openapi.yaml.",
       "tags": ["contract", "openapi"],
-      "endpoint": "https://developer.nylas.com/_spec-files/nylas-api.yaml"
+      "endpoint": "https://developer.nylas.com/openapi.json"
     },
     {
       "id": "documentation",
@@ -122,6 +122,8 @@
     "note": "The interfaces above are Model Context Protocol and REST. Nylas does not currently operate an A2A JSON-RPC endpoint, so no A2A protocolVersion is declared. This card is published at the A2A well-known path as a machine-readable front door for agent discovery.",
     "apiCatalog": "https://developer.nylas.com/.well-known/api-catalog",
     "mcpServerCard": "https://developer.nylas.com/.well-known/mcp/server-card.json",
-    "regions": ["us", "eu"]
+    "regions": ["us", "eu"],
+    "openApiJson": "https://developer.nylas.com/openapi.json",
+    "openApiYaml": "https://developer.nylas.com/openapi.yaml"
   }
 }

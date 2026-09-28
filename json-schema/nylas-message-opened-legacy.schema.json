@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-opened-legacy.schema.json",
+  "title": "Nylas message.opened.legacy notification object",
+  "description": "Legacy format for message opened tracking notifications. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "The v3 grant ID."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "deltas": {
+      "type": "array",
+      "description": "Array of delta change objects in v2 format.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "integer",
+            "description": "Unix timestamp of the open event."
+          },
+          "object": {
+            "type": "string",
+            "description": "Always `metadata`."
+          },
+          "type": {
+            "type": "string",
+            "description": "The delta type, always `message.opened`."
+          },
+          "object_data": {
+            "type": "object",
+            "description": "The v2-format tracking data.",
+            "properties": {
+              "account_id": {
+                "type": "string",
+                "description": "The v2 account ID."
+              },
+              "id": {
+                "type": "string",
+                "description": "The v2 webhook ID."
+              },
+              "namespace_id": {
+                "type": "string",
+                "description": "The v2 namespace ID."
+              },
+              "object": {
+                "type": "string",
+                "description": "Always `metadata`."
+              },
+              "attributes": {
+                "description": "Legacy attributes field. Always `null`.",
+                "nullable": true
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Tracking metadata including open count and recents.",
+                "properties": {
+                  "count": {
+                    "type": "integer",
+                    "description": "Total number of opens."
+                  },
+                  "message_id": {
+                    "type": "string",
+                    "description": "The v2 message ID."
+                  },
+                  "payload": {
+                    "type": "string",
+                    "description": "Custom payload set when creating the tracking pixel."
+                  },
+                  "recents": {
+                    "type": "array",
+                    "description": "Recent open events.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Sequential open ID."
+                        },
+                        "ip": {
+                          "type": "string",
+                          "description": "IP address of the opener."
+                        },
+                        "timestamp": {
+                          "type": "integer",
+                          "description": "Unix timestamp of the open."
+                        },
+                        "user_agent": {
+                          "type": "string",
+                          "description": "User-Agent string."
+                        }
+                      }
+                    }
+                  },
+                  "timestamp": {
+                    "type": "integer",
+                    "description": "Unix timestamp of the first open."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "grant_id",
+    "object",
+    "deltas"
+  ],
+  "x-nylas-trigger": "message.opened.legacy",
+  "x-nylas-category": "Message Tracking",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/message-tracking/message-opened-legacy/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "deltas": [
+        {
+          "date": 1733261154,
+          "object": "metadata",
+          "object_data": {
+            "account_id": "<V2_NYLAS_ACCOUNT_ID>",
+            "id": "<V2_WEBHOOK_ID>",
+            "metadata": {
+              "count": 1,
+              "message_id": "<V2_MESSAGE_ID>",
+              "payload": "Hello world",
+              "recents": [
+                {
+                  "id": 0,
+                  "ip": "ip_address",
+                  "timestamp": 1733163186,
+                  "user_agent": "Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko Firefox/11.0 (via ggpht.com GoogleImageProxy)"
+                }
+              ],
+              "timestamp": 1733261154
+            },
+            "namespace_id": "<V2_NAMESPACE_ID>",
+            "object": "metadata"
+          },
+          "type": "message.opened"
+        }
+      ],
+      "grant_id": "<V3_NYLAS_GRANT_ID>",
+      "object": "message"
+    }
+  ]
+}

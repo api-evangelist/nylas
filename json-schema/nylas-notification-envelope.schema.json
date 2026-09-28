@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-notification-envelope.schema.json",
+  "title": "Nylas notification envelope",
+  "type": "object",
+  "description": "All Nylas webhook notifications use the [CloudEvents](https://cloudevents.io/) envelope format. The envelope fields are the same for every notification type \u2014 the `data.object` structure varies by trigger.",
+  "properties": {
+    "specversion": {
+      "type": "string",
+      "description": "CloudEvents specification version. Always `1.0`.",
+      "example": "1.0"
+    },
+    "type": {
+      "type": "string",
+      "description": "The notification trigger name (e.g. `grant.expired`, `message.created`). Matches the trigger you subscribed to when creating the webhook."
+    },
+    "source": {
+      "type": "string",
+      "description": "Origin of the event, generally in `/<provider>/<product>/<sync_type>` format. Common values include `/google/emails/realtime`, `/google/emails/historic`, `/google/emails/incremental`, `/microsoft/emails/realtime`, `/google/events/incremental`, `/google/contacts/incremental`, `/nylas/system` (grants), `/nylas/send` (message send), `/nylas/passthru` (scheduler), `/nylas/notetaker` (notetaker), and `/com/nylas/tracking` (message tracking)."
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique notification ID. Use this for deduplication \u2014 Nylas guarantees at-least-once delivery, so you may receive the same notification more than once."
+    },
+    "time": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) when the event occurred."
+    },
+    "webhook_delivery_attempt": {
+      "type": "integer",
+      "description": "Which delivery attempt this is. `1` on the first try, up to `3` if previous attempts failed.",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "data": {
+      "type": "object",
+      "description": "Container for the notification payload.",
+      "properties": {
+        "application_id": {
+          "type": "string",
+          "description": "Your Nylas application ID."
+        },
+        "object": {
+          "type": "object",
+          "description": "The affected resource. Structure varies by trigger type \u2014 see individual schemas below."
+        }
+      }
+    }
+  },
+  "required": [
+    "specversion",
+    "type",
+    "source",
+    "id",
+    "time",
+    "data"
+  ],
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  }
+}

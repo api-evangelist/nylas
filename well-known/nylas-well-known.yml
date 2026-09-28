@@ -1,10 +1,12 @@
-generated: '2026-08-20'
-method: provider-published
+generated: '2026-09-28'
+method: authored
+publisher: Nylas
 authored_by: Nylas
+source: https://developer.nylas.com/.well-known/api-catalog
 description: >-
   Results of probing the /.well-known/ discovery surface for the Nylas developer
   host and for every base host in apis.yml (baseURL) and the OpenAPI servers[]
-  (https://api.us.nylas.com, https://api.eu.nylas.com), plus the MCP host.
+  (https://api.us.nylas.com, https://api.eu.nylas.com), plus both MCP hosts.
   Status is the HTTP code observed at fetch time. The discovery surface is served
   from the developer host (developer.nylas.com), not from the API hosts: the API
   hosts are the callable surface and answer 404 for discovery paths by design.
@@ -24,11 +26,18 @@ link_header:
     - rel: agent-card
       href: /.well-known/agent-card.json
       type: application/json
+    - rel: service-doc
+      href: /docs/reference/api/
+    - rel: service-doc
+      href: /docs/reference/ui/
+    - rel: service-doc
+      href: /docs/reference/notifications/
+    - rel: service-desc
+      href: /openapi.json
+      type: application/json
     - rel: service-desc
       href: /_spec-files/nylas-api.yaml
       type: application/yaml
-    - rel: service-doc
-      href: /docs/reference/api/
     - rel: describedby
       href: /llms.txt
       type: text/plain
@@ -42,8 +51,9 @@ hosts:
         status: 200
         type: application/linkset+json
         note: >-
-          RFC 9727 linkset. Carries service-desc, service-doc and status links
-          for both the US and EU API base URLs.
+          RFC 9727 linkset. Carries service-desc (/openapi.json and
+          /openapi.yaml), service-doc and status links for both the US and EU
+          API base URLs.
       - path: /.well-known/mcp/server-card.json
         status: 200
         type: application/json
@@ -72,6 +82,25 @@ hosts:
         status: 404
       - path: /.well-known/oauth-protected-resource
         status: 404
+      - path: /openapi.json
+        status: 200
+        type: application/json; charset=utf-8
+        note: >-
+          OpenAPI 3.1 contract as JSON. Same document as
+          /_spec-files/nylas-api.yaml (120 paths, 213 operations).
+      - path: /openapi.yaml
+        status: 200
+        type: application/yaml; charset=utf-8
+        note: OpenAPI 3.1 contract as YAML. Same document as /_spec-files/nylas-api.yaml.
+      - path: /llms.txt
+        status: 200
+        type: text/plain; charset=utf-8
+      - path: /llms-full.txt
+        status: 200
+        type: text/plain; charset=utf-8
+        note: >-
+          Served as text/plain although the Link header advertises it as
+          text/markdown.
   - host: https://api.us.nylas.com
     documents:
       - path: /.well-known/api-catalog
@@ -105,11 +134,31 @@ hosts:
           Every path on the MCP host answers 401 without a Bearer token,
           including /.well-known/*. Auth is a Nylas API key, not OAuth, so there
           is no RFC 9728 protected-resource document to serve.
+      - path: /.well-known/mcp/server-card.json
+        status: 401
+        type: application/json
+        note: >-
+          The server card is served from the developer host, not the MCP host.
+  - host: https://mcp.eu.nylas.com
+    documents:
+      - path: /.well-known/oauth-protected-resource
+        status: 401
+        type: application/json
+        note: >-
+          Same behavior as the US MCP host: every probed path answers 401
+          without a Bearer token.
+      - path: /.well-known/mcp/server-card.json
+        status: 401
+        type: application/json
 robots:
   host: https://developer.nylas.com
   content_signal: search=yes, ai-input=yes, ai-train=yes
   note: >-
-    robots.txt carries a Content-Signal declaration and explicit Allow rules for
-    GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, Claude-Web, anthropic-ai and
-    Google-Extended.
-checked: '2026-08-20'
+    robots.txt carries a Content-Signal declaration under User-agent: * and
+    explicit Allow rules for GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot,
+    Claude-Web, anthropic-ai, Google-Extended, PerplexityBot, Perplexity-User,
+    Applebot-Extended, CCBot, Amazonbot and meta-externalagent. It disallows
+    /cdn-cgi/, declares the sitemap at
+    https://developer.nylas.com/sitemap-index.xml, and points in comments at
+    /llms.txt, /llms-full.txt and /openapi.json.
+checked: '2026-09-28'

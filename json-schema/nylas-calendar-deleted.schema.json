@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-calendar-deleted.schema.json",
+  "title": "Nylas calendar.deleted notification object",
+  "description": "Sent when a user deletes a calendar. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [
+    "id",
+    "object"
+  ],
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the grant that owned this calendar."
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the deleted calendar."
+    },
+    "is_primary": {
+      "type": "boolean",
+      "description": "Whether this was the user's primary calendar."
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the deleted calendar."
+    },
+    "object": {
+      "type": "string",
+      "description": "Object type identifier.",
+      "enum": [
+        "calendar"
+      ]
+    },
+    "read_only": {
+      "type": "boolean",
+      "description": "Whether the calendar was read-only for the authenticated user."
+    },
+    "timezone": {
+      "type": "string",
+      "description": "IANA timezone of the calendar."
+    },
+    "is_owned_by_user": {
+      "type": "boolean",
+      "description": "Whether the authenticated user owned this calendar."
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email address of the account that owned the calendar. Microsoft grants only; omitted for other providers."
+    },
+    "hex_color": {
+      "type": "string",
+      "description": "Background color of the calendar in hex format. May be omitted if not set by the provider."
+    },
+    "hex_foreground_color": {
+      "type": "string",
+      "description": "Foreground (text) color of the calendar in hex format. May be omitted if not set by the provider."
+    }
+  },
+  "x-nylas-trigger": "calendar.deleted",
+  "x-nylas-category": "Calendar",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/calendar/calendar-deleted/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "id": "calendar@group.calendar.google.com",
+      "is_primary": false,
+      "name": "Mock Calendar",
+      "object": "calendar",
+      "read_only": false,
+      "timezone": "America/Los_Angeles",
+      "is_owned_by_user": false
+    }
+  ]
+}

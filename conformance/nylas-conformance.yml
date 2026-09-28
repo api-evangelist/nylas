@@ -1,11 +1,13 @@
-generated: '2026-08-20'
-method: provider-published
+generated: '2026-09-28'
+method: authored
+publisher: Nylas
 authored_by: Nylas
-source: >-
+source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+source_note: >-
   Derived from the published contract at
   https://developer.nylas.com/_spec-files/nylas-api.yaml (securitySchemes,
   parameters, response schemas) and from live probes of the developer and API
-  hosts. Every claim below is checkable against one of those two.
+  hosts on 2026-09-28. Every claim below is checkable against one of those two.
 description: >-
   Standards conformance for the Nylas v3 platform. Recorded as measured, not as
   aspired to: several entries below are deliberately false and are listed so the
@@ -40,8 +42,8 @@ standards:
   - id: oauth-scopes
     conforms: true
     evidence: >-
-      Provider scopes are enumerated per operation via x-scopes on 90
-      operations, and documented at
+      Provider scopes are enumerated per operation via x-scopes on 112 of
+      213 operations, and documented at
       https://developer.nylas.com/docs/dev-guide/scopes/.
   - id: credentials-not-in-query
     conforms: true
@@ -51,9 +53,11 @@ standards:
   - id: openapi-3.1
     conforms: true
     evidence: >-
-      The published contract is OpenAPI 3.1.0: 118 paths, 208 operations, 174
+      The published contract is OpenAPI 3.1.0: 120 paths, 213 operations, 178
       component schemas, 100% of operations carrying a summary, description,
-      tag and unique operationId.
+      tag and unique operationId. The same contract is served as YAML at
+      /_spec-files/nylas-api.yaml and /openapi.yaml, and as JSON at
+      /openapi.json.
   - id: cursor-pagination
     conforms: true
     evidence: >-
@@ -64,8 +68,8 @@ standards:
     evidence: >-
       Idempotent send is implemented and documented at
       https://developer.nylas.com/docs/v3/email/idempotent-send/, but the
-      Idempotency-Key header is declared on only 2 of 95 mutating operations in
-      the contract (/v3/grants/{grant_id}/messages/send and
+      Idempotency-Key header is declared on only 2 of 133 mutating operations
+      (POST, PUT, PATCH and DELETE) in the contract (/v3/grants/{grant_id}/messages/send and
       /v3/domains/{domain_name}/messages/send). Declaring it across the
       remaining mutating operations is open work, not a capability gap.
   - id: webhook-signing
@@ -90,14 +94,18 @@ standards:
     conforms: true
     evidence: >-
       https://developer.nylas.com/.well-known/api-catalog returns 200
-      application/linkset+json, carrying service-desc, service-doc and status
-      links for both the US and EU base URLs.
+      application/linkset+json, carrying service-desc (/openapi.json and
+      /openapi.yaml), service-doc and status links for both the US and EU base
+      URLs.
   - id: rfc8288-web-linking
     conforms: true
     evidence: >-
       developer.nylas.com serves Link headers on every page with rel values
       api-catalog, mcp-server-card, agent-skills, agent-card, service-desc,
-      service-doc, describedby and alternate.
+      service-doc, describedby and alternate. service-desc is declared twice
+      (/openapi.json as application/json and /_spec-files/nylas-api.yaml as
+      application/yaml) and service-doc three times (/docs/reference/api/,
+      /docs/reference/ui/ and /docs/reference/notifications/).
   - id: model-context-protocol
     conforms: true
     evidence: >-
@@ -126,8 +134,9 @@ standards:
     conforms: false
     evidence: >-
       Errors do not use application/problem+json. Error responses reference
-      per-status schemas rather than one shared envelope, and only 49 of 208
-      operations document a 4xx response schema at all. Error codes are
+      per-status schemas rather than one shared envelope. All 213 operations
+      document a 4xx response schema, all as application/json (plus two
+      text/plain) rather than application/problem+json. Error codes are
       catalogued at https://developer.nylas.com/docs/api/errors/.
   - id: rate-limit-headers
     conforms: false

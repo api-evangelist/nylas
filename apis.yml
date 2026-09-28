@@ -45,7 +45,7 @@ tags:
   - Email
   - Messaging
   - Scheduling
-  - A2A
+  - Notetaker
 tags_raw:
   - Calendar
   - Communication
@@ -53,12 +53,14 @@ tags_raw:
   - Email
   - Messaging
   - Scheduling
-  - A2A
 created: '2025-02-06'
-modified: '2026-04-28'
+modified: '2026-09-28'
 url: >-
   https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/apis.yml
 specificationVersion: '0.23'
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
 apis:
 - aid: nylas:nylas-contacts-api
   name: Nylas Contacts API
@@ -162,11 +164,13 @@ apis:
     notifications inside it. Nylas adds a `content_encoding: gzip+base64` message attribute so your subscriber
     knows which messages to decompress. For setup and the decode pattern, see [Reducing payload size with
     compression](/docs/dev-guide/best-practices/compression/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/amazon-sns-notifications/
   baseURL: https://api.us.nylas.com
   tags:
   - Amazon SNS Notifications
   properties:
+  - type: AsyncAPI
+    url: asyncapi/nylas-notifications-asyncapi.yml
   - type: OpenAPI
     url: openapi/nylas-amazon-sns-notifications-api-openapi.yml
   - type: APIReference
@@ -190,7 +194,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -237,7 +241,7 @@ apis:
     <div id="admonition-warning"><strong>Make sure you use the correct region!</strong> In Nylas v3, you
     mange applications for both the U.S. and E.U. regions using the same Dashboard. If you're migrating
     a v2 application to a v3 one, make sure you create the v3 application in the correct region. </div>
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/
   baseURL: https://api.us.nylas.com
   tags:
   - App migration
@@ -265,7 +269,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -302,7 +306,7 @@ apis:
     We recommend you use [mustache }}](https://mustache.github.io/) or [Handlebars](https://handlebarsjs.com/)
     if you need a simple implementation. If you need more advanced formatting, conditions, or layouts,
     we recommend [Nunjucks](https://mozilla.github.io/nunjucks/) or [Twig](https://twig.symfony.com/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/application-level-templates/
   baseURL: https://api.us.nylas.com
   tags:
   - Application-level templates
@@ -330,7 +334,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -355,7 +359,7 @@ apis:
 
     <div id="admonition-info">💡 <b>If you want to create workflows for specific grants, use the <a href="/docs/reference/api/grant-level-workflows/">grant-level
     workflows endpoints</a></b>.</div>
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/application-level-workflows/
   baseURL: https://api.us.nylas.com
   tags:
   - Application-level workflows
@@ -383,7 +387,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -480,7 +484,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -590,7 +594,7 @@ apis:
     - Implement flexible buffer handling when the exact byte count of a file matters to your project.
 
     - Test your Nylas integration with a number of different attachment types and sizes.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/attachments/
   baseURL: https://api.us.nylas.com
   tags:
   - Attachments
@@ -618,7 +622,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -718,7 +722,7 @@ apis:
 
 
     Learn more about [Google verification and security assessment](/docs/provider-guides/google/google-verification-security-assessment-guide/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/authentication-apis/
   baseURL: https://api.us.nylas.com
   tags:
   - Authentication APIs
@@ -746,7 +750,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -793,7 +797,7 @@ apis:
 
 
     For more information about scopes, see [Using scopes to request user data](/docs/dev-guide/scopes/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/availability/
   baseURL: https://api.us.nylas.com
   tags:
   - Availability
@@ -821,7 +825,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -872,7 +876,7 @@ apis:
     \ `/scheduling/bookings/<BOOKING_ID>` | `/calendar.events` ☑️</br>`/calendar`                   |\
     \ `Calendars.ReadWrite` ☑️                               |\n\nFor more information about scopes, see\
     \ [Using scopes to request user data](/docs/dev-guide/scopes/)."
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/bookings/
   baseURL: https://api.us.nylas.com
   tags:
   - Booking
@@ -902,7 +906,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1029,7 +1033,7 @@ apis:
 
     Microsoft Outlook events are often shared across all calendars in a user's account. If the user creates
     an event on one of their calendars, you can retrieve it using another calendar ID from their grant.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/calendar/
   baseURL: https://api.us.nylas.com
   tags:
   - Calendar
@@ -1057,7 +1061,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1132,7 +1136,7 @@ apis:
 
 
     For more information about scopes, see [Using scopes to request user data](/docs/dev-guide/scopes/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/configurations/
   baseURL: https://api.us.nylas.com
   tags:
   - Configurations
@@ -1160,7 +1164,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1206,7 +1210,7 @@ apis:
     - When you make a [Create Credential request](/docs/reference/api/connector-credentials/create_credential/),
     Nylas checks if a connector credential with the same parameters exists. If one _does_ exist, Nylas
     uses that connector credential instead of creating one.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/connector-credentials/
   baseURL: https://api.us.nylas.com
   tags:
   - Connector credentials
@@ -1234,7 +1238,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1290,7 +1294,7 @@ apis:
     GCP project, but you already have a default Google connector), you can create additional credentials
     for your connector. Each connector can have multiple credentials, where each credential represents
     a different provider auth application. For more information, see [Using multiple provider applications](/docs/v3/auth/using-multiple-provider-applications/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/connectors-integrations/
   baseURL: https://api.us.nylas.com
   tags:
   - Connectors (Integrations)
@@ -1318,7 +1322,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1347,7 +1351,7 @@ apis:
 
     Some data objects that exist in Nylas v2 may not have provider IDs available, meaning they do not
     exist on the provider. When this happens, Nylas returns the `v3_resource_id` as `None`.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/
   baseURL: https://api.us.nylas.com
   tags:
   - Data Migration
@@ -1377,7 +1381,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1475,7 +1479,7 @@ apis:
 
     - It might take up to 10 minutes for folders to be available in Nylas after you authenticate an IMAP
     grant.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/folders/
   baseURL: https://api.us.nylas.com
   tags:
   - Folders
@@ -1503,7 +1507,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1540,7 +1544,7 @@ apis:
     We recommend you use [mustache }}](https://mustache.github.io/) or [Handlebars](https://handlebarsjs.com/)
     if you need a simple implementation. If you need more advanced formatting, conditions, or layouts,
     we recommend [Nunjucks](https://mozilla.github.io/nunjucks/) or [Twig](https://twig.symfony.com/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/grant-level-templates/
   baseURL: https://api.us.nylas.com
   tags:
   - Grant-level templates
@@ -1568,7 +1572,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1592,7 +1596,7 @@ apis:
 
     <div id="admonition-info">💡 <b>If you want to create workflows for a Nylas application, use the <a
     href="/docs/reference/api/application-level-workflows/">application-level workflows endpoints</a></b>.</div>
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/grant-level-workflows/
   baseURL: https://api.us.nylas.com
   tags:
   - Grant-level workflows
@@ -1620,7 +1624,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1636,7 +1640,7 @@ apis:
   description: >-
     Group meetings let you host events with multiple participants. Unlike one-on-one meetings, group events
     are designed for collaborative scheduling where multiple attendees are invited to the same event.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/group-events/
   baseURL: https://api.us.nylas.com
   tags:
   - Group Events
@@ -1664,7 +1668,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1702,7 +1706,7 @@ apis:
     `/v3/lists/{list_id}/items` sub-resource endpoints. Values are automatically normalized (lowercased
     and trimmed) and validated against the list's `type`. Duplicate additions are silently ignored. You
     can submit up to 1000 items per add or remove request, and each item value can be at most 500 characters.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/lists/
   baseURL: https://api.us.nylas.com
   tags:
   - List
@@ -1732,7 +1736,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1781,7 +1785,7 @@ apis:
     You use the information in this file to generate the headers that sign your requests (for example,
     the `X-Nylas-Signature` header uses your private key's RSA, a 2048-bit key, and an SHA-256 hashed
     string of the path, method, timestamp, nonce, and payload.). Be sure to [store this information securely](/docs/dev-guide/best-practices/#store-secrets-securely).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/manage-api-keys/
   baseURL: https://api.us.nylas.com
   tags:
   - Manage API keys
@@ -1809,7 +1813,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1863,7 +1867,7 @@ apis:
 
 
     For more information, see [Managing domains](/docs/v3/email/domains/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/manage-domains/
   baseURL: https://api.us.nylas.com
   tags:
   - Manage Domains
@@ -1891,7 +1895,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -1998,7 +2002,7 @@ apis:
 
 
     For more information, see the [Grant notification schemas](/docs/reference/notifications/#grant-notifications).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/manage-grants/
   baseURL: https://api.us.nylas.com
   tags:
   - Manage Grants
@@ -2026,7 +2030,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2062,7 +2066,7 @@ apis:
 
     Policy limits are validated against your plan's maximum values. If a limit field is omitted, it defaults
     to the plan maximum. If a requested value exceeds the plan limit, the API returns an error.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/policies/
   baseURL: https://api.us.nylas.com
   tags:
   - Policies
@@ -2090,7 +2094,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2160,11 +2164,13 @@ apis:
 
 
     </div>
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/pubsub-notifications/
   baseURL: https://api.us.nylas.com
   tags:
   - Pub/Sub Notifications
   properties:
+  - type: AsyncAPI
+    url: asyncapi/nylas-notifications-asyncapi.yml
   - type: OpenAPI
     url: openapi/nylas-pub-sub-notifications-api-openapi.yml
   - type: APIReference
@@ -2188,7 +2194,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2228,7 +2234,7 @@ apis:
 
 
     For more information, see [Using scopes to request user data](/docs/dev-guide/scopes/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/room-resources/
   baseURL: https://api.us.nylas.com
   tags:
   - Room resources
@@ -2256,7 +2262,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2306,7 +2312,7 @@ apis:
     Rule executions are audited per grant. List evaluation records with `GET /v3/grants/{grant_id}/rule-evaluations`
     to see which inbound or outbound rules ran, what normalized input was considered, and which actions
     were applied.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/rules/
   baseURL: https://api.us.nylas.com
   tags:
   - Rules
@@ -2334,7 +2340,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2361,7 +2367,7 @@ apis:
 
     For security purposes, Nylas recommends you set the `time_to_live` value for each session and refresh
     the sessions as they expire.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/sessions/
   baseURL: https://api.us.nylas.com
   tags:
   - Sessions
@@ -2389,7 +2395,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2419,7 +2425,7 @@ apis:
 
 
     For more information, see the [Using email signatures](/docs/v3/email/signatures/) documentation.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/signatures/
   baseURL: https://api.us.nylas.com
   tags:
   - Signatures
@@ -2447,7 +2453,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2501,7 +2507,7 @@ apis:
 
 
     For more information about scopes, see [Using scopes to request user data](/docs/dev-guide/scopes/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/smart-compose/
   baseURL: https://api.us.nylas.com
   tags:
   - Smart compose
@@ -2529,7 +2535,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2550,7 +2556,7 @@ apis:
     The `/v3/notetakers` endpoints let you interact with Nylas Notetaker without referencing a grant.
     This lets all your users — even those who haven't authenticated with your Nylas application — use
     Notetaker in their meetings.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/standalone-notetaker/
   baseURL: https://api.us.nylas.com
   tags:
   - Standalone Notetaker
@@ -2578,7 +2584,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2595,7 +2601,7 @@ apis:
     Nylas' Transactional Send endpoint lets you send messages directly from an email domain that you've
     verified with Nylas. You can use this to send password reset emails, account verifications, or system
     notifications.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/transactional-send/
   baseURL: https://api.us.nylas.com
   tags:
   - Transactional send
@@ -2623,7 +2629,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2639,7 +2645,7 @@ apis:
   description: >-
     Nylas Scheduler uses the `/v3/scheduling/should-redirect/<V2_SCHEDULER_SLUG>` endpoint to redirect
     existing v2 Scheduling Pages to v3.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/unlisted/redirect-v2-scheduling-pages/
   baseURL: https://api.us.nylas.com
   tags:
   - v2 Redirects
@@ -2667,7 +2673,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -2929,11 +2935,121 @@ apis:
     These metadata entries share the event's customer-visible `metadata` object. If you update an event's
     metadata using the Events API, include the Scheduler-stamped entries in your request — updates replace
     the metadata object as a whole.
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/webhook-notifications/
   baseURL: https://api.us.nylas.com
   tags:
   - Webhook Notifications
   properties:
+  - type: AsyncAPI
+    url: asyncapi/nylas-notifications-asyncapi.yml
+  - type: JSONSchema
+    url: json-schema/nylas-notification-envelope.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-grant-created.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-grant-updated.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-grant-deleted.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-grant-expired.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-grant-imap-sync-completed.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-created.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-created-cleaned.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-updated.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-deleted.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-send-success.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-send-failed.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-bounce-detected.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-opened.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-link-clicked.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-thread-replied.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-opened-legacy.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-link-clicked-legacy.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-thread-replied-legacy.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-created-metadata.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-updated-metadata.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-folder-created.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-folder-updated.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-folder-deleted.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-calendar-created.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-calendar-updated.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-calendar-deleted.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-event-created.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-event-updated.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-event-deleted.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-contact-updated.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-contact-deleted.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-booking-created.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-booking-pending.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-booking-rescheduled.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-booking-cancelled.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-booking-reminder.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-notetaker-created.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-notetaker-updated.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-notetaker-deleted.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-notetaker-meeting-state.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-notetaker-media.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-intelligence-order.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-intelligence-tracking.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-intelligence-return.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-intelligence-travel.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-transactional-bounced.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-transactional-complaint.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-transactional-delivered.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-transactional-rejected.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-bounced.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-complaint.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-delivered.schema.json
+  - type: JSONSchema
+    url: json-schema/nylas-message-rejected.schema.json
   - type: OpenAPI
     url: openapi/nylas-webhook-notifications-api-openapi.yml
   - type: APIReference
@@ -2957,7 +3073,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -3030,7 +3146,7 @@ apis:
 
     - When `auto_group` is `true`, Nylas automatically assigns new grants to the workspace. You can move
     grants to a different workspace by making an [Update Workspace Assignments request](/docs/reference/api/workspaces/manually-assign-workspace/).
-  humanURL: https://developer.nylas.com/docs/reference/api/applications/
+  humanURL: https://developer.nylas.com/docs/reference/api/workspaces/
   baseURL: https://api.us.nylas.com
   tags:
   - Workspace
@@ -3060,7 +3176,7 @@ apis:
   - type: Signup
     url: https://dashboard-v3.nylas.com/register
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: SDKs
     url: https://github.com/nylas/nylas-nodejs
   - type: SDKs
@@ -3098,9 +3214,9 @@ common:
   - type: TermsOfService
     url: https://www.nylas.com/legal/terms/
   - type: PrivacyPolicy
-    url: https://www.nylas.com/legal/privacy-policy/
+    url: https://www.nylas.com/privacy-policy/
   - type: StatusPage
-    url: https://status.nylas.com/
+    url: https://status-v3.nylas.com/
   - type: LlmsText
     url: https://developer.nylas.com/llms.txt
   - type: DeveloperPortal
@@ -3177,7 +3293,51 @@ common:
     url: https://developer.nylas.com/.well-known/api-catalog
   - type: WellKnown
     url: well-known/nylas-well-known.yml
+  - type: OAuthScopes
+    url: https://developer.nylas.com/docs/dev-guide/scopes/
+    name: Provider scopes Nylas requests
+  - type: Console
+    url: https://developer.nylas.com/docs/reference/api/
+    name: Try it console on every API reference page (US/EU, API key or access token)
+  - type: CodeSamples
+    url: https://github.com/nylas-samples
+    name: Nylas sample applications
+  - type: Examples
+    url: https://developer.nylas.com/docs/cookbook/
+    name: Nylas cookbook
+  - type: Newsroom
+    url: https://www.nylas.com/newsroom/
+  - type: Leadership
+    url: https://www.nylas.com/company/about/
+  - type: Subprocessors
+    url: https://www.nylas.com/security/subprocessors/
+  - type: DataResidency
+    url: https://developer.nylas.com/docs/dev-guide/platform/data-residency/
+    name: US and EU regions
+  - type: DataSubjectRequest
+    url: https://www.nylas.com/privacy-policy/
+    name: Privacy rights requests (access, correction, deletion, portability)
+  - type: GlobalPrivacyControl
+    url: https://www.nylas.com/privacy-policy/
+    name: GPC treated as an opt-out of targeted advertising
+  - type: AITransparency
+    url: https://developer.nylas.com/docs/v3/notetaker/custom-announcements/
+    name: Notetaker announces in the meeting chat that it is recording and transcribing
+  - type: AsyncAPI
+    url: asyncapi/nylas-notifications-asyncapi.yml
+    name: Nylas notifications over webhooks, Pub/Sub and SNS
+  - type: JSONSchema
+    url: json-schema/nylas-notification-envelope.schema.json
+    name: Notification envelope
+  - type: JSONLDContext
+    url: json-ld/nylas-context.jsonld
+  - type: SpectralRules
+    url: rules/nylas-rules.yml
+    name: Nylas API contract ruleset
 x-provenance:
+  method: authored
+  publisher: Nylas
+  source: https://developer.nylas.com/
   provider_published: true
   summary: >-
     The artifacts in this repository were authored by Nylas and submitted as
@@ -3224,6 +3384,44 @@ x-provenance:
       provider's disclosed negatives were confirmed as negatives: no A2A
       protocolVersion on the agent card, no webhooks object, and Idempotency-Key
       on exactly 2 of 95 mutating operations.
-maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+  update:
+    date: '2026-09-28'
+    submitted_by: Nylas developer documentation
+    live_contract: >-
+      https://developer.nylas.com/_spec-files/nylas-api.yaml (byte-identical to
+      /openapi.yaml) is now OpenAPI 3.1.0 with 120 paths, 213 operations and 178
+      component schemas (sha256 8e39b714747fe2b9..., 1,730,368 bytes). It adds the
+      five Notetaker Configurations operations (/v3/notetakers/configs*) published
+      2026-09-21, and on 2026-09-28 (nylas/developer.nylas.com#741) it was
+      corrected against production code: every Spectral error and invalid example
+      is fixed, and paginated list, send, auth-error, API-key, room-resource,
+      conferencing, and EWS connector schemas now match the running API. The
+      harvest in openapi/_original/ predates both changes (208 operations,
+      re-serialized since harvest, sha256 now 0ea4e6ea2014a39c..., so the
+      sha256 recorded under api_evangelist_changes no longer matches it). A
+      re-harvest is requested.
+    splits: >-
+      openapi/ now holds 40 per-tag splits of the harvest (refine-openapis,
+      2026-09-16 and 2026-09-27), not the 13 domain specs described above. All
+      208 harvested operations are present; summaries and operationIds are
+      unchanged and 70 descriptions differ only by whitespace and admonition
+      markup.
+    idempotency: >-
+      Idempotency-Key is declared on 2 of 133 mutating (POST, PUT, PATCH,
+      DELETE) operations: both /messages/send paths.
+    added_artifacts: >-
+      asyncapi/, json-schema/, json-ld/ and rules/ were authored by
+      Nylas from its own published sources: the notification schemas behind
+      /docs/reference/notifications/, the v3 contract, the glossary, and the lint
+      conventions in the developer.nylas.com redocly.yaml. Each file carries its
+      own x-provenance (method, publisher, source).
+    notifications: >-
+      Nylas describes the notifications it sends (webhooks, Google Cloud Pub/Sub
+      and Amazon SNS) in asyncapi/nylas-notifications-asyncapi.yml, with one JSON
+      Schema per trigger in json-schema/, rather than in a `webhooks` object in the
+      OpenAPI contract. Keeping the event contract in AsyncAPI, separate from the
+      request/response contract, is the normal pattern for this kind of use case,
+      so the absence of an OpenAPI `webhooks` object is intentional, not a gap.
+      This does not contradict review.yml, which concluded that Nylas has no
+      WebSocket, SSE or streaming API; that is still true. The AsyncAPI document
+      describes push notifications, not a streaming surface.

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-notetaker-deleted.schema.json",
+  "title": "Nylas notetaker.deleted notification object",
+  "description": "Sent when a Notetaker bot is deleted, its associated event is cancelled, or its settings are set to null. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the deleted Notetaker bot."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owned this Notetaker."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `notetaker`.",
+      "enum": [
+        "notetaker"
+      ]
+    },
+    "event": {
+      "type": "object",
+      "description": "Calendar event that was associated with this Notetaker.",
+      "properties": {
+        "ical_uid": {
+          "type": "string",
+          "description": "iCalendar UID of the associated event."
+        },
+        "event_id": {
+          "type": "string",
+          "description": "Nylas event ID of the associated event."
+        },
+        "master_event_id": {
+          "type": "string",
+          "description": "Master event ID for recurring events."
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "object"
+  ],
+  "x-nylas-trigger": "notetaker.deleted",
+  "x-nylas-category": "Notetaker",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/notetaker/notetaker-deleted/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "id": "<NOTETAKER_ID>",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "object": "notetaker",
+      "event": {
+        "ical_uid": "<ICAL_UID>",
+        "event_id": "<EVENT_ID>",
+        "master_event_id": "<EVENT_ID>"
+      }
+    }
+  ]
+}

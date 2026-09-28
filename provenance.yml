@@ -4,8 +4,8 @@ note: Who wrote each artifact in this repository. `unknown` means we have no rec
   by check-provenance-manifest.py.
 artifacts:
   a2a/nylas-a2a.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   a2a/nylas-agent-card.json:
     method: unknown
     evidence: no authorship recorded
@@ -13,8 +13,8 @@ artifacts:
     method: generated
     evidence: declared in the artifact
   authentication/nylas-authentication.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   capabilities/nylas-capability-edges.yml:
     method: unknown
     evidence: no authorship recorded
@@ -85,11 +85,11 @@ artifacts:
     method: derived
     evidence: openapi/nylas
   conformance/nylas-conformance.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   finops/nylas-finops.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   kin/checks-2026-09-05T072335.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
@@ -229,8 +229,8 @@ artifacts:
     method: searched
     evidence: 'derive-llms-provenance.py: harvested'
   mcp/nylas-mcp.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   openapi/_original/nylas-api-openapi.yml:
     method: harvested
     evidence: fetched from the provider as-is; byte-identical to the source
@@ -277,23 +277,194 @@ artifacts:
     method: derived
     evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   plans/nylas-plans-pricing.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   rate-limits/nylas-rate-limits.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   security/nylas-domain-security.yml:
     method: unknown
     evidence: no authorship recorded
   security/nylas-trust-center.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   security/nylas-vulnerability-disclosure.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   vocabulary/nylas-vocabulary.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
   well-known/nylas-well-known.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  asyncapi/nylas-notifications-asyncapi.yml:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-ld/nylas-context.jsonld:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-booking-cancelled.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-booking-created.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-booking-pending.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-booking-reminder.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-booking-rescheduled.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-calendar-created.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-calendar-deleted.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-calendar-updated.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-contact-deleted.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-contact-updated.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-event-created.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-event-deleted.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-event-updated.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-folder-created.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-folder-deleted.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-folder-updated.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-grant-created.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-grant-deleted.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-grant-expired.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-grant-imap-sync-completed.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-grant-updated.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-bounce-detected.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-bounced.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-complaint.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-created-cleaned.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-created-metadata.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-created.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-deleted.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-delivered.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-intelligence-order.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-intelligence-return.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-intelligence-tracking.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-intelligence-travel.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-link-clicked-legacy.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-link-clicked.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-opened-legacy.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-opened.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-rejected.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-send-failed.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-send-success.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-transactional-bounced.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-transactional-complaint.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-transactional-delivered.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-transactional-rejected.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-updated-metadata.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-message-updated.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-notetaker-created.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-notetaker-deleted.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-notetaker-media.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-notetaker-meeting-state.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-notetaker-updated.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-notification-envelope.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-thread-replied-legacy.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  json-schema/nylas-thread-replied.schema.json:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'
+  rules/nylas-rules.yml:
+    method: authored
+    evidence: 'declared in the artifact (publisher: Nylas)'

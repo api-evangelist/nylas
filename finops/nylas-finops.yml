@@ -11,8 +11,13 @@ providerId: nylas
 publisherName: Nylas
 serviceCategory: API
 created: '2026-05-04'
-method: provider-published
-modified: '2026-08-20'
+method: authored
+publisher: Nylas
+authored_by: Nylas
+source: https://www.nylas.com/pricing/
+generated: '2026-09-28'
+verified: '2026-09-28'
+modified: '2026-09-28'
 tags:
 - Calendar
 - Communication
@@ -27,8 +32,11 @@ description: >-
   FinOps framework mapping for the Nylas v3 platform, aligned to FOCUS. Corrects a generated scaffold
   that modelled Nylas as a per-API-request platform with a "request" pricing unit and meters for billable
   API requests and compute-seconds. Nylas does not meter API requests and does not bill compute time.
-  Billing is a monthly plan fee plus usage overage on connected accounts, Agent Accounts, storage,
-  bandwidth, outgoing email and Notetaker minutes. See plans/nylas-plans-pricing.yml.
+  Billing is a monthly plan fee (Free, Essentials, Pro monthly or Pro Annual; Enterprise is custom)
+  plus usage overage on email and calendar connected accounts, calendar-only connected accounts,
+  Notetaker bot hours, Agent Accounts, agent storage, agent bandwidth and agent emails. This reflects
+  the pricing Nylas introduced on 2026-09-09, verified against https://www.nylas.com/pricing/ on
+  2026-09-28. Plan allowances and per-plan overage rates are in plans/nylas-plans-pricing.yml.
 principles:
 - name: Visibility
   description: >-
@@ -73,7 +81,7 @@ domains:
   - Intersecting Disciplines
 billingModel:
   pricingCategory: Subscription plus usage overage
-  billingFrequency: Monthly
+  billingFrequency: Monthly (Pro Annual is a 12-month commitment)
   billingCurrency: USD
   chargeCategories:
   - Usage
@@ -89,49 +97,59 @@ focusColumns:
   PublisherName: Nylas
   InvoiceIssuerName: Nylas
   PricingCategory: Subscription plus usage overage
-  PricingUnit: connected account, Agent Account, GB, outgoing email, Notetaker minute
+  PricingUnit: connected account, calendar-only connected account, bot hour, Agent Account, GB, 1,000 agent emails
   BillingCurrency: USD
   ChargeCategory: Usage
 meters:
 - name: connected_accounts
-  description: Connected mailboxes and calendars beyond the plan allowance
+  description: Email and calendar connected accounts beyond the plan allowance
   unit: connected account
   aggregation: max
   dimensions:
   - plan
   - region
   - grant
+- name: calendar_only_accounts
+  description: Calendar-only connected accounts beyond the plan allowance
+  unit: connected account
+  aggregation: max
+  dimensions:
+  - plan
+  - region
+  - grant
+- name: notetaker_bot_hours
+  description: >-
+    Notetaker bot hours beyond the plan allowance. A bot hour is one hour the Notetaker bot spends
+    in a Google Meet, Teams or Zoom meeting.
+  unit: bot hour
+  aggregation: sum
+  dimensions:
+  - plan
+  - grant
 - name: agent_accounts
-  description: Nylas-hosted Agent Account mailboxes beyond the plan allowance
+  description: Nylas-hosted Agent Accounts beyond the plan allowance
   unit: agent account
   aggregation: max
   dimensions:
   - plan
   - region
 - name: storage
-  description: Stored data beyond the plan allowance
+  description: Agent Account storage beyond the plan allowance
   unit: GB
   aggregation: max
   dimensions:
   - plan
   - region
 - name: bandwidth
-  description: Data transferred beyond the plan allowance
+  description: Agent Account bandwidth beyond the plan allowance (GB/month)
   unit: GB
   aggregation: sum
   dimensions:
   - plan
   - region
-- name: outgoing_email
-  description: Outgoing messages sent beyond the plan allowance
-  unit: message
-  aggregation: sum
-  dimensions:
-  - plan
-  - grant
-- name: notetaker_minutes
-  description: Meeting notetaker time beyond the plan allowance
-  unit: minute
+- name: agent_emails
+  description: Agent Account emails beyond the plan allowance, billed per 1,000
+  unit: 1,000 emails
   aggregation: sum
   dimensions:
   - plan
@@ -155,14 +173,12 @@ unitEconomics:
 - name: Cost per Agent Account
   metric: billed_cost / agent_accounts
   target: TBD
-- name: Cost per Notetaker hour
-  metric: billed_cost / (notetaker_minutes / 60)
+- name: Cost per Notetaker bot hour
+  metric: billed_cost / notetaker_bot_hours
   target: TBD
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
-authored_by: Nylas
-source: https://www.nylas.com/pricing/
 notes: >-
   There is no per-API-request charge and no compute-time charge on any plan. Rate limits exist but
   are not a billing dimension and do not vary by plan; see rate-limits/nylas-rate-limits.yml. This
@@ -173,7 +189,8 @@ programmaticAccess:
   billingApi: false
   invoiceApi: false
   evidence: >-
-    The Nylas v3 contract exposes no usage, billing, invoice, cost or subscription operation: 0 of
-    208. The meters below describe what Nylas bills on, not endpoints that return meter data. Cost
+    The Nylas v3 contract (https://developer.nylas.com/_spec-files/nylas-api.yaml, checked
+    2026-09-28) exposes no usage, billing, invoice, cost, subscription, meter or quota operation: 0 of
+    213. The meters below describe what Nylas bills on, not endpoints that return meter data. Cost
     and usage figures are read from the Nylas Dashboard and from invoices, not through the API.
   docs: https://developer.nylas.com/docs/support/billing/

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-intelligence-tracking.schema.json",
+  "title": "Nylas message.intelligence.tracking notification object",
+  "description": "Sent when a user receives a message with tracking information for an e-commerce order. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "confidence_score": {
+      "type": "number",
+      "description": "Confidence score from 0 to 1 indicating extraction accuracy.",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "email_category": {
+      "type": "string",
+      "description": "Category of the email as determined by ExtractAI."
+    },
+    "email_timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp of the original email."
+    },
+    "error": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Error message if extraction failed, otherwise null."
+    },
+    "fetched_email_id": {
+      "type": "string",
+      "description": "Provider-specific message ID of the analyzed email."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns this message."
+    },
+    "merchant": {
+      "type": "object",
+      "description": "Merchant information extracted from the tracking email.",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Merchant's domain name."
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Merchant's display name, if detected."
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional extraction metadata.",
+      "properties": {
+        "language": {
+          "type": "string",
+          "description": "Detected language of the email."
+        },
+        "market": {
+          "type": "string",
+          "description": "Detected market/region."
+        },
+        "sender_domain": {
+          "type": "string",
+          "description": "Domain of the email sender."
+        }
+      }
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "order_status": {
+      "type": "string",
+      "description": "Current status of the order."
+    },
+    "shippings": {
+      "type": "array",
+      "description": "List of shipping/tracking entries extracted from the email.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "carrier": {
+            "type": "string",
+            "description": "Name of the shipping carrier."
+          },
+          "decoded_link": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Decoded tracking link, if available."
+          },
+          "order_number": {
+            "type": "string",
+            "description": "Carrier's order or shipment number."
+          },
+          "tracking_link": {
+            "type": "string",
+            "description": "URL to track the shipment."
+          },
+          "tracking_number": {
+            "type": "string",
+            "description": "Carrier tracking number."
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "description": "Extraction status.",
+      "enum": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    }
+  },
+  "required": [
+    "confidence_score",
+    "fetched_email_id",
+    "grant_id",
+    "object",
+    "status"
+  ],
+  "x-nylas-trigger": "message.intelligence.tracking",
+  "x-nylas-category": "ExtractAI",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/extractai/message-intelligence-tracking/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "confidence_score": 1,
+      "email_category": "order_in_transit",
+      "email_timestamp": 1714136753,
+      "error": null,
+      "fetched_email_id": "18f1a83273ee32e9",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "merchant": {
+        "domain": "example.com",
+        "name": null
+      },
+      "metadata": {
+        "language": "en",
+        "market": "US",
+        "sender_domain": "example.com"
+      },
+      "object": "message",
+      "order_status": "order_in_transit",
+      "shippings": [
+        {
+          "carrier": "Nyla Global Express Inc.",
+          "decoded_link": null,
+          "order_number": "<CARRIER_ORDER_NUMBER>",
+          "tracking_link": "<CARRIER_TRACKING_LINK>",
+          "tracking_number": "<CARRIER_TRACKING_NUMBERx>"
+        }
+      ],
+      "status": "SUCCESS"
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-transactional-complaint.schema.json",
+  "title": "Nylas message.transactional.complaint notification object",
+  "description": "Sent when a transactional email was delivered but the recipient marked it as spam. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "object",
+      "description": "The original transactional message that received a complaint.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The Nylas message ID."
+        },
+        "subject": {
+          "type": "string",
+          "description": "The message subject line."
+        },
+        "from": {
+          "type": "string",
+          "description": "Sender email address."
+        },
+        "to": {
+          "type": "array",
+          "description": "Primary recipient email addresses.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cc": {
+          "type": "array",
+          "description": "CC recipient email addresses. Omitted if none were specified.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bcc": {
+          "type": "array",
+          "description": "BCC recipient email addresses. Omitted if none were specified.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sent_at": {
+          "type": "integer",
+          "description": "Unix timestamp when the message was sent."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Custom key-value metadata attached when sending. Omitted if none were provided.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "complaint": {
+      "type": "object",
+      "description": "Complaint details.",
+      "properties": {
+        "reported_at": {
+          "type": "integer",
+          "description": "Unix timestamp when the complaint was reported."
+        },
+        "type": {
+          "type": "string",
+          "description": "Complaint type (e.g. `abuse`)."
+        },
+        "complained_recipients": {
+          "type": "array",
+          "description": "Email addresses that reported the complaint.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "message",
+    "complaint"
+  ],
+  "x-nylas-trigger": "message.transactional.complaint",
+  "x-nylas-category": "Transactional Email",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/transactional-email/message-transactional-complaint/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "message": {
+        "id": "<MESSAGE_ID>",
+        "subject": "Your order has shipped",
+        "from": "notifications@example.com",
+        "to": [
+          "jordan.taylor@example.com"
+        ],
+        "cc": [
+          "sam.lee@example.com"
+        ],
+        "bcc": [
+          "alex.johnson@example.com"
+        ],
+        "sent_at": 1234567890,
+        "metadata": {
+          "campaign": "welcome-email"
+        }
+      },
+      "complaint": {
+        "reported_at": 1234567890,
+        "type": "abuse",
+        "complained_recipients": [
+          "jordan.taylor@example.com"
+        ]
+      }
+    }
+  ]
+}

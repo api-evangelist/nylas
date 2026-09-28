@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-link-clicked-legacy.schema.json",
+  "title": "Nylas message.link_clicked.legacy notification object",
+  "description": "Legacy format for link clicked tracking notifications. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "The v3 grant ID."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "deltas": {
+      "type": "array",
+      "description": "Array of delta change objects in v2 format.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "integer",
+            "description": "Unix timestamp of the click event."
+          },
+          "object": {
+            "type": "string",
+            "description": "Always `metadata`."
+          },
+          "type": {
+            "type": "string",
+            "description": "The delta type, always `message.link_clicked`."
+          },
+          "object_data": {
+            "type": "object",
+            "description": "The v2-format tracking data.",
+            "properties": {
+              "account_id": {
+                "type": "string",
+                "description": "The v2 account ID."
+              },
+              "id": {
+                "type": "string",
+                "description": "The v2 webhook ID."
+              },
+              "namespace_id": {
+                "type": "string",
+                "description": "The v2 namespace ID."
+              },
+              "object": {
+                "type": "string",
+                "description": "Always `metadata`."
+              },
+              "attributes": {
+                "description": "Legacy attributes field. Always `null`.",
+                "nullable": true
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Tracking metadata including link data and recents.",
+                "properties": {
+                  "link_data": {
+                    "type": "array",
+                    "description": "Aggregate click data per link.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "type": "integer",
+                          "description": "Total clicks on this link."
+                        },
+                        "url": {
+                          "type": "string",
+                          "description": "The clicked URL."
+                        }
+                      }
+                    }
+                  },
+                  "message_id": {
+                    "type": "string",
+                    "description": "The v2 message ID."
+                  },
+                  "payload": {
+                    "type": "string",
+                    "description": "Custom payload set when creating link tracking."
+                  },
+                  "recents": {
+                    "type": "array",
+                    "description": "Recent click events.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Sequential click ID."
+                        },
+                        "ip": {
+                          "type": "string",
+                          "description": "IP address of the clicker."
+                        },
+                        "link_index": {
+                          "type": "integer",
+                          "description": "Index of the clicked link."
+                        },
+                        "timestamp": {
+                          "type": "integer",
+                          "description": "Unix timestamp of the click."
+                        },
+                        "user_agent": {
+                          "type": "string",
+                          "description": "User-Agent string."
+                        }
+                      }
+                    }
+                  },
+                  "timestamp": {
+                    "type": "integer",
+                    "description": "Unix timestamp of the first click."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "grant_id",
+    "object",
+    "deltas"
+  ],
+  "x-nylas-trigger": "message.link_clicked.legacy",
+  "x-nylas-category": "Message Tracking",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/message-tracking/message-link_clicked-legacy/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "deltas": [
+        {
+          "date": 1733261158,
+          "object": "metadata",
+          "object_data": {
+            "account_id": "<V2_NYLAS_ACCOUNT_ID>",
+            "id": "<V2_WEBHOOK_ID>",
+            "metadata": {
+              "link_data": [
+                {
+                  "count": 8,
+                  "url": "client_url"
+                }
+              ],
+              "message_id": "<V2_MESSAGE_ID>",
+              "payload": "Hello world",
+              "recents": [
+                {
+                  "id": 0,
+                  "ip": "ip_address",
+                  "link_index": 0,
+                  "timestamp": 1733163188,
+                  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+                }
+              ],
+              "timestamp": 1733163166
+            },
+            "namespace_id": "<V2_NAMESPACE_ID>",
+            "object": "metadata"
+          },
+          "type": "message.link_clicked"
+        }
+      ],
+      "grant_id": "<V3_NYLAS_GRANT_ID>",
+      "object": "message"
+    }
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-intelligence-order.schema.json",
+  "title": "Nylas message.intelligence.order notification object",
+  "description": "Sent when a user receives a message with e-commerce order information. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "confidence_score": {
+      "type": "number",
+      "description": "Confidence score from 0 to 1 indicating extraction accuracy.",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "email_category": {
+      "type": "string",
+      "description": "Category of the email as determined by ExtractAI."
+    },
+    "email_timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp of the original email."
+    },
+    "error": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Error message if extraction failed, otherwise null."
+    },
+    "fetched_email_id": {
+      "type": "string",
+      "description": "Provider-specific message ID of the analyzed email."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns this message."
+    },
+    "merchant": {
+      "type": "object",
+      "description": "Merchant information extracted from the order email.",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Merchant's domain name."
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Merchant's display name, if detected."
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional extraction metadata.",
+      "properties": {
+        "language": {
+          "type": "string",
+          "description": "Detected language of the email."
+        },
+        "market": {
+          "type": "string",
+          "description": "Detected market/region."
+        },
+        "sender_domain": {
+          "type": "string",
+          "description": "Domain of the email sender."
+        }
+      }
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "order_status": {
+      "type": "string",
+      "description": "Current status of the order."
+    },
+    "orders": {
+      "type": "array",
+      "description": "List of orders extracted from the email.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "coupon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Coupon code applied to the order."
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code."
+          },
+          "discount": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Discount amount in minor units (cents)."
+          },
+          "gift_card": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Gift card applied to the order."
+          },
+          "line_items": {
+            "type": "array",
+            "description": "Individual items in the order.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Color of the item."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Product name."
+                },
+                "product_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Merchant product identifier."
+                },
+                "product_image_uri": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "URL of the product image."
+                },
+                "quantity": {
+                  "type": "integer",
+                  "description": "Quantity ordered."
+                },
+                "size": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Size of the item."
+                },
+                "unit_price": {
+                  "type": "integer",
+                  "description": "Price per unit in minor units (cents)."
+                },
+                "url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "URL to the product page."
+                }
+              }
+            }
+          },
+          "order_date": {
+            "type": "string",
+            "description": "Unix timestamp of the order date as a string."
+          },
+          "order_number": {
+            "type": "string",
+            "description": "Merchant's order number."
+          },
+          "shipping_total": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Shipping cost in minor units (cents)."
+          },
+          "total_amount": {
+            "type": "integer",
+            "description": "Total order amount in minor units (cents)."
+          },
+          "total_tax_amount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Tax amount in minor units (cents)."
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "description": "Extraction status.",
+      "enum": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    }
+  },
+  "required": [
+    "confidence_score",
+    "fetched_email_id",
+    "grant_id",
+    "object",
+    "status"
+  ],
+  "x-nylas-trigger": "message.intelligence.order",
+  "x-nylas-category": "ExtractAI",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/extractai/message-intelligence-order/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "confidence_score": 1,
+      "email_category": "order_in_transit",
+      "email_timestamp": 1632877388,
+      "error": null,
+      "fetched_email_id": "18f9d4c513cbd00d",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "merchant": {
+        "domain": "example.com",
+        "name": "Nyla's Natural Bath Products"
+      },
+      "metadata": {
+        "language": "en",
+        "market": "US",
+        "sender_domain": "store.example.com"
+      },
+      "object": "message",
+      "order_status": "order_in_transit",
+      "orders": [
+        {
+          "coupon": null,
+          "currency": "USD",
+          "discount": null,
+          "gift_card": null,
+          "line_items": [
+            {
+              "color": null,
+              "name": "So Sensitive Soap - Unscented Soap Bar For Sensitive Skin - 4 oz.",
+              "product_id": null,
+              "product_image_uri": "https://imgcdn.example.com/img/1925bf51-82a3-49be-bfdb-01e0633195f8.jpeg",
+              "quantity": 1,
+              "size": null,
+              "unit_price": 197,
+              "url": null
+            }
+          ],
+          "order_date": "1632726000",
+          "order_number": "<MERCHANT_ORDER_NUMBER>",
+          "shipping_total": null,
+          "total_amount": 812,
+          "total_tax_amount": 16
+        }
+      ],
+      "status": "SUCCESS"
+    }
+  ]
+}

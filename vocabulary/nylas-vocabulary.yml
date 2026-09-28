@@ -6,8 +6,10 @@ description: >-
   term linking throughout the published documentation.
 version: '1.0'
 created: '2026-08-20'
-modified: '2026-08-20'
-method: provider-published
+modified: '2026-09-28'
+generated: '2026-09-28'
+method: authored
+publisher: Nylas
 authored_by: Nylas
 source: https://developer.nylas.com/docs/dev-guide/glossary/
 tags:
@@ -121,16 +123,16 @@ terms:
     Nylas offers two data center options — U.S. and E.U. — to accommodate customers around the world.
     See the Data residency documentation for more details.
   category: Platform
-- term: GCP
-  definition: >-
-    An acronym for "Google Cloud Platform". This is the portal where you create a provider auth app
-    to allow your project to connect to Google resources.
-  category: Platform
 - term: GDPR
   definition: >-
     "General Data Protection Regulation". Regulation set by the European Union, designed to harmonize
     data privacy laws across Europe. See What is the GDPR?.
   category: Compliance
+- term: Google Cloud
+  definition: >-
+    Google's cloud computing platform, at cloud.google.com. This is where you create a provider auth
+    app to allow your project to connect to Google resources.
+  category: Platform
 - term: Grant
   definition: >-
     A record of permissions ("scopes") that a user "granted" to your application to access their data.
@@ -161,6 +163,14 @@ terms:
     "Multipurpose Internet Mail Extensions". An internet standard that allows messages to support
     attachments and non-ASCII text.
   category: Protocol or Format
+- term: Nylas Connect
+  definition: >-
+    The core Nylas platform: the Email, Calendar, and Contacts APIs, plus Scheduler and the
+    authentication that connects user accounts. Nylas Connect works with a user's existing accounts
+    across Google, Microsoft, iCloud, Yahoo, Exchange, and IMAP providers. Notetaker and Agent Accounts
+    are separate Nylas products. Not to be confused with @nylas/connect, the JavaScript library that
+    runs the OAuth flow in the browser.
+  category: Platform
 - term: Nylas Service Account
   definition: >-
     An organization-level authentication mechanism that uses RSA cryptographic request signing to

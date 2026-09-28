@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-contact-deleted.schema.json",
+  "title": "Nylas contact.deleted notification object",
+  "description": "Sent when a user deletes a contact. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns this contact."
+    },
+    "id": {
+      "type": "string",
+      "description": "The deleted contact ID."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `contact`.",
+      "enum": [
+        "contact"
+      ]
+    }
+  },
+  "required": [
+    "grant_id",
+    "id"
+  ],
+  "x-nylas-trigger": "contact.deleted",
+  "x-nylas-category": "Contacts",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/contacts/contact-deleted/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "id": "<CONTACT_ID>",
+      "object": "contact"
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-bounced.schema.json",
+  "title": "Nylas message.bounced notification object",
+  "description": "Sent when an email was not delivered due to a hard bounce. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "object",
+      "description": "The original message that bounced.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The Nylas message ID."
+        },
+        "subject": {
+          "type": "string",
+          "description": "The message subject line."
+        },
+        "from": {
+          "type": "string",
+          "description": "Sender email address."
+        },
+        "to": {
+          "type": "array",
+          "description": "Primary recipient email addresses.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cc": {
+          "type": "array",
+          "description": "CC recipient email addresses. Omitted if none were specified.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bcc": {
+          "type": "array",
+          "description": "BCC recipient email addresses. Omitted if none were specified.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sent_at": {
+          "type": "integer",
+          "description": "Unix timestamp when the message was sent."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Custom key-value metadata attached when sending. Omitted if none were provided.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "bounce": {
+      "type": "object",
+      "description": "Bounce details.",
+      "properties": {
+        "bounced_at": {
+          "type": "integer",
+          "description": "Unix timestamp when the bounce occurred."
+        },
+        "type": {
+          "type": "string",
+          "description": "Bounce type (e.g. `MailboxFull`)."
+        },
+        "recipients": {
+          "type": "array",
+          "description": "Recipients that bounced.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "Email address that bounced."
+              },
+              "diagnostic_code": {
+                "type": "string",
+                "description": "SMTP diagnostic code from the receiving server."
+              }
+            },
+            "required": [
+              "email"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "message",
+    "bounce"
+  ],
+  "x-nylas-trigger": "message.bounced",
+  "x-nylas-category": "Agent Accounts",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/agent-accounts/message-bounced/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "message": {
+        "id": "<MESSAGE_ID>",
+        "subject": "Your order has shipped",
+        "from": "notifications@example.com",
+        "to": [
+          "jordan.taylor@example.com"
+        ],
+        "cc": [
+          "sam.lee@example.com"
+        ],
+        "bcc": [
+          "alex.johnson@example.com"
+        ],
+        "sent_at": 1234567890,
+        "metadata": {
+          "campaign": "welcome-email"
+        }
+      },
+      "bounce": {
+        "bounced_at": 1234567890,
+        "type": "MailboxFull",
+        "recipients": [
+          {
+            "email": "john@example.com"
+          },
+          {
+            "email": "jane@example.com",
+            "diagnostic_code": "smtp; 550 user unknown"
+          }
+        ]
+      }
+    }
+  ]
+}

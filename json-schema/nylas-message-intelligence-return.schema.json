@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-intelligence-return.schema.json",
+  "title": "Nylas message.intelligence.return notification object",
+  "description": "Sent when a user receives a message with return information for an e-commerce order. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "confidence_score": {
+      "type": "number",
+      "description": "Confidence score from 0 to 1 indicating extraction accuracy.",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "email_category": {
+      "type": "string",
+      "description": "Category of the email as determined by ExtractAI."
+    },
+    "email_timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp of the original email."
+    },
+    "fetched_email_id": {
+      "type": "string",
+      "description": "Provider-specific message ID of the analyzed email."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns this message."
+    },
+    "merchant": {
+      "type": "object",
+      "description": "Merchant information extracted from the return email.",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Merchant's domain name."
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Merchant's display name, if detected."
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional extraction metadata.",
+      "properties": {
+        "language": {
+          "type": "string",
+          "description": "Detected language of the email."
+        },
+        "market": {
+          "type": "string",
+          "description": "Detected market/region."
+        },
+        "sender_domain": {
+          "type": "string",
+          "description": "Domain of the email sender."
+        }
+      }
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "order_status": {
+      "type": "string",
+      "description": "Current status of the order."
+    },
+    "returns": {
+      "type": "array",
+      "description": "List of return entries extracted from the email.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "order_number": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Order number associated with the return."
+          },
+          "refund_total": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Refund amount in minor units (cents)."
+          },
+          "returns_date": {
+            "type": "integer",
+            "description": "Unix timestamp of the return date."
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "description": "Extraction status.",
+      "enum": [
+        "SUCCESS",
+        "ERROR"
+      ]
+    }
+  },
+  "required": [
+    "confidence_score",
+    "fetched_email_id",
+    "grant_id",
+    "object",
+    "status"
+  ],
+  "x-nylas-trigger": "message.intelligence.return",
+  "x-nylas-category": "ExtractAI",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/extractai/message-intelligence-return/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "confidence_score": 1,
+      "email_category": "other",
+      "email_timestamp": 1734370631,
+      "fetched_email_id": "<MESSAGE_ID>",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "merchant": {
+        "domain": "example.com",
+        "name": "Nyla's Natural Bath Products"
+      },
+      "metadata": {
+        "language": "en",
+        "market": "US",
+        "sender_domain": "example.com"
+      },
+      "object": "message",
+      "order_status": "other",
+      "returns": [
+        {
+          "order_number": null,
+          "refund_total": null,
+          "returns_date": 1734370631
+        }
+      ],
+      "status": "SUCCESS"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-event-deleted.schema.json",
+  "title": "Nylas event.deleted notification object",
+  "description": "Sent when an event is deleted from a user's calendar. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [
+    "calendar_id",
+    "id",
+    "object"
+  ],
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the grant that owned this event."
+    },
+    "calendar_id": {
+      "type": "string",
+      "description": "Identifier for the calendar this event belonged to. May be `null` in rare edge cases.",
+      "nullable": true
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the deleted event."
+    },
+    "master_event_id": {
+      "type": "string",
+      "description": "If this was an occurrence of a recurring event, the ID of the master event. Absent for non-recurring events."
+    },
+    "object": {
+      "type": "string",
+      "description": "Object type identifier.",
+      "enum": [
+        "event"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Custom key-value metadata attached to the event. May be omitted if not set."
+    }
+  },
+  "x-nylas-trigger": "event.deleted",
+  "x-nylas-category": "Events",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/events/event-deleted/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "calendar_id": "CALENDAR_ID",
+      "id": "<EVENT_ID>",
+      "master_event_id": "<MASTER_EVENT_ID>",
+      "object": "event"
+    }
+  ]
+}

@@ -4,11 +4,14 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Nylas
 providerId: nylas
 created: '2026-05-04'
-method: provider-published
+method: authored
+publisher: Nylas
 authored_by: Nylas
-modified: '2026-08-20'
 source: https://www.nylas.com/pricing/
-transcribed: '2026-08-20'
+generated: '2026-09-28'
+verified: '2026-09-28'
+modified: '2026-09-28'
+transcribed: '2026-09-28'
 tags:
   - Calendar
   - Communication
@@ -18,40 +21,44 @@ tags:
   - Scheduling
 description: >-
   Published Nylas plans and pricing, transcribed from the plan cards and the
-  plan comparison table at https://www.nylas.com/pricing/ on 2026-08-20. This
-  replaces a generated scaffold that described a three-tier Free / Professional /
-  Enterprise structure metered by monthly API request quotas. None of that
-  existed. Nylas sells five plans and does not meter by API request. The billing
-  unit is the connected account, alongside separate allowances for Agent
-  Accounts, storage, bandwidth, outgoing email and Notetaker minutes. Rate limits
-  are not tied to a plan; see rate-limits/nylas-rate-limits.yml. Where the
-  comparison table publishes no allowance for a plan on a given dimension it is
-  omitted here rather than inferred: the Activity Drivers table carries columns
-  only for Free, Full Platform and Enterprise.
+  "What's included every month" comparison table at https://www.nylas.com/pricing/
+  and verified against the live page on 2026-09-28. Nylas changed its pricing on
+  2026-09-09: every plan now includes every product (email, calendar, Notetaker
+  and Agent Accounts) with usage included, and usage beyond the allowance is
+  billed at per-plan rates that fall on higher plans. This replaces the earlier
+  five-plan structure (Free, Notetaker, Calendar, Full Platform, Enterprise).
+  Nylas sells four plans: Free, Essentials, Pro and Enterprise. Pro is offered
+  monthly or annually (a toggle on a single plan card), so Pro Annual is modelled
+  as a billing variant of Pro rather than a separate plan. Nylas does not meter
+  by API request. Rate limits are not tied to a plan; see
+  rate-limits/nylas-rate-limits.yml. All prices are in USD.
 billing_units:
-  - connected account
+  - connected account (email and calendar)
+  - connected account (calendar-only)
+  - Notetaker bot hour
   - Agent Account
   - GB storage
   - GB bandwidth
-  - outgoing email message
-  - Notetaker minute
+  - agent email message
+currency: USD
 notes: >-
-  There is no per-API-request quota on any plan. The Free plan runs in the Nylas
-  Developer Sandbox, which carries the full platform feature set (bi-directional
-  email and calendar sync, Notetaker, Scheduler, Agent Accounts) and ships with
-  pre-configured provider connectors, so a developer can authenticate a test
-  account and exercise the API without first registering their own OAuth
-  application with Google or Microsoft. Sandbox applications use those supplied
-  connectors as-is: you cannot add your own connector or change requested scopes
-  on one.
+  There is no per-API-request quota on any plan. A bot hour is one hour the
+  Notetaker bot spends in a Google Meet, Teams or Zoom meeting. Per the page,
+  most usage keeps running past the included allowance and is billed at the
+  plan's overage rate; a few limits are fixed, such as on the Free plan, and
+  upgrading raises them immediately. Every plan includes access to the
+  developer forums; Pro Annual and Enterprise include Basic Support. The
+  per-feature check marks in the comparison table are rendered as icons and are
+  not transcribed here; only the numeric allowances, rates and labelled
+  add-ons are.
 plans:
   - id: nylas-free
     name: Free
     type: freemium
     description: >-
-      Free indefinitely. Runs in the Nylas Developer Sandbox with the full
-      feature set and pre-configured provider connectors, so no OAuth
-      application setup is needed to start making calls.
+      "For proving it works." $0/month, no credit card required, free forever.
+      Full API access to every product with enough included to build and test a
+      proof of concept.
     entries:
       - label: Monthly Base Fee
         name: base_fee
@@ -62,11 +69,19 @@ plans:
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Connected Accounts
-        description: Included connected accounts, in the Developer Sandbox
+      - label: Connected accounts, email and calendar
         name: connected_accounts
         type: quota
         metric: connected_accounts
+        limit: 5
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Notetaker bot hours
+        name: notetaker_bot_hours
+        type: quota
+        metric: bot_hours
         limit: 5
         timeFrame: month
         unit: 1
@@ -81,7 +96,7 @@ plans:
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Storage
+      - label: Agent storage
         name: storage
         type: quota
         metric: gigabytes
@@ -90,7 +105,7 @@ plans:
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Bandwidth
+      - label: Agent bandwidth
         name: bandwidth
         type: quota
         metric: gigabytes
@@ -99,116 +114,29 @@ plans:
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Inbound email
-        name: inbound_email
+      - label: Agent emails
+        name: agent_emails
         type: quota
         metric: messages
-        limit: -1
+        limit: 3000
         timeFrame: month
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Outgoing email
-        name: outgoing_email
-        type: quota
-        metric: messages
-        limit: 100
-        timeFrame: day
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
+    note: >-
+      The page publishes no overage rates for Free and no calendar-only
+      connected account allowance or custom sending domain for Free (the Free
+      column is blank on those rows). The FAQ says Free limits are fixed.
     elements:
-      - name: Access to Developer Sandbox
-      - name: Bi-directional email and calendar sync
+      - name: Email and Calendar API
       - name: Nylas Notetaker
-      - name: Nylas Scheduler
       - name: Agent Accounts
-  - id: nylas-notetaker
-    name: Notetaker
+      - name: Nylas trial domain
+      - name: Community support (developer forums)
+  - id: nylas-essentials
+    name: Essentials
     type: paid
-    description: >-
-      Meeting notetaker plan. 300 minutes included per month, then billed by the
-      hour.
-    entries:
-      - label: Monthly Base Fee
-        name: base_fee
-        type: recurring
-        metric: months
-        limit: 1
-        timeFrame: month
-        unit: 1
-        price: '5.00'
-        userMultiplied: false
-      - label: Notetaker minutes included
-        name: notetaker_minutes
-        type: quota
-        metric: minutes
-        limit: 300
-        timeFrame: month
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Notetaker overage
-        description: Per additional hour beyond the included 300 minutes
-        name: notetaker_overage
-        type: metered
-        metric: hours
-        limit: -1
-        timeFrame: month
-        unit: 1
-        price: '0.70'
-        userMultiplied: false
-    elements:
-      - name: Record Google Meet, Teams and Zoom
-      - name: Scheduled or ad-hoc Notetakers
-      - name: AI summaries and action items
-      - name: Translation in 80+ languages
-      - name: Export structured data for CRM updates
-  - id: nylas-calendar
-    name: Calendar
-    type: paid
-    description: Calendar-only plan, billed per connected account beyond the included five.
-    entries:
-      - label: Monthly Base Fee
-        name: base_fee
-        type: recurring
-        metric: months
-        limit: 1
-        timeFrame: month
-        unit: 1
-        price: '10.00'
-        userMultiplied: false
-      - label: Connected Accounts
-        name: connected_accounts
-        type: quota
-        metric: connected_accounts
-        limit: 5
-        timeFrame: month
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Connected Account overage
-        name: connected_account_overage
-        type: metered
-        metric: connected_accounts
-        limit: -1
-        timeFrame: month
-        unit: 1
-        price: '1.50'
-        userMultiplied: false
-    elements:
-      - name: Bi-directional Calendar Sync
-      - name: Recurring events
-      - name: Hosted Nylas Scheduler
-      - name: React scheduler components
-      - name: Round robin scheduling
-      - name: Calendar and Event webhooks
-  - id: nylas-full-platform
-    name: Full Platform
-    type: paid
-    description: >-
-      Email, calendar, contacts, Scheduler and Agent Accounts. Everything in the
-      Calendar plan plus the email surface.
+    description: '"For your first users." $15/month.'
     entries:
       - label: Monthly Base Fee
         name: base_fee
@@ -219,43 +147,73 @@ plans:
         unit: 1
         price: '15.00'
         userMultiplied: false
-      - label: Connected Accounts
+      - label: Connected accounts, email and calendar
         name: connected_accounts
         type: quota
         metric: connected_accounts
-        limit: 5
+        limit: 10
         timeFrame: month
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Connected Account overage
+      - label: Connected account overage
+        description: Per additional email and calendar connected account
         name: connected_account_overage
         type: metered
         metric: connected_accounts
         limit: -1
         timeFrame: month
         unit: 1
-        price: '2.00'
+        price: '2.25'
+        userMultiplied: false
+      - label: Connected accounts, calendar-only
+        name: calendar_only_accounts
+        type: quota
+        metric: connected_accounts
+        limit: 10
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Calendar-only connected account overage
+        description: Per additional calendar-only connected account
+        name: calendar_only_account_overage
+        type: metered
+        metric: connected_accounts
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '1.70'
+        userMultiplied: false
+      - label: Notetaker bot hours
+        name: notetaker_bot_hours
+        type: quota
+        metric: bot_hours
+        limit: 10
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Notetaker bot hour overage
+        description: Per additional hour
+        name: notetaker_bot_hour_overage
+        type: metered
+        metric: bot_hours
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.80'
         userMultiplied: false
       - label: Agent Accounts
         name: agent_accounts
         type: quota
         metric: agent_accounts
-        limit: 20
+        limit: 10
         timeFrame: month
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Agent Account overage
-        name: agent_account_overage
-        type: metered
-        metric: agent_accounts
-        limit: -1
-        timeFrame: month
-        unit: 1
-        price: '0.20'
-        userMultiplied: false
-      - label: Storage
+      - label: Agent storage
         name: storage
         type: quota
         metric: gigabytes
@@ -264,16 +222,7 @@ plans:
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Storage overage
-        name: storage_overage
-        type: metered
-        metric: gigabytes
-        limit: -1
-        timeFrame: month
-        unit: 1
-        price: '0.20'
-        userMultiplied: false
-      - label: Bandwidth
+      - label: Agent bandwidth
         name: bandwidth
         type: quota
         metric: gigabytes
@@ -282,26 +231,8 @@ plans:
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Bandwidth overage
-        name: bandwidth_overage
-        type: metered
-        metric: gigabytes
-        limit: -1
-        timeFrame: month
-        unit: 1
-        price: '0.50'
-        userMultiplied: false
-      - label: Inbound email
-        name: inbound_email
-        type: quota
-        metric: messages
-        limit: -1
-        timeFrame: month
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Outgoing email
-        name: outgoing_email
+      - label: Agent emails
+        name: agent_emails
         type: quota
         metric: messages
         limit: 10000
@@ -309,9 +240,168 @@ plans:
         unit: 1
         price: '0.00'
         userMultiplied: false
-      - label: Outgoing email overage
-        description: Per 1,000 outgoing messages beyond the included 10,000 per month
-        name: outgoing_email_overage
+      - label: Custom sending domains
+        name: custom_sending_domains
+        type: quota
+        metric: domains
+        limit: 1
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+    note: >-
+      The page publishes no overage rate on Essentials for Agent Accounts, agent
+      storage, agent bandwidth or agent emails. It does not say whether those
+      allowances are fixed limits or are billed at an unpublished rate.
+    elements:
+      - name: Email and Calendar API
+      - name: Nylas Notetaker
+      - name: Agent Accounts
+      - name: 1 custom sending domain
+      - name: Community support (developer forums)
+  - id: nylas-pro
+    name: Pro
+    type: paid
+    description: >-
+      "For unpredictable volume." Marked "Best Value". $49/month billed monthly
+      (the comparison table says "from $49/month"). An annual commitment is
+      offered as Pro Annual; see billingVariants.
+    entries:
+      - label: Monthly Base Fee
+        name: base_fee
+        type: recurring
+        metric: months
+        limit: 1
+        timeFrame: month
+        unit: 1
+        price: '49.00'
+        userMultiplied: false
+      - label: Connected accounts, email and calendar
+        name: connected_accounts
+        type: quota
+        metric: connected_accounts
+        limit: 25
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Connected account overage
+        description: Per additional email and calendar connected account
+        name: connected_account_overage
+        type: metered
+        metric: connected_accounts
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '2.00'
+        userMultiplied: false
+      - label: Connected accounts, calendar-only
+        name: calendar_only_accounts
+        type: quota
+        metric: connected_accounts
+        limit: 35
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Calendar-only connected account overage
+        description: Per additional calendar-only connected account
+        name: calendar_only_account_overage
+        type: metered
+        metric: connected_accounts
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '1.50'
+        userMultiplied: false
+      - label: Notetaker bot hours
+        name: notetaker_bot_hours
+        type: quota
+        metric: bot_hours
+        limit: 70
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Notetaker bot hour overage
+        description: Per additional bot hour
+        name: notetaker_bot_hour_overage
+        type: metered
+        metric: bot_hours
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.70'
+        userMultiplied: false
+      - label: Agent Accounts
+        name: agent_accounts
+        type: quota
+        metric: agent_accounts
+        limit: 50
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Agent Account overage
+        description: Per additional Agent Account
+        name: agent_account_overage
+        type: metered
+        metric: agent_accounts
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.40'
+        userMultiplied: false
+      - label: Agent storage
+        name: storage
+        type: quota
+        metric: gigabytes
+        limit: 50
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Agent storage overage
+        description: Per additional GB
+        name: storage_overage
+        type: metered
+        metric: gigabytes
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.40'
+        userMultiplied: false
+      - label: Agent bandwidth
+        name: bandwidth
+        type: quota
+        metric: gigabytes
+        limit: 50
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Agent bandwidth overage
+        description: Per additional GB
+        name: bandwidth_overage
+        type: metered
+        metric: gigabytes
+        limit: -1
+        timeFrame: month
+        unit: 1
+        price: '0.80'
+        userMultiplied: false
+      - label: Agent emails
+        name: agent_emails
+        type: quota
+        metric: messages
+        limit: 50000
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+      - label: Agent email overage
+        description: Per 1,000 additional agent emails beyond the included 50,000 per month
+        name: agent_email_overage
         type: metered
         metric: messages
         limit: -1
@@ -319,19 +409,205 @@ plans:
         unit: 1000
         price: '0.80'
         userMultiplied: false
+      - label: Custom sending domains
+        name: custom_sending_domains
+        type: quota
+        metric: domains
+        limit: 10
+        timeFrame: month
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
     elements:
-      - name: Everything in the Calendar plan
-      - name: Email sync
-      - name: Instant and scheduled send
-      - name: Email bounce detection
-      - name: Link and open message tracking
+      - name: Email and Calendar API
+      - name: Nylas Notetaker
       - name: Agent Accounts
+      - name: 10 custom sending domains
+      - name: Community support (developer forums)
+    billingVariants:
+      - id: nylas-pro-annual
+        name: Pro Annual
+        billingFrequency: annual
+        commitment: 12 months
+        description: >-
+          The same Pro plan at a lower price for a 12-month commitment: $43/month
+          (the comparison table says "from $43/month"; the toggle says "Save up to
+          12%"), lower overage rates, Basic Support, and access to features
+          reserved for annual plans such as Scheduler whitelabeling.
+        note: >-
+          The page shows the Pro Annual fee as a monthly figure ($43/month). It
+          does not state whether it is invoiced monthly or once per year.
+        entries:
+          - label: Monthly Base Fee
+            name: base_fee
+            type: recurring
+            metric: months
+            limit: 1
+            timeFrame: month
+            unit: 1
+            price: '43.00'
+            userMultiplied: false
+          - label: Connected accounts, email and calendar
+            name: connected_accounts
+            type: quota
+            metric: connected_accounts
+            limit: 25
+            timeFrame: month
+            unit: 1
+            price: '0.00'
+            userMultiplied: false
+          - label: Connected account overage
+            description: Per additional email and calendar connected account
+            name: connected_account_overage
+            type: metered
+            metric: connected_accounts
+            limit: -1
+            timeFrame: month
+            unit: 1
+            price: '1.75'
+            userMultiplied: false
+          - label: Connected accounts, calendar-only
+            name: calendar_only_accounts
+            type: quota
+            metric: connected_accounts
+            limit: 35
+            timeFrame: month
+            unit: 1
+            price: '0.00'
+            userMultiplied: false
+          - label: Calendar-only connected account overage
+            description: Per additional calendar-only connected account
+            name: calendar_only_account_overage
+            type: metered
+            metric: connected_accounts
+            limit: -1
+            timeFrame: month
+            unit: 1
+            price: '1.35'
+            userMultiplied: false
+          - label: Notetaker bot hours
+            name: notetaker_bot_hours
+            type: quota
+            metric: bot_hours
+            limit: 70
+            timeFrame: month
+            unit: 1
+            price: '0.00'
+            userMultiplied: false
+          - label: Notetaker bot hour overage
+            description: Per additional bot hour
+            name: notetaker_bot_hour_overage
+            type: metered
+            metric: bot_hours
+            limit: -1
+            timeFrame: month
+            unit: 1
+            price: '0.65'
+            userMultiplied: false
+          - label: Agent Accounts
+            name: agent_accounts
+            type: quota
+            metric: agent_accounts
+            limit: 50
+            timeFrame: month
+            unit: 1
+            price: '0.00'
+            userMultiplied: false
+          - label: Agent Account overage
+            description: Per additional Agent Account
+            name: agent_account_overage
+            type: metered
+            metric: agent_accounts
+            limit: -1
+            timeFrame: month
+            unit: 1
+            price: '0.20'
+            userMultiplied: false
+          - label: Agent storage
+            name: storage
+            type: quota
+            metric: gigabytes
+            limit: 50
+            timeFrame: month
+            unit: 1
+            price: '0.00'
+            userMultiplied: false
+          - label: Agent storage overage
+            description: Per additional GB
+            name: storage_overage
+            type: metered
+            metric: gigabytes
+            limit: -1
+            timeFrame: month
+            unit: 1
+            price: '0.20'
+            userMultiplied: false
+          - label: Agent bandwidth
+            name: bandwidth
+            type: quota
+            metric: gigabytes
+            limit: 50
+            timeFrame: month
+            unit: 1
+            price: '0.00'
+            userMultiplied: false
+          - label: Agent bandwidth overage
+            description: Per additional GB
+            name: bandwidth_overage
+            type: metered
+            metric: gigabytes
+            limit: -1
+            timeFrame: month
+            unit: 1
+            price: '0.50'
+            userMultiplied: false
+          - label: Agent emails
+            name: agent_emails
+            type: quota
+            metric: messages
+            limit: 50000
+            timeFrame: month
+            unit: 1
+            price: '0.00'
+            userMultiplied: false
+          - label: Agent email overage
+            description: Per 1,000 additional agent emails beyond the included 50,000 per month
+            name: agent_email_overage
+            type: metered
+            metric: messages
+            limit: -1
+            timeFrame: month
+            unit: 1000
+            price: '0.70'
+            userMultiplied: false
+          - label: Custom sending domains
+            name: custom_sending_domains
+            type: quota
+            metric: domains
+            limit: 20
+            timeFrame: month
+            unit: 1
+            price: '0.00'
+            userMultiplied: false
+        elements:
+          - name: Everything in Pro
+          - name: 20 custom sending domains
+          - name: Basic Support
+          - name: Scheduler whitelabeling (annual plans only)
+          - name: Access to paid add-ons
+        addOns:
+          - name: Accelerator package
+            description: >-
+              Shared Google App and Custom Domain (CNAME). The plan card also
+              describes it as including Custom Auth Branding.
+            price: not published
   - id: nylas-enterprise
     name: Enterprise
     type: enterprise
     description: >-
-      Custom-negotiated plan. Every dimension is priced at a negotiated volume
-      rate.
+      "For when you're ready to scale." Custom pricing. Lower rates at higher
+      volumes, a contractual uptime SLA, a signed BAA, custom terms, and
+      dedicated support and onboarding under one agreement.
     entries:
       - label: Monthly Base Fee
         name: base_fee
@@ -344,8 +620,9 @@ plans:
         userMultiplied: false
       - label: All metered dimensions
         description: >-
-          Connected accounts, Agent Accounts, storage, bandwidth and outgoing
-          email are all charged at a negotiated volume rate.
+          Connected accounts (email and calendar, and calendar-only), Notetaker
+          bot hours, Agent Accounts, agent storage, agent bandwidth, agent emails
+          and custom sending domains are all listed as Custom.
         name: volume_rate
         type: metered
         metric: mixed
@@ -355,12 +632,13 @@ plans:
         price: custom
         userMultiplied: false
     elements:
-      - name: Volume-based discounts
-      - name: Customizable branding
-      - name: Dedicated support
-      - name: Professional services access
-      - name: Uptime guarantees
-      - name: Signed BAA
+      - name: Volume band pricing
+      - name: HIPAA and HITECH BAA
+      - name: Guaranteed uptime SLA
+      - name: App-level field filtering
+      - name: Dedicated support and onboarding options
+      - name: Basic Support
+      - name: Advanced support plans, guided onboarding and professional services available as add-ons
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-thread-replied.schema.json",
+  "title": "Nylas thread.replied notification object",
+  "description": "Sent when a participant replies to a tracked email thread. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "object": {
+      "type": "string",
+      "description": "Always `thread`.",
+      "enum": [
+        "thread"
+      ]
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns the tracked thread."
+    },
+    "message_id": {
+      "type": "string",
+      "description": "The ID of the reply message."
+    },
+    "root_message_id": {
+      "type": "string",
+      "description": "The ID of the original tracked message that was replied to."
+    },
+    "label": {
+      "type": "string",
+      "description": "The tracking label you assigned when sending the original message."
+    },
+    "reply_data": {
+      "type": "object",
+      "description": "Aggregate reply data.",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "description": "Total number of replies to the tracked thread."
+        }
+      }
+    },
+    "sender_app_id": {
+      "type": "string",
+      "description": "The Nylas application ID that sent the tracked message."
+    },
+    "thread_id": {
+      "type": "string",
+      "description": "The thread ID containing the reply."
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp of the reply."
+    },
+    "reply_to_message_id": {
+      "type": "string",
+      "description": "The message ID that was replied to."
+    },
+    "from_self": {
+      "type": "boolean",
+      "description": "Whether the reply was sent by the tracked message sender."
+    }
+  },
+  "required": [
+    "message_id",
+    "root_message_id"
+  ],
+  "x-nylas-trigger": "thread.replied",
+  "x-nylas-category": "Message Tracking",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/message-tracking/thread-replied/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "object": "thread",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "message_id": "<message-id-of-reply>",
+      "root_message_id": "<message-id-of-original-tracked-message>",
+      "label": "some-client-label",
+      "reply_data": {
+        "count": 1
+      },
+      "reply_to_message_id": "<message-id-of-original-tracked-message>",
+      "from_self": false,
+      "sender_app_id": "<app-id>",
+      "thread_id": "<thread-id-of-sent-message>",
+      "timestamp": 1696007157
+    }
+  ]
+}
