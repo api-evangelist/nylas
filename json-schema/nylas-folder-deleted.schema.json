@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-folder-deleted.schema.json",
+  "title": "Nylas folder.deleted notification object",
+  "description": "Sent when a user deletes a folder. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [
+    "id"
+  ],
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the grant that owned this folder."
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the deleted folder."
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the deleted folder."
+    },
+    "object": {
+      "type": "string",
+      "description": "Object type identifier.",
+      "enum": [
+        "folder"
+      ]
+    },
+    "system_folder": {
+      "type": "boolean",
+      "description": "Whether this was a provider system folder."
+    }
+  },
+  "x-nylas-trigger": "folder.deleted",
+  "x-nylas-category": "Folders and Labels",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/folders/folder-deleted/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "id": "<FOLDER_ID>",
+      "name": "My test folder",
+      "object": "folder",
+      "system_folder": false
+    }
+  ]
+}

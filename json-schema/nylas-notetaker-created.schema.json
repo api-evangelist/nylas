@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-notetaker-created.schema.json",
+  "title": "Nylas notetaker.created notification object",
+  "description": "Sent when you create or schedule a Notetaker bot. For ad-hoc meetings, `join_time`, `event.ical_uid`, and `event.event_id` are omitted. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the Notetaker bot."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns this Notetaker."
+    },
+    "meeting_settings": {
+      "type": "object",
+      "description": "Configuration for what the Notetaker captures.",
+      "properties": {
+        "video_recording": {
+          "type": "boolean",
+          "description": "Whether video recording is enabled."
+        },
+        "audio_recording": {
+          "type": "boolean",
+          "description": "Whether audio recording is enabled."
+        },
+        "transcription": {
+          "type": "boolean",
+          "description": "Whether transcription is enabled."
+        },
+        "summary": {
+          "type": "boolean",
+          "description": "Whether AI summary generation is enabled."
+        },
+        "summary_settings": {
+          "type": "object",
+          "description": "Custom instructions for summary generation.",
+          "properties": {
+            "custom_instructions": {
+              "type": "string",
+              "description": "Prompt instructions for the AI summary."
+            }
+          }
+        },
+        "action_items": {
+          "type": "boolean",
+          "description": "Whether AI action item extraction is enabled."
+        },
+        "action_items_settings": {
+          "type": "object",
+          "description": "Custom instructions for action item extraction.",
+          "properties": {
+            "custom_instructions": {
+              "type": "string",
+              "description": "Prompt instructions for action item extraction."
+            }
+          }
+        },
+        "deduplication_settings": {
+          "type": "object",
+          "description": "Settings for deduplicating Notetaker bots across a workspace.",
+          "properties": {
+            "scope": {
+              "type": "string",
+              "description": "Deduplication scope.",
+              "enum": [
+                "workspace"
+              ]
+            },
+            "key": {
+              "type": "string",
+              "description": "Deduplication key."
+            },
+            "workspace_id": {
+              "type": "string",
+              "description": "Workspace ID for scoped deduplication."
+            }
+          }
+        },
+        "leave_after_silence_seconds": {
+          "type": "integer",
+          "description": "Seconds of silence before the bot automatically leaves the meeting."
+        },
+        "messages": {
+          "type": "object",
+          "description": "Custom announcements posted by the bot to the meeting chat. Present only when configured. See [Custom announcements](/docs/v3/notetaker/custom-announcements/).",
+          "properties": {
+            "on_join": {
+              "type": "array",
+              "description": "Messages posted shortly after the bot joins, each on its own delay.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "text"
+                    ],
+                    "description": "Message format. Currently only `text`."
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "The message text (1\u20131,000 characters, HTML stripped)."
+                  },
+                  "send_after_ms": {
+                    "type": "integer",
+                    "description": "Delay in milliseconds from bot-join before posting (1\u2013600,000)."
+                  }
+                }
+              }
+            },
+            "on_participant_join": {
+              "type": "array",
+              "description": "Messages posted on a trailing debounce when participants join.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "text"
+                    ],
+                    "description": "Message format. Currently only `text`."
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "The message text (1\u20131,000 characters, HTML stripped)."
+                  },
+                  "debounce_ms": {
+                    "type": "integer",
+                    "description": "Trailing debounce window in milliseconds (1\u2013600,000)."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "meeting_provider": {
+      "type": "string",
+      "description": "The video conferencing provider.",
+      "enum": [
+        "Google Meet",
+        "Zoom",
+        "Microsoft Teams"
+      ]
+    },
+    "meeting_link": {
+      "type": "string",
+      "description": "URL of the meeting the Notetaker will join."
+    },
+    "join_time": {
+      "type": "integer",
+      "description": "Unix timestamp when the Notetaker is scheduled to join. Omitted for ad-hoc meetings."
+    },
+    "event": {
+      "type": "object",
+      "description": "Calendar event associated with this Notetaker. Some fields omitted for ad-hoc meetings.",
+      "properties": {
+        "ical_uid": {
+          "type": "string",
+          "description": "iCalendar UID of the associated event."
+        },
+        "event_id": {
+          "type": "string",
+          "description": "Nylas event ID of the associated event."
+        },
+        "master_event_id": {
+          "type": "string",
+          "description": "Master event ID for recurring events."
+        }
+      }
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `notetaker`.",
+      "enum": [
+        "notetaker"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the Notetaker bot.",
+      "enum": [
+        "scheduled"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "description": "Current state of the Notetaker bot.",
+      "enum": [
+        "scheduled"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "object",
+    "state"
+  ],
+  "x-nylas-trigger": "notetaker.created",
+  "x-nylas-category": "Notetaker",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/notetaker/notetaker-created/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "id": "<NOTETAKER_ID>",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "meeting_settings": {
+        "video_recording": true,
+        "audio_recording": true,
+        "transcription": true,
+        "summary": true,
+        "summary_settings": {
+          "custom_instructions": "Focus on action items related to the product launch."
+        },
+        "action_items": true,
+        "action_items_settings": {
+          "custom_instructions": "Group action items by team member."
+        },
+        "deduplication_settings": {
+          "scope": "workspace",
+          "key": "",
+          "workspace_id": "<WORKSPACE_ID>"
+        },
+        "leave_after_silence_seconds": 300,
+        "messages": {
+          "on_join": [
+            {
+              "type": "text",
+              "content": "\ud83d\udc4b Hey team! I'm your AI notetaker \u2014 here to capture the key points.",
+              "send_after_ms": 5000
+            }
+          ],
+          "on_participant_join": [
+            {
+              "type": "text",
+              "content": "\ud83d\udc4b Welcome! Recording and transcription are running.",
+              "debounce_ms": 3000
+            }
+          ]
+        }
+      },
+      "meeting_provider": "Google Meet",
+      "meeting_link": "https://meet.google.com/abc-defg-hij",
+      "join_time": 1737500936,
+      "event": {
+        "ical_uid": "<ICAL_UID>",
+        "event_id": "<EVENT_ID>",
+        "master_event_id": "<EVENT_ID>"
+      },
+      "object": "notetaker",
+      "status": "scheduled",
+      "state": "scheduled"
+    }
+  ]
+}

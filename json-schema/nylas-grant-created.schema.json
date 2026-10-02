@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-grant-created.schema.json",
+  "title": "Nylas grant.created notification object",
+  "description": "Sent when a user successfully authenticates with your Nylas application for the first time. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [],
+  "properties": {
+    "code": {
+      "type": "integer",
+      "description": "Nylas notification code."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the grant."
+    },
+    "integration_id": {
+      "type": "string",
+      "description": "Identifier for the connector (integration) used to create this grant."
+    },
+    "login_id": {
+      "type": "string",
+      "description": "Identifier for the login session that created this grant. Only present for hosted auth flows."
+    },
+    "provider": {
+      "type": "string",
+      "description": "Email provider for this grant.",
+      "enum": [
+        "google",
+        "microsoft",
+        "imap",
+        "yahoo",
+        "icloud",
+        "ews",
+        "eas"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address associated with the grant."
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the grant owner. Absent when the provider does not return a display name."
+    },
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "OAuth scopes granted during authentication."
+    }
+  },
+  "x-nylas-trigger": "grant.created",
+  "x-nylas-category": "Grants",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/grants/grant-created/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "code": 25012,
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "integration_id": "<NYLAS_INTEGRATION_ID>",
+      "login_id": "<LOGIN_ID>",
+      "provider": "google",
+      "email": "user@example.com",
+      "name": "John Doe",
+      "scope": [
+        "https://www.googleapis.com/auth/gmail.readonly",
+        "https://www.googleapis.com/auth/calendar"
+      ]
+    }
+  ]
+}

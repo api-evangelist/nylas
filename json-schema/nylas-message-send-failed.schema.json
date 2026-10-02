@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-send-failed.schema.json",
+  "title": "Nylas message.send_failed notification object",
+  "description": "The `data` object includes `grant_id`, `reason`, and `error` at the same level as `object`.",
+  "type": "object",
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that attempted to send this message."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Human-readable reason for the send failure."
+    },
+    "error": {
+      "type": "object",
+      "description": "Detailed error information about the failure.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The Nylas error type (e.g. `api.provider_error`)."
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable error message."
+        },
+        "status_code": {
+          "type": "integer",
+          "description": "HTTP status code from the provider."
+        },
+        "provider_error": {
+          "type": "object",
+          "description": "Raw error response from the email provider.",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "type",
+        "message"
+      ]
+    },
+    "object": {
+      "type": "object",
+      "description": "The scheduled message that failed to send. May be `null` if the message could not be constructed.",
+      "properties": {
+        "object": {
+          "type": "string",
+          "description": "Always `message`.",
+          "enum": [
+            "message"
+          ]
+        },
+        "grant_id": {
+          "type": "string",
+          "description": "The grant ID that attempted to send this message."
+        },
+        "id": {
+          "type": "string",
+          "description": "The Nylas message ID."
+        },
+        "subject": {
+          "type": "string",
+          "description": "The message subject line."
+        },
+        "body": {
+          "type": "string",
+          "description": "The message body."
+        },
+        "from": {
+          "type": "array",
+          "description": "Sender information.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        },
+        "to": {
+          "type": "array",
+          "description": "Primary recipients.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        },
+        "cc": {
+          "type": "array",
+          "description": "CC recipients.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        },
+        "bcc": {
+          "type": "array",
+          "description": "BCC recipients.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        },
+        "reply_to": {
+          "type": "array",
+          "description": "Reply-to addresses.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        },
+        "attachments": {
+          "type": "array",
+          "description": "Attachment metadata.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Attachment ID."
+              },
+              "filename": {
+                "type": "string",
+                "description": "Original filename."
+              },
+              "content_type": {
+                "type": "string",
+                "description": "MIME type."
+              },
+              "size": {
+                "type": "integer",
+                "description": "Size in bytes."
+              },
+              "content": {
+                "type": "string",
+                "description": "Base64-encoded attachment content."
+              }
+            }
+          }
+        },
+        "schedule_id": {
+          "type": "string",
+          "description": "The scheduled send job ID."
+        },
+        "send_at": {
+          "type": "integer",
+          "description": "Unix timestamp when the message was scheduled to send."
+        },
+        "use_draft": {
+          "type": "boolean",
+          "description": "Whether the message was sent from a draft."
+        }
+      },
+      "nullable": true
+    }
+  },
+  "required": [
+    "grant_id",
+    "reason",
+    "error",
+    "object"
+  ],
+  "x-nylas-trigger": "message.send_failed",
+  "x-nylas-category": "Messages",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/messages/message-send_failed/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "x-nylas-upstream-issue": "The published example for this trigger does not validate against its published schema ('message' is not of type 'object'; 'reason' is a required property; 'error' is a required property), so it is omitted here. Reported to the Nylas docs team."
+}

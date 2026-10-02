@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-contact-updated.schema.json",
+  "title": "Nylas contact.updated notification object",
+  "description": "Sent when a user creates or updates a contact. Most providers don't differentiate between creating and updating contacts. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [
+    "grant_id",
+    "id"
+  ],
+  "properties": {
+    "birthday": {
+      "type": "string",
+      "description": "Contact's birthday in YYYY-MM-DD format."
+    },
+    "company_name": {
+      "type": "string",
+      "description": "Name of the contact's company."
+    },
+    "emails": {
+      "type": "array",
+      "description": "Email addresses associated with the contact. May be `null` if the contact has none.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "The email address."
+          },
+          "type": {
+            "type": "string",
+            "description": "Category of the email address.",
+            "enum": [
+              "work",
+              "home",
+              "other"
+            ]
+          }
+        }
+      },
+      "nullable": true
+    },
+    "given_name": {
+      "type": "string",
+      "description": "Contact's first name."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the grant that owns this contact."
+    },
+    "groups": {
+      "type": "array",
+      "description": "Groups the contact belongs to. May be `null` if the contact has none.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier of the contact group."
+          }
+        }
+      },
+      "nullable": true
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the contact."
+    },
+    "im_addresses": {
+      "type": "array",
+      "description": "Instant messaging addresses for the contact. May be `null` if the contact has none.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "IM service type."
+          },
+          "im_address": {
+            "type": "string",
+            "description": "The IM address or handle."
+          }
+        }
+      },
+      "nullable": true
+    },
+    "job_title": {
+      "type": "string",
+      "description": "Contact's job title."
+    },
+    "manager_name": {
+      "type": "string",
+      "description": "Name of the contact's manager."
+    },
+    "middle_name": {
+      "type": "string",
+      "description": "Contact's middle name."
+    },
+    "nickname": {
+      "type": "string",
+      "description": "Contact's nickname."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-form notes about the contact."
+    },
+    "office_location": {
+      "type": "string",
+      "description": "Contact's office location."
+    },
+    "object": {
+      "type": "string",
+      "description": "Object type identifier.",
+      "enum": [
+        "contact"
+      ]
+    },
+    "phone_numbers": {
+      "type": "array",
+      "description": "Phone numbers for the contact. May be `null` if the contact has none.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "The phone number."
+          },
+          "type": {
+            "type": "string",
+            "description": "Category of the phone number.",
+            "enum": [
+              "work",
+              "home",
+              "mobile",
+              "other"
+            ]
+          }
+        }
+      },
+      "nullable": true
+    },
+    "physical_addresses": {
+      "type": "array",
+      "description": "Physical addresses for the contact. May be `null` if the contact has none.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name."
+          },
+          "country": {
+            "type": "string",
+            "description": "Country name or code."
+          },
+          "postal_code": {
+            "type": "string",
+            "description": "Postal or ZIP code."
+          },
+          "state": {
+            "type": "string",
+            "description": "State or province."
+          },
+          "street_address": {
+            "type": "string",
+            "description": "Street address."
+          },
+          "type": {
+            "type": "string",
+            "description": "Category of the address.",
+            "enum": [
+              "work",
+              "home",
+              "other"
+            ]
+          }
+        }
+      },
+      "nullable": true
+    },
+    "suffix": {
+      "type": "string",
+      "description": "Contact's name suffix (e.g. Jr, Sr, III)."
+    },
+    "surname": {
+      "type": "string",
+      "description": "Contact's last name."
+    },
+    "source": {
+      "type": "string",
+      "description": "Source of the contact record.",
+      "enum": [
+        "address_book",
+        "inbox",
+        "domain"
+      ]
+    },
+    "web_pages": {
+      "type": "array",
+      "description": "Web pages associated with the contact. May be `null` if the contact has none.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The URL."
+          },
+          "type": {
+            "type": "string",
+            "description": "Category of the web page.",
+            "enum": [
+              "work",
+              "home",
+              "other"
+            ]
+          }
+        }
+      },
+      "nullable": true
+    }
+  },
+  "x-nylas-trigger": "contact.updated",
+  "x-nylas-category": "Contacts",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/contacts/contact-updated/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "birthday": "1988-12-31",
+      "company_name": "Nyla Global Express Inc.",
+      "emails": [
+        {
+          "email": "john.schmidt@example.com",
+          "type": "work"
+        },
+        {
+          "email": "johnisacoolguy@example.com",
+          "type": "home"
+        }
+      ],
+      "given_name": "John",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "groups": [
+        {
+          "id": "friends"
+        }
+      ],
+      "id": "<WEBHOOK_ID>",
+      "im_addresses": [
+        {
+          "type": "jabber",
+          "im_address": "myjabberaddress"
+        },
+        {
+          "type": "msn",
+          "im_address": "mymsnaddress"
+        }
+      ],
+      "job_title": "Software Engineer",
+      "manager_name": "Melissa A. Manager",
+      "middle_name": "Jacob",
+      "nickname": "JJ",
+      "notes": "This is where you'd write something about John.",
+      "office_location": "123 Main Street",
+      "object": "contact",
+      "phone_numbers": [
+        {
+          "number": "1 123 456 7890",
+          "type": "work"
+        }
+      ],
+      "physical_addresses": [
+        {
+          "city": "San Francisco",
+          "country": "USA",
+          "postal_code": "94107",
+          "state": "CA",
+          "street_address": "123 Main Street",
+          "type": "work"
+        }
+      ],
+      "suffix": "Jr",
+      "surname": "Jingleheimer-Schmidt",
+      "source": "address_book",
+      "web_pages": [
+        {
+          "url": "www.myWorkPage.example.com",
+          "type": "work"
+        }
+      ]
+    }
+  ]
+}

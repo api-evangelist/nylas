@@ -1,0 +1,182 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "nylas": "https://developer.nylas.com/docs/dev-guide/glossary/#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "@vocab": "https://developer.nylas.com/docs/dev-guide/glossary/#",
+
+    "object": "@type",
+    "id": "@id",
+
+    "UnixTimestamp": "nylas:UnixTimestamp",
+
+    "grant_id": { "@id": "nylas:grant", "@type": "@id" },
+    "application_id": { "@id": "nylas:application", "@type": "@id" },
+    "created_at": { "@id": "nylas:created_at", "@type": "nylas:UnixTimestamp" },
+    "updated_at": { "@id": "nylas:updated_at", "@type": "nylas:UnixTimestamp" },
+    "metadata": { "@id": "nylas:metadata", "@type": "@json" },
+    "email": "schema:email",
+    "name": "schema:name",
+    "description": "schema:description",
+
+    "grant": {
+      "@id": "nylas:Grant",
+      "@context": {
+        "provider": "nylas:provider",
+        "grant_status": "nylas:grant_status",
+        "scope": { "@id": "nylas:scope", "@container": "@set" }
+      }
+    },
+
+    "message": {
+      "@id": "schema:EmailMessage",
+      "@context": {
+        "subject": "schema:headline",
+        "body": "schema:text",
+        "snippet": "schema:abstract",
+        "from": { "@id": "schema:sender", "@container": "@set" },
+        "to": { "@id": "schema:toRecipient", "@container": "@set" },
+        "cc": { "@id": "schema:ccRecipient", "@container": "@set" },
+        "bcc": { "@id": "schema:bccRecipient", "@container": "@set" },
+        "reply_to": { "@id": "nylas:reply_to", "@container": "@set" },
+        "date": { "@id": "nylas:date", "@type": "nylas:UnixTimestamp" },
+        "thread_id": { "@id": "schema:isPartOf", "@type": "@id" },
+        "attachments": { "@id": "schema:messageAttachment", "@container": "@set" },
+        "folders": { "@id": "nylas:folder", "@container": "@set" },
+        "unread": { "@id": "nylas:unread", "@type": "xsd:boolean" },
+        "starred": { "@id": "nylas:starred", "@type": "xsd:boolean" },
+        "in_reply_to": "nylas:in_reply_to"
+      }
+    },
+
+    "draft": {
+      "@id": "nylas:Draft",
+      "@context": {
+        "subject": "schema:headline",
+        "body": "schema:text",
+        "to": { "@id": "schema:toRecipient", "@container": "@set" },
+        "cc": { "@id": "schema:ccRecipient", "@container": "@set" },
+        "bcc": { "@id": "schema:bccRecipient", "@container": "@set" },
+        "attachments": { "@id": "schema:messageAttachment", "@container": "@set" }
+      }
+    },
+
+    "thread": {
+      "@id": "schema:Conversation",
+      "@context": {
+        "subject": "schema:headline",
+        "snippet": "schema:abstract",
+        "message_ids": { "@id": "schema:hasPart", "@type": "@id", "@container": "@set" },
+        "draft_ids": { "@id": "nylas:draft", "@type": "@id", "@container": "@set" },
+        "participants": { "@id": "nylas:participant", "@container": "@set" },
+        "has_attachments": { "@id": "nylas:has_attachments", "@type": "xsd:boolean" },
+        "earliest_message_date": { "@id": "nylas:earliest_message_date", "@type": "nylas:UnixTimestamp" },
+        "latest_message_received_date": { "@id": "nylas:latest_message_received_date", "@type": "nylas:UnixTimestamp" },
+        "latest_message_sent_date": { "@id": "nylas:latest_message_sent_date", "@type": "nylas:UnixTimestamp" }
+      }
+    },
+
+    "attachment": {
+      "@id": "schema:MediaObject",
+      "@context": {
+        "filename": "schema:name",
+        "content_type": "schema:encodingFormat",
+        "size": { "@id": "nylas:size_bytes", "@type": "xsd:integer" },
+        "is_inline": { "@id": "nylas:is_inline", "@type": "xsd:boolean" },
+        "content_id": "nylas:content_id",
+        "content_disposition": "nylas:content_disposition"
+      }
+    },
+
+    "folder": {
+      "@id": "nylas:Folder",
+      "@context": {
+        "parent_id": { "@id": "nylas:parent_folder", "@type": "@id" },
+        "system_folder": { "@id": "nylas:system_folder", "@type": "xsd:boolean" },
+        "unread_count": { "@id": "nylas:unread_count", "@type": "xsd:integer" },
+        "total_count": { "@id": "nylas:total_count", "@type": "xsd:integer" }
+      }
+    },
+
+    "calendar": {
+      "@id": "nylas:Calendar",
+      "@context": {
+        "timezone": "nylas:timezone",
+        "is_primary": { "@id": "nylas:is_primary", "@type": "xsd:boolean" },
+        "read_only": { "@id": "nylas:read_only", "@type": "xsd:boolean" },
+        "owner_email": "nylas:owner_email",
+        "location": "schema:location"
+      }
+    },
+
+    "event": {
+      "@id": "schema:Event",
+      "@context": {
+        "title": "schema:name",
+        "location": "schema:location",
+        "calendar_id": { "@id": "nylas:calendar", "@type": "@id" },
+        "participants": { "@id": "schema:attendee", "@container": "@set" },
+        "organizer": "schema:organizer",
+        "status": "nylas:event_status",
+        "busy": { "@id": "nylas:busy", "@type": "xsd:boolean" },
+        "when": "nylas:when",
+        "recurrence": { "@id": "nylas:recurrence", "@container": "@list" },
+        "html_link": { "@id": "schema:url", "@type": "@id" },
+        "ical_uid": "nylas:ical_uid",
+        "conferencing": "nylas:conferencing"
+      }
+    },
+
+    "contact": {
+      "@id": "schema:Person",
+      "@context": {
+        "given_name": "schema:givenName",
+        "middle_name": "schema:additionalName",
+        "surname": "schema:familyName",
+        "suffix": "schema:honorificSuffix",
+        "nickname": "nylas:nickname",
+        "birthday": "schema:birthDate",
+        "company_name": "nylas:company_name",
+        "job_title": "schema:jobTitle",
+        "emails": { "@id": "nylas:email_address", "@container": "@set" },
+        "phone_numbers": { "@id": "nylas:phone_number", "@container": "@set" },
+        "physical_addresses": { "@id": "nylas:physical_address", "@container": "@set" },
+        "web_pages": { "@id": "nylas:web_page", "@container": "@set" },
+        "picture_url": { "@id": "schema:image", "@type": "@id" },
+        "notes": "nylas:notes",
+        "groups": { "@id": "nylas:contact_group", "@container": "@set" }
+      }
+    },
+
+    "notetaker": {
+      "@id": "nylas:Notetaker",
+      "@context": {
+        "meeting_link": { "@id": "nylas:meeting_link", "@type": "@id" },
+        "meeting_provider": "nylas:meeting_provider",
+        "join_time": { "@id": "nylas:join_time", "@type": "nylas:UnixTimestamp" },
+        "state": "nylas:notetaker_state"
+      }
+    },
+
+    "booking": {
+      "@id": "schema:EventReservation",
+      "@context": {
+        "booking_id": "schema:reservationId",
+        "configuration_id": { "@id": "nylas:scheduler_configuration", "@type": "@id" },
+        "booking_ref": "nylas:booking_ref"
+      }
+    }
+  },
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/dev-guide/glossary/",
+    "derived_from": [
+      "https://developer.nylas.com/_spec-files/nylas-api.yaml (components.schemas message, thread, draft, attachment, folder, contact)",
+      "https://developer.nylas.com/docs/reference/notifications/ (event, calendar, notetaker, booking, grant object schemas)"
+    ],
+    "generated": "2026-09-28",
+    "note": "Field names are Nylas API field names verbatim. `object` is the Nylas resource discriminator and is aliased to @type; its values (message, event, ...) are the class terms. Nylas timestamps are Unix epoch seconds, so they are typed nylas:UnixTimestamp and deliberately NOT mapped to schema.org Date/DateTime properties. schema.org is used only where the semantics match; everything else stays in the Nylas glossary namespace."
+  }
+}

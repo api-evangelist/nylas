@@ -3072,6 +3072,16 @@ apis:
   - type: APIReference
     url: https://developer.nylas.com/docs/reference/api/application-level-templates/
 common:
+  - type: AsyncAPI
+    url: asyncapi/nylas-notifications-asyncapi.yml
+    name: Nylas Notifications (AsyncAPI, authored by Nylas)
+  - type: JSONSchema
+    url: json-schema/nylas-notification-envelope.schema.json
+    name: Nylas Notification Envelope (one schema per trigger alongside it in json-schema/)
+  - type: JSONLDContext
+    url: json-ld/nylas-context.jsonld
+  - type: SpectralRules
+    url: rules/nylas-rules.yml
   - type: CapabilityMap
     url: capabilities/nylas-capability-edges.yml
     name: Nylas Business Capability Map
@@ -3227,3 +3237,47 @@ x-provenance:
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-correction-request:
+  requested: '2026-10-02'
+  source:
+  - https://github.com/api-evangelist/nylas/pull/4
+  request: >-
+    Submitted by Nick Barraclough (Product, Nylas; member of the nylas GitHub org), follow-up to
+    PR #1/#2. Verified live 2026-10-02. TAKEN AS FILES (Nylas-authored, x-provenance method
+    authored / publisher Nylas): asyncapi/nylas-notifications-asyncapi.yml (AsyncAPI 3.1.0, 3
+    channels webhook / Google Pub/Sub / SNS, 53 messages; passes `asyncapi validate` with no
+    governance issues; 49 of 53 trigger names appear on
+    https://developer.nylas.com/docs/reference/notifications/ -- the four message.intelligence.*
+    triggers (order, tracking, return, travel) are NOT on the public reference, llms-full.txt or
+    the live OpenAPI, and derived_from points at nylas/developer.nylas.com, which is not publicly
+    resolvable; keep them but mark as unverified until Nylas publishes them); json-schema/ (54
+    files, all pass the 2020-12 metaschema); json-ld/nylas-context.jsonld; rules/nylas-rules.yml
+    (extends spectral:oas, 21 rules; against the live spec: 0 errors, 10 warnings, 129 info);
+    a2a/nylas-agent-card.json (byte-identical to https://developer.nylas.com/.well-known/agent-card.json);
+    mcp/nylas-mcp.yml (38 tools, names identical to
+    https://developer.nylas.com/.well-known/mcp/server-card.json; main had 17). Rebuild
+    provenance.yml so these record as authored. RE-HARVEST: openapi/_original/nylas-api-openapi.yml
+    from https://developer.nylas.com/_spec-files/nylas-api.yaml -- live is 213 operations (incl.
+    /v3/notetakers/configs) vs 208 harvested, 1,735,021 bytes, sha256 2d6e38c9e898...; then re-split
+    and re-refine. POINTERS to add (all 200): OAuthScopes
+    https://developer.nylas.com/docs/dev-guide/scopes/; Console
+    https://developer.nylas.com/docs/reference/api/; CodeSamples https://github.com/nylas-samples;
+    Examples https://developer.nylas.com/docs/cookbook/; Newsroom https://www.nylas.com/newsroom/;
+    Leadership https://www.nylas.com/company/about/; Subprocessors
+    https://www.nylas.com/security/subprocessors/; DataResidency
+    https://developer.nylas.com/docs/dev-guide/platform/data-residency/; DataSubjectRequest and
+    GlobalPrivacyControl https://www.nylas.com/privacy-policy/ (policy text covers GPC and EEA data
+    subject rights); AITransparency https://developer.nylas.com/docs/v3/notetaker/custom-announcements/.
+    Canonicalize PrivacyPolicy to https://www.nylas.com/privacy-policy/ and StatusPage to
+    https://status-v3.nylas.com/ (the old URLs redirect there). SecurityTxt /
+    VulnerabilityDisclosure: https://developer.nylas.com/.well-known/security.txt serves 200
+    (RFC 9116, security@nylas.com) -- correct the 'does not serve security.txt' finding. PRICING:
+    nylas.com/pricing shows Free / Essentials / Pro / Enterprise with Notetaker bot-hour
+    allowances -- regenerate plans/finops. TAGS: drop A2A (agent card exists but no A2A
+    endpoint), add Notetaker. humanURL: each per-tag API should point at its own reference page,
+    not the Applications page. Notifications are intentionally AsyncAPI, not OpenAPI webhooks --
+    do not count the missing webhooks object as a gap. NOT TAKEN: the PR's apis.yml (including
+    moving maintainers to the top -- the maintainer_present miss is a read-window defect in our
+    reader and is being fixed there), provenance.yml, README, plans, finops, security, rate-limits,
+    vocabulary, conformance, well-known, llms and capability files -- pipeline-generated; regenerate
+    from the verified facts above.

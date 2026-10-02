@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-opened.schema.json",
+  "title": "Nylas message.opened notification object",
+  "description": "Sent when a participant opens a tracked message. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns the tracked message."
+    },
+    "message_id": {
+      "type": "string",
+      "description": "The ID of the tracked message that was opened."
+    },
+    "label": {
+      "type": "string",
+      "description": "The tracking label you assigned when sending the message."
+    },
+    "message_data": {
+      "type": "object",
+      "description": "Aggregate open data.",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "description": "Total number of times the message has been opened."
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "Unix timestamp of the most recent open event."
+        }
+      }
+    },
+    "recents": {
+      "type": "array",
+      "description": "Recent open events with client details.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ip": {
+            "type": "string",
+            "description": "IP address of the opener."
+          },
+          "opened_id": {
+            "type": "integer",
+            "description": "Sequential open event ID."
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "Unix timestamp of this open event."
+          },
+          "user_agent": {
+            "type": "string",
+            "description": "User-Agent string of the opener's client."
+          }
+        }
+      }
+    },
+    "sender_app_id": {
+      "type": "string",
+      "description": "The Nylas application ID that sent the tracked message."
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "Unix timestamp of the most recent open event."
+    }
+  },
+  "required": [
+    "message_id"
+  ],
+  "x-nylas-trigger": "message.opened",
+  "x-nylas-category": "Message Tracking",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/message-tracking/message-opened/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "object": "message",
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "message_data": {
+        "count": 1,
+        "timestamp": 1695480410
+      },
+      "message_id": "18ac281f237c934b",
+      "label": "Testing Nylas Messaged Opened Tracking",
+      "recents": [
+        {
+          "ip": "<IP ADDR>",
+          "opened_id": 0,
+          "timestamp": 1695480567,
+          "user_agent": "Mozilla/5.0"
+        },
+        {
+          "ip": "<IP ADDR>",
+          "opened_id": 1,
+          "timestamp": 1695480567,
+          "user_agent": "Mozilla/5.0"
+        },
+        {
+          "ip": "<IP ADDR>",
+          "opened_id": 2,
+          "timestamp": 1695480567,
+          "user_agent": "Mozilla/5.0"
+        }
+      ],
+      "sender_app_id": "<app id>",
+      "timestamp": 1695480410
+    }
+  ]
+}

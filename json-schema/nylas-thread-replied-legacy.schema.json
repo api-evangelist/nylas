@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-thread-replied-legacy.schema.json",
+  "title": "Nylas thread.replied.legacy notification object",
+  "description": "Legacy format for thread replied tracking notifications. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "The v3 grant ID."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `thread`.",
+      "enum": [
+        "thread"
+      ]
+    },
+    "deltas": {
+      "type": "array",
+      "description": "Array of delta change objects in v2 format.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "integer",
+            "description": "Unix timestamp of the reply event."
+          },
+          "object": {
+            "type": "string",
+            "description": "Always `message`."
+          },
+          "type": {
+            "type": "string",
+            "description": "The delta type, always `thread.replied`."
+          },
+          "object_data": {
+            "type": "object",
+            "description": "The v2-format reply data.",
+            "properties": {
+              "account_id": {
+                "type": "string",
+                "description": "The v2 account ID."
+              },
+              "id": {
+                "type": "string",
+                "description": "The v2 webhook ID."
+              },
+              "namespace_id": {
+                "type": "string",
+                "description": "The v2 namespace ID."
+              },
+              "object": {
+                "type": "string",
+                "description": "Always `message`."
+              },
+              "attributes": {
+                "description": "Legacy attributes field. Always `null`.",
+                "nullable": true
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Reply metadata.",
+                "properties": {
+                  "from_self": {
+                    "type": "boolean",
+                    "description": "Whether the reply was sent by the tracked message sender."
+                  },
+                  "message_id": {
+                    "type": "string",
+                    "description": "The v2 reply message ID."
+                  },
+                  "payload": {
+                    "type": "string",
+                    "description": "Custom payload set when creating reply tracking."
+                  },
+                  "reply_to_message_id": {
+                    "type": "string",
+                    "description": "The v2 ID of the message being replied to."
+                  },
+                  "thread_id": {
+                    "type": "string",
+                    "description": "The v2 thread ID."
+                  },
+                  "timestamp": {
+                    "type": "integer",
+                    "description": "Unix timestamp of the reply."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "grant_id",
+    "object",
+    "deltas"
+  ],
+  "x-nylas-trigger": "thread.replied.legacy",
+  "x-nylas-category": "Message Tracking",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/message-tracking/thread-replied-legacy/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "deltas": [
+        {
+          "date": 1733180719,
+          "object": "message",
+          "object_data": {
+            "account_id": "<V2_NYLAS_ACCOUNT_ID>",
+            "id": "<V2_WEBHOOK_ID>",
+            "metadata": {
+              "from_self": true,
+              "message_id": "<V2_MESSAGE_ID>",
+              "payload": "Hello world",
+              "reply_to_message_id": "<V2_REPLY_TO_MESSAGE_ID>",
+              "thread_id": "<V2_THREAD_ID>",
+              "timestamp": 1733180490
+            },
+            "namespace_id": "<V2_NAMESPACE_ID>",
+            "object": "message"
+          },
+          "type": "thread.replied"
+        }
+      ],
+      "grant_id": "<V3_NYLAS_GRANT_ID>",
+      "object": "thread"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-grant-imap-sync-completed.schema.json",
+  "title": "Nylas grant.imap_sync_completed notification object",
+  "description": "Sent when a grant is created for an IMAP account and the initial historic sync completes. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [
+    "grant_id",
+    "provider"
+  ],
+  "properties": {
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the grant whose sync completed."
+    },
+    "code": {
+      "type": "integer",
+      "description": "Nylas notification code."
+    },
+    "integration_id": {
+      "type": "string",
+      "description": "Identifier for the connector (integration) associated with this grant."
+    },
+    "provider": {
+      "type": "string",
+      "description": "Email provider for this grant.",
+      "enum": [
+        "imap"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "description": "Notification trigger type echoed within the data object.",
+      "enum": [
+        "grant.imap_sync_completed"
+      ]
+    }
+  },
+  "x-nylas-trigger": "grant.imap_sync_completed",
+  "x-nylas-category": "Grants",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/grants/grant-imap_sync_completed/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "code": 25012,
+      "integration_id": "<INTEGRATION_ID>",
+      "provider": "imap",
+      "type": "grant.imap_sync_completed"
+    }
+  ]
+}

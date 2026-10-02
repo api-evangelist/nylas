@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-created-metadata.schema.json",
+  "title": "Nylas message.created.metadata notification object",
+  "description": "Sent for Google grants using the `/gmail.metadata` scope. Does not include `body`, `snippet`, or `attachment` fields. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The Nylas message ID."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns this message."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "thread_id": {
+      "type": "string",
+      "description": "The thread this message belongs to."
+    },
+    "subject": {
+      "type": "string",
+      "description": "The message subject line."
+    },
+    "from": {
+      "type": "array",
+      "description": "Sender information.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name of the sender."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the sender."
+          }
+        }
+      }
+    },
+    "to": {
+      "type": "array",
+      "description": "Primary recipients.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      }
+    },
+    "cc": {
+      "type": "array",
+      "description": "CC recipients.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      }
+    },
+    "bcc": {
+      "type": "array",
+      "description": "BCC recipients.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      }
+    },
+    "reply_to": {
+      "type": "array",
+      "description": "Reply-to addresses.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      }
+    },
+    "date": {
+      "type": "integer",
+      "description": "Unix timestamp when the message was sent."
+    },
+    "headers": {
+      "type": "array",
+      "description": "Email headers included with the metadata scope.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Header name."
+          },
+          "value": {
+            "type": "string",
+            "description": "Header value."
+          }
+        }
+      }
+    },
+    "starred": {
+      "type": "boolean",
+      "description": "Whether the message is starred/flagged."
+    },
+    "unread": {
+      "type": "boolean",
+      "description": "Whether the message is unread."
+    },
+    "folders": {
+      "type": "array",
+      "description": "Folder names the message belongs to.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Custom key-value metadata attached to the message.",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "id",
+    "grant_id",
+    "object"
+  ],
+  "x-nylas-trigger": "message.created.metadata",
+  "x-nylas-category": "Message Metadata",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/message-metadata/message-created-metadata/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "bcc": [
+        {
+          "email": "leyah@example.com"
+        }
+      ],
+      "cc": [
+        {
+          "email": "kaveh@example.com"
+        }
+      ],
+      "date": 1723821981,
+      "folders": [
+        "SENT"
+      ],
+      "from": [
+        {
+          "email": "swag@example.com",
+          "name": "Nylas Swag"
+        }
+      ],
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "headers": [
+        {
+          "name": "Delivered-To",
+          "value": "nyla@example.com"
+        },
+        {
+          "name": "Return-Path",
+          "value": "<swag@example.com>"
+        },
+        {
+          "name": "Received",
+          "value": "Received Header Value"
+        },
+        {
+          "name": "MIME-Version",
+          "value": "1.0"
+        },
+        {
+          "name": "From",
+          "value": "Nylas Swag <swag@example.com>"
+        },
+        {
+          "name": "Date",
+          "value": "Fri, 16 Aug 2024 9:26:21 -0600"
+        },
+        {
+          "name": "Message-ID",
+          "value": "<MESSAGE_ID>"
+        },
+        {
+          "name": "Subject",
+          "value": "Let's send an attachment"
+        },
+        {
+          "name": "To",
+          "value": "<nyla@example.com>"
+        },
+        {
+          "name": "Content-Type",
+          "value": "multipart/alternative"
+        },
+        {
+          "name": "Custom-Header",
+          "value": "Custom header"
+        }
+      ],
+      "id": "<MESSAGE_ID>",
+      "metadata": {
+        "key1": "all-meetings",
+        "key2": "on-site"
+      },
+      "object": "message",
+      "reply_to": [],
+      "starred": false,
+      "subject": "Let's send an attachment",
+      "thread_id": "<THREAD_ID>",
+      "to": [
+        {
+          "email": "nyla@example.com"
+        }
+      ],
+      "unread": false
+    }
+  ]
+}

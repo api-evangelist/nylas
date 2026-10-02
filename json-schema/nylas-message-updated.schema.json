@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-updated.schema.json",
+  "title": "Nylas message.updated notification object",
+  "description": "Sent when a user modifies or updates a message. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The Nylas message ID."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owns this message."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "thread_id": {
+      "type": "string",
+      "description": "The thread this message belongs to."
+    },
+    "subject": {
+      "type": "string",
+      "description": "The message subject line."
+    },
+    "from": {
+      "type": "array",
+      "description": "Sender information.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name of the sender."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address of the sender."
+          }
+        }
+      }
+    },
+    "to": {
+      "type": "array",
+      "description": "Primary recipients.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      }
+    },
+    "cc": {
+      "type": "array",
+      "description": "CC recipients.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      }
+    },
+    "date": {
+      "type": "integer",
+      "description": "Unix timestamp when the message was sent."
+    },
+    "body": {
+      "type": "string",
+      "description": "The HTML body of the message."
+    },
+    "snippet": {
+      "type": "string",
+      "description": "A short plaintext preview of the message body."
+    },
+    "starred": {
+      "type": "boolean",
+      "description": "Whether the message is starred/flagged."
+    },
+    "unread": {
+      "type": "boolean",
+      "description": "Whether the message is unread."
+    },
+    "folders": {
+      "type": "array",
+      "description": "Folder names the message belongs to.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Custom key-value metadata attached to the message.",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "id",
+    "grant_id",
+    "object"
+  ],
+  "x-nylas-trigger": "message.updated",
+  "x-nylas-category": "Messages",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/messages/message-updated/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "body": "<div dir=\"ltr\">Test with attachments</div>\r\n",
+      "cc": [
+        {
+          "email": "nyla@example.com",
+          "name": "Nyla"
+        }
+      ],
+      "date": 1234567890,
+      "folders": [
+        "INBOX"
+      ],
+      "from": [
+        {
+          "email": "leyah@example.com",
+          "name": "Leyah Miller"
+        }
+      ],
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "id": "<MESSAGE_ID>",
+      "metadata": {
+        "key1": "all-meetings",
+        "key2": "on-site"
+      },
+      "object": "message",
+      "snippet": "This message has an attachment.",
+      "starred": false,
+      "subject": "Let's send an attachment",
+      "thread_id": "<THREAD_ID>",
+      "to": [
+        {
+          "email": "kaveh@example.com"
+        }
+      ],
+      "unread": true
+    }
+  ]
+}

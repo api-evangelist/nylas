@@ -1,0 +1,248 @@
+# Nylas API contract ruleset (Spectral).
+#
+# method: authored
+# publisher: Nylas
+# source: https://developer.nylas.com/_spec-files/nylas-api.yaml
+# generated: '2026-09-28'
+#
+# The conventions the Nylas v3 contract (https://developer.nylas.com/openapi.yaml) is held to,
+# written as Spectral rules so anyone can lint the published document the way Nylas does.
+# It ports the custom rules in Nylas's own redocly.yaml (x-code-samples-exist, require-bash-sample,
+# check-sdk-coverage, x-scopes-exist, and the disabled opid-not-test) and adds the conventions the
+# contract already follows on every operation.
+#
+# Severity policy:
+#   error  a convention the published contract meets on 100% of operations today; a regression fails.
+#   warn   a convention the contract meets on nearly every operation; the gaps are known and tracked.
+#          (Remaining warn gaps: x-code-samples on the 5 Notetaker config operations, explicit
+#          security on 3 operations, and 2 legacy camelCase path parameters.)
+#   info   guidance that is intentionally not universal (it applies to a subset of operations).
+#
+# Run: npx @stoplight/spectral-cli lint https://developer.nylas.com/openapi.yaml -r rules/nylas-rules.yml
+extends:
+  - spectral:oas
+aliases:
+  Operations:
+    - "$.paths[*][get,put,post,patch,delete]"
+rules:
+  # --- error: met on every operation today ---
+  nylas-paths-v3-prefix:
+    description: Every path is versioned under /v3/.
+    severity: error
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^/v3/"
+  nylas-paths-no-trailing-slash:
+    description: Paths do not end with a slash.
+    severity: error
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        notMatch: ".+/$"
+  nylas-operation-summary:
+    description: Every operation has a summary (it becomes the reference page title and the MCP/agent tool label).
+    severity: error
+    given: "#Operations"
+    then:
+      field: summary
+      function: truthy
+  nylas-summary-length:
+    description: Summaries fit in a navigation label (80 characters or fewer).
+    severity: error
+    given: "#Operations.summary"
+    then:
+      function: length
+      functionOptions:
+        max: 80
+  nylas-summary-no-trailing-period:
+    description: Summaries are titles, not sentences, so they do not end with a period.
+    severity: error
+    given: "#Operations.summary"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "\\.$"
+  nylas-operation-description:
+    description: Every operation has a description.
+    severity: error
+    given: "#Operations"
+    then:
+      field: description
+      function: truthy
+  nylas-operation-tags:
+    description: Every operation is tagged, which places it in the API reference navigation.
+    severity: error
+    given: "#Operations"
+    then:
+      field: tags
+      function: length
+      functionOptions:
+        min: 1
+  nylas-operation-id-case:
+    description: operationIds are lowercase words joined by hyphens or underscores (stable SDK method and tool names).
+    severity: error
+    given: "#Operations.operationId"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z0-9]+([-_][a-z0-9]+)*$"
+  nylas-servers-us-eu:
+    description: The contract declares both data-residency regions, api.us.nylas.com and api.eu.nylas.com.
+    severity: error
+    given: "$"
+    then:
+      field: servers
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          allOf:
+            - contains: { type: object, properties: { url: { const: "https://api.us.nylas.com" } }, required: [url] }
+            - contains: { type: object, properties: { url: { const: "https://api.eu.nylas.com" } }, required: [url] }
+  nylas-security-bearer-schemes:
+    description: Credentials (API key, grant access token, Scheduler session) travel as HTTP bearer tokens.
+    severity: error
+    given: "$.components.securitySchemes[*]"
+    then:
+      - field: type
+        function: pattern
+        functionOptions:
+          match: "^http$"
+      - field: scheme
+        function: pattern
+        functionOptions:
+          match: "^bearer$"
+  nylas-no-api-key-in-query:
+    description: No security scheme places a credential in the query string.
+    severity: error
+    given: "$.components.securitySchemes[?(@.type == 'apiKey')]"
+    then:
+      field: in
+      function: pattern
+      functionOptions:
+        notMatch: "^query$"
+  nylas-success-response:
+    description: Operations document at least one 2xx or 3xx response.
+    severity: error
+    given: "#Operations.responses"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          patternProperties: { "^[23][0-9]{2}$": {} }
+          minProperties: 1
+          anyOf:
+            - required: ["200"]
+            - required: ["201"]
+            - required: ["202"]
+            - required: ["204"]
+            - required: ["302"]
+            - required: ["303"]
+
+  # --- warn: met on nearly every operation; gaps are tracked ---
+  nylas-x-code-samples-exist:
+    description: Every operation carries x-code-samples (ported from redocly.yaml rule/x-code-samples-exist).
+    severity: warn
+    given: "#Operations"
+    then:
+      field: x-code-samples
+      function: truthy
+  nylas-require-bash-sample:
+    description: Every operation has a curl/bash sample (ported from the require-bash-sample plugin rule).
+    severity: warn
+    given: "$.paths[*][get,put,post,patch,delete].x-code-samples"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          contains:
+            type: object
+            properties: { lang: { type: string, pattern: "^[Bb][Aa][Ss][Hh]" } }
+            required: [lang]
+  nylas-error-responses:
+    description: Operations document at least one 4xx response.
+    severity: error
+    given: "#Operations.responses"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          anyOf:
+            - required: ["400"]
+            - required: ["401"]
+            - required: ["403"]
+            - required: ["404"]
+            - required: ["409"]
+            - required: ["422"]
+            - required: ["429"]
+  nylas-path-params-snake-case:
+    description: Path parameters are snake_case (grant_id, event_id).
+    severity: warn
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        notMatch: "\\{(?![a-z][a-z0-9_]*\\})[^}]*\\}"
+  nylas-operation-security:
+    description: Operations state which credential they accept rather than relying on the root default.
+    severity: warn
+    given: "#Operations"
+    then:
+      field: security
+      function: defined
+
+  # --- info: intentionally partial ---
+  nylas-x-scopes:
+    description: Operations that touch provider data declare the provider scopes they need in x-scopes (redocly rule/x-scopes-exist, enforced on the ECC API only).
+    severity: info
+    given: "$.paths[?(@property.match(/^\\/v3\\/grants\\/\\{grant_id\\}\\/(messages|threads|drafts|folders|attachments|events|calendars|contacts)/))][get,put,post,patch,delete]"
+    then:
+      field: x-scopes
+      function: defined
+  nylas-sdk-sample-coverage:
+    description: Operations carry samples for the Nylas SDK languages (ported from the check-sdk-coverage plugin rule).
+    severity: info
+    given: "$.paths[*][get,put,post,patch,delete].x-code-samples"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          allOf:
+            - contains: { properties: { lang: { const: javascript } }, required: [lang] }
+            - contains: { properties: { lang: { const: python } }, required: [lang] }
+            - contains: { properties: { lang: { const: ruby } }, required: [lang] }
+            - contains: { properties: { lang: { const: java } }, required: [lang] }
+  nylas-operation-id-not-test:
+    description: operationIds do not contain "test" unless the operation genuinely sends a test (ported from the disabled opid-not-test rule).
+    severity: info
+    given: "#Operations.operationId"
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: "test"
+  nylas-idempotent-send:
+    description: Send endpoints accept an Idempotency-Key header so a retried send is not delivered twice.
+    severity: info
+    given: "$.paths[?(@property.match(/\\/messages\\/send$/))]"
+    then:
+      field: parameters
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          contains:
+            anyOf:
+              - properties: { name: { const: Idempotency-Key } }
+                required: [name]
+              - properties: { $ref: { type: string, pattern: "[Ii]dempotency" } }
+                required: [$ref]

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-message-deleted.schema.json",
+  "title": "Nylas message.deleted notification object",
+  "description": "Sent when a message is deleted. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The Nylas message ID of the deleted message."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant ID that owned this message."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `message`.",
+      "enum": [
+        "message"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Custom key-value metadata attached to the message. May be omitted if not set."
+    }
+  },
+  "required": [
+    "id",
+    "grant_id",
+    "object"
+  ],
+  "x-nylas-trigger": "message.deleted",
+  "x-nylas-category": "Messages",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/messages/message-deleted/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "id": "<WEBHOOK_ID>",
+      "object": "message"
+    }
+  ]
+}

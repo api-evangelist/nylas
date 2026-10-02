@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-booking-rescheduled.schema.json",
+  "title": "Nylas booking.rescheduled notification object",
+  "description": "Sent when a guest reschedules a booking. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "properties": {
+    "booking_id": {
+      "type": "string",
+      "description": "Unique identifier for the booking."
+    },
+    "booking_ref": {
+      "type": "string",
+      "description": "A human-readable booking reference string."
+    },
+    "configuration_id": {
+      "type": "string",
+      "description": "The Scheduler configuration used to create this booking."
+    },
+    "object": {
+      "type": "string",
+      "description": "Always `booking`.",
+      "enum": [
+        "booking"
+      ]
+    },
+    "booking_info": {
+      "type": "object",
+      "description": "Details about the rescheduled booking, including old and new times.",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "description": "The calendar event ID for this booking."
+        },
+        "start_time": {
+          "type": "integer",
+          "description": "Unix timestamp for the new event start."
+        },
+        "end_time": {
+          "type": "integer",
+          "description": "Unix timestamp for the new event end."
+        },
+        "old_start_time": {
+          "type": "integer",
+          "description": "Unix timestamp of the original start time before rescheduling."
+        },
+        "old_end_time": {
+          "type": "integer",
+          "description": "Unix timestamp of the original end time before rescheduling."
+        },
+        "participants": {
+          "type": "array",
+          "description": "List of booking participants. May be `null` when no participants are set.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Participant email address."
+              },
+              "name": {
+                "type": "string",
+                "description": "Participant display name."
+              }
+            }
+          },
+          "nullable": true
+        },
+        "additional_fields": {
+          "type": "object",
+          "description": "Custom fields collected from the guest during booking. May be `null` if no custom fields were provided.",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "hide_cancellation_options": {
+          "type": "boolean",
+          "description": "Whether cancellation options are hidden from the guest."
+        },
+        "hide_rescheduling_options": {
+          "type": "boolean",
+          "description": "Whether rescheduling options are hidden from the guest."
+        },
+        "participant_rescheduling_url": {
+          "type": "string",
+          "description": "URL the guest can use to reschedule the booking."
+        },
+        "participant_cancellation_url": {
+          "type": "string",
+          "description": "URL the guest can use to cancel the booking."
+        },
+        "host_language": {
+          "type": "string",
+          "description": "Locale code for the host's language."
+        },
+        "guest_language": {
+          "type": "string",
+          "description": "Locale code for the guest's language."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the booked event."
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Event duration in minutes."
+        },
+        "location": {
+          "type": "string",
+          "description": "Meeting location or conferencing link."
+        },
+        "organizer_timezone": {
+          "type": "string",
+          "description": "IANA timezone of the organizer."
+        },
+        "guest_timezone": {
+          "type": "string",
+          "description": "IANA timezone of the guest."
+        },
+        "is_group_event": {
+          "type": "boolean",
+          "description": "Whether this is a group event with multiple attendees."
+        },
+        "organizer_calendar_id": {
+          "type": "string",
+          "description": "Calendar ID where the event was created."
+        },
+        "notetaker_id": {
+          "type": "string",
+          "description": "Notetaker bot ID if Notetaker is attached to this booking. Omitted when not applicable."
+        },
+        "event_description": {
+          "type": "string",
+          "description": "Description of the calendar event."
+        },
+        "event_html_link": {
+          "type": "string",
+          "description": "Link to the calendar event in the provider's web UI."
+        },
+        "ical_uid": {
+          "type": "string",
+          "description": "iCalendar UID of the event."
+        },
+        "host_confirmation_url": {
+          "type": "string",
+          "description": "URL for the host to confirm a pending booking. Only present for bookings that require host confirmation."
+        }
+      }
+    }
+  },
+  "required": [
+    "booking_id",
+    "configuration_id",
+    "booking_info"
+  ],
+  "x-nylas-trigger": "booking.rescheduled",
+  "x-nylas-category": "Scheduler",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/scheduler/booking-rescheduled/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "booking_id": "<BOOKING_ID>",
+      "booking_ref": "<BOOKING_REFERENCE>",
+      "configuration_id": "<CONFIGURATION_ID>",
+      "object": "booking",
+      "booking_info": {
+        "event_id": "<EVENT_ID>",
+        "start_time": 1719842400,
+        "end_time": 1719846000,
+        "old_start_time": 1719839400,
+        "old_end_time": 1719843000,
+        "participants": [
+          {
+            "email": "john@example.com",
+            "name": "John Doe"
+          },
+          {
+            "email": "jane@example.com",
+            "name": "Jane Smith"
+          }
+        ],
+        "additional_fields": {
+          "phone": "555-123-4567",
+          "company": "Acme Corp"
+        },
+        "hide_cancellation_options": false,
+        "hide_rescheduling_options": false,
+        "participant_rescheduling_url": "https://example.com/reschedule/<BOOKING_REFERENCE>",
+        "participant_cancellation_url": "https://example.com/cancel/<BOOKING_REFERENCE>",
+        "host_language": "en",
+        "guest_language": "en",
+        "title": "Meeting with John Doe",
+        "duration": 60,
+        "location": "https://meet.google.com/abc-defg-hij",
+        "organizer_timezone": "America/New_York",
+        "guest_timezone": "America/New_York",
+        "is_group_event": false,
+        "organizer_calendar_id": "primary"
+      }
+    }
+  ]
+}

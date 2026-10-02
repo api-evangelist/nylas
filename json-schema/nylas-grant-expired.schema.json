@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/refs/heads/main/json-schema/nylas-grant-expired.schema.json",
+  "title": "Nylas grant.expired notification object",
+  "description": "Sent when a grant's credentials expire, typically due to a change in the user's password on the provider, OAuth token expiration without successful refresh, the provider revoking access, or an admin revoking app permissions. This schema describes `data.object` inside the Nylas notification envelope.",
+  "type": "object",
+  "required": [],
+  "properties": {
+    "code": {
+      "type": "integer",
+      "description": "Nylas notification code."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "Unique identifier for the expired grant."
+    },
+    "integration_id": {
+      "type": "string",
+      "description": "Identifier for the connector (integration) associated with this grant."
+    },
+    "provider": {
+      "type": "string",
+      "description": "Email provider for this grant.",
+      "enum": [
+        "google",
+        "microsoft",
+        "imap",
+        "yahoo",
+        "icloud",
+        "ews",
+        "eas"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address associated with the expired grant."
+    },
+    "grant_updated_at": {
+      "type": "integer",
+      "description": "Unix timestamp of the last successful grant update before expiration."
+    }
+  },
+  "x-nylas-trigger": "grant.expired",
+  "x-nylas-category": "Grants",
+  "x-provenance": {
+    "method": "authored",
+    "publisher": "Nylas",
+    "source": "https://developer.nylas.com/docs/reference/notifications/grants/grant-expired/",
+    "derived_from": "nylas/developer.nylas.com@a7995fb6:src/_component-data/notification-schemas.json",
+    "generated": "2026-09-28"
+  },
+  "examples": [
+    {
+      "code": 25009,
+      "grant_id": "<NYLAS_GRANT_ID>",
+      "integration_id": "<NYLAS_INTEGRATION_ID>",
+      "provider": "google",
+      "email": "user@example.com",
+      "grant_updated_at": 1734200000
+    }
+  ]
+}
