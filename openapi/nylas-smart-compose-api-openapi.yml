@@ -166,6 +166,64 @@ paths:
         source: "import com.nylas.NylasClient\nimport com.nylas.models.ComposeMessageRequest\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val requestBody : ComposeMessageRequest = \n    ComposeMessageRequest(\"Reply\")\n    val message = nylas.messages().smartCompose().composeMessageReply(\"<NYLAS_GRANT_ID>\", \n    \"<MESSAGE_ID>\", requestBody)\n    print(message.data.suggestion)\n\n}\n"
 components:
   responses:
+    smart_compose_400:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request
+              error:
+                type: object
+                description: Response error object.
+                properties:
+                  type:
+                    type: string
+                    description: Error Type
+                  message:
+                    type: string
+                    description: Error Message
+          examples:
+            Invalid Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: invalid request
+            Prompt Required:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: prompt_required_error
+                  message: prompt is required
+            Prompt Not Allowed:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: prompt_not_allowed_error
+                  message: prompt is not allowed
+            Message ID Required:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: message_id_required_error
+                  message: message ID is required
+            Grant ID Required:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: grant_id_required_error
+                  message: grant ID is required
+            Unknown Message Sender Error:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unknown_message_sender_error
+                  message: could not determine message sender
     smart_compose_500:
       description: Unexpected Error
       content:
@@ -194,6 +252,40 @@ components:
                 error:
                   type: unexpected_error
                   message: an unexepcted error has occurred
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
     smart_compose_200:
       description: Returns a suggestion for a message
       content:
@@ -275,98 +367,6 @@ components:
                     - item_id
                     msg: value is not a valid integer
                     type: type_error.integer
-    smart_compose_400:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: ID of the request
-              error:
-                type: object
-                description: Response error object.
-                properties:
-                  type:
-                    type: string
-                    description: Error Type
-                  message:
-                    type: string
-                    description: Error Message
-          examples:
-            Invalid Request:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: invalid_request_error
-                  message: invalid request
-            Prompt Required:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: prompt_required_error
-                  message: prompt is required
-            Prompt Not Allowed:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: prompt_not_allowed_error
-                  message: prompt is not allowed
-            Message ID Required:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: message_id_required_error
-                  message: message ID is required
-            Grant ID Required:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: grant_id_required_error
-                  message: grant ID is required
-            Unknown Message Sender Error:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unknown_message_sender_error
-                  message: could not determine message sender
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
   requestBodies:
     smart_compose:
       content:
@@ -383,6 +383,15 @@ components:
                 type: string
                 example: Reply to John Doe about the upcoming project.
   schemas:
+    smart_compose_suggestion:
+      title: PromptSuggestion
+      required:
+      - suggestion
+      type: object
+      properties:
+        suggestion:
+          title: Suggestion
+          type: string
     common_response:
       properties:
         request_id:
@@ -393,15 +402,6 @@ components:
           description: The response object.
       example:
         request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    smart_compose_suggestion:
-      title: PromptSuggestion
-      required:
-      - suggestion
-      type: object
-      properties:
-        suggestion:
-          title: Suggestion
-          type: string
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

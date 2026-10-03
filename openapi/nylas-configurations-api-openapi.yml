@@ -341,25 +341,70 @@ paths:
       - NYLAS_API_KEY: []
 components:
   schemas:
-    configuration_appearance:
-      title: appearance
+    configuration_participants_specific_time_availability:
+      description: 'A specific date and time range when the participant is available.
+
+        Use "00:00" for both start and end to explicitly mark a date as unavailable.'
+      type: array
+      items:
+        type: object
+        required:
+        - date
+        - start
+        - end
+        properties:
+          date:
+            type: string
+            description: The date in YYYY-MM-DD format.
+            example: '2025-08-21'
+          start:
+            type: string
+            description: 'The start time in HH:MM format (24-hour clock).
+
+              Use "00:00" with end "00:00" to explicitly mark this date as unavailable.'
+            example: 09:00
+          end:
+            type: string
+            description: The end time in HH:MM format (24-hour clock).
+            example: '17:00'
+          timezone:
+            type: string
+            description: 'The timezone for this specific date (e.g., "America/New_York").
+
+              Optional for participant-level entries. Uses the participant''s timezone if not specified.'
+            example: America/Toronto
+    configuration_availability:
       type: object
-      description: Appearance settings definitions for the Scheduling Page.
+      description: The rules that determine the available time slots for the event.
+      required:
+      - duration_minutes
       properties:
-        your-key:
-          type: string
-          description: A key-value pair. For pre-defined keys for hosted Scheduling Pages, see [Styling options for hosted Scheduling Pages](/docs/v3/scheduler/customize-scheduler/#styling-options-for-hosted-scheduling-pages).
-          maxLength: 550
-    configuration_scheduler_email_template_booking_confirmed:
-      description: Configurable settings specifically for booking confirmed emails.
+        duration_minutes:
+          type: integer
+          description: The total number of minutes the event should last.
+        interval_minutes:
+          type: integer
+          description: The interval between meetings. Nylas checks from the nearest interval of the passed `start_time`. For example, you schedule 30-minute meetings (`duration_minutes`) with 15 minutes between them (`interval_minutes`). If you have a meeting starting at 9:59, the API returns times starting at 10:00 (10:00-10:30, 10:15-10:45).
+        round_to:
+          type: integer
+          default: 15
+          description: Nylas rounds each time slot to the nearest `round_to` value. For example, if a time slot starts at 9:05a.m. and `round_to` is set to `15`, Nylas rounds it to 9:15a.m. Must be a multiple of 5 minutes.
+        availability_rules:
+          $ref: '#/components/schemas/configuration_availability_rules'
+    configuration_participants_booking:
+      description: The booking data for the participant. If omitted, the participant is not included in the booked event. At least one participant must have booking data.
       type: object
+      required:
+      - calendar_id
       properties:
-        title:
+        calendar_id:
           type: string
-          description: The title to replace the default 'Booking Confirmed' title. This doesn't change the email subject line. Only visible in emails sent to guests.
-        body:
-          type: string
-          description: The additional body to be appended after the default body. Only visible in emails sent to guests.
+          description: 'The calendar ID that the event is created in.
+
+
+            For an [Agent Account](/docs/v3/scheduler/agent-accounts/) participant, set this to
+
+            `primary`. Scheduler creates booking events on an Agent Account''s primary calendar only.'
     meeting_settings_common:
       type: object
       description: A collection of settings for the Notetaker bot.
@@ -424,39 +469,6 @@ components:
           description: When `true`, Notetaker records the meeting's video.
           default: true
           example: true
-    configuration_participants_availability:
-      description: The availability data for the participant. If omitted, the participant is considered to be available at all times. At least one participant must have availability data.
-      type: object
-      required:
-      - calendar_ids
-      properties:
-        calendar_ids:
-          type: array
-          description: 'A list of calendar IDs associated with the participant''s email address. These calendars are
-
-            used to check the participant''s availability.
-
-
-            For an [Agent Account](/docs/v3/scheduler/agent-accounts/) participant, set this to
-
-            `["primary"]`. Scheduler reads busy time from an Agent Account''s primary calendar only.'
-          items:
-            type: string
-        open_hours:
-          type: array
-          description: An array of objects for the participant's open hours. Nylas searches for free time slots within these open hours.
-          items:
-            $ref: '#/components/schemas/configuration_availability_open_hours'
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
     configuration_availability_rules:
       description: Availability rules for the scheduling configuration. These rules define how Nylas calculates availability for all participants.
       type: object
@@ -542,304 +554,51 @@ components:
             **Note**: When set at the config level, individual participants cannot override this to `false`.'
           default: false
           example: true
-    configuration_scheduler:
-      type: object
-      properties:
-        additional_fields:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/configuration_scheduler_additional_fields'
-        available_days_in_future:
-          type: integer
-          description: The number of days in the future that Scheduler is available for scheduling events.
-          default: 30
-        min_booking_notice:
-          type:
-          - integer
-          - 'null'
-          description: The minimum number of minutes in the future that a user can make a new booking. This field may be `null` if not explicitly set on the configuration; treat `null` the same as `60` (the default behavior).
-          default: 60
-        min_cancellation_notice:
-          type: integer
-          description: The minimum number of minutes before a booking can be cancelled.
-          default: 0
-        cancellation_policy:
-          type: string
-          description: A message about the cancellation policy to display to users when booking an event.
-        rescheduling_url:
-          type: string
-          description: The URL used to reschedule bookings. This URL is included in confirmation messages.
-        cancellation_url:
-          type: string
-          description: The URL used to cancel bookings. This URL is included in confirmation messages.
-        organizer_confirmation_url:
-          type: string
-          description: 'The URL used to confirm or cancel pending bookings. This URL is included in booking request
-
-            messages.'
-        confirmation_redirect_url:
-          type: string
-          description: The URL that Nylas redirects the user to when the booking is confirmed.
-        hide_rescheduling_options:
-          type: boolean
-          description: If `true`, the option to reschedule an event is hidden in booking confirmations and email notifications.
-          default: false
-        hide_cancellation_options:
-          type: boolean
-          description: If `true`, the option to cancel an event is hidden in booking confirmations and email notifications.
-          default: false
-        hide_additional_guests:
-          type: boolean
-          description: Whether to hide the **Additional guests** field on the Scheduling Page. If `true`, guests cannot invite additional guests to the event.
-          default: false
-        notetaker_settings:
-          type: object
-          description: 'Settings for automatically adding a Notetaker bot to bookings created with this configuration.
-
-            When enabled, Notetaker joins the meeting to record, transcribe, and optionally generate
-
-            summaries and action items. Requires `event_booking.conferencing` to be configured.'
-          properties:
-            enabled:
-              type: boolean
-              description: 'When `true`, automatically creates a Notetaker bot for bookings made with this configuration.
-
-                The bot joins the meeting at the scheduled time to record and transcribe.'
-              default: false
-              example: true
-            show_ui_consent_message:
-              type: boolean
-              description: 'When `true`, displays a consent message in the Scheduler UI informing guests that the
-
-                meeting will be recorded.'
-              default: true
-              example: true
-            notetaker_name:
-              type: string
-              description: 'The display name for the Notetaker bot that joins the meeting.
-
-                Maximum 255 characters.'
-              default: Nylas Notetaker
-              example: Sales Recording Bot
-            meeting_settings:
-              $ref: '#/components/schemas/meeting_settings'
-        email_template:
-          $ref: '#/components/schemas/configuration_scheduler_email_template'
-    configuration_participants_booking:
-      description: The booking data for the participant. If omitted, the participant is not included in the booked event. At least one participant must have booking data.
+    configuration:
       type: object
       required:
-      - calendar_id
-      properties:
-        calendar_id:
-          type: string
-          description: 'The calendar ID that the event is created in.
-
-
-            For an [Agent Account](/docs/v3/scheduler/agent-accounts/) participant, set this to
-
-            `primary`. Scheduler creates booking events on an Agent Account''s primary calendar only.'
-    configuration_event_booking:
-      type: object
-      required:
-      - title
-      properties:
-        booking_type:
-          type: string
-          description: 'The booking type. If set to `booking`, Scheduler follows the
-
-            [standard booking flow](/docs/v3/scheduler/customize-booking-flows/).
-
-
-            If set to `organizer-confirmation`, Scheduler creates an event marked "Pending" in the organizer''s
-
-            calendar and sends a confirmation request email to the organizer. The confirmation request email
-
-            includes a link to a page where the organizer can confirm or cancel the booking.'
-          enum:
-          - booking
-          - organizer-confirmation
-          default: booking
-          example: booking
-        conferencing:
-          $ref: '#/components/schemas/event_conferencing_request'
-        description:
-          type: string
-          description: The description of the event.
-          example: Come ready to talk philosophy!
-        disable_emails:
-          type:
-          - boolean
-          - 'null'
-          description: 'When `true`, Nylas doesn''t send email notifications when an event is booked, cancelled, or
-
-            rescheduled. When `null`, the default behavior applies (emails are sent).'
-          default: false
-          example: false
-        hide_participants:
-          type:
-          - boolean
-          - 'null'
-          description: When `true`, Nylas creates the event with `hide_participants=true`, so the host can see who's on the event but the guests cannot. When `null`, the default behavior applies (participants are visible).
-          default: false
-          example: false
-        location:
-          type: string
-          description: The location of the event.
-          example: Central Library, room 203
-        notify_participants:
-          type:
-          - boolean
-          - 'null'
-          description: 'When `true`, the calendar provider sends notifications to participants when the
-
-            event is created, updated, or deleted. Microsoft grants ignore this flag and
-
-            always notify participants. This field may be `null` if not explicitly set on
-
-            the configuration; treat `null` the same as `false` (the default behavior).'
-          default: false
-          example: true
-        reminders:
-          type: array
-          required:
-          - minutes_before_event
-          - type
-          items:
-            type: object
-            properties:
-              email_subject:
-                type: string
-                description: (Email reminders only) The subject line of the email reminder.
-                example: 'Reminder: Annual Philosophy Club Meeting'
-              minutes_before_event:
-                type: integer
-                description: The number of minutes before the event to send the reminder.
-                minimum: 1
-                example: 30
-              recipient:
-                type: string
-                description: (Email reminders only) Who should receive the reminder.
-                enum:
-                - all
-                - host
-                - guest
-                default: all
-                example: host
-              type:
-                type: string
-                description: The reminder type.
-                enum:
-                - email
-                - webhook
-                example: email
-        timezone:
-          type: string
-          description: 'The timezone Nylas uses to display times in confirmation messages and reminders. This must be
-
-            an [IANA-formatted string](https://en.wikipedia.org/wiki/Tz_database).'
-          minLength: 1
-          example: America/Chicago
-        title:
-          type: string
-          description: The title of the event.
-          example: Annual Philosophy Club Meeting
-    configuration_availability:
-      type: object
-      description: The rules that determine the available time slots for the event.
-      required:
-      - duration_minutes
-      properties:
-        duration_minutes:
-          type: integer
-          description: The total number of minutes the event should last.
-        interval_minutes:
-          type: integer
-          description: The interval between meetings. Nylas checks from the nearest interval of the passed `start_time`. For example, you schedule 30-minute meetings (`duration_minutes`) with 15 minutes between them (`interval_minutes`). If you have a meeting starting at 9:59, the API returns times starting at 10:00 (10:00-10:30, 10:15-10:45).
-        round_to:
-          type: integer
-          default: 15
-          description: Nylas rounds each time slot to the nearest `round_to` value. For example, if a time slot starts at 9:05a.m. and `round_to` is set to `15`, Nylas rounds it to 9:15a.m. Must be a multiple of 5 minutes.
-        availability_rules:
-          $ref: '#/components/schemas/configuration_availability_rules'
-    group-configuration:
-      type: object
-      required:
-      - group_booking
-      - name
-      - type
+      - participants
+      - availability
+      - event_booking
       properties:
         appearance:
-          $ref: '#/components/schemas/configuration_appearance'
-        group_booking:
-          type: object
-          description: Settings for the group booking.
-          required:
-          - calendar_id
-          properties:
-            booking_type:
-              type: string
-              description: 'The booking type. Group Configurations support `booking` only, and follow the
+          description: 'An object that defines the appearance settings for the Scheduling Page. This field
 
-                [standard booking flow](/docs/v3/scheduler/customize-booking-flows/).'
-              default: booking
-              example: booking
-            calendar_id:
-              type: string
-              description: 'The ID of the calendar on which the group event is created. Nylas doesn''t support read-only
-
-                calendars.'
-              example: primary
-            disable_emails:
-              type:
-              - boolean
-              - 'null'
-              description: 'When `true`, Nylas doesn''t send email notifications when an event is booked, cancelled, or
-
-                rescheduled. When `null`, the default behavior applies (emails are sent).'
-              default: false
-              example: false
-            reminders:
-              type: array
-              description: A list of reminders for the event.
-              items:
-                type: object
-                required:
-                - minutes_before_event
-                - type
-                properties:
-                  email_subject:
-                    type: string
-                    description: (Email reminders only) The subject line for the email reminder.
-                    example: 'Reminder: Your physiotherapy appointment'
-                  minutes_before_event:
-                    type: integer
-                    description: The number of minutes before the event to send the reminder.
-                    minimum: 1
-                    example: 30
-                  recipient:
-                    type: string
-                    description: (Email reminders only) Who should receive the email reminder.
-                    enum:
-                    - host
-                    - guest
-                    example: host
-                  type:
-                    type: string
-                    description: The reminder type.
-                    enum:
-                    - email
-                    - webhook
-                    example: email
+            may be `null` if no appearance customization has been set.'
+          anyOf:
+          - $ref: '#/components/schemas/configuration_appearance'
+          - type: 'null'
+        availability:
+          $ref: '#/components/schemas/configuration_availability'
+        event_booking:
+          $ref: '#/components/schemas/configuration_event_booking'
         name:
           type: string
-          description: The name of the Scheduling Page.
-          example: InPath Physiotherapy
+          description: The name of the Scheduling Page. If not defined, Nylas defaults to the organizer's name.
+        participants:
+          type: array
+          description: 'A list of participants to be included in the scheduled event.
+
+
+            Participants that provide availability (through an `availability` or `booking` block) must be
+
+            associated with a valid Nylas grant, or the request fails. Participants supplied by email only
+
+            don''t require a grant. They''re notification-only invitees who receive scheduling emails but don''t
+
+            affect availability calculation and can''t be selected as a round-robin host.
+
+
+            This field isn''t accepted for group or round-robin configurations, which are anchored to the
+
+            organizer''s own grant and calendar instead.'
+          items:
+            $ref: '#/components/schemas/configuration_participants'
         requires_session_auth:
           type:
           - boolean
           - 'null'
-          description: 'When `true`, the [Availability](/docs/reference/api/availability/) and
+          description: 'When `true`, the scheduling [Availability](/docs/reference/api/availability/) and
 
             [Bookings](/docs/reference/api/bookings/) endpoints require a valid session ID to
 
@@ -849,7 +608,6 @@ components:
 
             (the default behavior).'
           default: false
-          example: false
         scheduler:
           $ref: '#/components/schemas/configuration_scheduler'
         slug:
@@ -861,167 +619,37 @@ components:
             slug instead of the `configuration_id` when making requests to the Nylas Scheduling endpoints.
 
             Slugs are unique to each Nylas application. This field may be `null` if no slug has been set.'
-        type:
-          type: string
-          description: 'The type of event supported by the Configuration. When set to `group`, enables access to the
-
-            [Group Events endpoints](/docs/reference/api/group-events/) and functionality.
-
-            Defaults to empty (`""`) for all existing Configurations.'
-          example: group
-    configuration_availability_open_hours:
-      description: Open hours settings for a participant.
-      type: object
-      title: Open Hours
-      examples: []
+    common_response_with_cursor:
       properties:
-        days:
-          type: array
-          description: The days of the week that the open hour settings are applied to. Sunday corresponds to `0`, and Saturday corresponds to `6`.
-          items:
-            type: integer
-          example:
-          - 0
-          - 1
-          - 2
-        start:
+        request_id:
           type: string
-          minLength: 1
-          description: The start time in 24-hour time format. Single-digit hours doesn't have a leading zero. The earliest start time is `0:00`, and the latest start time is `23:49`.
-          example: '10:00'
-        end:
-          type: string
-          minLength: 1
-          description: The end time in a 24-hour time format. Single-digit hours doesn't have a leading zero.
-          example: '14:00'
-        timezone:
-          type: string
-          minLength: 1
-          description: 'The timezone for this open-hours block, as an [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string.
-
-
-            For participant `open_hours`, this value applies only to the open-hours block where you define it and overrides the participant''s `timezone`. If you omit it, Scheduler uses the participant''s `timezone`, then `event_booking.timezone`.
-
-
-            For `default_open_hours` in Scheduler configurations, set `event_booking.timezone` to control the timezone that Scheduler uses when evaluating default open hours.'
-          example: America/Chicago
-        exdates:
-          type: array
-          description: A list of dates that are excluded from the open hours. Dates should be formatted as `YYYY-MM-DD`.
-          items:
-            type: string
-          example:
-          - '2006-01-18'
-    availability_buffer:
-      title: buffer
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    configuration_scheduler_email_template:
       type: object
+      description: Configurable settings for booking emails.
       properties:
-        before:
-          type: integer
-          description: 'The amount of buffer time to add before meetings, in increments of five minutes. For example,
-
-            if an account has a meeting scheduled from 10:00–11:00a.m., and you set a `before` buffer of
-
-            30 minutes, Nylas treats 9:30–11:00a.m. as busy.
-
-
-            This value must be between 0 and 120, and must be divisible by 5.'
-          default: 0
-          minimum: 0
-          maximum: 120
-        after:
-          type: integer
-          description: 'The amount of buffer time to add after meetings, in increments of five minutes. For example, if
-
-            an account has a meeting scheduled from 10:00–11:00a.m., and you set an `after` buffer of 15
-
-            minutes, Nylas treats 10:00–11:15a.m. as busy.
-
-
-            This value must be between 0 and 120, and must be divisible by 5.'
-          default: 0
-          minimum: 0
-          maximum: 120
-    configuration_participants:
-      type: object
-      description: List of participants for the scheduling Configuration.
-      required:
-      - availability
-      - booking
-      - email
-      properties:
-        availability:
-          $ref: '#/components/schemas/configuration_participants_availability'
-        booking:
-          $ref: '#/components/schemas/configuration_participants_booking'
-        email:
+        booking_confirmed:
+          $ref: '#/components/schemas/configuration_scheduler_email_template_booking_confirmed'
+        logo:
           type: string
-          description: 'The participant''s email address.
+          description: 'The URL of a custom logo that is displayed at the top of the booking email. Replaces the default
 
-
-            If the participant provides an `availability` or `booking` block, this email address must be
-
-            associated with a valid Nylas grant, or the request fails. Participants supplied by email only
-
-            (no `availability` or `booking` block) don''t require a grant. They''re treated as notification-only
-
-            invitees: they still receive scheduling emails, but they don''t affect availability or free-busy
-
-            calculation and can''t be selected as a round-robin host.'
-          example: nyla@example.com
-        grant_id:
-          type: string
-          description: The participant's grant ID.
-        is_organizer:
+            Nylas logo. The URL needs to be publicly accessible.'
+        show_nylas_branding:
           type: boolean
-          description: 'When `true`, indicates that the participant is the organizer of the event.
-
-
-            For non-round-robin meetings, one of the participants must be specified as the organizer. For
-
-            round-robin meetings, remove the `is_organizer` key/value pair or set `is_organizer` to `false`
-
-            for all participants.'
-          default: false
-          example: false
-        name:
-          type: string
-          description: The participant's name.
-          example: Nyla
-        specific_time_availability:
-          $ref: '#/components/schemas/configuration_participants_specific_time_availability'
-        only_specific_time_availability:
-          type: boolean
-          description: 'When `true`, this participant will ONLY be available at times defined in their
-
-            `specific_time_availability` entries. Their regular `open_hours` are ignored.
-
-
-            If the config-level `availability_rules.only_specific_time_availability` is `true`,
-
-            this participant-level setting cannot override it to `false`.
-
-
-            Setting to `true` with an empty `specific_time_availability` array results in
-
-            zero availability for this participant (useful for temporarily disabling someone).'
-          default: false
-          example: true
-        timezone:
-          type: string
-          description: 'The timezone in which the participant is located, as an
-
-            [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string. Nylas uses this when
-
-            calculating the participant''s open hours, and in email notifications.
-
-
-            If a participant `open_hours` block includes its own `timezone`, the open-hours timezone
-
-            overrides this participant timezone for that block. If participant `open_hours` doesn''t include
-
-            a `timezone`, Scheduler uses this participant timezone, then `event_booking.timezone`.'
-          example: America/Toronto
+          default: true
+          description: When `true`, displays Nylas branding in the booking email.
     meeting_settings:
       allOf:
       - $ref: '#/components/schemas/meeting_settings_common'
@@ -1079,22 +707,6 @@ components:
 
                   transcribed accurately. Optional. Cannot be `null`.'
                 example: true
-    common_response_with_cursor:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-        next_cursor:
-          type:
-          - string
-          - 'null'
-          description: A cursor pointing to the next page of results for the request.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
     event_conferencing_request:
       title: Event with conferencing
       type: object
@@ -1364,51 +976,94 @@ components:
                 items:
                   type: string
                 description: The phone number associated with the GoToMeeting conference.
-    configuration:
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    group-configuration:
       type: object
       required:
-      - participants
-      - availability
-      - event_booking
+      - group_booking
+      - name
+      - type
       properties:
         appearance:
-          description: 'An object that defines the appearance settings for the Scheduling Page. This field
+          $ref: '#/components/schemas/configuration_appearance'
+        group_booking:
+          type: object
+          description: Settings for the group booking.
+          required:
+          - calendar_id
+          properties:
+            booking_type:
+              type: string
+              description: 'The booking type. Group Configurations support `booking` only, and follow the
 
-            may be `null` if no appearance customization has been set.'
-          anyOf:
-          - $ref: '#/components/schemas/configuration_appearance'
-          - type: 'null'
-        availability:
-          $ref: '#/components/schemas/configuration_availability'
-        event_booking:
-          $ref: '#/components/schemas/configuration_event_booking'
+                [standard booking flow](/docs/v3/scheduler/customize-booking-flows/).'
+              default: booking
+              example: booking
+            calendar_id:
+              type: string
+              description: 'The ID of the calendar on which the group event is created. Nylas doesn''t support read-only
+
+                calendars.'
+              example: primary
+            disable_emails:
+              type:
+              - boolean
+              - 'null'
+              description: 'When `true`, Nylas doesn''t send email notifications when an event is booked, cancelled, or
+
+                rescheduled. When `null`, the default behavior applies (emails are sent).'
+              default: false
+              example: false
+            reminders:
+              type: array
+              description: A list of reminders for the event.
+              items:
+                type: object
+                required:
+                - minutes_before_event
+                - type
+                properties:
+                  email_subject:
+                    type: string
+                    description: (Email reminders only) The subject line for the email reminder.
+                    example: 'Reminder: Your physiotherapy appointment'
+                  minutes_before_event:
+                    type: integer
+                    description: The number of minutes before the event to send the reminder.
+                    minimum: 1
+                    example: 30
+                  recipient:
+                    type: string
+                    description: (Email reminders only) Who should receive the email reminder.
+                    enum:
+                    - host
+                    - guest
+                    example: host
+                  type:
+                    type: string
+                    description: The reminder type.
+                    enum:
+                    - email
+                    - webhook
+                    example: email
         name:
           type: string
-          description: The name of the Scheduling Page. If not defined, Nylas defaults to the organizer's name.
-        participants:
-          type: array
-          description: 'A list of participants to be included in the scheduled event.
-
-
-            Participants that provide availability (through an `availability` or `booking` block) must be
-
-            associated with a valid Nylas grant, or the request fails. Participants supplied by email only
-
-            don''t require a grant. They''re notification-only invitees who receive scheduling emails but don''t
-
-            affect availability calculation and can''t be selected as a round-robin host.
-
-
-            This field isn''t accepted for group or round-robin configurations, which are anchored to the
-
-            organizer''s own grant and calendar instead.'
-          items:
-            $ref: '#/components/schemas/configuration_participants'
+          description: The name of the Scheduling Page.
+          example: InPath Physiotherapy
         requires_session_auth:
           type:
           - boolean
           - 'null'
-          description: 'When `true`, the scheduling [Availability](/docs/reference/api/availability/) and
+          description: 'When `true`, the [Availability](/docs/reference/api/availability/) and
 
             [Bookings](/docs/reference/api/bookings/) endpoints require a valid session ID to
 
@@ -1418,6 +1073,7 @@ components:
 
             (the default behavior).'
           default: false
+          example: false
         scheduler:
           $ref: '#/components/schemas/configuration_scheduler'
         slug:
@@ -1429,6 +1085,170 @@ components:
             slug instead of the `configuration_id` when making requests to the Nylas Scheduling endpoints.
 
             Slugs are unique to each Nylas application. This field may be `null` if no slug has been set.'
+        type:
+          type: string
+          description: 'The type of event supported by the Configuration. When set to `group`, enables access to the
+
+            [Group Events endpoints](/docs/reference/api/group-events/) and functionality.
+
+            Defaults to empty (`""`) for all existing Configurations.'
+          example: group
+    configuration_availability_open_hours:
+      description: Open hours settings for a participant.
+      type: object
+      title: Open Hours
+      examples: []
+      properties:
+        days:
+          type: array
+          description: The days of the week that the open hour settings are applied to. Sunday corresponds to `0`, and Saturday corresponds to `6`.
+          items:
+            type: integer
+          example:
+          - 0
+          - 1
+          - 2
+        start:
+          type: string
+          minLength: 1
+          description: The start time in 24-hour time format. Single-digit hours doesn't have a leading zero. The earliest start time is `0:00`, and the latest start time is `23:49`.
+          example: '10:00'
+        end:
+          type: string
+          minLength: 1
+          description: The end time in a 24-hour time format. Single-digit hours doesn't have a leading zero.
+          example: '14:00'
+        timezone:
+          type: string
+          minLength: 1
+          description: 'The timezone for this open-hours block, as an [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string.
+
+
+            For participant `open_hours`, this value applies only to the open-hours block where you define it and overrides the participant''s `timezone`. If you omit it, Scheduler uses the participant''s `timezone`, then `event_booking.timezone`.
+
+
+            For `default_open_hours` in Scheduler configurations, set `event_booking.timezone` to control the timezone that Scheduler uses when evaluating default open hours.'
+          example: America/Chicago
+        exdates:
+          type: array
+          description: A list of dates that are excluded from the open hours. Dates should be formatted as `YYYY-MM-DD`.
+          items:
+            type: string
+          example:
+          - '2006-01-18'
+    availability_buffer:
+      title: buffer
+      type: object
+      properties:
+        before:
+          type: integer
+          description: 'The amount of buffer time to add before meetings, in increments of five minutes. For example,
+
+            if an account has a meeting scheduled from 10:00–11:00a.m., and you set a `before` buffer of
+
+            30 minutes, Nylas treats 9:30–11:00a.m. as busy.
+
+
+            This value must be between 0 and 120, and must be divisible by 5.'
+          default: 0
+          minimum: 0
+          maximum: 120
+        after:
+          type: integer
+          description: 'The amount of buffer time to add after meetings, in increments of five minutes. For example, if
+
+            an account has a meeting scheduled from 10:00–11:00a.m., and you set an `after` buffer of 15
+
+            minutes, Nylas treats 10:00–11:15a.m. as busy.
+
+
+            This value must be between 0 and 120, and must be divisible by 5.'
+          default: 0
+          minimum: 0
+          maximum: 120
+    configuration_scheduler:
+      type: object
+      properties:
+        additional_fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/configuration_scheduler_additional_fields'
+        available_days_in_future:
+          type: integer
+          description: The number of days in the future that Scheduler is available for scheduling events.
+          default: 30
+        min_booking_notice:
+          type:
+          - integer
+          - 'null'
+          description: The minimum number of minutes in the future that a user can make a new booking. This field may be `null` if not explicitly set on the configuration; treat `null` the same as `60` (the default behavior).
+          default: 60
+        min_cancellation_notice:
+          type: integer
+          description: The minimum number of minutes before a booking can be cancelled.
+          default: 0
+        cancellation_policy:
+          type: string
+          description: A message about the cancellation policy to display to users when booking an event.
+        rescheduling_url:
+          type: string
+          description: The URL used to reschedule bookings. This URL is included in confirmation messages.
+        cancellation_url:
+          type: string
+          description: The URL used to cancel bookings. This URL is included in confirmation messages.
+        organizer_confirmation_url:
+          type: string
+          description: 'The URL used to confirm or cancel pending bookings. This URL is included in booking request
+
+            messages.'
+        confirmation_redirect_url:
+          type: string
+          description: The URL that Nylas redirects the user to when the booking is confirmed.
+        hide_rescheduling_options:
+          type: boolean
+          description: If `true`, the option to reschedule an event is hidden in booking confirmations and email notifications.
+          default: false
+        hide_cancellation_options:
+          type: boolean
+          description: If `true`, the option to cancel an event is hidden in booking confirmations and email notifications.
+          default: false
+        hide_additional_guests:
+          type: boolean
+          description: Whether to hide the **Additional guests** field on the Scheduling Page. If `true`, guests cannot invite additional guests to the event.
+          default: false
+        notetaker_settings:
+          type: object
+          description: 'Settings for automatically adding a Notetaker bot to bookings created with this configuration.
+
+            When enabled, Notetaker joins the meeting to record, transcribe, and optionally generate
+
+            summaries and action items. Requires `event_booking.conferencing` to be configured.'
+          properties:
+            enabled:
+              type: boolean
+              description: 'When `true`, automatically creates a Notetaker bot for bookings made with this configuration.
+
+                The bot joins the meeting at the scheduled time to record and transcribe.'
+              default: false
+              example: true
+            show_ui_consent_message:
+              type: boolean
+              description: 'When `true`, displays a consent message in the Scheduler UI informing guests that the
+
+                meeting will be recorded.'
+              default: true
+              example: true
+            notetaker_name:
+              type: string
+              description: 'The display name for the Notetaker bot that joins the meeting.
+
+                Maximum 255 characters.'
+              default: Nylas Notetaker
+              example: Sales Recording Bot
+            meeting_settings:
+              $ref: '#/components/schemas/meeting_settings'
+        email_template:
+          $ref: '#/components/schemas/configuration_scheduler_email_template'
     configuration_scheduler_additional_fields:
       description: The definitions for additional fields to be displayed in the Scheduler UI. Guest will see the additional fields on the Scheduling Page when they book an event.
       type: object
@@ -1470,105 +1290,234 @@ components:
           description: A list of options for the `dropdown` or `radio_button` types. This field is required for the `dropdown` and `radio_button` types.
           items:
             type: string
-    configuration_participants_specific_time_availability:
-      description: 'A specific date and time range when the participant is available.
-
-        Use "00:00" for both start and end to explicitly mark a date as unavailable.'
-      type: array
-      items:
-        type: object
-        required:
-        - date
-        - start
-        - end
-        properties:
-          date:
-            type: string
-            description: The date in YYYY-MM-DD format.
-            example: '2025-08-21'
-          start:
-            type: string
-            description: 'The start time in HH:MM format (24-hour clock).
-
-              Use "00:00" with end "00:00" to explicitly mark this date as unavailable.'
-            example: 09:00
-          end:
-            type: string
-            description: The end time in HH:MM format (24-hour clock).
-            example: '17:00'
-          timezone:
-            type: string
-            description: 'The timezone for this specific date (e.g., "America/New_York").
-
-              Optional for participant-level entries. Uses the participant''s timezone if not specified.'
-            example: America/Toronto
-    configuration_scheduler_email_template:
+    configuration_event_booking:
       type: object
-      description: Configurable settings for booking emails.
+      required:
+      - title
       properties:
-        booking_confirmed:
-          $ref: '#/components/schemas/configuration_scheduler_email_template_booking_confirmed'
-        logo:
+        booking_type:
           type: string
-          description: 'The URL of a custom logo that is displayed at the top of the booking email. Replaces the default
+          description: 'The booking type. If set to `booking`, Scheduler follows the
 
-            Nylas logo. The URL needs to be publicly accessible.'
-        show_nylas_branding:
-          type: boolean
-          default: true
-          description: When `true`, displays Nylas branding in the booking email.
-  parameters:
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
+            [standard booking flow](/docs/v3/scheduler/customize-booking-flows/).
 
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
 
-        information.'
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+            If set to `organizer-confirmation`, Scheduler creates an event marked "Pending" in the organizer''s
 
-        for more information.'
-  responses:
-    '504':
-      description: Provider Failure
-      content:
-        application/json:
-          schema:
-            title: error
+            calendar and sends a confirmation request email to the organizer. The confirmation request email
+
+            includes a link to a page where the organizer can confirm or cancel the booking.'
+          enum:
+          - booking
+          - organizer-confirmation
+          default: booking
+          example: booking
+        conferencing:
+          $ref: '#/components/schemas/event_conferencing_request'
+        description:
+          type: string
+          description: The description of the event.
+          example: Come ready to talk philosophy!
+        disable_emails:
+          type:
+          - boolean
+          - 'null'
+          description: 'When `true`, Nylas doesn''t send email notifications when an event is booked, cancelled, or
+
+            rescheduled. When `null`, the default behavior applies (emails are sent).'
+          default: false
+          example: false
+        hide_participants:
+          type:
+          - boolean
+          - 'null'
+          description: When `true`, Nylas creates the event with `hide_participants=true`, so the host can see who's on the event but the guests cannot. When `null`, the default behavior applies (participants are visible).
+          default: false
+          example: false
+        location:
+          type: string
+          description: The location of the event.
+          example: Central Library, room 203
+        notify_participants:
+          type:
+          - boolean
+          - 'null'
+          description: 'When `true`, the calendar provider sends notifications to participants when the
+
+            event is created, updated, or deleted. Microsoft grants ignore this flag and
+
+            always notify participants. This field may be `null` if not explicitly set on
+
+            the configuration; treat `null` the same as `false` (the default behavior).'
+          default: false
+          example: true
+        reminders:
+          type: array
+          required:
+          - minutes_before_event
+          - type
+          items:
             type: object
             properties:
-              request_id:
+              email_subject:
                 type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Provider Failure:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: provider_error
-                  message: Provider request timed out.
+                description: (Email reminders only) The subject line of the email reminder.
+                example: 'Reminder: Annual Philosophy Club Meeting'
+              minutes_before_event:
+                type: integer
+                description: The number of minutes before the event to send the reminder.
+                minimum: 1
+                example: 30
+              recipient:
+                type: string
+                description: (Email reminders only) Who should receive the reminder.
+                enum:
+                - all
+                - host
+                - guest
+                default: all
+                example: host
+              type:
+                type: string
+                description: The reminder type.
+                enum:
+                - email
+                - webhook
+                example: email
+        timezone:
+          type: string
+          description: 'The timezone Nylas uses to display times in confirmation messages and reminders. This must be
+
+            an [IANA-formatted string](https://en.wikipedia.org/wiki/Tz_database).'
+          minLength: 1
+          example: America/Chicago
+        title:
+          type: string
+          description: The title of the event.
+          example: Annual Philosophy Club Meeting
+    configuration_participants_availability:
+      description: The availability data for the participant. If omitted, the participant is considered to be available at all times. At least one participant must have availability data.
+      type: object
+      required:
+      - calendar_ids
+      properties:
+        calendar_ids:
+          type: array
+          description: 'A list of calendar IDs associated with the participant''s email address. These calendars are
+
+            used to check the participant''s availability.
+
+
+            For an [Agent Account](/docs/v3/scheduler/agent-accounts/) participant, set this to
+
+            `["primary"]`. Scheduler reads busy time from an Agent Account''s primary calendar only.'
+          items:
+            type: string
+        open_hours:
+          type: array
+          description: An array of objects for the participant's open hours. Nylas searches for free time slots within these open hours.
+          items:
+            $ref: '#/components/schemas/configuration_availability_open_hours'
+    configuration_appearance:
+      title: appearance
+      type: object
+      description: Appearance settings definitions for the Scheduling Page.
+      properties:
+        your-key:
+          type: string
+          description: A key-value pair. For pre-defined keys for hosted Scheduling Pages, see [Styling options for hosted Scheduling Pages](/docs/v3/scheduler/customize-scheduler/#styling-options-for-hosted-scheduling-pages).
+          maxLength: 550
+    configuration_scheduler_email_template_booking_confirmed:
+      description: Configurable settings specifically for booking confirmed emails.
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title to replace the default 'Booking Confirmed' title. This doesn't change the email subject line. Only visible in emails sent to guests.
+        body:
+          type: string
+          description: The additional body to be appended after the default body. Only visible in emails sent to guests.
+    configuration_participants:
+      type: object
+      description: List of participants for the scheduling Configuration.
+      required:
+      - availability
+      - booking
+      - email
+      properties:
+        availability:
+          $ref: '#/components/schemas/configuration_participants_availability'
+        booking:
+          $ref: '#/components/schemas/configuration_participants_booking'
+        email:
+          type: string
+          description: 'The participant''s email address.
+
+
+            If the participant provides an `availability` or `booking` block, this email address must be
+
+            associated with a valid Nylas grant, or the request fails. Participants supplied by email only
+
+            (no `availability` or `booking` block) don''t require a grant. They''re treated as notification-only
+
+            invitees: they still receive scheduling emails, but they don''t affect availability or free-busy
+
+            calculation and can''t be selected as a round-robin host.'
+          example: nyla@example.com
+        grant_id:
+          type: string
+          description: The participant's grant ID.
+        is_organizer:
+          type: boolean
+          description: 'When `true`, indicates that the participant is the organizer of the event.
+
+
+            For non-round-robin meetings, one of the participants must be specified as the organizer. For
+
+            round-robin meetings, remove the `is_organizer` key/value pair or set `is_organizer` to `false`
+
+            for all participants.'
+          default: false
+          example: false
+        name:
+          type: string
+          description: The participant's name.
+          example: Nyla
+        specific_time_availability:
+          $ref: '#/components/schemas/configuration_participants_specific_time_availability'
+        only_specific_time_availability:
+          type: boolean
+          description: 'When `true`, this participant will ONLY be available at times defined in their
+
+            `specific_time_availability` entries. Their regular `open_hours` are ignored.
+
+
+            If the config-level `availability_rules.only_specific_time_availability` is `true`,
+
+            this participant-level setting cannot override it to `false`.
+
+
+            Setting to `true` with an empty `specific_time_availability` array results in
+
+            zero availability for this participant (useful for temporarily disabling someone).'
+          default: false
+          example: true
+        timezone:
+          type: string
+          description: 'The timezone in which the participant is located, as an
+
+            [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string. Nylas uses this when
+
+            calculating the participant''s open hours, and in email notifications.
+
+
+            If a participant `open_hours` block includes its own `timezone`, the open-hours timezone
+
+            overrides this participant timezone for that block. If participant `open_hours` doesn''t include
+
+            a `timezone`, Scheduler uses this participant timezone, then `event_booking.timezone`.'
+          example: America/Toronto
+  responses:
     '429':
       description: Rate Limit
       content:
@@ -1597,6 +1546,537 @@ components:
                 error:
                   type: rate_limit_error
                   message: Too many requests, please try again shortly.
+    configurations:
+      description: Configuration objects returned
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    type: object
+                    oneOf:
+                    - title: Standard Configuration
+                      description: Single-host configuration for one-on-one bookings.
+                      properties:
+                        appearance:
+                          type:
+                          - object
+                          - 'null'
+                          example: null
+                        availability:
+                          type: object
+                          description: The rules that determine available time slots for the event.
+                          properties:
+                            availability_rules:
+                              type: object
+                              description: A list of availability rules that apply to all participants.
+                              properties:
+                                availability_method:
+                                  type: string
+                                  description: The method Nylas uses to calculate availability for all participants.
+                                  example: collective
+                                buffer:
+                                  type: object
+                                  description: A list of rules that set buffer time around events for all participants.
+                                  properties:
+                                    after:
+                                      type: integer
+                                      description: 'The amount of buffer time to add after meetings. For example, if
+
+                                        an account has a meeting scheduled from 10:00–11:00a.m., and you
+
+                                        set an after buffer of 15 minutes, Nylas treats 10:00–11:15a.m. as
+
+                                        busy.'
+                                      example: 15
+                                    before:
+                                      type: integer
+                                      description: 'The amount of buffer time to add before meetings. For example, if
+
+                                        an account has a meeting scheduled from 10:00–11:00a.m., and you
+
+                                        set a before buffer of 30 minutes, Nylas treats 9:30–11:00a.m. as
+
+                                        busy.'
+                                      example: 5
+                            duration_minutes:
+                              type: integer
+                              description: The total duration of the event, in minutes.
+                              example: 30
+                            interval_minutes:
+                              type: integer
+                              description: The interval between meetings, in minutes.
+                              example: 15
+                            round_to:
+                              type: integer
+                              description: 'Nylas rounds each time slot to the nearest `round_to` value. For example,
+
+                                if a time slot starts at 9:05a.m. and `round_to` is set to 15, Nylas rounds
+
+                                it to 9:15a.m.'
+                              example: 5
+                        event_booking:
+                          type: object
+                          description: An object containing details about the booking.
+                          properties:
+                            booking_type:
+                              type: string
+                              description: The booking type.
+                              example: booking
+                            disable_emails:
+                              type:
+                              - boolean
+                              - 'null'
+                              description: 'When `true`, Nylas doesn''t send email notifications when an event is booked,
+
+                                cancelled, or rescheduled. When `null`, the default behavior applies (emails are sent).'
+                              example: false
+                            hide_participants:
+                              type:
+                              - boolean
+                              - 'null'
+                              description: When `true`, Nylas creates the event with `hide_participants=true`, so the host can see who's on the event but the guests cannot. When `null`, the default behavior applies (participants are visible).
+                              example: false
+                            location:
+                              type: string
+                              description: The location of the event.
+                              example: Conference room 104
+                            notify_participants:
+                              type:
+                              - boolean
+                              - 'null'
+                              description: 'When `true`, the calendar provider sends notifications to participants
+
+                                when the event is created, updated, or deleted. Microsoft grants ignore
+
+                                this flag and always notify participants. This field may be `null` if not
+
+                                explicitly set on the configuration; treat `null` the same as `false`.'
+                              example: false
+                            reminders:
+                              type: array
+                              description: A list of reminders for the event.
+                              items:
+                                type: object
+                                properties:
+                                  minutes_before_event:
+                                    type: integer
+                                    description: The number of minutes before the event to send the reminder.
+                                    example: 15
+                                  recipient:
+                                    type: string
+                                    description: (Email reminders only) Who should receive the reminder.
+                                    example: all
+                                  type:
+                                    type: string
+                                    description: The reminder type.
+                                    example: email
+                            timezone:
+                              type: string
+                              description: 'The event''s timezone as an
+
+                                [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string.'
+                              example: America/New York
+                            title:
+                              type: string
+                              description: The event title.
+                              example: Weekly One-on-One
+                        id:
+                          type: string
+                          description: The Configuration ID.
+                          example: 26e98405-3b48-47d2-898a-7254f1fad8d7
+                        name:
+                          type: string
+                          description: The name of the Scheduling Page.
+                          example: Leyah & Nyla Weekly One-on-One
+                        participants:
+                          type: array
+                          description: A list of participants included in the scheduled event.
+                          items:
+                            type: object
+                            properties:
+                              availability:
+                                type: object
+                                description: The availability settings for the participant.
+                                properties:
+                                  calendar_ids:
+                                    type: array
+                                    description: A list of calendar IDs used to check the participant's availability.
+                                    items:
+                                      type: string
+                                    example:
+                                    - primary
+                                  open_hours:
+                                    type: array
+                                    description: 'An array of objects representing the participant''s open hours. Nylas
+
+                                      searches for free time slots within these open hours.'
+                                    items:
+                                      type: object
+                                      properties:
+                                        days:
+                                          type: array
+                                          description: 'The days of the week that the open hour settings are applied
+
+                                            to. Sunday corresponds to `0`, and Saturday corresponds to `6`.'
+                                          items:
+                                            type: integer
+                                          example:
+                                          - 1
+                                          - 2
+                                          - 3
+                                          - 4
+                                          - 5
+                                        end:
+                                          type: string
+                                          description: The end time in 24-hour time format.
+                                          example: '14:00'
+                                        exdates:
+                                          type: array
+                                          description: 'A list of dates that are excluded from the participant''s open
+
+                                            hours, in `YYYY-MM-DD` format.'
+                                          items:
+                                            type: string
+                                          example:
+                                          - '2025-01-18'
+                                        start:
+                                          type: string
+                                          description: The start time in 24-hour time format.
+                                          example: '10:00'
+                                        timezone:
+                                          type: string
+                                          description: 'The participant''s timezone as an
+
+                                            [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database)
+
+                                            string. Nylas uses this when calculating the participant''s open
+
+                                            hours and in email notifications.'
+                                          example: America/New York
+                              booking:
+                                type: object
+                                description: The participant's booking data.
+                                properties:
+                                  calendar_id:
+                                    type: string
+                                    description: The ID of the calendar the event was created on.
+                                    example: primary
+                              email:
+                                type: string
+                                description: The participant's email address.
+                                example: leyah@example.com
+                              name:
+                                type: string
+                                description: The participant's name.
+                                example: Leyah Miller
+                              is_organizer:
+                                type: boolean
+                                description: When `true`, shows that the participant is the organizer of the event.
+                                example: true
+                        requires_session_auth:
+                          type:
+                          - boolean
+                          - 'null'
+                          description: 'When `true`, the scheduling Availability and Bookings endpoints require a valid
+
+                            session ID to authenticate requests using the Configuration. This field may be
+
+                            `null` if not explicitly set; treat `null` the same as `false`.'
+                          example: false
+                        scheduler:
+                          type: object
+                          properties:
+                            additional_fields:
+                              type: object
+                              description: An object containing additional custom fields.
+                              properties:
+                                example_field:
+                                  type: object
+                                  properties:
+                                    label:
+                                      type: string
+                                      description: The text label to be displayed in the Scheduler UI.
+                                      example: Sample field
+                                    order:
+                                      type: integer
+                                      description: 'The order in which the field is displayed in the Scheduler UI.
+
+                                        Fields with lower order values are displayed first.'
+                                      example: 4
+                                    required:
+                                      type: boolean
+                                      description: When `true`, marks the field as required.
+                                      example: false
+                                    type:
+                                      type: string
+                                      description: The field type.
+                                      example: multi_line_text
+                            available_days_in_future:
+                              type: integer
+                              description: 'The number of days in the future that Scheduler is available for scheduling
+
+                                events.'
+                              example: 30
+                            email_template:
+                              type: object
+                              description: Template settings for email notifications.
+                              properties:
+                                booking_confirmed:
+                                  type: object
+                                  description: Template settings for confirmation notifications.
+                                  properties:
+                                    body:
+                                      type: string
+                                      description: The body text of the message.
+                                      example: Your weekly one-on-one with Nyla has been confirmed.
+                                    title:
+                                      type: string
+                                      description: The title of the message.
+                                      example: 'Confirmed: Weekly One-on-One'
+                                organizer_locale:
+                                  type: string
+                                  description: The organizer's locale settings.
+                                  example: en
+                            min_booking_notice:
+                              type:
+                              - integer
+                              - 'null'
+                              description: 'The minimum number of minutes in the future that a user can schedule a new
+
+                                booking. This field may be `null` if not explicitly set; treat `null` the
+
+                                same as `60`.'
+                              example: 30
+                            min_cancellation_notice:
+                              type: integer
+                              description: 'The minimum amount of time before a meeting that the booking can still be
+
+                                cancelled, in minutes.'
+                              example: 30
+                        slug:
+                          type:
+                          - string
+                          - 'null'
+                          description: 'The Configuration slug. You can use this instead of the `configuration_id`
+
+                            when making requests to other Scheduling endpoints. This field may be `null`
+
+                            if no slug has been set.'
+                          example: xyz-en
+                    - title: Group Configuration
+                      description: Multi-host configuration for group event bookings.
+                      properties:
+                        appearance:
+                          type:
+                          - object
+                          - 'null'
+                          example: null
+                        group_booking:
+                          type: object
+                          description: An object containing details about the group booking.
+                          properties:
+                            booking_type:
+                              type: string
+                              description: The booking type.
+                              example: booking
+                            calendar_id:
+                              type: string
+                              description: The ID of the calendar on which the group event is created.
+                              example: primary
+                            default_capacity:
+                              type: integer
+                              description: The default capacity for the booking.
+                              example: 50
+                            disable_emails:
+                              type:
+                              - boolean
+                              - 'null'
+                              description: 'When `true`, Nylas doesn''t send email notifications when an event is booked,
+
+                                cancelled, or rescheduled. When `null`, the default behavior applies (emails are sent).'
+                              example: false
+                            reminders:
+                              type: array
+                              description: A list of reminders for the event.
+                              items:
+                                type: object
+                                properties:
+                                  minutes_before_event:
+                                    type: integer
+                                    description: The number of minutes before the event to send the reminder.
+                                    example: 15
+                                  recipient:
+                                    type: string
+                                    description: (Email reminders only) Who should receive the reminder.
+                                    example: all
+                                  type:
+                                    type: string
+                                    description: The reminder type.
+                                    example: email
+                            title:
+                              type: string
+                              description: The event title.
+                              example: Annual Philosophy Club Meeting
+                        id:
+                          type: string
+                          description: The group Configuration ID.
+                          example: 26e98405-3b48-47d2-898a-7254f1fad8d7
+                        name:
+                          type: string
+                          description: The name of the Scheduling Page.
+                          example: Annual Philosophy Club Meeting
+                        requires_session_auth:
+                          type:
+                          - boolean
+                          - 'null'
+                          description: 'When `true`, the scheduling Availability and Bookings endpoints require a valid
+
+                            session ID to authenticate requests using the Configuration. This field may be
+
+                            `null` if not explicitly set; treat `null` the same as `false`.'
+                          example: false
+                        scheduler:
+                          type: object
+                          properties:
+                            available_days_in_future:
+                              type: integer
+                              description: 'The number of days in the future that Scheduler is available for scheduling
+
+                                events.'
+                              example: 30
+                            email_template:
+                              type: object
+                              description: Template settings for email notifications.
+                              properties:
+                                booking_confirmed:
+                                  type: object
+                                  description: Template settings for confirmation notifications.
+                                  properties:
+                                    body:
+                                      type: string
+                                      description: The body text of the message.
+                                      example: Our annual Philosophy Club meeting is confirmed!
+                                    title:
+                                      type: string
+                                      description: The title of the message.
+                                      example: 'Confirmed: Annual Philosophy Club Meeting'
+                            min_booking_notice:
+                              type:
+                              - integer
+                              - 'null'
+                              description: 'The minimum number of minutes in the future that a user can schedule a new
+
+                                booking. This field may be `null` if not explicitly set; treat `null` the
+
+                                same as `60`.'
+                              example: 30
+                            min_cancellation_notice:
+                              type: integer
+                              description: 'The minimum amount of time before a meeting that the booking can still be
+
+                                cancelled, in minutes.'
+                              example: 30
+                        slug:
+                          type:
+                          - string
+                          - 'null'
+                          description: 'The group Configuration slug. You can use this instead of the `configuration_id`
+
+                            when making requests to other Scheduling endpoints. This field may be `null`
+
+                            if no slug has been set.'
+                          example: xyz-en
+                        type:
+                          type: string
+                          description: 'The booking type for the Scheduling Page. For group Configurations, this is
+
+                            always `group`.'
+                          example: group
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
     configuration:
       description: Configuration returned
       content:
@@ -2051,530 +2531,6 @@ components:
 
                           always `group`.'
                         example: group
-    configurations:
-      description: Configuration objects returned
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response_with_cursor'
-            - properties:
-                data:
-                  type: array
-                  items:
-                    type: object
-                    oneOf:
-                    - title: Standard Configuration
-                      description: Single-host configuration for one-on-one bookings.
-                      properties:
-                        appearance:
-                          type:
-                          - object
-                          - 'null'
-                          example: null
-                        availability:
-                          type: object
-                          description: The rules that determine available time slots for the event.
-                          properties:
-                            availability_rules:
-                              type: object
-                              description: A list of availability rules that apply to all participants.
-                              properties:
-                                availability_method:
-                                  type: string
-                                  description: The method Nylas uses to calculate availability for all participants.
-                                  example: collective
-                                buffer:
-                                  type: object
-                                  description: A list of rules that set buffer time around events for all participants.
-                                  properties:
-                                    after:
-                                      type: integer
-                                      description: 'The amount of buffer time to add after meetings. For example, if
-
-                                        an account has a meeting scheduled from 10:00–11:00a.m., and you
-
-                                        set an after buffer of 15 minutes, Nylas treats 10:00–11:15a.m. as
-
-                                        busy.'
-                                      example: 15
-                                    before:
-                                      type: integer
-                                      description: 'The amount of buffer time to add before meetings. For example, if
-
-                                        an account has a meeting scheduled from 10:00–11:00a.m., and you
-
-                                        set a before buffer of 30 minutes, Nylas treats 9:30–11:00a.m. as
-
-                                        busy.'
-                                      example: 5
-                            duration_minutes:
-                              type: integer
-                              description: The total duration of the event, in minutes.
-                              example: 30
-                            interval_minutes:
-                              type: integer
-                              description: The interval between meetings, in minutes.
-                              example: 15
-                            round_to:
-                              type: integer
-                              description: 'Nylas rounds each time slot to the nearest `round_to` value. For example,
-
-                                if a time slot starts at 9:05a.m. and `round_to` is set to 15, Nylas rounds
-
-                                it to 9:15a.m.'
-                              example: 5
-                        event_booking:
-                          type: object
-                          description: An object containing details about the booking.
-                          properties:
-                            booking_type:
-                              type: string
-                              description: The booking type.
-                              example: booking
-                            disable_emails:
-                              type:
-                              - boolean
-                              - 'null'
-                              description: 'When `true`, Nylas doesn''t send email notifications when an event is booked,
-
-                                cancelled, or rescheduled. When `null`, the default behavior applies (emails are sent).'
-                              example: false
-                            hide_participants:
-                              type:
-                              - boolean
-                              - 'null'
-                              description: When `true`, Nylas creates the event with `hide_participants=true`, so the host can see who's on the event but the guests cannot. When `null`, the default behavior applies (participants are visible).
-                              example: false
-                            location:
-                              type: string
-                              description: The location of the event.
-                              example: Conference room 104
-                            notify_participants:
-                              type:
-                              - boolean
-                              - 'null'
-                              description: 'When `true`, the calendar provider sends notifications to participants
-
-                                when the event is created, updated, or deleted. Microsoft grants ignore
-
-                                this flag and always notify participants. This field may be `null` if not
-
-                                explicitly set on the configuration; treat `null` the same as `false`.'
-                              example: false
-                            reminders:
-                              type: array
-                              description: A list of reminders for the event.
-                              items:
-                                type: object
-                                properties:
-                                  minutes_before_event:
-                                    type: integer
-                                    description: The number of minutes before the event to send the reminder.
-                                    example: 15
-                                  recipient:
-                                    type: string
-                                    description: (Email reminders only) Who should receive the reminder.
-                                    example: all
-                                  type:
-                                    type: string
-                                    description: The reminder type.
-                                    example: email
-                            timezone:
-                              type: string
-                              description: 'The event''s timezone as an
-
-                                [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string.'
-                              example: America/New York
-                            title:
-                              type: string
-                              description: The event title.
-                              example: Weekly One-on-One
-                        id:
-                          type: string
-                          description: The Configuration ID.
-                          example: 26e98405-3b48-47d2-898a-7254f1fad8d7
-                        name:
-                          type: string
-                          description: The name of the Scheduling Page.
-                          example: Leyah & Nyla Weekly One-on-One
-                        participants:
-                          type: array
-                          description: A list of participants included in the scheduled event.
-                          items:
-                            type: object
-                            properties:
-                              availability:
-                                type: object
-                                description: The availability settings for the participant.
-                                properties:
-                                  calendar_ids:
-                                    type: array
-                                    description: A list of calendar IDs used to check the participant's availability.
-                                    items:
-                                      type: string
-                                    example:
-                                    - primary
-                                  open_hours:
-                                    type: array
-                                    description: 'An array of objects representing the participant''s open hours. Nylas
-
-                                      searches for free time slots within these open hours.'
-                                    items:
-                                      type: object
-                                      properties:
-                                        days:
-                                          type: array
-                                          description: 'The days of the week that the open hour settings are applied
-
-                                            to. Sunday corresponds to `0`, and Saturday corresponds to `6`.'
-                                          items:
-                                            type: integer
-                                          example:
-                                          - 1
-                                          - 2
-                                          - 3
-                                          - 4
-                                          - 5
-                                        end:
-                                          type: string
-                                          description: The end time in 24-hour time format.
-                                          example: '14:00'
-                                        exdates:
-                                          type: array
-                                          description: 'A list of dates that are excluded from the participant''s open
-
-                                            hours, in `YYYY-MM-DD` format.'
-                                          items:
-                                            type: string
-                                          example:
-                                          - '2025-01-18'
-                                        start:
-                                          type: string
-                                          description: The start time in 24-hour time format.
-                                          example: '10:00'
-                                        timezone:
-                                          type: string
-                                          description: 'The participant''s timezone as an
-
-                                            [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database)
-
-                                            string. Nylas uses this when calculating the participant''s open
-
-                                            hours and in email notifications.'
-                                          example: America/New York
-                              booking:
-                                type: object
-                                description: The participant's booking data.
-                                properties:
-                                  calendar_id:
-                                    type: string
-                                    description: The ID of the calendar the event was created on.
-                                    example: primary
-                              email:
-                                type: string
-                                description: The participant's email address.
-                                example: leyah@example.com
-                              name:
-                                type: string
-                                description: The participant's name.
-                                example: Leyah Miller
-                              is_organizer:
-                                type: boolean
-                                description: When `true`, shows that the participant is the organizer of the event.
-                                example: true
-                        requires_session_auth:
-                          type:
-                          - boolean
-                          - 'null'
-                          description: 'When `true`, the scheduling Availability and Bookings endpoints require a valid
-
-                            session ID to authenticate requests using the Configuration. This field may be
-
-                            `null` if not explicitly set; treat `null` the same as `false`.'
-                          example: false
-                        scheduler:
-                          type: object
-                          properties:
-                            additional_fields:
-                              type: object
-                              description: An object containing additional custom fields.
-                              properties:
-                                example_field:
-                                  type: object
-                                  properties:
-                                    label:
-                                      type: string
-                                      description: The text label to be displayed in the Scheduler UI.
-                                      example: Sample field
-                                    order:
-                                      type: integer
-                                      description: 'The order in which the field is displayed in the Scheduler UI.
-
-                                        Fields with lower order values are displayed first.'
-                                      example: 4
-                                    required:
-                                      type: boolean
-                                      description: When `true`, marks the field as required.
-                                      example: false
-                                    type:
-                                      type: string
-                                      description: The field type.
-                                      example: multi_line_text
-                            available_days_in_future:
-                              type: integer
-                              description: 'The number of days in the future that Scheduler is available for scheduling
-
-                                events.'
-                              example: 30
-                            email_template:
-                              type: object
-                              description: Template settings for email notifications.
-                              properties:
-                                booking_confirmed:
-                                  type: object
-                                  description: Template settings for confirmation notifications.
-                                  properties:
-                                    body:
-                                      type: string
-                                      description: The body text of the message.
-                                      example: Your weekly one-on-one with Nyla has been confirmed.
-                                    title:
-                                      type: string
-                                      description: The title of the message.
-                                      example: 'Confirmed: Weekly One-on-One'
-                                organizer_locale:
-                                  type: string
-                                  description: The organizer's locale settings.
-                                  example: en
-                            min_booking_notice:
-                              type:
-                              - integer
-                              - 'null'
-                              description: 'The minimum number of minutes in the future that a user can schedule a new
-
-                                booking. This field may be `null` if not explicitly set; treat `null` the
-
-                                same as `60`.'
-                              example: 30
-                            min_cancellation_notice:
-                              type: integer
-                              description: 'The minimum amount of time before a meeting that the booking can still be
-
-                                cancelled, in minutes.'
-                              example: 30
-                        slug:
-                          type:
-                          - string
-                          - 'null'
-                          description: 'The Configuration slug. You can use this instead of the `configuration_id`
-
-                            when making requests to other Scheduling endpoints. This field may be `null`
-
-                            if no slug has been set.'
-                          example: xyz-en
-                    - title: Group Configuration
-                      description: Multi-host configuration for group event bookings.
-                      properties:
-                        appearance:
-                          type:
-                          - object
-                          - 'null'
-                          example: null
-                        group_booking:
-                          type: object
-                          description: An object containing details about the group booking.
-                          properties:
-                            booking_type:
-                              type: string
-                              description: The booking type.
-                              example: booking
-                            calendar_id:
-                              type: string
-                              description: The ID of the calendar on which the group event is created.
-                              example: primary
-                            default_capacity:
-                              type: integer
-                              description: The default capacity for the booking.
-                              example: 50
-                            disable_emails:
-                              type:
-                              - boolean
-                              - 'null'
-                              description: 'When `true`, Nylas doesn''t send email notifications when an event is booked,
-
-                                cancelled, or rescheduled. When `null`, the default behavior applies (emails are sent).'
-                              example: false
-                            reminders:
-                              type: array
-                              description: A list of reminders for the event.
-                              items:
-                                type: object
-                                properties:
-                                  minutes_before_event:
-                                    type: integer
-                                    description: The number of minutes before the event to send the reminder.
-                                    example: 15
-                                  recipient:
-                                    type: string
-                                    description: (Email reminders only) Who should receive the reminder.
-                                    example: all
-                                  type:
-                                    type: string
-                                    description: The reminder type.
-                                    example: email
-                            title:
-                              type: string
-                              description: The event title.
-                              example: Annual Philosophy Club Meeting
-                        id:
-                          type: string
-                          description: The group Configuration ID.
-                          example: 26e98405-3b48-47d2-898a-7254f1fad8d7
-                        name:
-                          type: string
-                          description: The name of the Scheduling Page.
-                          example: Annual Philosophy Club Meeting
-                        requires_session_auth:
-                          type:
-                          - boolean
-                          - 'null'
-                          description: 'When `true`, the scheduling Availability and Bookings endpoints require a valid
-
-                            session ID to authenticate requests using the Configuration. This field may be
-
-                            `null` if not explicitly set; treat `null` the same as `false`.'
-                          example: false
-                        scheduler:
-                          type: object
-                          properties:
-                            available_days_in_future:
-                              type: integer
-                              description: 'The number of days in the future that Scheduler is available for scheduling
-
-                                events.'
-                              example: 30
-                            email_template:
-                              type: object
-                              description: Template settings for email notifications.
-                              properties:
-                                booking_confirmed:
-                                  type: object
-                                  description: Template settings for confirmation notifications.
-                                  properties:
-                                    body:
-                                      type: string
-                                      description: The body text of the message.
-                                      example: Our annual Philosophy Club meeting is confirmed!
-                                    title:
-                                      type: string
-                                      description: The title of the message.
-                                      example: 'Confirmed: Annual Philosophy Club Meeting'
-                            min_booking_notice:
-                              type:
-                              - integer
-                              - 'null'
-                              description: 'The minimum number of minutes in the future that a user can schedule a new
-
-                                booking. This field may be `null` if not explicitly set; treat `null` the
-
-                                same as `60`.'
-                              example: 30
-                            min_cancellation_notice:
-                              type: integer
-                              description: 'The minimum amount of time before a meeting that the booking can still be
-
-                                cancelled, in minutes.'
-                              example: 30
-                        slug:
-                          type:
-                          - string
-                          - 'null'
-                          description: 'The group Configuration slug. You can use this instead of the `configuration_id`
-
-                            when making requests to other Scheduling endpoints. This field may be `null`
-
-                            if no slug has been set.'
-                          example: xyz-en
-                        type:
-                          type: string
-                          description: 'The booking type for the Scheduling Page. For group Configurations, this is
-
-                            always `group`.'
-                          example: group
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The raw error from the provider, if available
-                    properties:
-                      code:
-                        type: string
-                      message:
-                        type: string
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: not_found_error
-                  message: requested object not found
-                  provider_error:
-                    code: MailboxNotEnabledForRESTAPI
-                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
     '400':
       description: Bad Request
       content:
@@ -2615,19 +2571,63 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-    200-delete:
-      description: Delete Succeeded
+    '401':
+      description: Unauthorized
       content:
         application/json:
           schema:
+            title: error
             type: object
-            required:
-            - request_id
             properties:
               request_id:
                 type: string
-                description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

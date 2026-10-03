@@ -503,42 +503,291 @@ paths:
       security:
       - SCHEDULER_SESSION_TOKEN: []
 components:
-  schemas:
-    200-delete:
-      description: Delete Succeeded
+  responses:
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '200':
+      description: OK
       content:
         application/json:
           schema:
             type: object
-            required:
-            - request_id
             properties:
               request_id:
                 type: string
                 description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    booking_update:
-      type: object
-      required:
-      - start_time
-      - end_time
-      properties:
-        start_time:
-          type: string
-          description: The event's start time, in seconds using the Unix timestamp format.
-        end_time:
-          type: string
-          description: The event's end time, in seconds using the Unix timestamp format.
+          examples:
+            OK:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    booking_confirm:
+      description: Booking confirmed or cancelled
+      content:
+        application/json:
+          schema:
+            oneOf:
+            - title: Booking confirmed
+              type: object
+              description: Returned when the booking was confirmed.
+              properties:
+                request_id:
+                  type: string
+                  description: The ID of the request.
+                  example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                data:
+                  type: object
+                  properties:
+                    booking_id:
+                      type: string
+                      description: The unique ID of the booking.
+                      example: xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
+                    description:
+                      type: string
+                      description: A brief description of the event.
+                      example: Come ready to talk philosophy!
+                    event_id:
+                      type: string
+                      description: The event ID associated with the booking.
+                      example: 5d3qmne77v32r8l4phyuksl2x
+                    organizer:
+                      type: object
+                      description: The participant designated as the organizer of the event.
+                      properties:
+                        email:
+                          type: string
+                          description: The organizer's email address.
+                          example: leyah@example.com
+                        name:
+                          type: string
+                          description: The organizer's name.
+                          example: Leyah Miller
+                    status:
+                      type: string
+                      description: The status of the booking.
+                      enum:
+                      - booked
+                      - cancelled
+                      - pending
+                      example: booked
+                    title:
+                      type: string
+                      description: The title of the event.
+                      example: Annual Philosophy Club Meeting
+            - title: Booking cancelled
+              type: object
+              $ref: '#/components/schemas/200-delete'
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+    booking_create:
+      description: Create a new booking
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/booking'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              booking_id: AAAA-BBBB-1111-2222
+              event_id: CCCC-DDDD-3333-4444
+              title: My test event
+              organizer:
+                name: John Doe
+                email: user@example.com
+              status: booked
+              description: This is an example of a description.
+  requestBodies:
+    booking_confirm:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/booking_confirm'
+          example:
+            salt: -zgLLAuk_qtcsw
+            status: cancelled
+            cancellation_reason: I am no longer available at this time.
+    booking_create:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/booking_create'
+          example:
+            start_time: '1708714800'
+            end_time: '1708722000'
+            participants:
+            - email: user@example.com
+            guest:
+              name: Guest
+              email: guest@example.com
+  schemas:
     booking_create:
       type: object
       required:
@@ -609,34 +858,47 @@ components:
           example:
             name: Dorothy Vaughan
             email_address: dorothy@example.com
-    booking_update_group:
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    booking_confirm:
       type: object
       required:
-      - calendar_id
-      - end_time
-      - event_id
-      - start_time
+      - salt
+      - status
       properties:
-        calendar_id:
+        salt:
           type: string
-          description: The ID of the calendar to access.
-          example: 7d93zl2palhxqdy6e5qinsakt
-        end_time:
-          type: integer
-          description: The event's end time, in seconds using the Unix timestamp format.\
-          example: 1661877792
-        event_id:
+          description: The salt extracted from the booking reference embedded in the organizer confirmation link, encoded as a URL-safe base64 string (without padding).
+        status:
           type: string
-          description: The ID of the event to update.
-          example: 5d3qmne77v32r8l4phyuksl2x
-        master_event_id:
+          description: The action to take on the pending booking.
+          enum:
+          - confirmed
+          - cancelled
+        cancellation_reason:
           type: string
-          description: (Recurring events only) The ID of the master event.
-          example: 5d3qmne77v32r8l4phyuksl2x
-        start_time:
-          type: integer
-          description: The event's start time, in seconds using the Unix timestamp format.
-          example: 1661874192
+          description: The reason that the booking is being cancelled.
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
     booking:
       type: object
       required:
@@ -675,308 +937,46 @@ components:
         description:
           type: string
           description: The description of the event.
-    booking_confirm:
+    booking_update:
       type: object
       required:
-      - salt
-      - status
+      - start_time
+      - end_time
       properties:
-        salt:
+        start_time:
           type: string
-          description: The salt extracted from the booking reference embedded in the organizer confirmation link, encoded as a URL-safe base64 string (without padding).
-        status:
+          description: The event's start time, in seconds using the Unix timestamp format.
+        end_time:
           type: string
-          description: The action to take on the pending booking.
-          enum:
-          - confirmed
-          - cancelled
-        cancellation_reason:
+          description: The event's end time, in seconds using the Unix timestamp format.
+    booking_update_group:
+      type: object
+      required:
+      - calendar_id
+      - end_time
+      - event_id
+      - start_time
+      properties:
+        calendar_id:
           type: string
-          description: The reason that the booking is being cancelled.
-  responses:
-    '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The raw error from the provider, if available
-                    properties:
-                      code:
-                        type: string
-                      message:
-                        type: string
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: not_found_error
-                  message: requested object not found
-                  provider_error:
-                    code: MailboxNotEnabledForRESTAPI
-                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    '504':
-      description: Provider Failure
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Provider Failure:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: provider_error
-                  message: Provider request timed out.
-    booking_confirm:
-      description: Booking confirmed or cancelled
-      content:
-        application/json:
-          schema:
-            oneOf:
-            - title: Booking confirmed
-              type: object
-              description: Returned when the booking was confirmed.
-              properties:
-                request_id:
-                  type: string
-                  description: The ID of the request.
-                  example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-                data:
-                  type: object
-                  properties:
-                    booking_id:
-                      type: string
-                      description: The unique ID of the booking.
-                      example: xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
-                    description:
-                      type: string
-                      description: A brief description of the event.
-                      example: Come ready to talk philosophy!
-                    event_id:
-                      type: string
-                      description: The event ID associated with the booking.
-                      example: 5d3qmne77v32r8l4phyuksl2x
-                    organizer:
-                      type: object
-                      description: The participant designated as the organizer of the event.
-                      properties:
-                        email:
-                          type: string
-                          description: The organizer's email address.
-                          example: leyah@example.com
-                        name:
-                          type: string
-                          description: The organizer's name.
-                          example: Leyah Miller
-                    status:
-                      type: string
-                      description: The status of the booking.
-                      enum:
-                      - booked
-                      - cancelled
-                      - pending
-                      example: booked
-                    title:
-                      type: string
-                      description: The title of the event.
-                      example: Annual Philosophy Club Meeting
-            - title: Booking cancelled
-              type: object
-              $ref: '#/components/schemas/200-delete'
-    booking_create:
-      description: Create a new booking
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/booking'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-              booking_id: AAAA-BBBB-1111-2222
-              event_id: CCCC-DDDD-3333-4444
-              title: My test event
-              organizer:
-                name: John Doe
-                email: user@example.com
-              status: booked
-              description: This is an example of a description.
-    '200':
-      description: OK
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: ID of the request.
-          examples:
-            OK:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Bad Request:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: invalid_request_error
-                  message: error parsing request body
-                  provider_error:
-                    code: TargetIdShouldNotBeMeOrWhitespace
-                    message: Id is malformed.
-            Invalid Idempotency-Key:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.invalid_idempotency_key
-                  message: Idempotency-Key must be 256 characters or fewer.
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-  requestBodies:
-    booking_create:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/booking_create'
-          example:
-            start_time: '1708714800'
-            end_time: '1708722000'
-            participants:
-            - email: user@example.com
-            guest:
-              name: Guest
-              email: guest@example.com
-    booking_confirm:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/booking_confirm'
-          example:
-            salt: -zgLLAuk_qtcsw
-            status: cancelled
-            cancellation_reason: I am no longer available at this time.
+          description: The ID of the calendar to access.
+          example: 7d93zl2palhxqdy6e5qinsakt
+        end_time:
+          type: integer
+          description: The event's end time, in seconds using the Unix timestamp format.\
+          example: 1661877792
+        event_id:
+          type: string
+          description: The ID of the event to update.
+          example: 5d3qmne77v32r8l4phyuksl2x
+        master_event_id:
+          type: string
+          description: (Recurring events only) The ID of the master event.
+          example: 5d3qmne77v32r8l4phyuksl2x
+        start_time:
+          type: integer
+          description: The event's start time, in seconds using the Unix timestamp format.
+          example: 1661874192
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

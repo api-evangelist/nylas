@@ -183,7 +183,88 @@ paths:
         '400':
           $ref: '#/components/responses/400'
 components:
+  parameters:
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
   responses:
+    workflow:
+      description: Success. Returns workflow.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+              data:
+                $ref: '#/components/schemas/workflow'
+          example:
+            request_id: 9ca1d434-5ac7-4331-b8fb-3749c9a758d3
+            data:
+              app_id: null
+              date_created: 1756477389
+              delay: 5
+              grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+              id: b79c82b2-a51b-4c54-8469-28006a43551a
+              is_enabled: true
+              name: New booking confirmation workflow
+              template_id: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              trigger_event: booking.created
+              from:
+                email: support@example.com
+                name: Support
+    workflow_400:
+      description: 'Error: Bad request'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.invalid_request_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: invalid_event is not a valid option
     workflows_list:
       description: Success. Returns list of workflows.
       content:
@@ -248,92 +329,6 @@ components:
                 type: string
                 description: The ID of the request.
                 example: 3906564297-48e7fb5b-f220-427b-a4de-255736adba08
-    workflow_400:
-      description: 'Error: Bad request'
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - error
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
-              error:
-                type: object
-                required:
-                - message
-                - type
-                properties:
-                  type:
-                    type: string
-                    description: The type of error that occurred.
-                    example: api.invalid_request_error
-                  message:
-                    type: string
-                    description: A human-readable message describing the error.
-                    example: invalid_event is not a valid option
-    workflow:
-      description: Success. Returns workflow.
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - data
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-              data:
-                $ref: '#/components/schemas/workflow'
-          example:
-            request_id: 9ca1d434-5ac7-4331-b8fb-3749c9a758d3
-            data:
-              app_id: null
-              date_created: 1756477389
-              delay: 5
-              grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
-              id: b79c82b2-a51b-4c54-8469-28006a43551a
-              is_enabled: true
-              name: New booking confirmation workflow
-              template_id: 14c00cc8-648c-4381-ad10-52641d9bac8e
-              trigger_event: booking.created
-              from:
-                email: support@example.com
-                name: Support
-    workflow_404:
-      description: 'Error: Not found'
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - error
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
-              error:
-                type: object
-                required:
-                - message
-                - type
-                properties:
-                  type:
-                    type: string
-                    description: The type of error that occurred.
-                    example: api.not_found_error
-                  message:
-                    type: string
-                    description: A human-readable message describing the error.
-                    example: template not found
     '400':
       description: Bad Request
       content:
@@ -374,6 +369,145 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
+    workflow_404:
+      description: 'Error: Not found'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.not_found_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: template not found
+  requestBodies:
+    workflow_update:
+      description: Update workflow request
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              delay:
+                type: integer
+                description: 'The number of minutes between a `trigger_event` being met and the workflow
+
+                  sending a message.'
+                example: 1
+              is_enabled:
+                type: boolean
+                description: When `true`, indicates that the workflow is enabled.
+                example: false
+              name:
+                type: string
+                description: The name of the workflow.
+                example: Updated booking confirmation workflow
+              template_id:
+                type: string
+                description: The ID of the email template the workflow uses.
+                example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              trigger_event:
+                type: string
+                enum:
+                - booking.cancelled
+                - booking.created
+                - booking.pending
+                - booking.reminder
+                - booking.rescheduled
+                description: The event which triggers the workflow.
+                example: booking.created
+              from:
+                type:
+                - object
+                - 'null'
+                description: 'Details of the sender if the workflow should use [transactional send](/docs/reference/api/transactional-send/).
+
+                  If not provided, the sender will be the grant associated with the trigger event.'
+                properties:
+                  email:
+                    type: string
+                    description: The email address of the sender.
+                    example: support@example.com
+                  name:
+                    type: string
+                    description: The name of the sender.
+                    example: Support
+    workflow_create:
+      description: Create workflow request
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - name
+            - template_id
+            - trigger_event
+            properties:
+              delay:
+                type: integer
+                description: 'The number of minutes between a `trigger_event` being met and the workflow
+
+                  sending a message.'
+                default: 0
+                example: 5
+              is_enabled:
+                type: boolean
+                description: When `true`, indicates that the workflow is enabled.
+                default: true
+                example: true
+              name:
+                type: string
+                description: The name of the workflow.
+                example: New booking confirmation workflow
+              template_id:
+                type: string
+                description: The ID of the email template the workflow uses.
+                example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              trigger_event:
+                type: string
+                enum:
+                - booking.cancelled
+                - booking.created
+                - booking.pending
+                - booking.reminder
+                - booking.rescheduled
+                description: The event which triggers the workflow.
+                example: booking.created
+              from:
+                type:
+                - object
+                - 'null'
+                description: 'Details of the sender if the workflow should use [transactional send](/docs/reference/api/transactional-send/).
+
+                  If not provided, the sender will be the grant associated with the trigger event.'
+                properties:
+                  email:
+                    type: string
+                    description: The email address of the sender.
+                    example: support@example.com
+                  name:
+                    type: string
+                    description: The name of the sender.
+                    example: Support
   schemas:
     workflow:
       type: object
@@ -453,140 +587,6 @@ components:
               type: string
               description: The name of the sender.
               example: Support
-  parameters:
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
-  requestBodies:
-    workflow_create:
-      description: Create workflow request
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - name
-            - template_id
-            - trigger_event
-            properties:
-              delay:
-                type: integer
-                description: 'The number of minutes between a `trigger_event` being met and the workflow
-
-                  sending a message.'
-                default: 0
-                example: 5
-              is_enabled:
-                type: boolean
-                description: When `true`, indicates that the workflow is enabled.
-                default: true
-                example: true
-              name:
-                type: string
-                description: The name of the workflow.
-                example: New booking confirmation workflow
-              template_id:
-                type: string
-                description: The ID of the email template the workflow uses.
-                example: 14c00cc8-648c-4381-ad10-52641d9bac8e
-              trigger_event:
-                type: string
-                enum:
-                - booking.cancelled
-                - booking.created
-                - booking.pending
-                - booking.reminder
-                - booking.rescheduled
-                description: The event which triggers the workflow.
-                example: booking.created
-              from:
-                type:
-                - object
-                - 'null'
-                description: 'Details of the sender if the workflow should use [transactional send](/docs/reference/api/transactional-send/).
-
-                  If not provided, the sender will be the grant associated with the trigger event.'
-                properties:
-                  email:
-                    type: string
-                    description: The email address of the sender.
-                    example: support@example.com
-                  name:
-                    type: string
-                    description: The name of the sender.
-                    example: Support
-    workflow_update:
-      description: Update workflow request
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              delay:
-                type: integer
-                description: 'The number of minutes between a `trigger_event` being met and the workflow
-
-                  sending a message.'
-                example: 1
-              is_enabled:
-                type: boolean
-                description: When `true`, indicates that the workflow is enabled.
-                example: false
-              name:
-                type: string
-                description: The name of the workflow.
-                example: Updated booking confirmation workflow
-              template_id:
-                type: string
-                description: The ID of the email template the workflow uses.
-                example: 14c00cc8-648c-4381-ad10-52641d9bac8e
-              trigger_event:
-                type: string
-                enum:
-                - booking.cancelled
-                - booking.created
-                - booking.pending
-                - booking.reminder
-                - booking.rescheduled
-                description: The event which triggers the workflow.
-                example: booking.created
-              from:
-                type:
-                - object
-                - 'null'
-                description: 'Details of the sender if the workflow should use [transactional send](/docs/reference/api/transactional-send/).
-
-                  If not provided, the sender will be the grant associated with the trigger event.'
-                properties:
-                  email:
-                    type: string
-                    description: The email address of the sender.
-                    example: support@example.com
-                  name:
-                    type: string
-                    description: The name of the sender.
-                    example: Support
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

@@ -463,74 +463,252 @@ paths:
         label: Kotlin SDK
         source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n\n    val nylas: NylasClient = NylasClient(\n        apiKey = \"<NYLAS_API_KEY>\"\n    )\n\n    val draft = nylas.drafts().send(\"<NYLAS_GRANT_ID>\", \"<DRAFT_ID>\")\n    print(draft.data)\n}\n"
 components:
-  parameters:
-    field_selection:
-      name: select
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
-
-        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
-
-        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
-
-        to only the information that you need.'
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
-    metadata_pair:
-      name: metadata_pair
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Pass a metadata key/value pair (for example, `?metadata_pair=key1:value`) to search for metadata
-
-        associated with objects. See [Metadata](/docs/reference/api/#metadata) for more information.'
-    query_imap_list:
-      name: query_imap
-      schema:
-        type: boolean
-        default: false
-      in: query
-      required: false
-      description: '(IMAP, Yahoo, and iCloud only) When `true`, Nylas queries the IMAP server directly instead of the
-
-        Nylas database. You also need to set the `in` query parameter in your request so Nylas knows which
-
-        folder to query.'
-    query_imap_get_by_id:
-      name: query_imap
-      schema:
-        type: boolean
-        default: false
-      in: query
-      required: false
-      description: '(IMAP, iCloud, and Yahoo only) When `true`, Nylas queries from the IMAP server directly instead of
-
-        the Nylas database.'
   requestBodies:
+    draft_update:
+      content:
+        application/json:
+          schema:
+            title: Drafts
+            type: object
+            description: A draft of a message. You can edit a draft until you send it as a message.
+            properties:
+              bcc:
+                type: array
+                uniqueItems: true
+                description: The name/email address pairs of the recipients to be BCC'd.
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: brandon.carson@example.com
+                  name: ''
+              body:
+                type: string
+                description: The body of the draft, in HTML format.
+                example: Hi, Welcome to Nylas!
+              cc:
+                type: array
+                uniqueItems: true
+                description: The name/email address pairs of the recipients to be CC'd.
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: clivescounters@example.com
+                  name: ''
+              tracking_options:
+                type: object
+                properties:
+                  opens:
+                    type: boolean
+                  thread_replies:
+                    type: boolean
+                  links:
+                    type: boolean
+                  label:
+                    type: string
+                    maxLength: 2048
+                  domain_name:
+                    $ref: '#/components/schemas/tracking_domain_name'
+              attachments:
+                type: array
+                uniqueItems: true
+                description: An array of file attachments to include in the draft. You can use either the `application/json` or `multipart/form-data` schema, depending on attachment size. The `application/json` format is limited to 3MB including the message body, and the `content` must be Base64 encoded. The `multipart/form-data` format size is limited by the provider to 25MB.  See [Attachments](/#tag--Attachments) for more information.
+                items:
+                  type: object
+                  properties:
+                    filename:
+                      type: string
+                    content:
+                      description: Must be Base64-encoded if using the `application/json` schema. Use binary format if using `multipart/form-data`.
+                      type: string
+                    content_type:
+                      type: string
+                      description: The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don't provide a type, Nylas infers it from the file name.
+                    content_id:
+                      type: string
+                      description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s
+
+                        HTML. For example, you might see something like
+
+                        `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in the message body. Only
+
+                        include a value for the `content_id` field if the attachment is inline.'
+                    content_disposition:
+                      type: string
+                      description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
+                      example: inline; filename="some-image.jpeg"
+              reply_to:
+                type: array
+                uniqueItems: true
+                description: 'An array of name/email address pairs that should receive replies to the message. This is
+
+                  used to set an alternative `Reply-To` header in the sent message. Not all providers support
+
+                  setting this in a draft.'
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: healthcare.demo@example.com
+                  name: ''
+              starred:
+                type: boolean
+                description: If `true`, the draft is starred.
+                example: false
+              subject:
+                type: string
+                description: The subject line of the draft.
+                example: 'Invitation: Welcome! @ Thu Oct 28, 2021 7am - 8am (EDT) - Toronto'
+              to:
+                type: array
+                uniqueItems: true
+                description: The name/email address pairs of the recipients.
+                items:
+                  $ref: '#/components/schemas/message-participant'
+                example:
+                - email: demo@example.com
+                  name: ''
+                - email: realestate.demo@example.com
+                  name: ''
+              metadata:
+                $ref: '#/components/schemas/metadata'
+              template:
+                type: object
+                description: The [template](/docs/reference/api/application-level-templates/) to use for the message. Can be overriden by the `body` and `subject` fields.
+                properties:
+                  id:
+                    type: string
+                    description: The template ID.
+                    example: b79c82b2-a51b-4c54-8469-28006a43551a
+                  strict:
+                    type: boolean
+                    description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
+
+                      defined in the `variables` object.'
+                    default: true
+                    example: true
+                  variables:
+                    type: object
+                    description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                      template.'
+                    additionalProperties:
+                      type: string
+                    example:
+                      user:
+                        name: Leyah
+                        surname: Miller
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              draft:
+                type: object
+                description: A draft of a message. You can edit a draft until you send it as a message.
+                properties:
+                  bcc:
+                    type: array
+                    uniqueItems: true
+                    description: The name/email address pairs of the recipients to be BCC'd.
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    example:
+                    - email: brandon.carson@example.com
+                      name: ''
+                  body:
+                    type: string
+                    description: The body of the draft, in HTML format.
+                    example: Hi, Welcome to Nylas!
+                  cc:
+                    type: array
+                    uniqueItems: true
+                    description: The name/email address pairs of the recipients to be CC'd.
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    example:
+                    - email: clivescounters@example.com
+                      name: ''
+                  tracking_options:
+                    type: object
+                    properties:
+                      opens:
+                        type: boolean
+                      thread_replies:
+                        type: boolean
+                      links:
+                        type: boolean
+                      label:
+                        type: string
+                        maxLength: 2048
+                      domain_name:
+                        $ref: '#/components/schemas/tracking_domain_name'
+                  reply_to:
+                    type: array
+                    uniqueItems: true
+                    description: 'An array of name/email address pairs that should receive replies to the message. This
+
+                      is used to set an alternative `Reply-To` header in the sent message. Not all providers
+
+                      support setting this in a draft.'
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    example:
+                    - email: healthcare.demo@example.com
+                      name: ''
+                  starred:
+                    type: boolean
+                    description: If `true`, the draft is starred.
+                    example: false
+                  subject:
+                    type: string
+                    description: The subject line of the draft.
+                    example: 'Invitation: Welcome! @ Thu Oct 28, 2021 7am - 8am (EDT) - Toronto'
+                  thread_id:
+                    type: string
+                    description: A reference to the parent Thread object.
+                    example: 1t8tv3890q4vgmwq6pmdwm8qg
+                  to:
+                    type: array
+                    uniqueItems: true
+                    description: The name/email address pairs of the recipients.
+                    items:
+                      $ref: '#/components/schemas/message-participant'
+                    examples:
+                    - email: demo@example.com
+                      name: ''
+                    - email: realestate.demo@example.com
+                      name: ''
+                  metadata:
+                    $ref: '#/components/schemas/metadata'
+                  template:
+                    type: object
+                    description: The [template](/docs/reference/api/application-level-templates/) to use for the message. Can be overriden by the `body` and `subject` fields.
+                    properties:
+                      id:
+                        type: string
+                        description: The template ID.
+                        example: b79c82b2-a51b-4c54-8469-28006a43551a
+                      strict:
+                        type: boolean
+                        description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
+
+                          defined in the `variables` object.'
+                        default: true
+                        example: true
+                      variables:
+                        type: object
+                        description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                          template.'
+                        additionalProperties:
+                          type: string
+                        example:
+                          user:
+                            name: Leyah
+                            surname: Miller
+              attachment:
+                type: string
+                description: The content of the attachment, in binary format.
+                format: binary
+                example: binary data
     draft_create:
       content:
         application/json:
@@ -853,330 +1031,281 @@ components:
                 description: The content of the attachment, in binary format.
                 format: binary
                 example: binary data
-    draft_update:
+  responses:
+    '429':
+      description: Rate Limit
       content:
         application/json:
           schema:
-            title: Drafts
+            title: error
             type: object
-            description: A draft of a message. You can edit a draft until you send it as a message.
             properties:
-              bcc:
-                type: array
-                uniqueItems: true
-                description: The name/email address pairs of the recipients to be BCC'd.
-                items:
-                  $ref: '#/components/schemas/message-participant'
-                example:
-                - email: brandon.carson@example.com
-                  name: ''
-              body:
+              request_id:
                 type: string
-                description: The body of the draft, in HTML format.
-                example: Hi, Welcome to Nylas!
-              cc:
-                type: array
-                uniqueItems: true
-                description: The name/email address pairs of the recipients to be CC'd.
-                items:
-                  $ref: '#/components/schemas/message-participant'
-                example:
-                - email: clivescounters@example.com
-                  name: ''
-              tracking_options:
+                description: The request ID.
+              error:
                 type: object
+                description: The response error object.
                 properties:
-                  opens:
-                    type: boolean
-                  thread_replies:
-                    type: boolean
-                  links:
-                    type: boolean
-                  label:
+                  type:
                     type: string
-                    maxLength: 2048
-                  domain_name:
-                    $ref: '#/components/schemas/tracking_domain_name'
-              attachments:
-                type: array
-                uniqueItems: true
-                description: An array of file attachments to include in the draft. You can use either the `application/json` or `multipart/form-data` schema, depending on attachment size. The `application/json` format is limited to 3MB including the message body, and the `content` must be Base64 encoded. The `multipart/form-data` format size is limited by the provider to 25MB.  See [Attachments](/#tag--Attachments) for more information.
-                items:
-                  type: object
-                  properties:
-                    filename:
-                      type: string
-                    content:
-                      description: Must be Base64-encoded if using the `application/json` schema. Use binary format if using `multipart/form-data`.
-                      type: string
-                    content_type:
-                      type: string
-                      description: The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don't provide a type, Nylas infers it from the file name.
-                    content_id:
-                      type: string
-                      description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s
-
-                        HTML. For example, you might see something like
-
-                        `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in the message body. Only
-
-                        include a value for the `content_id` field if the attachment is inline.'
-                    content_disposition:
-                      type: string
-                      description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
-                      example: inline; filename="some-image.jpeg"
-              reply_to:
-                type: array
-                uniqueItems: true
-                description: 'An array of name/email address pairs that should receive replies to the message. This is
-
-                  used to set an alternative `Reply-To` header in the sent message. Not all providers support
-
-                  setting this in a draft.'
-                items:
-                  $ref: '#/components/schemas/message-participant'
-                example:
-                - email: healthcare.demo@example.com
-                  name: ''
-              starred:
-                type: boolean
-                description: If `true`, the draft is starred.
-                example: false
-              subject:
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
                 type: string
-                description: The subject line of the draft.
-                example: 'Invitation: Welcome! @ Thu Oct 28, 2021 7am - 8am (EDT) - Toronto'
-              to:
-                type: array
-                uniqueItems: true
-                description: The name/email address pairs of the recipients.
-                items:
-                  $ref: '#/components/schemas/message-participant'
-                example:
-                - email: demo@example.com
-                  name: ''
-                - email: realestate.demo@example.com
-                  name: ''
-              metadata:
-                $ref: '#/components/schemas/metadata'
-              template:
+                description: The request ID.
+              error:
                 type: object
-                description: The [template](/docs/reference/api/application-level-templates/) to use for the message. Can be overriden by the `body` and `subject` fields.
+                description: The response error object.
                 properties:
-                  id:
+                  type:
                     type: string
-                    description: The template ID.
-                    example: b79c82b2-a51b-4c54-8469-28006a43551a
-                  strict:
-                    type: boolean
-                    description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
-
-                      defined in the `variables` object.'
-                    default: true
-                    example: true
-                  variables:
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
                     type: object
-                    description: 'A set of key/value pairs representing variables to substitute for values in the
-
-                      template.'
-                    additionalProperties:
-                      type: string
-                    example:
-                      user:
-                        name: Leyah
-                        surname: Miller
-        multipart/form-data:
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    drafts:
+      description: Drafts
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/draft'
+          example:
+            Draft response example:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+              - body: Hello, I just sent a message using Nylas!
+                cc:
+                - email: arya.stark@example.com
+                attachments:
+                - content_type: text/calendar
+                  id: 4kj2jrcoj9ve5j9yxqz5cuv98
+                  size: 1708
+                - content_type: application/ics
+                  filename: invite.ics
+                  id: 70jcsv367jaiavt4njeu4xswg
+                  size: 1708
+                folders:
+                - 8l6c4d11y1p4dm4fxj52whyr9
+                - d9zkcr2tljpu3m4qpj7l2hbr0
+                from:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+                id: 5d3qmne77v32r8l4phyuksl2x
+                object: message
+                reply_to:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                snippet: Hello, I just sent a message using Nylas!
+                starred: true
+                subject: Hello from Nylas!
+                thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+                to:
+                - name: Jon Snow
+                  email: j.snow@example.com
+              next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
           schema:
             type: object
+            required:
+            - request_id
             properties:
-              draft:
-                type: object
-                description: A draft of a message. You can edit a draft until you send it as a message.
-                properties:
-                  bcc:
-                    type: array
-                    uniqueItems: true
-                    description: The name/email address pairs of the recipients to be BCC'd.
-                    items:
-                      $ref: '#/components/schemas/message-participant'
-                    example:
-                    - email: brandon.carson@example.com
-                      name: ''
-                  body:
-                    type: string
-                    description: The body of the draft, in HTML format.
-                    example: Hi, Welcome to Nylas!
-                  cc:
-                    type: array
-                    uniqueItems: true
-                    description: The name/email address pairs of the recipients to be CC'd.
-                    items:
-                      $ref: '#/components/schemas/message-participant'
-                    example:
-                    - email: clivescounters@example.com
-                      name: ''
-                  tracking_options:
-                    type: object
-                    properties:
-                      opens:
-                        type: boolean
-                      thread_replies:
-                        type: boolean
-                      links:
-                        type: boolean
-                      label:
-                        type: string
-                        maxLength: 2048
-                      domain_name:
-                        $ref: '#/components/schemas/tracking_domain_name'
-                  reply_to:
-                    type: array
-                    uniqueItems: true
-                    description: 'An array of name/email address pairs that should receive replies to the message. This
-
-                      is used to set an alternative `Reply-To` header in the sent message. Not all providers
-
-                      support setting this in a draft.'
-                    items:
-                      $ref: '#/components/schemas/message-participant'
-                    example:
-                    - email: healthcare.demo@example.com
-                      name: ''
-                  starred:
-                    type: boolean
-                    description: If `true`, the draft is starred.
-                    example: false
-                  subject:
-                    type: string
-                    description: The subject line of the draft.
-                    example: 'Invitation: Welcome! @ Thu Oct 28, 2021 7am - 8am (EDT) - Toronto'
-                  thread_id:
-                    type: string
-                    description: A reference to the parent Thread object.
-                    example: 1t8tv3890q4vgmwq6pmdwm8qg
-                  to:
-                    type: array
-                    uniqueItems: true
-                    description: The name/email address pairs of the recipients.
-                    items:
-                      $ref: '#/components/schemas/message-participant'
-                    examples:
-                    - email: demo@example.com
-                      name: ''
-                    - email: realestate.demo@example.com
-                      name: ''
-                  metadata:
-                    $ref: '#/components/schemas/metadata'
-                  template:
-                    type: object
-                    description: The [template](/docs/reference/api/application-level-templates/) to use for the message. Can be overriden by the `body` and `subject` fields.
-                    properties:
-                      id:
-                        type: string
-                        description: The template ID.
-                        example: b79c82b2-a51b-4c54-8469-28006a43551a
-                      strict:
-                        type: boolean
-                        description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
-
-                          defined in the `variables` object.'
-                        default: true
-                        example: true
-                      variables:
-                        type: object
-                        description: 'A set of key/value pairs representing variables to substitute for values in the
-
-                          template.'
-                        additionalProperties:
-                          type: string
-                        example:
-                          user:
-                            name: Leyah
-                            surname: Miller
-              attachment:
+              request_id:
                 type: string
-                description: The content of the attachment, in binary format.
-                format: binary
-                example: binary data
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    draft:
+      description: Draft
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/draft'
+          example:
+            Draft response example:
+              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+              data:
+                body: Hello, I just sent a message using Nylas!
+                cc:
+                - email: arya.stark@example.com
+                attachments:
+                - content_type: text/calendar
+                  id: 4kj2jrcoj9ve5j9yxqz5cuv98
+                  size: 1708
+                - content_type: application/ics
+                  filename: invite.ics
+                  id: 70jcsv367jaiavt4njeu4xswg
+                  size: 1708
+                folders:
+                - 8l6c4d11y1p4dm4fxj52whyr9
+                - d9zkcr2tljpu3m4qpj7l2hbr0
+                from:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+                id: 5d3qmne77v32r8l4phyuksl2x
+                object: draft
+                reply_to:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                snippet: Hello, I just sent a message using Nylas!
+                starred: true
+                subject: Hello from Nylas!
+                thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+                to:
+                - name: Jon Snow
+                  email: j.snow@example.com
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
   schemas:
-    tracking_domain_name:
-      type: string
-      minLength: 1
-      maxLength: 253
-      example: tracking.example.com
-      description: 'The custom hostname to use for link click and message open tracking. The hostname must be
-
-        registered to the authenticated organization in the
-
-        [Nylas Dashboard](https://dashboard-v3.nylas.com/organization/domains?tab=hosted-auth) and have an
-
-        active certificate.
-
-
-        Custom tracking hostnames are available on select plans. Contact your Nylas account representative
-
-        or the [Nylas Sales team](https://www.nylas.com/contact-sales/) to enable this feature for your
-
-        organization.
-
-
-        Nylas trims surrounding whitespace, removes one trailing dot, and converts ASCII letters to
-
-        lowercase before looking up the hostname. Provide an ASCII fully qualified hostname without a URL
-
-        scheme, path, port, or wildcard.
-
-
-        You must enable `links`, `opens`, or both when you provide this field. A custom tracking hostname
-
-        does not support `thread_replies` by itself. If you omit this field, Nylas uses its regional
-
-        tracking hostname. Invalid, inactive, blocked, deleted, and unowned hostnames return the same
-
-        generic `400` response. If Nylas cannot complete the explicit ownership and certificate lookup, it
-
-        returns a `5xx` response without falling back to a Nylas hostname.'
-    grant_id:
-      title: Grant ID
-      type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    metadata:
-      title: Metadata
-      type: object
-      description: 'The metadata associated with the object. For more information, see
-
-        [Metadata](/docs/reference/api/#metadata).'
-      additionalProperties:
-        type: string
-        description: A key-value pair.
-        maxLength: 500
-      maxProperties: 50
-    message-participant:
-      title: Message participant
-      type: object
-      description: A name/email address pair.
-      properties:
-        name:
-          type: string
-          example: Jon Snow
-        email:
-          type: string
-          format: email
-          example: jon.snow@example.com
-      required:
-      - email
     attachment:
       description: A file attached to an email message.
       type: object
@@ -1232,6 +1361,106 @@ components:
           type: integer
           description: The size of the attachment, in bytes.
           example: 13068
+    metadata:
+      title: Metadata
+      type: object
+      description: 'The metadata associated with the object. For more information, see
+
+        [Metadata](/docs/reference/api/#metadata).'
+      additionalProperties:
+        type: string
+        description: A key-value pair.
+        maxLength: 500
+      maxProperties: 50
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    id:
+      title: ID
+      type: string
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    tracking_domain_name:
+      type: string
+      minLength: 1
+      maxLength: 253
+      example: tracking.example.com
+      description: 'The custom hostname to use for link click and message open tracking. The hostname must be
+
+        registered to the authenticated organization in the
+
+        [Nylas Dashboard](https://dashboard-v3.nylas.com/organization/domains?tab=hosted-auth) and have an
+
+        active certificate.
+
+
+        Custom tracking hostnames are available on select plans. Contact your Nylas account representative
+
+        or the [Nylas Sales team](https://www.nylas.com/contact-sales/) to enable this feature for your
+
+        organization.
+
+
+        Nylas trims surrounding whitespace, removes one trailing dot, and converts ASCII letters to
+
+        lowercase before looking up the hostname. Provide an ASCII fully qualified hostname without a URL
+
+        scheme, path, port, or wildcard.
+
+
+        You must enable `links`, `opens`, or both when you provide this field. A custom tracking hostname
+
+        does not support `thread_replies` by itself. If you omit this field, Nylas uses its regional
+
+        tracking hostname. Invalid, inactive, blocked, deleted, and unowned hostnames return the same
+
+        generic `400` response. If Nylas cannot complete the explicit ownership and certificate lookup, it
+
+        returns a `5xx` response without falling back to a Nylas hostname.'
+    message-participant:
+      title: Message participant
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+      required:
+      - email
     draft:
       title: Drafts
       type: object
@@ -1345,28 +1574,6 @@ components:
             name: ''
           - email: realestate.demo@example.com
             name: ''
-    common_response_with_cursor:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-        next_cursor:
-          type:
-          - string
-          - 'null'
-          description: A cursor pointing to the next page of results for the request.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    id:
-      title: ID
-      type: string
-      minLength: 1
-      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
-      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
     message-participant-response:
       title: Message participant response
       type: object
@@ -1379,280 +1586,73 @@ components:
           type: string
           format: email
           example: jon.snow@example.com
-  responses:
-    draft:
-      description: Draft
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/draft'
-          example:
-            Draft response example:
-              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-              data:
-                body: Hello, I just sent a message using Nylas!
-                cc:
-                - email: arya.stark@example.com
-                attachments:
-                - content_type: text/calendar
-                  id: 4kj2jrcoj9ve5j9yxqz5cuv98
-                  size: 1708
-                - content_type: application/ics
-                  filename: invite.ics
-                  id: 70jcsv367jaiavt4njeu4xswg
-                  size: 1708
-                folders:
-                - 8l6c4d11y1p4dm4fxj52whyr9
-                - d9zkcr2tljpu3m4qpj7l2hbr0
-                from:
-                - name: Daenerys Targaryen
-                  email: daenerys.t@example.com
-                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-                id: 5d3qmne77v32r8l4phyuksl2x
-                object: draft
-                reply_to:
-                - name: Daenerys Targaryen
-                  email: daenerys.t@example.com
-                snippet: Hello, I just sent a message using Nylas!
-                starred: true
-                subject: Hello from Nylas!
-                thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
-                to:
-                - name: Jon Snow
-                  email: j.snow@example.com
-    '504':
-      description: Provider Failure
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Provider Failure:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: provider_error
-                  message: Provider request timed out.
-    drafts:
-      description: Drafts
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response_with_cursor'
-            - properties:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/draft'
-          example:
-            Draft response example:
-              request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-              data:
-              - body: Hello, I just sent a message using Nylas!
-                cc:
-                - email: arya.stark@example.com
-                attachments:
-                - content_type: text/calendar
-                  id: 4kj2jrcoj9ve5j9yxqz5cuv98
-                  size: 1708
-                - content_type: application/ics
-                  filename: invite.ics
-                  id: 70jcsv367jaiavt4njeu4xswg
-                  size: 1708
-                folders:
-                - 8l6c4d11y1p4dm4fxj52whyr9
-                - d9zkcr2tljpu3m4qpj7l2hbr0
-                from:
-                - name: Daenerys Targaryen
-                  email: daenerys.t@example.com
-                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-                id: 5d3qmne77v32r8l4phyuksl2x
-                object: message
-                reply_to:
-                - name: Daenerys Targaryen
-                  email: daenerys.t@example.com
-                snippet: Hello, I just sent a message using Nylas!
-                starred: true
-                subject: Hello from Nylas!
-                thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
-                to:
-                - name: Jon Snow
-                  email: j.snow@example.com
-              next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The raw error from the provider, if available
-                    properties:
-                      code:
-                        type: string
-                      message:
-                        type: string
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: not_found_error
-                  message: requested object not found
-                  provider_error:
-                    code: MailboxNotEnabledForRESTAPI
-                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Bad Request:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: invalid_request_error
-                  message: error parsing request body
-                  provider_error:
-                    code: TargetIdShouldNotBeMeOrWhitespace
-                    message: Id is malformed.
-            Invalid Idempotency-Key:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.invalid_idempotency_key
-                  message: Idempotency-Key must be 256 characters or fewer.
-    200-delete:
-      description: Delete Succeeded
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+  parameters:
+    query_imap_get_by_id:
+      name: query_imap
+      schema:
+        type: boolean
+        default: false
+      in: query
+      required: false
+      description: '(IMAP, iCloud, and Yahoo only) When `true`, Nylas queries from the IMAP server directly instead of
+
+        the Nylas database.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+    query_imap_list:
+      name: query_imap
+      schema:
+        type: boolean
+        default: false
+      in: query
+      required: false
+      description: '(IMAP, Yahoo, and iCloud only) When `true`, Nylas queries the IMAP server directly instead of the
+
+        Nylas database. You also need to set the `in` query parameter in your request so Nylas knows which
+
+        folder to query.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
+    metadata_pair:
+      name: metadata_pair
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Pass a metadata key/value pair (for example, `?metadata_pair=key1:value`) to search for metadata
+
+        associated with objects. See [Metadata](/docs/reference/api/#metadata) for more information.'
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

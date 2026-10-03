@@ -644,6 +644,59 @@ paths:
                 $ref: '#/components/schemas/401'
 components:
   schemas:
+    AutodetectObject:
+      type: object
+      additionalProperties: false
+      required:
+      - email_address
+      - detected
+      properties:
+        provider:
+          type: string
+          description: Provider detected.
+          example: google
+        type:
+          type: string
+          description: Provider type. Returned only when IMAP detected displays the IMAP provider.
+          example: icloud
+        email_address:
+          type: string
+          description: Email provided for autodetection.
+          example: test@example.com
+        detected:
+          type: boolean
+          description: Whether Nylas detected a provider for the given email address.
+          example: true
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
     ConnectorObject:
       type: object
       additionalProperties: false
@@ -686,36 +739,6 @@ components:
           type: string
           description: The ID of the "default" credential record of this Connector. This credential will be used as a default for communication with the provider.
           example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
-    '400':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: bad_request
-            message:
-              description: Informative error message
-              default: Bad request
-              type: string
-              example: Bad request
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
     '401':
       type: object
       required:
@@ -776,29 +799,20 @@ components:
               example:
                 error: invalid_grant
                 provider_error: Bad Request
-    AutodetectObject:
-      type: object
-      additionalProperties: false
-      required:
-      - email_address
-      - detected
-      properties:
-        provider:
-          type: string
-          description: Provider detected.
-          example: google
-        type:
-          type: string
-          description: Provider type. Returned only when IMAP detected displays the IMAP provider.
-          example: icloud
-        email_address:
-          type: string
-          description: Email provided for autodetection.
-          example: test@example.com
-        detected:
-          type: boolean
-          description: Whether Nylas detected a provider for the given email address.
-          example: true
+  responses:
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
   parameters:
     provider:
       name: provider
@@ -817,20 +831,6 @@ components:
         - zoom
         - nylas
         example: google
-  responses:
-    200-delete:
-      description: Delete Succeeded
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

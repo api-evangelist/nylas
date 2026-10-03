@@ -554,6 +554,126 @@ paths:
           $ref: '#/components/responses/409_idempotent'
 components:
   schemas:
+    tracking_domain_name:
+      type: string
+      minLength: 1
+      maxLength: 253
+      example: tracking.example.com
+      description: 'The custom hostname to use for link click and message open tracking. The hostname must be
+
+        registered to the authenticated organization in the
+
+        [Nylas Dashboard](https://dashboard-v3.nylas.com/organization/domains?tab=hosted-auth) and have an
+
+        active certificate.
+
+
+        Custom tracking hostnames are available on select plans. Contact your Nylas account representative
+
+        or the [Nylas Sales team](https://www.nylas.com/contact-sales/) to enable this feature for your
+
+        organization.
+
+
+        Nylas trims surrounding whitespace, removes one trailing dot, and converts ASCII letters to
+
+        lowercase before looking up the hostname. Provide an ASCII fully qualified hostname without a URL
+
+        scheme, path, port, or wildcard.
+
+
+        You must enable `links`, `opens`, or both when you provide this field. A custom tracking hostname
+
+        does not support `thread_replies` by itself. If you omit this field, Nylas uses its regional
+
+        tracking hostname. Invalid, inactive, blocked, deleted, and unowned hostnames return the same
+
+        generic `400` response. If Nylas cannot complete the explicit ownership and certificate lookup, it
+
+        returns a `5xx` response without falling back to a Nylas hostname.'
+    message-participant:
+      title: Message participant
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+      required:
+      - email
+    message-participant-response:
+      title: Message participant response
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+    metadata:
+      title: Metadata
+      type: object
+      description: 'The metadata associated with the object. For more information, see
+
+        [Metadata](/docs/reference/api/#metadata).'
+      additionalProperties:
+        type: string
+        description: A key-value pair.
+        maxLength: 500
+      maxProperties: 50
+    attachment_transactional_send:
+      description: A file attachment for a transactional email message.
+      type: object
+      properties:
+        content_type:
+          type: string
+          minLength: 1
+          description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don''t provide a type, Nylas infers it from the file name.
+
+            The value of this field is exactly the same as the email attachment''s `Content-Type` header.
+
+            The provider might set additional parameters, such as `name` and `charset`.
+
+
+            Nylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can''t detect its content type.'
+          example: image/png; name="pic.png"
+        filename:
+          type: string
+          minLength: 1
+          description: The file name of the attachment.
+          example: pic.png
+        content_id:
+          type: string
+          description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s HTML. For
+
+            example, you might see something like `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in
+
+            the message body.
+
+
+            Sometimes, the `content_id` value is contained in angle brackets (for example,
+
+            `<ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>`).'
+          example: 1234567890
+        content_disposition:
+          type: string
+          description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
+          example: inline
+        is_inline:
+          type: boolean
+          description: If `true`, indicates that the attachment is an inline file.
+          example: true
+        size:
+          type: integer
+          description: The size of the attachment, in bytes.
+          example: 13068
     transactional_send_message:
       type: object
       properties:
@@ -647,127 +767,41 @@ components:
           items:
             $ref: '#/components/schemas/message-participant'
           uniqueItems: true
-    metadata:
-      title: Metadata
-      type: object
-      description: 'The metadata associated with the object. For more information, see
-
-        [Metadata](/docs/reference/api/#metadata).'
-      additionalProperties:
-        type: string
-        description: A key-value pair.
-        maxLength: 500
-      maxProperties: 50
-    tracking_domain_name:
-      type: string
-      minLength: 1
-      maxLength: 253
-      example: tracking.example.com
-      description: 'The custom hostname to use for link click and message open tracking. The hostname must be
-
-        registered to the authenticated organization in the
-
-        [Nylas Dashboard](https://dashboard-v3.nylas.com/organization/domains?tab=hosted-auth) and have an
-
-        active certificate.
-
-
-        Custom tracking hostnames are available on select plans. Contact your Nylas account representative
-
-        or the [Nylas Sales team](https://www.nylas.com/contact-sales/) to enable this feature for your
-
-        organization.
-
-
-        Nylas trims surrounding whitespace, removes one trailing dot, and converts ASCII letters to
-
-        lowercase before looking up the hostname. Provide an ASCII fully qualified hostname without a URL
-
-        scheme, path, port, or wildcard.
-
-
-        You must enable `links`, `opens`, or both when you provide this field. A custom tracking hostname
-
-        does not support `thread_replies` by itself. If you omit this field, Nylas uses its regional
-
-        tracking hostname. Invalid, inactive, blocked, deleted, and unowned hostnames return the same
-
-        generic `400` response. If Nylas cannot complete the explicit ownership and certificate lookup, it
-
-        returns a `5xx` response without falling back to a Nylas hostname.'
-    message-participant:
-      title: Message participant
-      type: object
-      description: A name/email address pair.
-      properties:
-        name:
-          type: string
-          example: Jon Snow
-        email:
-          type: string
-          format: email
-          example: jon.snow@example.com
-      required:
-      - email
-    attachment_transactional_send:
-      description: A file attachment for a transactional email message.
-      type: object
-      properties:
-        content_type:
-          type: string
-          minLength: 1
-          description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don''t provide a type, Nylas infers it from the file name.
-
-            The value of this field is exactly the same as the email attachment''s `Content-Type` header.
-
-            The provider might set additional parameters, such as `name` and `charset`.
-
-
-            Nylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can''t detect its content type.'
-          example: image/png; name="pic.png"
-        filename:
-          type: string
-          minLength: 1
-          description: The file name of the attachment.
-          example: pic.png
-        content_id:
-          type: string
-          description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s HTML. For
-
-            example, you might see something like `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in
-
-            the message body.
-
-
-            Sometimes, the `content_id` value is contained in angle brackets (for example,
-
-            `<ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>`).'
-          example: 1234567890
-        content_disposition:
-          type: string
-          description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
-          example: inline
-        is_inline:
-          type: boolean
-          description: If `true`, indicates that the attachment is an inline file.
-          example: true
-        size:
-          type: integer
-          description: The size of the attachment, in bytes.
-          example: 13068
-    message-participant-response:
-      title: Message participant response
-      type: object
-      description: A name/email address pair.
-      properties:
-        name:
-          type: string
-          example: Jon Snow
-        email:
-          type: string
-          format: email
-          example: jon.snow@example.com
   responses:
+    409_idempotent:
+      description: Conflict. Returned when an `Idempotency-Key` conflicts with an existing entry.
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Different payload, same key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotent_request
+                  message: The Idempotency-Key was reused with a different request payload. Use a different key, or match the original payload.
+            Concurrent request in flight:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.concurrent_idempotent_request
+                  message: A request with the same Idempotency-Key is currently in progress. Wait a moment and retry with the same key.
     '400':
       description: Bad Request
       content:
@@ -808,40 +842,6 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-    409_idempotent:
-      description: Conflict. Returned when an `Idempotency-Key` conflicts with an existing entry.
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Different payload, same key:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.invalid_idempotent_request
-                  message: The Idempotency-Key was reused with a different request payload. Use a different key, or match the original payload.
-            Concurrent request in flight:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.concurrent_idempotent_request
-                  message: A request with the same Idempotency-Key is currently in progress. Wait a moment and retry with the same key.
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

@@ -583,31 +583,35 @@ paths:
                       message:
                         type: string
 components:
-  parameters:
-    field_selection:
-      name: select
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
-
-        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
-
-        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
-
-        to only the information that you need.'
-    query_imap_get_by_id:
-      name: query_imap
-      schema:
-        type: boolean
-        default: false
-      in: query
-      required: false
-      description: '(IMAP, iCloud, and Yahoo only) When `true`, Nylas queries from the IMAP server directly instead of
-
-        the Nylas database.'
   responses:
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
     '404':
       description: Not Found
       content:
@@ -647,8 +651,8 @@ components:
                   provider_error:
                     code: MailboxNotEnabledForRESTAPI
                     message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    '504':
-      description: Provider Failure
+    '429':
+      description: Rate Limit
       content:
         application/json:
           schema:
@@ -669,12 +673,46 @@ components:
                     type: string
                     description: The error message.
           examples:
-            Provider Failure:
+            Not Found:
               value:
                 request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
                 error:
-                  type: provider_error
-                  message: Provider request timed out.
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
     attachment_file:
       description: 'The attached file as a binary stream (`application/octet-stream`). Use the
 
@@ -748,69 +786,13 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
   schemas:
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
     attachment_metadata:
       description: Metadata for a file attached to an email message.
       type: object
@@ -866,18 +848,36 @@ components:
           description: The response object.
       example:
         request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    grant_id:
-      title: Grant ID
-      type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
     id:
       title: ID
       type: string
       minLength: 1
       description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
       example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
+  parameters:
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
+    query_imap_get_by_id:
+      name: query_imap
+      schema:
+        type: boolean
+        default: false
+      in: query
+      required: false
+      description: '(IMAP, iCloud, and Yahoo only) When `true`, Nylas queries from the IMAP server directly instead of
+
+        the Nylas database.'
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

@@ -448,62 +448,426 @@ paths:
         label: Kotlin SDK
         source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val thread = nylas.threads().destroy(\"<NYLAS_GRANT_ID>\", \"<THREAD_ID>\")\n\n  print(thread)\n}"
 components:
-  parameters:
-    field_selection:
-      name: select
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
-
-        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
-
-        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
-
-        to only the information that you need.'
-    shared_folder_id:
-      name: shared_folder_id
-      in: query
-      schema:
-        type: string
-      description: '(Microsoft only) When provided, Nylas returns items from the specified shared folder ID.
-
-        Required when using `shared_from`.
-
-        This parameter only accepts a single folder ID.
-
-        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
-    shared_from:
-      name: shared_from
-      in: query
-      schema:
-        type: string
-      description: '(Microsoft only) When provided, Nylas returns items that were shared from the specified email address.
-
-        It also accepts grant ID.
-
-        This parameter only accepts single email address or grant ID.
-
-        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
+  responses:
+    threads:
+      description: Threads response
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    threads:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/thread'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              threads:
+              - grant_id: ca8f1733-6063-40cc-a2e3-ec7274abef11
+                id: 7ml84jdmfnw20sq59f30hirhe
+                object: thread
+                has_attachments: false
+                has_drafts: false
+                earliest_message_date: 1634149514
+                latest_message_received_date: 1634832749
+                latest_message_sent_date: 1635174399
+                participants:
+                - email: daenerys.t@example.com
+                  name: Daenerys Targaryen
+                - email: dr.crumpler@example.com
+                  name: Rebecca Lee Crumpler
+                snippet: jnlnnn --Sent with Nylas
+                starred: false
+                subject: Dinner Wednesday?
+                unread: false
+                message_ids:
+                - njeb79kFFzli09
+                - 998abue3mGH4sk
+                draft_ids:
+                - a809kmmoW90Dx
+                folders:
+                - 8l6c4d11y1p4dm4fxj52whyr9
+                - d9zkcr2tljpu3m4qpj7l2hbr0
+                latest_draft_or_message:
+                  body: Hello, I just sent a message using Nylas!
+                  cc:
+                  - name: Arya Stark
+                    email: arya.stark@example.com
+                  date: 1635355739
+                  attachments:
+                  - content_id: YXR0YWNoDQoNCi0tLS0tLS0tLS0gRm9yd2FyZGVkIG1lc3NhZ2UgL=
+                    content_type: text/calendar
+                    id: 4kj2jrcoj9ve5j9yxqz5cuv98
+                    size: 1708
+                  - content_type: application/ics
+                    filename: invite.ics
+                    id: 70jcsv367jaiavt4njeu4xswg
+                    size: 1708
+                  folders:
+                  - 8l6c4d11y1p4dm4fxj52whyr9
+                  - d9zkcr2tljpu3m4qpj7l2hbr0
+                  from:
+                  - name: Daenerys Targaryen
+                    email: daenerys.t@example.com
+                  grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+                  id: njeb79kFFzli09
+                  object: message
+                  reply_to:
+                  - name: Daenerys Targaryen
+                    email: daenerys.t@example.com
+                  snippet: Hello, I just sent a message using Nylas!
+                  starred: true
+                  subject: Hello from Nylas!
+                  thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+                  to:
+                  - name: Jon Snow
+                    email: j.snow@example.com
+                  unread: true
+            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    thread:
+      description: Thread response
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/thread'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              grant_id: ca8f1733-6063-40cc-a2e3-ec7274abef11
+              id: 7ml84jdmfnw20sq59f30hirhe
+              object: thread
+              has_attachments: false
+              has_drafts: false
+              earliest_message_date: 1634149514
+              latest_message_received_date: 1634832749
+              latest_message_sent_date: 1635174399
+              participants:
+              - email: daenerys.t@example.com
+                name: Daenerys Targaryen
+              - email: dr.crumpler@example.com
+                name: Rebecca Lee Crumpler
+              snippet: jnlnnn --Sent with Nylas
+              starred: false
+              subject: Dinner Wednesday?
+              unread: false
+              message_ids:
+              - njeb79kFFzli09
+              - 998abue3mGH4sk
+              draft_ids:
+              - a809kmmoW90Dx
+              folders:
+              - 8l6c4d11y1p4dm4fxj52whyr9
+              - d9zkcr2tljpu3m4qpj7l2hbr0
+              latest_draft_or_message:
+                body: Hello, I just sent a message using Nylas!
+                cc:
+                - name: Arya Stark
+                  email: arya.stark@example.com
+                date: 1635355739
+                attachments:
+                - filename: YXR0YWNoDQoNCi0tLS0tLS0tLS0gRm9yd2FyZGVkIG1lc3NhZ2UgL=
+                  content_type: text/calendar
+                  content_id: 4kj2jrcoj9ve5j9yxqz5cuv98
+                  size: 1708
+                - content_type: application/ics
+                  filename: invite.ics
+                  content_id: 70jcsv367jaiavt4njeu4xswg
+                  size: 1708
+                folders:
+                - 8l6c4d11y1p4dm4fxj52whyr9
+                - d9zkcr2tljpu3m4qpj7l2hbr0
+                from:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+                id: njeb79kFFzli09
+                object: message
+                reply_to:
+                - name: Daenerys Targaryen
+                  email: daenerys.t@example.com
+                snippet: Hello, I just sent a message using Nylas!
+                starred: true
+                subject: Hello from Nylas!
+                thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+                to:
+                - name: Jon Snow
+                  email: j.snow@example.com
+                unread: true
+            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
   schemas:
-    grant_id:
-      title: Grant ID
-      type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
+    attachment:
+      description: A file attached to an email message.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: The ID of the attachment.
+          readOnly: true
+          example: 4kj2jrcoj9ve5j9yxqz5cuv98
+        content_type:
+          type: string
+          minLength: 1
+          description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don''t provide a type, Nylas infers it from the file name.
+
+            The value of this field is exactly the same as the email attachment''s `Content-Type` header.
+
+            The provider might set additional parameters, such as `name` and `charset`.
+
+
+            Nylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can''t detect its content type.'
+          example: image/png; name="pic.png"
+        filename:
+          type: string
+          minLength: 1
+          description: The file name of the attachment.
+          example: pic.png
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        content_id:
+          type: string
+          description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s HTML. For
+
+            example, you might see something like `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in
+
+            the message body.
+
+
+            Sometimes, the `content_id` value is contained in angle brackets (for example,
+
+            `<ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>`).'
+          example: 1234567890
+        content_disposition:
+          type: string
+          description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
+          example: inline
+        is_inline:
+          type: boolean
+          description: If `true`, indicates that the attachment is an inline file.
+          example: true
+        size:
+          type: integer
+          description: The size of the attachment, in bytes.
+          example: 13068
+    metadata:
+      title: Metadata
+      type: object
+      description: 'The metadata associated with the object. For more information, see
+
+        [Metadata](/docs/reference/api/#metadata).'
+      additionalProperties:
+        type: string
+        description: A key-value pair.
+        maxLength: 500
+      maxProperties: 50
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
     common_response:
       properties:
         request_id:
@@ -514,6 +878,32 @@ components:
           description: The response object.
       example:
         request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    id:
+      title: ID
+      type: string
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    message-participant:
+      title: Message participant
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+      required:
+      - email
     thread:
       title: Thread
       type: object
@@ -604,102 +994,6 @@ components:
           example:
           - 8l6c4d11y1p4dm4fxj52whyr9
           - d9zkcr2tljpu3m4qpj7l2hbr0
-    metadata:
-      title: Metadata
-      type: object
-      description: 'The metadata associated with the object. For more information, see
-
-        [Metadata](/docs/reference/api/#metadata).'
-      additionalProperties:
-        type: string
-        description: A key-value pair.
-        maxLength: 500
-      maxProperties: 50
-    message-participant:
-      title: Message participant
-      type: object
-      description: A name/email address pair.
-      properties:
-        name:
-          type: string
-          example: Jon Snow
-        email:
-          type: string
-          format: email
-          example: jon.snow@example.com
-      required:
-      - email
-    attachment:
-      description: A file attached to an email message.
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          description: The ID of the attachment.
-          readOnly: true
-          example: 4kj2jrcoj9ve5j9yxqz5cuv98
-        content_type:
-          type: string
-          minLength: 1
-          description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don''t provide a type, Nylas infers it from the file name.
-
-            The value of this field is exactly the same as the email attachment''s `Content-Type` header.
-
-            The provider might set additional parameters, such as `name` and `charset`.
-
-
-            Nylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can''t detect its content type.'
-          example: image/png; name="pic.png"
-        filename:
-          type: string
-          minLength: 1
-          description: The file name of the attachment.
-          example: pic.png
-        grant_id:
-          $ref: '#/components/schemas/grant_id'
-        content_id:
-          type: string
-          description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s HTML. For
-
-            example, you might see something like `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in
-
-            the message body.
-
-
-            Sometimes, the `content_id` value is contained in angle brackets (for example,
-
-            `<ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>`).'
-          example: 1234567890
-        content_disposition:
-          type: string
-          description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
-          example: inline
-        is_inline:
-          type: boolean
-          description: If `true`, indicates that the attachment is an inline file.
-          example: true
-        size:
-          type: integer
-          description: The size of the attachment, in bytes.
-          example: 13068
-    common_response_with_cursor:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-        next_cursor:
-          type:
-          - string
-          - 'null'
-          description: A cursor pointing to the next page of results for the request.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
     message-header:
       title: Message header
       type: object
@@ -714,24 +1008,6 @@ components:
       required:
       - name
       - value
-    id:
-      title: ID
-      type: string
-      minLength: 1
-      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
-      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
-    message-participant-response:
-      title: Message participant response
-      type: object
-      description: A name/email address pair.
-      properties:
-        name:
-          type: string
-          example: Jon Snow
-        email:
-          type: string
-          format: email
-          example: jon.snow@example.com
     message:
       title: Message
       type: object
@@ -893,343 +1169,67 @@ components:
           type: boolean
           description: If `true`, shows that the message has not been read by the user.
           example: true
-  responses:
-    thread:
-      description: Thread response
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/thread'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-              grant_id: ca8f1733-6063-40cc-a2e3-ec7274abef11
-              id: 7ml84jdmfnw20sq59f30hirhe
-              object: thread
-              has_attachments: false
-              has_drafts: false
-              earliest_message_date: 1634149514
-              latest_message_received_date: 1634832749
-              latest_message_sent_date: 1635174399
-              participants:
-              - email: daenerys.t@example.com
-                name: Daenerys Targaryen
-              - email: dr.crumpler@example.com
-                name: Rebecca Lee Crumpler
-              snippet: jnlnnn --Sent with Nylas
-              starred: false
-              subject: Dinner Wednesday?
-              unread: false
-              message_ids:
-              - njeb79kFFzli09
-              - 998abue3mGH4sk
-              draft_ids:
-              - a809kmmoW90Dx
-              folders:
-              - 8l6c4d11y1p4dm4fxj52whyr9
-              - d9zkcr2tljpu3m4qpj7l2hbr0
-              latest_draft_or_message:
-                body: Hello, I just sent a message using Nylas!
-                cc:
-                - name: Arya Stark
-                  email: arya.stark@example.com
-                date: 1635355739
-                attachments:
-                - filename: YXR0YWNoDQoNCi0tLS0tLS0tLS0gRm9yd2FyZGVkIG1lc3NhZ2UgL=
-                  content_type: text/calendar
-                  content_id: 4kj2jrcoj9ve5j9yxqz5cuv98
-                  size: 1708
-                - content_type: application/ics
-                  filename: invite.ics
-                  content_id: 70jcsv367jaiavt4njeu4xswg
-                  size: 1708
-                folders:
-                - 8l6c4d11y1p4dm4fxj52whyr9
-                - d9zkcr2tljpu3m4qpj7l2hbr0
-                from:
-                - name: Daenerys Targaryen
-                  email: daenerys.t@example.com
-                grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-                id: njeb79kFFzli09
-                object: message
-                reply_to:
-                - name: Daenerys Targaryen
-                  email: daenerys.t@example.com
-                snippet: Hello, I just sent a message using Nylas!
-                starred: true
-                subject: Hello from Nylas!
-                thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
-                to:
-                - name: Jon Snow
-                  email: j.snow@example.com
-                unread: true
-            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    '504':
-      description: Provider Failure
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Provider Failure:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: provider_error
-                  message: Provider request timed out.
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    threads:
-      description: Threads response
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response_with_cursor'
-            - properties:
-                data:
-                  type: object
-                  properties:
-                    threads:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/thread'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-              threads:
-              - grant_id: ca8f1733-6063-40cc-a2e3-ec7274abef11
-                id: 7ml84jdmfnw20sq59f30hirhe
-                object: thread
-                has_attachments: false
-                has_drafts: false
-                earliest_message_date: 1634149514
-                latest_message_received_date: 1634832749
-                latest_message_sent_date: 1635174399
-                participants:
-                - email: daenerys.t@example.com
-                  name: Daenerys Targaryen
-                - email: dr.crumpler@example.com
-                  name: Rebecca Lee Crumpler
-                snippet: jnlnnn --Sent with Nylas
-                starred: false
-                subject: Dinner Wednesday?
-                unread: false
-                message_ids:
-                - njeb79kFFzli09
-                - 998abue3mGH4sk
-                draft_ids:
-                - a809kmmoW90Dx
-                folders:
-                - 8l6c4d11y1p4dm4fxj52whyr9
-                - d9zkcr2tljpu3m4qpj7l2hbr0
-                latest_draft_or_message:
-                  body: Hello, I just sent a message using Nylas!
-                  cc:
-                  - name: Arya Stark
-                    email: arya.stark@example.com
-                  date: 1635355739
-                  attachments:
-                  - content_id: YXR0YWNoDQoNCi0tLS0tLS0tLS0gRm9yd2FyZGVkIG1lc3NhZ2UgL=
-                    content_type: text/calendar
-                    id: 4kj2jrcoj9ve5j9yxqz5cuv98
-                    size: 1708
-                  - content_type: application/ics
-                    filename: invite.ics
-                    id: 70jcsv367jaiavt4njeu4xswg
-                    size: 1708
-                  folders:
-                  - 8l6c4d11y1p4dm4fxj52whyr9
-                  - d9zkcr2tljpu3m4qpj7l2hbr0
-                  from:
-                  - name: Daenerys Targaryen
-                    email: daenerys.t@example.com
-                  grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-                  id: njeb79kFFzli09
-                  object: message
-                  reply_to:
-                  - name: Daenerys Targaryen
-                    email: daenerys.t@example.com
-                  snippet: Hello, I just sent a message using Nylas!
-                  starred: true
-                  subject: Hello from Nylas!
-                  thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
-                  to:
-                  - name: Jon Snow
-                    email: j.snow@example.com
-                  unread: true
-            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The raw error from the provider, if available
-                    properties:
-                      code:
-                        type: string
-                      message:
-                        type: string
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: not_found_error
-                  message: requested object not found
-                  provider_error:
-                    code: MailboxNotEnabledForRESTAPI
-                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Bad Request:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: invalid_request_error
-                  message: error parsing request body
-                  provider_error:
-                    code: TargetIdShouldNotBeMeOrWhitespace
-                    message: Id is malformed.
-            Invalid Idempotency-Key:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.invalid_idempotency_key
-                  message: Idempotency-Key must be 256 characters or fewer.
-    200-delete:
-      description: Delete Succeeded
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    message-participant-response:
+      title: Message participant response
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+  parameters:
+    shared_from:
+      name: shared_from
+      in: query
+      schema:
+        type: string
+      description: '(Microsoft only) When provided, Nylas returns items that were shared from the specified email address.
+
+        It also accepts grant ID.
+
+        This parameter only accepts single email address or grant ID.
+
+        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
+    shared_folder_id:
+      name: shared_folder_id
+      in: query
+      schema:
+        type: string
+      description: '(Microsoft only) When provided, Nylas returns items from the specified shared folder ID.
+
+        Required when using `shared_from`.
+
+        This parameter only accepts a single folder ID.
+
+        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
   requestBodies:
     thread_update:
       content:

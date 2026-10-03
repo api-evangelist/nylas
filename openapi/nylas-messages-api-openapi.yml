@@ -852,698 +852,79 @@ paths:
         label: Kotlin SDK
         source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n  val nylas: NylasClient = NylasClient(\n      apiKey = \"<NYLAS_API_KEY>\"\n  )\n\n  val messages = nylas.messages().stopScheduledMessage(\n      \"<NYLAS_GRANT_ID>\", \n      \"SCHEDULED_MESSAGE_ID\").data\n      \n  print(messages)\n}\n"
 components:
-  schemas:
-    message_send_response:
-      title: Message
-      type: object
-      properties:
-        attachments:
-          type: array
-          description: An array of Attachment objects. For google, linked Google Drive files are not included. For Microsoft, linked One Drive files are not included.
-          items:
-            $ref: '#/components/schemas/attachment'
-          uniqueItems: true
-          minItems: 0
-          example:
-          - content_disposition: attachment
-            content_type: text/calendar
-            filename: null
-            content_id: 4kj2jrcoj9ve5j9yxqz5cuv98
-            size: 1708
-          - content_disposition: attachment
-            content_type: application/ics
-            filename: invite.ics
-            content_id: 70jcsv367jaiavt4njeu4xswg
-            size: 1708
-        bcc:
-          type: array
-          description: 'An array of name/email address pairs that the message was BCC''d to. For received messages, this
-
-            is nearly always empty.'
-          items:
-            $ref: '#/components/schemas/message-participant'
-        body:
-          type: string
-          description: The body of the message. This field is the same as the `body` field in your request.
-          example: Hello, I just sent a message using Nylas!
-        cc:
-          type: array
-          description: An array of name/email address pairs that the message was CC'd to.
-          items:
-            $ref: '#/components/schemas/message-participant'
-        date:
-          type: integer
-          description: 'Unix timestamp in seconds that represents when _the mail server_ received the message. This might be
-
-            different from the unified `Date` header in a raw Message object.'
-          example: 1635355739
-        folders:
-          type: array
-          description: 'The ID(s) of the folder(s) that the message appears in.
-
-
-            Microsoft messages can be in a single folder only. Google allows a single message to appear in
-
-            multiple folders.'
-          items:
-            type: string
-          uniqueItems: true
-          example:
-          - 8l6c4d11y1p4dm4fxj52whyr9
-          - d9zkcr2tljpu3m4qpj7l2hbr0
-        from:
-          type: array
-          description: 'A list of name/email address pairs that the message was sent from. This is usually one pair only,
-
-            but can be many.'
-          items:
-            $ref: '#/components/schemas/message-participant-response'
-          uniqueItems: true
-        grant_id:
-          $ref: '#/components/schemas/grant_id'
-        headers:
-          type: array
-          description: "An array of key-value pairs that contain the message headers. Nylas returns this field when you\nset the `fields` query parameter on the send request to either `include_headers` or\n`include_basic_headers`. This is supported for **synchronous** send only — the parameter has no\neffect when you set the `send_at` field on the request.\n\n- `fields=include_headers`: Returns the full set of headers on the response.\n- `fields=include_basic_headers`: Returns only the three RFC threading headers (`Message-ID`,\n  `In-Reply-To`, `References`). Use this option when you only need to track message identity and\n  thread relationships — payload size is significantly smaller than `include_headers`.\n\nA single message can sometimes have multiple headers with the same key name. Nylas adds all of\nthe headers to the `headers` array without merging or de-duplicating the data. When the headers\ncontain encoded data, Nylas adds it to the `headers` array without decoding it. If you need the\ndecoded data, you need to build decoding logic into your project.\n\nSome headers might contain raw MIME information (for example,\n`=?Windows-1252?Q?Re:_Candidature_de_Mme_Leyah_Miller?=`)."
-          items:
-            $ref: '#/components/schemas/message-header'
-        id:
-          $ref: '#/components/schemas/id'
-        object:
-          type: string
-          description: The object type of the response (in this case, `message`).
-          example: message
-        reply_to:
-          type: array
-          items:
-            $ref: '#/components/schemas/message-participant'
-          uniqueItems: true
-          description: An array of name/email address pairs that should receive replies to the message.
-        reply_to_message_id:
-          type: string
-          description: The unique identifier of the message to which you want to draft a reply.
-          example: 1t8tv3890q4vgmwq6pmdwm8qg
-        schedule_id:
-          type: string
-          description: The ID of the scheduled message. Nylas returns the `schedule_id` if `send_at` is set.
-          example: c712c7ec-0bbd-4038-a69a-d7c287b026f5
-        snippet:
-          type: string
-          minLength: 1
-          description: 'A short snippet (the first 100 characters, with HTML tags removed) of the message body. This is
-
-            useful for displaying a preview of the message.'
-          example: 'You have been invited to the following event. Welcome! WhenThu Oct 28, 2021 7am - 8am Eastern
-
-            Time - Toronto Joining info'
-        starred:
-          type: boolean
-          description: 'When `true`, shows that the message has been starred by the user. For EWS, this is only supported
-
-            for Microsoft Exchange 2010 or later.'
-          example: false
-        subject:
-          type: string
-          description: The subject of the message.
-          example: Nylas Send v3 Email
-        thread_id:
-          type: string
-          minLength: 1
-          description: 'A reference to the parent Thread object. Every message is associated with a thread, whether that
-
-            thread contains only one message or many. If this is a new message, Nylas assigns a `thread_id`
-
-            to it.'
-          example: 1t8tv3890q4vgmwq6pmdwm8qgsaer
-        tracking_options:
-          type: object
-          description: Tracking options for the message.
-          properties:
-            opens:
-              type: boolean
-              description: When `true`, shows that message open tracking is enabled.
-              example: true
-            thread_replies:
-              type: boolean
-              description: When `true`, shows that thread replied tracking is enabled.
-              example: true
-            links:
-              type: boolean
-              description: When `true`, shows that link clicked tracking is enabled.
-              example: true
-            label:
-              type: string
-              description: A label describing the message tracking purpose.
-              maxLength: 2048
-              example: Tracking test
-        to:
-          type: array
-          description: An array of name/email address pairs that the message was sent to.
-          items:
-            $ref: '#/components/schemas/message-participant'
-          uniqueItems: true
-        unread:
-          type: boolean
-          description: When `true`, shows that the message has not been read by the user.
-          example: true
-        use_draft:
-          $ref: '#/components/schemas/use_draft'
-    tracking_domain_name:
-      type: string
-      minLength: 1
-      maxLength: 253
-      example: tracking.example.com
-      description: 'The custom hostname to use for link click and message open tracking. The hostname must be
-
-        registered to the authenticated organization in the
-
-        [Nylas Dashboard](https://dashboard-v3.nylas.com/organization/domains?tab=hosted-auth) and have an
-
-        active certificate.
-
-
-        Custom tracking hostnames are available on select plans. Contact your Nylas account representative
-
-        or the [Nylas Sales team](https://www.nylas.com/contact-sales/) to enable this feature for your
-
-        organization.
-
-
-        Nylas trims surrounding whitespace, removes one trailing dot, and converts ASCII letters to
-
-        lowercase before looking up the hostname. Provide an ASCII fully qualified hostname without a URL
-
-        scheme, path, port, or wildcard.
-
-
-        You must enable `links`, `opens`, or both when you provide this field. A custom tracking hostname
-
-        does not support `thread_replies` by itself. If you omit this field, Nylas uses its regional
-
-        tracking hostname. Invalid, inactive, blocked, deleted, and unowned hostnames return the same
-
-        generic `400` response. If Nylas cannot complete the explicit ownership and certificate lookup, it
-
-        returns a `5xx` response without falling back to a Nylas hostname.'
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    grant_id:
-      title: Grant ID
-      type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
-    Schedules:
-      type: object
-      required:
-      - schedule_id
-      - status
-      properties:
-        schedule_id:
-          type: string
-          description: The ID of the scheduled message.
-        status:
-          type: object
-          description: The status of the specified scheduled message.
-          properties:
-            code:
-              type: string
-              description: The status code which describes the state of the specified scheduled message.
-            description:
-              type: string
-              description: A description of the status of the specified scheduled message.
-        close_time:
-          type: integer
-          description: The time that the message was sent, or failed to send, in seconds using the Unix timestamp format.
-    metadata:
-      title: Metadata
-      type: object
-      description: 'The metadata associated with the object. For more information, see
-
-        [Metadata](/docs/reference/api/#metadata).'
-      additionalProperties:
-        type: string
-        description: A key-value pair.
-        maxLength: 500
-      maxProperties: 50
-    message-participant:
-      title: Message participant
-      type: object
-      description: A name/email address pair.
-      properties:
-        name:
-          type: string
-          example: Jon Snow
-        email:
-          type: string
-          format: email
-          example: jon.snow@example.com
-      required:
-      - email
-    attachment:
-      description: A file attached to an email message.
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          description: The ID of the attachment.
-          readOnly: true
-          example: 4kj2jrcoj9ve5j9yxqz5cuv98
-        content_type:
-          type: string
-          minLength: 1
-          description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don''t provide a type, Nylas infers it from the file name.
-
-            The value of this field is exactly the same as the email attachment''s `Content-Type` header.
-
-            The provider might set additional parameters, such as `name` and `charset`.
-
-
-            Nylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can''t detect its content type.'
-          example: image/png; name="pic.png"
-        filename:
-          type: string
-          minLength: 1
-          description: The file name of the attachment.
-          example: pic.png
-        grant_id:
-          $ref: '#/components/schemas/grant_id'
-        content_id:
-          type: string
-          description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s HTML. For
-
-            example, you might see something like `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in
-
-            the message body.
-
-
-            Sometimes, the `content_id` value is contained in angle brackets (for example,
-
-            `<ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>`).'
-          example: 1234567890
-        content_disposition:
-          type: string
-          description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
-          example: inline
-        is_inline:
-          type: boolean
-          description: If `true`, indicates that the attachment is an inline file.
-          example: true
-        size:
-          type: integer
-          description: The size of the attachment, in bytes.
-          example: 13068
-    use_draft:
-      type: boolean
-      description: '(Google and Microsoft only) If `true` when scheduling a message, Nylas saves the message in the user''s
-
-        Drafts folder until it''s sent. For more information, see
-
-        [Schedule messages to send in the future](/docs/v3/email/scheduled-send/).'
-      default: false
-      example: false
-    common_response_with_cursor:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-        next_cursor:
-          type:
-          - string
-          - 'null'
-          description: A cursor pointing to the next page of results for the request.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    message-header:
-      title: Message header
-      type: object
-      description: A message header key-value pair.
-      properties:
-        name:
-          type: string
-          example: Date
-        value:
-          type: string
-          example: Thu, 15 Aug 2024 00:59:58 +0000 (UTC)
-      required:
-      - name
-      - value
-    id:
-      title: ID
-      type: string
-      minLength: 1
-      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
-      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
-    message-participant-response:
-      title: Message participant response
-      type: object
-      description: A name/email address pair.
-      properties:
-        name:
-          type: string
-          example: Jon Snow
-        email:
-          type: string
-          format: email
-          example: jon.snow@example.com
-    message:
-      title: Message
-      type: object
-      properties:
-        attachments:
-          type: array
-          description: 'An array of Attachment objects. For Google, linked Google Drive files are not included. For
-
-            Microsoft, linked OneDrive files are not included.'
-          items:
-            $ref: '#/components/schemas/attachment'
-          uniqueItems: true
-          minItems: 0
-          example:
-          - content_disposition: attachment
-            content_type: text/calendar
-            filename: null
-            content_id: 4kj2jrcoj9ve5j9yxqz5cuv98
-            size: 1708
-          - content_disposition: attachment
-            content_type: application/ics
-            filename: invite.ics
-            content_id: 70jcsv367jaiavt4njeu4xswg
-            size: 1708
-        bcc:
-          type: array
-          description: 'An array of name/email address pairs that the message was BCC''d to. For received messages, this
-
-            is nearly always empty.'
-          items:
-            $ref: '#/components/schemas/message-participant'
-        body:
-          type: string
-          description: 'The body of the message as either plain-text or HTML content. If the message has both plain-text
-
-            and HTML, Nylas returns the HTML version.'
-          example: Hello, I just sent a message using Nylas!
-        cc:
-          type: array
-          description: An array of name/email address pairs that the message was CC'd to.
-          items:
-            $ref: '#/components/schemas/message-participant'
-        date:
-          type: integer
-          description: 'Unix timestamp in seconds that represents when _the mail server_ received the message. This might be
-
-            different from the unified `Date` header in a raw Message object.'
-          example: 1635355739
-        folders:
-          type: array
-          description: 'The IDs of the folders that the message appears in. Microsoft messages can be in a single folder
-
-            only. Google allows a single message to appear in multiple folders.'
-          items:
-            type: string
-          uniqueItems: true
-          example:
-          - 8l6c4d11y1p4dm4fxj52whyr9
-          - d9zkcr2tljpu3m4qpj7l2hbr0
-        from:
-          type: array
-          description: 'A list of name/email address pairs that the message was sent from. This is usually one pair only,
-
-            but can be many.'
-          items:
-            $ref: '#/components/schemas/message-participant-response'
-          uniqueItems: true
-        grant_id:
-          $ref: '#/components/schemas/grant_id'
-        headers:
-          type: array
-          description: "An array of key-value pairs that contain the message headers. Nylas returns this field when you\nset the `fields` query parameter to either `include_headers` or `include_basic_headers`.\n\n- `fields=include_headers`: Returns the full set of headers on the message.\n- `fields=include_basic_headers`: Returns only the three RFC threading headers (`Message-ID`,\n  `In-Reply-To`, `References`). Use this option when you only need to track message identity and\n  thread relationships — payload size is significantly smaller than `include_headers`.\n\nA single message can sometimes have multiple headers with the same key name. Nylas adds all of\nthe headers to the `headers` array without merging or de-duplicating the data. When the headers\ncontain encoded data, Nylas adds it to the `headers` array without decoding it. If you need the\ndecoded data, you need to build decoding logic into your project.\n\nSome headers might contain raw MIME information (for example,\n`=?Windows-1252?Q?Re:_Candidature_de_Mme_Leyah_Miller?=`)."
-          items:
-            $ref: '#/components/schemas/message-header'
-        id:
-          $ref: '#/components/schemas/id'
-        in_reply_to:
-          type: string
-          description: '(EWS only) The ID of the message that this message replies to. This ID is the same as the
-
-            `In-Reply-To` header.'
-          example: <b0582d2c-816d-42a4-9ff8-46073170d827@me.com>
-        metadata:
-          $ref: '#/components/schemas/metadata'
-        object:
-          type: string
-          description: The object type of the response (in this case, `message`).
-          example: message
-        raw_mime:
-          type: string
-          description: 'A Base64url-encoded string containing the message data (including the body content).
-
-
-            To get the raw MIME content for a message, set the `fields` query parameter to `raw_mime` in
-
-            your request. When you request raw MIME data, Nylas returns the `grant_id`, `object`, `id`,
-
-            and `raw_mime` fields only.'
-        reply_to:
-          type: array
-          items:
-            $ref: '#/components/schemas/message-participant'
-          uniqueItems: true
-          description: An array of name/email address pairs that should receive replies to the message.
-        snippet:
-          type: string
-          minLength: 1
-          description: 'A short snippet (the first 100 characters, with HTML tags removed) of the message body. This is
-
-            useful for displaying a preview of the message.'
-          example: 'You have been invited to the following event. Welcome! WhenThu Oct 28, 2021
-
-            7am - 8am Eastern Time - Toronto Joining info'
-        starred:
-          type: boolean
-          description: 'If `true`, shows that the message has been starred by the user. For EWS, this is only supported
-
-            on Microsoft Exchange 2010 or later.'
-          example: false
-        subject:
-          type: string
-          description: The subject of the message.
-          example: Nylas Send v3 Email
-        thread_id:
-          type: string
-          minLength: 1
-          description: 'A reference to the parent Thread object. Every message is associated with a thread, whether that
-
-            thread contains one message or many. If the message is new, Nylas assigns a `thread_id` to it.'
-          example: 1t8tv3890q4vgmwq6pmdwm8qgsaer
-        to:
-          type: array
-          description: An array of name/email address pairs that the message was sent to.
-          items:
-            $ref: '#/components/schemas/message-participant'
-          uniqueItems: true
-        tracking_options:
-          type: object
-          description: Tracking options for the message.
-          properties:
-            opens:
-              type: boolean
-              description: When `true`, shows that message open tracking is enabled.
-              example: true
-            thread_replies:
-              type: boolean
-              description: When `true`, shows that thread replied tracking is enabled.
-              example: true
-            links:
-              type: boolean
-              description: When `true`, shows that link clicked tracking is enabled.
-              example: true
-            label:
-              type: string
-              description: A label describing the message tracking purpose.
-              maxLength: 2048
-              example: Tracking test
-        unread:
-          type: boolean
-          description: If `true`, shows that the message has not been read by the user.
-          example: true
-  parameters:
-    field_selection:
-      name: select
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
-
-        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
-
-        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
-
-        to only the information that you need.'
-    shared_folder_id:
-      name: shared_folder_id
-      in: query
-      schema:
-        type: string
-      description: '(Microsoft only) When provided, Nylas returns items from the specified shared folder ID.
-
-        Required when using `shared_from`.
-
-        This parameter only accepts a single folder ID.
-
-        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
-    metadata_pair:
-      name: metadata_pair
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Pass a metadata key/value pair (for example, `?metadata_pair=key1:value`) to search for metadata
-
-        associated with objects. See [Metadata](/docs/reference/api/#metadata) for more information.'
-    query_imap_list:
-      name: query_imap
-      schema:
-        type: boolean
-        default: false
-      in: query
-      required: false
-      description: '(IMAP, Yahoo, and iCloud only) When `true`, Nylas queries the IMAP server directly instead of the
-
-        Nylas database. You also need to set the `in` query parameter in your request so Nylas knows which
-
-        folder to query.'
-    query_imap_get_by_id:
-      name: query_imap
-      schema:
-        type: boolean
-        default: false
-      in: query
-      required: false
-      description: '(IMAP, iCloud, and Yahoo only) When `true`, Nylas queries from the IMAP server directly instead of
-
-        the Nylas database.'
-    hard_delete:
-      name: hard_delete
-      in: query
-      schema:
-        type: boolean
-        default: false
-      description: 'When `true`, Nylas immediately deletes the specified message instead of sending it to the user''s Trash
-
-        folder. This operation is irreversible.
-
-
-        To use this query parameter, you need to turn on "Enable hard delete" in the
-
-        [Nylas Dashboard](https://dashboard-v3.nylas.com/?utm_source=docs&utm_content=docs-hard-delete) under
-
-        **Customizations > API**.'
-    shared_from:
-      name: shared_from
-      in: query
-      schema:
-        type: string
-      description: '(Microsoft only) When provided, Nylas returns items that were shared from the specified email address.
-
-        It also accepts grant ID.
-
-        This parameter only accepts single email address or grant ID.
-
-        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
-    grant_id:
-      name: grant_id
-      schema:
-        type: string
-      in: path
-      required: true
-      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use `/me/`
-
-        to refer to the grant associated with an access token.'
-      example: nyla@example.com
   responses:
-    message:
-      description: Message response
+    '403':
+      description: Unauthorized
       content:
         application/json:
           schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/message'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-              body: Hello, I just sent a message using Nylas!
-              cc:
-              - name: Arya Stark
-                email: arya.stark@example.com
-              date: 1635355739
-              attachments:
-              - content_type: text/calendar
-                id: 4kj2jrcoj9ve5j9yxqz5cuv98
-                size: 1708
-              - content_type: application/ics
-                filename: invite.ics
-                id: 70jcsv367jaiavt4njeu4xswg
-                size: 1708
-              folders:
-              - 8l6c4d11y1p4dm4fxj52whyr9
-              - d9zkcr2tljpu3m4qpj7l2hbr0
-              from:
-              - name: Daenerys Targaryen
-                email: daenerys.t@example.com
-              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              id: 5d3qmne77v32r8l4phyuksl2x
-              object: message
-              reply_to:
-              - name: Daenerys Targaryen
-                email: daenerys.t@example.com
-              snippet: Hello, I just sent a message using Nylas!
-              starred: true
-              subject: Hello from Nylas!
-              thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
-              to:
-              - name: Jon Snow
-                email: j.snow@example.com
-              unread: true
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: ID of the request
+              error:
+                type: object
+                description: Response error object.
+                properties:
+                  type:
+                    type: string
+                    description: Error Type
+                  message:
+                    type: string
+                    description: Error Message
+                  provider_error:
+                    type: object
+                    description: Provider Error
+          examples:
+            Insufficient Scopes:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: insufficient_scopes
+                  message: missing provider scopes required to send email
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    200_schedule_id:
+      description: Schedule(s) Retrieved
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Schedules'
+          examples:
+            Retrieved two schedules:
+              value:
+                schedule_id: 8cd56334-6d95-432c-86d1-c5dab0ce98be
+                status:
+                  code: pending
+                  description: schedule send awaiting send at time
     messages:
       description: Messages response
       content:
@@ -1593,6 +974,384 @@ components:
                 email: j.snow@example.com
               unread: true
             next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    409_idempotent:
+      description: Conflict. Returned when an `Idempotency-Key` conflicts with an existing entry.
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Different payload, same key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotent_request
+                  message: The Idempotency-Key was reused with a different request payload. Use a different key, or match the original payload.
+            Concurrent request in flight:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.concurrent_idempotent_request
+                  message: A request with the same Idempotency-Key is currently in progress. Wait a moment and retry with the same key.
+    messages-clean:
+      description: Clean message response
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    allOf:
+                    - $ref: '#/components/schemas/message'
+                    - properties:
+                        conversation:
+                          type: string
+                          description: 'The cleaned message body. If `html_as_markdown` is `true`, the text is
+
+                            Markdown-formatted. Otherwise, Nylas returns plain text.'
+                          example: Hello, I just sent a message using Nylas!
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+            - body: '<div dir="ltr"><div>Hello, I just sent a message using Nylas! <br></div><img src="cid:ii_ltppe5ph0" alt="Nylas-Logo-Stacked-Blue_.png" width="540" height="464"><br><div dir="ltr" class="gmail_signature" data-smartmail="gmail_signature"><div dir="ltr"></div></div></div>
+
+                '
+              cc:
+              - name: Arya Stark
+                email: arya.stark@example.com
+              date: 1635355739
+              attachments:
+              - is_inline: true
+                id: v0:TnlsYXMtTG9nby1TdGFja2VkLUJsdWVfLnBuZw==:aW1hZ2UvcG5nOyBuYW1lPSJOeWxhcy1Mb2dvLVN0YWNrZWQtQmx1ZV8ucG5nIg==:26044
+                grant_id: nylas_test_9
+                filename: Nylas-Logo-Stacked-Blue_.png
+                content_type: image/png; name="Nylas-Logo-Stacked-Blue_.png"
+                content_disposition: inline; filename="Nylas-Logo-Stacked-Blue_.png"
+                content_id: ii_ltppe5ph0
+                size: 26044
+              folders:
+              - 8l6c4d11y1p4dm4fxj52whyr9
+              - d9zkcr2tljpu3m4qpj7l2hbr0
+              from:
+              - name: Daenerys Targaryen
+                email: daenerys.t@example.com
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              id: 5d3qmne77v32r8l4phyuksl2x
+              object: message
+              reply_to:
+              - name: Daenerys Targaryen
+                email: daenerys.t@example.com
+              snippet: Hello, I just sent a message using Nylas!
+              starred: true
+              subject: Hello from Nylas!
+              thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+              to:
+              - name: Jon Snow
+                email: j.snow@example.com
+              unread: true
+              conversation: Hello, I just sent a message using Nylas!
+    message:
+      description: Message response
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/message'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              body: Hello, I just sent a message using Nylas!
+              cc:
+              - name: Arya Stark
+                email: arya.stark@example.com
+              date: 1635355739
+              attachments:
+              - content_type: text/calendar
+                id: 4kj2jrcoj9ve5j9yxqz5cuv98
+                size: 1708
+              - content_type: application/ics
+                filename: invite.ics
+                id: 70jcsv367jaiavt4njeu4xswg
+                size: 1708
+              folders:
+              - 8l6c4d11y1p4dm4fxj52whyr9
+              - d9zkcr2tljpu3m4qpj7l2hbr0
+              from:
+              - name: Daenerys Targaryen
+                email: daenerys.t@example.com
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              id: 5d3qmne77v32r8l4phyuksl2x
+              object: message
+              reply_to:
+              - name: Daenerys Targaryen
+                email: daenerys.t@example.com
+              snippet: Hello, I just sent a message using Nylas!
+              starred: true
+              subject: Hello from Nylas!
+              thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+              to:
+              - name: Jon Snow
+                email: j.snow@example.com
+              unread: true
+    200_schedules:
+      description: Schedule(s) Successfully Retrieved
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Schedules'
+          examples:
+            Retrieved two schedules:
+              value:
+              - schedule_id: 8cd56334-6d95-432c-86d1-c5dab0ce98be
+                status:
+                  code: pending
+                  description: schedule send awaiting send at time
+              - schedule_id: rb856334-6d95-432c-86d1-c5dab0ce98be
+                status:
+                  code: success
+                  description: schedule send succeeded
+                close_time: 1690579819
+    '202':
+      description: Email Send Accepted
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - grant_id
+            - data
+            - request_id
+            - schedule_id
+            properties:
+              grant_id:
+                type: string
+              request_id:
+                type: string
+              data:
+                $ref: '#/components/schemas/message_send_response'
+          examples:
+            example1:
+              description: Save a scheduled message with an Attachment as a draft
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                schedule_id: 17d0281e-0c25-4ad1-a275-639c74f5f6a4
+                send_at: 1671234087
+                use_draft: true
+                grant_id: your grant_id
+                data:
+                  subject: Sending Emails with Nylas
+                  body: Nylas API v3 Test!
+                  from:
+                  - name: John Doe
+                    email: johnn.doe@example.com
+                  to:
+                  - name: Jane Doe
+                    email: jane.doe@example.com
+                  cc:
+                  - name: Nylas
+                    email: nylas@example.com
+                  bcc:
+                  - name: Nylas
+                    email: nylas@example.com
+                  attachments:
+                  - content_id: HASKDJhiuahsdjlkhKJAsd=
+                    content_type: text/plain
+                    content_disposition: inline
+                    filename: myfile.txt
+            example2:
+              description: Send a scheduled message with many recipients
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                schedule_id: 17d0281e-0c25-4ad1-a275-639c74f5f6a4
+                send_at: 1671234087
+                use_draft: false
+                grant_id: your grant_id
+                data:
+                  subject: Sending Emails with Nylas
+                  body: Nylas API v3 Test!
+                  from:
+                  - name: John Doe
+                    email: johnn.doe@example.com
+                  to:
+                  - name: Jane Doe
+                    email: jane.doe@example.com
+                  - name: Scott
+                    email: scott@example.com
+                  - name: Tom
+                    email: tom@example.com
+                  attachments:
+                  - content_id: HASKDJhiuahsdjlkhKJAsd=
+                    content_type: text/plain
+                    filename: myfile.txt
+                    content_disposition: attachment
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
+    202_schedules_delete:
+      description: Schedule Deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                example: 9c2ce8cd-d6e0-4206-a1d0-703f16880061
+              data:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: requested cancelation for workflow
+          examples:
+            Succesfully Request Schedule Deletion:
+              value:
+                request_id: 9c2ce8cd-d6e0-4206-a1d0-703f16880061
+                data:
+                  message: requested cancelation for workflow
     200_messages_send:
       description: 200 OK
       content:
@@ -1704,185 +1463,6 @@ components:
                     filename: myfile.txt
                   schedule_id: ''
                   reply_to_message_id: <the message ID you replied to>
-    200_schedule_id:
-      description: Schedule(s) Retrieved
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Schedules'
-          examples:
-            Retrieved two schedules:
-              value:
-                schedule_id: 8cd56334-6d95-432c-86d1-c5dab0ce98be
-                status:
-                  code: pending
-                  description: schedule send awaiting send at time
-    200_schedules:
-      description: Schedule(s) Successfully Retrieved
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/Schedules'
-          examples:
-            Retrieved two schedules:
-              value:
-              - schedule_id: 8cd56334-6d95-432c-86d1-c5dab0ce98be
-                status:
-                  code: pending
-                  description: schedule send awaiting send at time
-              - schedule_id: rb856334-6d95-432c-86d1-c5dab0ce98be
-                status:
-                  code: success
-                  description: schedule send succeeded
-                close_time: 1690579819
-    409_idempotent:
-      description: Conflict. Returned when an `Idempotency-Key` conflicts with an existing entry.
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Different payload, same key:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.invalid_idempotent_request
-                  message: The Idempotency-Key was reused with a different request payload. Use a different key, or match the original payload.
-            Concurrent request in flight:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.concurrent_idempotent_request
-                  message: A request with the same Idempotency-Key is currently in progress. Wait a moment and retry with the same key.
-    202_schedules_delete:
-      description: Schedule Deleted
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - data
-            - request_id
-            properties:
-              request_id:
-                type: string
-                example: 9c2ce8cd-d6e0-4206-a1d0-703f16880061
-              data:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: requested cancelation for workflow
-          examples:
-            Succesfully Request Schedule Deletion:
-              value:
-                request_id: 9c2ce8cd-d6e0-4206-a1d0-703f16880061
-                data:
-                  message: requested cancelation for workflow
-    '403':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: ID of the request
-              error:
-                type: object
-                description: Response error object.
-                properties:
-                  type:
-                    type: string
-                    description: Error Type
-                  message:
-                    type: string
-                    description: Error Message
-                  provider_error:
-                    type: object
-                    description: Provider Error
-          examples:
-            Insufficient Scopes:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: insufficient_scopes
-                  message: missing provider scopes required to send email
-    '504':
-      description: Provider Failure
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Provider Failure:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: provider_error
-                  message: Provider request timed out.
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
     '401':
       description: Unauthorized
       content:
@@ -1917,231 +1497,6 @@ components:
                   provider_error:
                     code: 401
                     message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The raw error from the provider, if available
-                    properties:
-                      code:
-                        type: string
-                      message:
-                        type: string
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: not_found_error
-                  message: requested object not found
-                  provider_error:
-                    code: MailboxNotEnabledForRESTAPI
-                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    '202':
-      description: Email Send Accepted
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - grant_id
-            - data
-            - request_id
-            - schedule_id
-            properties:
-              grant_id:
-                type: string
-              request_id:
-                type: string
-              data:
-                $ref: '#/components/schemas/message_send_response'
-          examples:
-            example1:
-              description: Save a scheduled message with an Attachment as a draft
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                schedule_id: 17d0281e-0c25-4ad1-a275-639c74f5f6a4
-                send_at: 1671234087
-                use_draft: true
-                grant_id: your grant_id
-                data:
-                  subject: Sending Emails with Nylas
-                  body: Nylas API v3 Test!
-                  from:
-                  - name: John Doe
-                    email: johnn.doe@example.com
-                  to:
-                  - name: Jane Doe
-                    email: jane.doe@example.com
-                  cc:
-                  - name: Nylas
-                    email: nylas@example.com
-                  bcc:
-                  - name: Nylas
-                    email: nylas@example.com
-                  attachments:
-                  - content_id: HASKDJhiuahsdjlkhKJAsd=
-                    content_type: text/plain
-                    content_disposition: inline
-                    filename: myfile.txt
-            example2:
-              description: Send a scheduled message with many recipients
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                schedule_id: 17d0281e-0c25-4ad1-a275-639c74f5f6a4
-                send_at: 1671234087
-                use_draft: false
-                grant_id: your grant_id
-                data:
-                  subject: Sending Emails with Nylas
-                  body: Nylas API v3 Test!
-                  from:
-                  - name: John Doe
-                    email: johnn.doe@example.com
-                  to:
-                  - name: Jane Doe
-                    email: jane.doe@example.com
-                  - name: Scott
-                    email: scott@example.com
-                  - name: Tom
-                    email: tom@example.com
-                  attachments:
-                  - content_id: HASKDJhiuahsdjlkhKJAsd=
-                    content_type: text/plain
-                    filename: myfile.txt
-                    content_disposition: attachment
-    messages-clean:
-      description: Clean message response
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  type: array
-                  items:
-                    allOf:
-                    - $ref: '#/components/schemas/message'
-                    - properties:
-                        conversation:
-                          type: string
-                          description: 'The cleaned message body. If `html_as_markdown` is `true`, the text is
-
-                            Markdown-formatted. Otherwise, Nylas returns plain text.'
-                          example: Hello, I just sent a message using Nylas!
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-            - body: '<div dir="ltr"><div>Hello, I just sent a message using Nylas! <br></div><img src="cid:ii_ltppe5ph0" alt="Nylas-Logo-Stacked-Blue_.png" width="540" height="464"><br><div dir="ltr" class="gmail_signature" data-smartmail="gmail_signature"><div dir="ltr"></div></div></div>
-
-                '
-              cc:
-              - name: Arya Stark
-                email: arya.stark@example.com
-              date: 1635355739
-              attachments:
-              - is_inline: true
-                id: v0:TnlsYXMtTG9nby1TdGFja2VkLUJsdWVfLnBuZw==:aW1hZ2UvcG5nOyBuYW1lPSJOeWxhcy1Mb2dvLVN0YWNrZWQtQmx1ZV8ucG5nIg==:26044
-                grant_id: nylas_test_9
-                filename: Nylas-Logo-Stacked-Blue_.png
-                content_type: image/png; name="Nylas-Logo-Stacked-Blue_.png"
-                content_disposition: inline; filename="Nylas-Logo-Stacked-Blue_.png"
-                content_id: ii_ltppe5ph0
-                size: 26044
-              folders:
-              - 8l6c4d11y1p4dm4fxj52whyr9
-              - d9zkcr2tljpu3m4qpj7l2hbr0
-              from:
-              - name: Daenerys Targaryen
-                email: daenerys.t@example.com
-              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              id: 5d3qmne77v32r8l4phyuksl2x
-              object: message
-              reply_to:
-              - name: Daenerys Targaryen
-                email: daenerys.t@example.com
-              snippet: Hello, I just sent a message using Nylas!
-              starred: true
-              subject: Hello from Nylas!
-              thread_id: 1t8tv3890q4vgmwq6pmdwm8qgsaer
-              to:
-              - name: Jon Snow
-                email: j.snow@example.com
-              unread: true
-              conversation: Hello, I just sent a message using Nylas!
-    '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Bad Request:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: invalid_request_error
-                  message: error parsing request body
-                  provider_error:
-                    code: TargetIdShouldNotBeMeOrWhitespace
-                    message: Id is malformed.
-            Invalid Idempotency-Key:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.invalid_idempotency_key
-                  message: Idempotency-Key must be 256 characters or fewer.
-    200-delete:
-      description: Delete Succeeded
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
   requestBodies:
     message_update:
       content:
@@ -2701,6 +2056,651 @@ components:
               contentType: application/octet-stream
             message:
               contentType: application/json
+  schemas:
+    attachment:
+      description: A file attached to an email message.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          description: The ID of the attachment.
+          readOnly: true
+          example: 4kj2jrcoj9ve5j9yxqz5cuv98
+        content_type:
+          type: string
+          minLength: 1
+          description: 'The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don''t provide a type, Nylas infers it from the file name.
+
+            The value of this field is exactly the same as the email attachment''s `Content-Type` header.
+
+            The provider might set additional parameters, such as `name` and `charset`.
+
+
+            Nylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can''t detect its content type.'
+          example: image/png; name="pic.png"
+        filename:
+          type: string
+          minLength: 1
+          description: The file name of the attachment.
+          example: pic.png
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        content_id:
+          type: string
+          description: '(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message''s HTML. For
+
+            example, you might see something like `<img src=\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\">` in
+
+            the message body.
+
+
+            Sometimes, the `content_id` value is contained in angle brackets (for example,
+
+            `<ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>`).'
+          example: 1234567890
+        content_disposition:
+          type: string
+          description: (Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename="some-image.jpeg"`).
+          example: inline
+        is_inline:
+          type: boolean
+          description: If `true`, indicates that the attachment is an inline file.
+          example: true
+        size:
+          type: integer
+          description: The size of the attachment, in bytes.
+          example: 13068
+    metadata:
+      title: Metadata
+      type: object
+      description: 'The metadata associated with the object. For more information, see
+
+        [Metadata](/docs/reference/api/#metadata).'
+      additionalProperties:
+        type: string
+        description: A key-value pair.
+        maxLength: 500
+      maxProperties: 50
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    id:
+      title: ID
+      type: string
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
+    Schedules:
+      type: object
+      required:
+      - schedule_id
+      - status
+      properties:
+        schedule_id:
+          type: string
+          description: The ID of the scheduled message.
+        status:
+          type: object
+          description: The status of the specified scheduled message.
+          properties:
+            code:
+              type: string
+              description: The status code which describes the state of the specified scheduled message.
+            description:
+              type: string
+              description: A description of the status of the specified scheduled message.
+        close_time:
+          type: integer
+          description: The time that the message was sent, or failed to send, in seconds using the Unix timestamp format.
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    tracking_domain_name:
+      type: string
+      minLength: 1
+      maxLength: 253
+      example: tracking.example.com
+      description: 'The custom hostname to use for link click and message open tracking. The hostname must be
+
+        registered to the authenticated organization in the
+
+        [Nylas Dashboard](https://dashboard-v3.nylas.com/organization/domains?tab=hosted-auth) and have an
+
+        active certificate.
+
+
+        Custom tracking hostnames are available on select plans. Contact your Nylas account representative
+
+        or the [Nylas Sales team](https://www.nylas.com/contact-sales/) to enable this feature for your
+
+        organization.
+
+
+        Nylas trims surrounding whitespace, removes one trailing dot, and converts ASCII letters to
+
+        lowercase before looking up the hostname. Provide an ASCII fully qualified hostname without a URL
+
+        scheme, path, port, or wildcard.
+
+
+        You must enable `links`, `opens`, or both when you provide this field. A custom tracking hostname
+
+        does not support `thread_replies` by itself. If you omit this field, Nylas uses its regional
+
+        tracking hostname. Invalid, inactive, blocked, deleted, and unowned hostnames return the same
+
+        generic `400` response. If Nylas cannot complete the explicit ownership and certificate lookup, it
+
+        returns a `5xx` response without falling back to a Nylas hostname.'
+    message-participant:
+      title: Message participant
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+      required:
+      - email
+    message-header:
+      title: Message header
+      type: object
+      description: A message header key-value pair.
+      properties:
+        name:
+          type: string
+          example: Date
+        value:
+          type: string
+          example: Thu, 15 Aug 2024 00:59:58 +0000 (UTC)
+      required:
+      - name
+      - value
+    message_send_response:
+      title: Message
+      type: object
+      properties:
+        attachments:
+          type: array
+          description: An array of Attachment objects. For google, linked Google Drive files are not included. For Microsoft, linked One Drive files are not included.
+          items:
+            $ref: '#/components/schemas/attachment'
+          uniqueItems: true
+          minItems: 0
+          example:
+          - content_disposition: attachment
+            content_type: text/calendar
+            filename: null
+            content_id: 4kj2jrcoj9ve5j9yxqz5cuv98
+            size: 1708
+          - content_disposition: attachment
+            content_type: application/ics
+            filename: invite.ics
+            content_id: 70jcsv367jaiavt4njeu4xswg
+            size: 1708
+        bcc:
+          type: array
+          description: 'An array of name/email address pairs that the message was BCC''d to. For received messages, this
+
+            is nearly always empty.'
+          items:
+            $ref: '#/components/schemas/message-participant'
+        body:
+          type: string
+          description: The body of the message. This field is the same as the `body` field in your request.
+          example: Hello, I just sent a message using Nylas!
+        cc:
+          type: array
+          description: An array of name/email address pairs that the message was CC'd to.
+          items:
+            $ref: '#/components/schemas/message-participant'
+        date:
+          type: integer
+          description: 'Unix timestamp in seconds that represents when _the mail server_ received the message. This might be
+
+            different from the unified `Date` header in a raw Message object.'
+          example: 1635355739
+        folders:
+          type: array
+          description: 'The ID(s) of the folder(s) that the message appears in.
+
+
+            Microsoft messages can be in a single folder only. Google allows a single message to appear in
+
+            multiple folders.'
+          items:
+            type: string
+          uniqueItems: true
+          example:
+          - 8l6c4d11y1p4dm4fxj52whyr9
+          - d9zkcr2tljpu3m4qpj7l2hbr0
+        from:
+          type: array
+          description: 'A list of name/email address pairs that the message was sent from. This is usually one pair only,
+
+            but can be many.'
+          items:
+            $ref: '#/components/schemas/message-participant-response'
+          uniqueItems: true
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        headers:
+          type: array
+          description: "An array of key-value pairs that contain the message headers. Nylas returns this field when you\nset the `fields` query parameter on the send request to either `include_headers` or\n`include_basic_headers`. This is supported for **synchronous** send only — the parameter has no\neffect when you set the `send_at` field on the request.\n\n- `fields=include_headers`: Returns the full set of headers on the response.\n- `fields=include_basic_headers`: Returns only the three RFC threading headers (`Message-ID`,\n  `In-Reply-To`, `References`). Use this option when you only need to track message identity and\n  thread relationships — payload size is significantly smaller than `include_headers`.\n\nA single message can sometimes have multiple headers with the same key name. Nylas adds all of\nthe headers to the `headers` array without merging or de-duplicating the data. When the headers\ncontain encoded data, Nylas adds it to the `headers` array without decoding it. If you need the\ndecoded data, you need to build decoding logic into your project.\n\nSome headers might contain raw MIME information (for example,\n`=?Windows-1252?Q?Re:_Candidature_de_Mme_Leyah_Miller?=`)."
+          items:
+            $ref: '#/components/schemas/message-header'
+        id:
+          $ref: '#/components/schemas/id'
+        object:
+          type: string
+          description: The object type of the response (in this case, `message`).
+          example: message
+        reply_to:
+          type: array
+          items:
+            $ref: '#/components/schemas/message-participant'
+          uniqueItems: true
+          description: An array of name/email address pairs that should receive replies to the message.
+        reply_to_message_id:
+          type: string
+          description: The unique identifier of the message to which you want to draft a reply.
+          example: 1t8tv3890q4vgmwq6pmdwm8qg
+        schedule_id:
+          type: string
+          description: The ID of the scheduled message. Nylas returns the `schedule_id` if `send_at` is set.
+          example: c712c7ec-0bbd-4038-a69a-d7c287b026f5
+        snippet:
+          type: string
+          minLength: 1
+          description: 'A short snippet (the first 100 characters, with HTML tags removed) of the message body. This is
+
+            useful for displaying a preview of the message.'
+          example: 'You have been invited to the following event. Welcome! WhenThu Oct 28, 2021 7am - 8am Eastern
+
+            Time - Toronto Joining info'
+        starred:
+          type: boolean
+          description: 'When `true`, shows that the message has been starred by the user. For EWS, this is only supported
+
+            for Microsoft Exchange 2010 or later.'
+          example: false
+        subject:
+          type: string
+          description: The subject of the message.
+          example: Nylas Send v3 Email
+        thread_id:
+          type: string
+          minLength: 1
+          description: 'A reference to the parent Thread object. Every message is associated with a thread, whether that
+
+            thread contains only one message or many. If this is a new message, Nylas assigns a `thread_id`
+
+            to it.'
+          example: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+        tracking_options:
+          type: object
+          description: Tracking options for the message.
+          properties:
+            opens:
+              type: boolean
+              description: When `true`, shows that message open tracking is enabled.
+              example: true
+            thread_replies:
+              type: boolean
+              description: When `true`, shows that thread replied tracking is enabled.
+              example: true
+            links:
+              type: boolean
+              description: When `true`, shows that link clicked tracking is enabled.
+              example: true
+            label:
+              type: string
+              description: A label describing the message tracking purpose.
+              maxLength: 2048
+              example: Tracking test
+        to:
+          type: array
+          description: An array of name/email address pairs that the message was sent to.
+          items:
+            $ref: '#/components/schemas/message-participant'
+          uniqueItems: true
+        unread:
+          type: boolean
+          description: When `true`, shows that the message has not been read by the user.
+          example: true
+        use_draft:
+          $ref: '#/components/schemas/use_draft'
+    use_draft:
+      type: boolean
+      description: '(Google and Microsoft only) If `true` when scheduling a message, Nylas saves the message in the user''s
+
+        Drafts folder until it''s sent. For more information, see
+
+        [Schedule messages to send in the future](/docs/v3/email/scheduled-send/).'
+      default: false
+      example: false
+    message:
+      title: Message
+      type: object
+      properties:
+        attachments:
+          type: array
+          description: 'An array of Attachment objects. For Google, linked Google Drive files are not included. For
+
+            Microsoft, linked OneDrive files are not included.'
+          items:
+            $ref: '#/components/schemas/attachment'
+          uniqueItems: true
+          minItems: 0
+          example:
+          - content_disposition: attachment
+            content_type: text/calendar
+            filename: null
+            content_id: 4kj2jrcoj9ve5j9yxqz5cuv98
+            size: 1708
+          - content_disposition: attachment
+            content_type: application/ics
+            filename: invite.ics
+            content_id: 70jcsv367jaiavt4njeu4xswg
+            size: 1708
+        bcc:
+          type: array
+          description: 'An array of name/email address pairs that the message was BCC''d to. For received messages, this
+
+            is nearly always empty.'
+          items:
+            $ref: '#/components/schemas/message-participant'
+        body:
+          type: string
+          description: 'The body of the message as either plain-text or HTML content. If the message has both plain-text
+
+            and HTML, Nylas returns the HTML version.'
+          example: Hello, I just sent a message using Nylas!
+        cc:
+          type: array
+          description: An array of name/email address pairs that the message was CC'd to.
+          items:
+            $ref: '#/components/schemas/message-participant'
+        date:
+          type: integer
+          description: 'Unix timestamp in seconds that represents when _the mail server_ received the message. This might be
+
+            different from the unified `Date` header in a raw Message object.'
+          example: 1635355739
+        folders:
+          type: array
+          description: 'The IDs of the folders that the message appears in. Microsoft messages can be in a single folder
+
+            only. Google allows a single message to appear in multiple folders.'
+          items:
+            type: string
+          uniqueItems: true
+          example:
+          - 8l6c4d11y1p4dm4fxj52whyr9
+          - d9zkcr2tljpu3m4qpj7l2hbr0
+        from:
+          type: array
+          description: 'A list of name/email address pairs that the message was sent from. This is usually one pair only,
+
+            but can be many.'
+          items:
+            $ref: '#/components/schemas/message-participant-response'
+          uniqueItems: true
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        headers:
+          type: array
+          description: "An array of key-value pairs that contain the message headers. Nylas returns this field when you\nset the `fields` query parameter to either `include_headers` or `include_basic_headers`.\n\n- `fields=include_headers`: Returns the full set of headers on the message.\n- `fields=include_basic_headers`: Returns only the three RFC threading headers (`Message-ID`,\n  `In-Reply-To`, `References`). Use this option when you only need to track message identity and\n  thread relationships — payload size is significantly smaller than `include_headers`.\n\nA single message can sometimes have multiple headers with the same key name. Nylas adds all of\nthe headers to the `headers` array without merging or de-duplicating the data. When the headers\ncontain encoded data, Nylas adds it to the `headers` array without decoding it. If you need the\ndecoded data, you need to build decoding logic into your project.\n\nSome headers might contain raw MIME information (for example,\n`=?Windows-1252?Q?Re:_Candidature_de_Mme_Leyah_Miller?=`)."
+          items:
+            $ref: '#/components/schemas/message-header'
+        id:
+          $ref: '#/components/schemas/id'
+        in_reply_to:
+          type: string
+          description: '(EWS only) The ID of the message that this message replies to. This ID is the same as the
+
+            `In-Reply-To` header.'
+          example: <b0582d2c-816d-42a4-9ff8-46073170d827@me.com>
+        metadata:
+          $ref: '#/components/schemas/metadata'
+        object:
+          type: string
+          description: The object type of the response (in this case, `message`).
+          example: message
+        raw_mime:
+          type: string
+          description: 'A Base64url-encoded string containing the message data (including the body content).
+
+
+            To get the raw MIME content for a message, set the `fields` query parameter to `raw_mime` in
+
+            your request. When you request raw MIME data, Nylas returns the `grant_id`, `object`, `id`,
+
+            and `raw_mime` fields only.'
+        reply_to:
+          type: array
+          items:
+            $ref: '#/components/schemas/message-participant'
+          uniqueItems: true
+          description: An array of name/email address pairs that should receive replies to the message.
+        snippet:
+          type: string
+          minLength: 1
+          description: 'A short snippet (the first 100 characters, with HTML tags removed) of the message body. This is
+
+            useful for displaying a preview of the message.'
+          example: 'You have been invited to the following event. Welcome! WhenThu Oct 28, 2021
+
+            7am - 8am Eastern Time - Toronto Joining info'
+        starred:
+          type: boolean
+          description: 'If `true`, shows that the message has been starred by the user. For EWS, this is only supported
+
+            on Microsoft Exchange 2010 or later.'
+          example: false
+        subject:
+          type: string
+          description: The subject of the message.
+          example: Nylas Send v3 Email
+        thread_id:
+          type: string
+          minLength: 1
+          description: 'A reference to the parent Thread object. Every message is associated with a thread, whether that
+
+            thread contains one message or many. If the message is new, Nylas assigns a `thread_id` to it.'
+          example: 1t8tv3890q4vgmwq6pmdwm8qgsaer
+        to:
+          type: array
+          description: An array of name/email address pairs that the message was sent to.
+          items:
+            $ref: '#/components/schemas/message-participant'
+          uniqueItems: true
+        tracking_options:
+          type: object
+          description: Tracking options for the message.
+          properties:
+            opens:
+              type: boolean
+              description: When `true`, shows that message open tracking is enabled.
+              example: true
+            thread_replies:
+              type: boolean
+              description: When `true`, shows that thread replied tracking is enabled.
+              example: true
+            links:
+              type: boolean
+              description: When `true`, shows that link clicked tracking is enabled.
+              example: true
+            label:
+              type: string
+              description: A label describing the message tracking purpose.
+              maxLength: 2048
+              example: Tracking test
+        unread:
+          type: boolean
+          description: If `true`, shows that the message has not been read by the user.
+          example: true
+    message-participant-response:
+      title: Message participant response
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+  parameters:
+    query_imap_get_by_id:
+      name: query_imap
+      schema:
+        type: boolean
+        default: false
+      in: query
+      required: false
+      description: '(IMAP, iCloud, and Yahoo only) When `true`, Nylas queries from the IMAP server directly instead of
+
+        the Nylas database.'
+    shared_from:
+      name: shared_from
+      in: query
+      schema:
+        type: string
+      description: '(Microsoft only) When provided, Nylas returns items that were shared from the specified email address.
+
+        It also accepts grant ID.
+
+        This parameter only accepts single email address or grant ID.
+
+        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+    hard_delete:
+      name: hard_delete
+      in: query
+      schema:
+        type: boolean
+        default: false
+      description: 'When `true`, Nylas immediately deletes the specified message instead of sending it to the user''s Trash
+
+        folder. This operation is irreversible.
+
+
+        To use this query parameter, you need to turn on "Enable hard delete" in the
+
+        [Nylas Dashboard](https://dashboard-v3.nylas.com/?utm_source=docs&utm_content=docs-hard-delete) under
+
+        **Customizations > API**.'
+    query_imap_list:
+      name: query_imap
+      schema:
+        type: boolean
+        default: false
+      in: query
+      required: false
+      description: '(IMAP, Yahoo, and iCloud only) When `true`, Nylas queries the IMAP server directly instead of the
+
+        Nylas database. You also need to set the `in` query parameter in your request so Nylas knows which
+
+        folder to query.'
+    shared_folder_id:
+      name: shared_folder_id
+      in: query
+      schema:
+        type: string
+      description: '(Microsoft only) When provided, Nylas returns items from the specified shared folder ID.
+
+        Required when using `shared_from`.
+
+        This parameter only accepts a single folder ID.
+
+        Check out the [Shared folders](/docs/provider-guides/microsoft/shared-folders) guide for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
+    metadata_pair:
+      name: metadata_pair
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Pass a metadata key/value pair (for example, `?metadata_pair=key1:value`) to search for metadata
+
+        associated with objects. See [Metadata](/docs/reference/api/#metadata) for more information.'
+    grant_id:
+      name: grant_id
+      schema:
+        type: string
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use `/me/`
+
+        to refer to the grant associated with an access token.'
+      example: nyla@example.com
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

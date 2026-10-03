@@ -139,36 +139,6 @@ paths:
         source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/translate' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"resource_type\": \"messages\",\n    \"v2_account_id\": \"<NYLAS_ACCOUNT_ID>\",\n    \"nylas_ids\": [\n      \"<NYLAS_ACCOUNT_ID>\",\n      \"<NYLAS_ACCOUNT_ID>\"\n    ]\n  }'"
 components:
   schemas:
-    '400':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: bad_request
-            message:
-              description: Informative error message
-              default: Bad request
-              type: string
-              example: Bad request
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
     '401':
       type: object
       required:
@@ -254,6 +224,36 @@ components:
           type: integer
           description: A page number for next set of results, if more results are available. This field does not appear if there are no more results.
           example: 2
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

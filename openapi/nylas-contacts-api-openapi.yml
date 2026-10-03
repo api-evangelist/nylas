@@ -427,7 +427,658 @@ paths:
         label: Kotlin SDK
         source: "import com.nylas.NylasClient\n\nfun main(args: Array<String>) {\n\n  val nylas: NylasClient = NylasClient(apiKey = \"<NYLAS_API_KEY>\")\n  var groups = nylas.contacts().listGroups(\"<NYLAS_GRANT_ID>\")\n\n  print(groups)\n}"
 components:
+  schemas:
+    contact_im_address:
+      title: Contact IM address
+      type: object
+      required:
+      - im_address
+      description: 'An array of the contact''s instant messaging (IM) addresses. Different providers may have different
+
+        limits on the number of IM addresses.
+
+        - IMAP/iCloud/Yahoo: at most one IM address per contact.
+
+        - Microsoft/EWS: at most three IM addresses per contact.'
+      properties:
+        im_address:
+          type: string
+          description: The contact's IM address.
+          maxLength: 255
+          example: myJabberAddress
+        type:
+          type: string
+          description: The protocol for the IM address.
+          example: jabber
+    contact_group_id:
+      title: Contact Group ID
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+      example:
+        id: 5d3qmne77v32r8l4phyuksl2x
+    contact_picture:
+      title: Contact Picture
+      type: string
+      description: The contact's picture, represented as a Base64-encoded string.
+      example: /9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHR...
+    contact_manager_name:
+      title: Contact Manager Name
+      type: string
+      description: The name of the contact's manager.
+      example: Bill
+    contact_web_page:
+      title: Contact web page
+      type: object
+      required:
+      - url
+      properties:
+        url:
+          type: string
+          description: A URL that links to the contact's website.
+          example: https://www.example.com/leyah-miller
+        type:
+          type: string
+          description: The website type.
+          enum:
+          - work
+          - home
+          - other
+          example: work
+    contact_given_name:
+      title: Contact Given Name
+      type: string
+      description: The contact's given name.
+      example: John
+    contact_source:
+      title: Contact source
+      type: string
+      description: "The source of the contact. For iCloud and IMAP grants, the source is `inbox` if the contact is \nparsed from a message. If the contact is created or updated using the Nylas API, its source is \n`address_book`."
+      enum:
+      - address_book
+      - domain
+      - inbox
+      example: address_book
+    contact_email:
+      title: Contact email
+      type: object
+      required:
+      - email
+      description: 'An array of the contact''s email addresses. Different providers may have different limits on the
+
+        number of email addresses.
+
+        - IMAP/iCloud/Yahoo: at most one email address per contact.
+
+        - Microsoft/EWS: at most three email addresses per contact.'
+      properties:
+        email:
+          type: string
+          description: The contact's email address.
+          maxLength: 255
+          example: leyah@example.com
+        type:
+          type: string
+          description: (Google, IMAP, and iCloud only) The email address type.
+          enum:
+          - work
+          - home
+          - other
+          example: work
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    contact_with_picture:
+      title: Contact With Picture
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/contact'
+      - properties:
+          picture:
+            $ref: '#/components/schemas/contact_picture'
+    contact_surname:
+      title: Contact Surname
+      type: string
+      description: The contact's surname.
+      example: Doe
+    contact_physical_address:
+      title: Contact physical address
+      type: object
+      required:
+      - type
+      description: 'An array of physical addresses associated with the contact. Different providers may have different
+
+        limits on the number of physical addresses.
+
+        - IMAP/iCloud/Yahoo: at most one physical address per contact.
+
+        - Microsoft/EWS: at most one physical address per contact per type.'
+      properties:
+        city:
+          type: string
+          description: The town or city in which the contact is located.
+          example: San Francisco
+        country:
+          type: string
+          description: The country in which the contact is located.
+          example: USA
+        postal_code:
+          type: string
+          description: The postal code of a location associated with the contact.
+          example: '94107'
+        state:
+          type: string
+          description: The state or province in which the contact is located.
+          example: CA
+        street_address:
+          type: string
+          description: The street address of a location associated with the contact (for example, their work).
+          example: 123 Main Street
+        type:
+          type: string
+          description: The physical address type.
+          enum:
+          - work
+          - home
+          - other
+          example: work
+    contact_middle_name:
+      title: Contact Middle Name
+      type: string
+      description: The contact's middle name.
+      example: Jacob
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    id:
+      title: ID
+      type: string
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    contact_picture_url:
+      title: Contact Picture URL
+      type: string
+      description: A URL that links to the contact's picture.
+      example: https://example.com/picture.jpg
+    contact:
+      title: Contact
+      type: object
+      properties:
+        birthday:
+          $ref: '#/components/schemas/contact_birthday'
+        company_name:
+          $ref: '#/components/schemas/contact_company_name'
+        emails:
+          type:
+          - array
+          - 'null'
+          description: The contact's email addresses. May be `null` if the contact has no email addresses. Treat `null` the same as an empty array.
+          items:
+            $ref: '#/components/schemas/contact_email'
+        given_name:
+          $ref: '#/components/schemas/contact_given_name'
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        groups:
+          type:
+          - array
+          - 'null'
+          description: The contact's group memberships. May be `null` if the contact has no group memberships. Treat `null` the same as an empty array.
+          items:
+            $ref: '#/components/schemas/contact_group_id'
+        id:
+          $ref: '#/components/schemas/id'
+        im_addresses:
+          type:
+          - array
+          - 'null'
+          description: The contact's IM addresses. May be `null` if the contact has no IM addresses. Treat `null` the same as an empty array.
+          items:
+            $ref: '#/components/schemas/contact_im_address'
+        job_title:
+          $ref: '#/components/schemas/contact_job_title'
+        manager_name:
+          $ref: '#/components/schemas/contact_manager_name'
+        middle_name:
+          $ref: '#/components/schemas/contact_middle_name'
+        nickname:
+          $ref: '#/components/schemas/contact_nickname'
+        notes:
+          $ref: '#/components/schemas/contact_notes'
+        object:
+          type: string
+          description: The response object type.
+          example: contact
+        office_location:
+          $ref: '#/components/schemas/contact_office_location'
+        phone_numbers:
+          type:
+          - array
+          - 'null'
+          description: The contact's phone numbers. May be `null` if the contact has no phone numbers. Treat `null` the same as an empty array.
+          items:
+            $ref: '#/components/schemas/contact_phone_number'
+        physical_addresses:
+          type:
+          - array
+          - 'null'
+          description: The contact's physical addresses. May be `null` if the contact has no physical addresses. Treat `null` the same as an empty array.
+          items:
+            $ref: '#/components/schemas/contact_physical_address'
+        picture_url:
+          $ref: '#/components/schemas/contact_picture_url'
+        source:
+          $ref: '#/components/schemas/contact_source'
+        suffix:
+          $ref: '#/components/schemas/contact_suffix'
+        surname:
+          $ref: '#/components/schemas/contact_surname'
+        web_pages:
+          type:
+          - array
+          - 'null'
+          description: The contact's web pages. May be `null` if the contact has no web pages. Treat `null` the same as an empty array.
+          items:
+            $ref: '#/components/schemas/contact_web_page'
+    contact_office_location:
+      title: Contact Office Location
+      type: string
+      description: The location of the office where the contact works.
+      example: 123 Main Street
+    contact_phone_number:
+      title: Contact phone number
+      type: object
+      required:
+      - number
+      description: "An array of phone numbers associated with the contact. Different providers may have different limits\non the number of phone numbers.\n- IMAP/iCloud/Yahoo: at most one phone number per contact.\n- Microsoft: at most two home phone numbers, two work phone numbers, and one mobile phone number.\n- EWS: at most two home phone numbers, two work phone numbers, one mobile phone number, and one\n  other phone number."
+      properties:
+        number:
+          type: string
+          description: 'The contact''s phone number, including its
+
+            [country code](https://www.itu.int/oth/T0202.aspx?parent=T0202).'
+          example: +1-555-555-5555
+        type:
+          type: string
+          description: 'The phone number type. `mobile` is supported for Google and Microsoft Graph only. `other` is
+
+            supported for Google and EWS only.'
+          enum:
+          - work
+          - home
+          - mobile
+          - other
+          example: work
+    contact_nickname:
+      title: Contact Nickname
+      type: string
+      description: A custom nickname for the contact.
+      example: JD
+    contact_birthday:
+      title: Contact Birthday
+      type: string
+      description: The contact's birthday in [ISO-8601 format](https://en.wikipedia.org/wiki/ISO_8601#Calendar_dates).
+      example: '1980-12-31'
+    contact_job_title:
+      title: Contact Job Title
+      type: string
+      description: The contact's occupation or job title.
+      example: Software Engineer
+    contact_notes:
+      title: Contact Notes
+      type: string
+      description: Notes about with the contact (for example, their favorite food).
+      example: Loves Ramen
+    contact_suffix:
+      title: Contact Suffix
+      type: string
+      description: (Not supported for EWS) The suffix of a contact's name, if applicable.
+      example: Jr.
+    contact_company_name:
+      title: Contact Company Name
+      type: string
+      description: The name of the company that the contact is affiliated with (for example, their workplace).
+      example: Nylas
+    contact_group:
+      title: Contact Group
+      type: object
+      properties:
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        group_type:
+          type: string
+          description: The Contact Group type.
+          enum:
+          - system
+          - user
+          - other
+          example: system
+        id:
+          $ref: '#/components/schemas/id'
+        name:
+          type: string
+          description: The Contact Group display name.
+          example: starred
+        object:
+          type: string
+          description: The response object type.
+          example: contact_group
+        path:
+          type: string
+          description: The Contact Group's path.
+          example: parentId/starred
   responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: not_found_error
+                  message: requested object not found
+                  provider_error:
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    200-delete:
+      description: Delete Succeeded
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+    contact:
+      description: Contact
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/contact'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+              birthday: '1960-12-31'
+              company_name: Nylas
+              emails:
+              - type: work
+                email: john@example.com
+              - type: home
+                email: johnisacooldad@example.com
+              given_name: John
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              groups:
+              - id: starred
+              - id: friends
+              id: 5d3qmne77v32r8l4phyuksl2x
+              im_addresses:
+              - type: jabber
+                im_address: myjabberaddress
+              - type: msn
+                im_address: mymsnaddress
+              job_title: Software Engineer
+              manager_name: Bill
+              middle_name: Jacob
+              nickname: JD
+              notes: Loves ramen
+              object: contact
+              office_location: 123 Main Street
+              phone_numbers:
+              - type: work
+                number: +1-555-555-5555
+              - type: home
+                number: +1-555-555-5556
+              physical_addresses:
+              - type: work
+                street_address: 123 Main Street
+                postal_code: '94107'
+                state: CA
+                country: US
+                city: San Francisco
+              - type: home
+                street_address: 321 Pleasant Drive
+                postal_code: '94107'
+                state: CA
+                country: US
+                city: San Francisco
+              picture_url: https://example.com/picture.jpg
+              source: address_book
+              suffix: Jr.
+              surname: Doe
+              web_pages:
+              - type: work
+                url: https://www.linkedin.com/in/johndoe
+              - type: home
+                url: https://www.johndoe.com
+    contacts:
+      description: Contacts
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response_with_cursor'
+            - properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/contact'
+          example:
+            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+            data:
+            - birthday: '1960-12-31'
+              company_name: Nylas
+              emails:
+              - type: work
+                email: john-work@example.com
+              - type: home
+                email: john-home@example.com
+              given_name: John
+              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              groups:
+              - id: starred
+              - id: friends
+              id: 5d3qmne77v32r8l4phyuksl2x
+              im_addresses:
+              - type: jabber
+                im_address: myjabberaddress
+              - type: msn
+                im_address: mymsnaddress
+              job_title: Software Engineer
+              manager_name: Bill
+              middle_name: Jacob
+              nickname: JD
+              notes: Loves ramen
+              object: contact
+              office_location: 123 Main Street
+              phone_numbers:
+              - type: work
+                number: +1-555-555-5555
+              - type: home
+                number: +1-555-555-5556
+              physical_addresses:
+              - type: work
+                street_address: 123 Main Street
+                postal_code: '94107'
+                state: CA
+                country: US
+                city: San Francisco
+              - type: home
+                street_address: 123 Main Street
+                postal_code: '94107'
+                state: CA
+                country: US
+                city: San Francisco
+              picture_url: https://example.com/picture.jpg
+              source: address_book
+              suffix: Jr.
+              surname: Doe
+              web_pages:
+              - type: work
+                url: https://www.linkedin.com/in/johndoe
+              - type: home
+                url: https://www.johndoe.com
+            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Bad Request:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: invalid_request_error
+                  message: error parsing request body
+                  provider_error:
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
     contact_with_picture:
       description: Contact
       content:
@@ -552,155 +1203,6 @@ components:
                     url: https://www.linkedin.com/in/johndoe
                   - type: home
                     url: https://www.johndoe.com
-    '504':
-      description: Provider Failure
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Provider Failure:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: provider_error
-                  message: Provider request timed out.
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-    contact_groups:
-      description: Contact Groups
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response_with_cursor'
-            - properties:
-                data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/contact_group'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-            - grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              group_type: system
-              id: starred
-              name: starred
-              object: contact_group
-              path: parentId/starred
-            - grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              group_type: user
-              id: friends
-              name: friends
-              object: contact_group
-              path: parentId/friends
-            next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    contact:
-      description: Contact
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/contact'
-          example:
-            request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-            data:
-              birthday: '1960-12-31'
-              company_name: Nylas
-              emails:
-              - type: work
-                email: john@example.com
-              - type: home
-                email: johnisacooldad@example.com
-              given_name: John
-              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              groups:
-              - id: starred
-              - id: friends
-              id: 5d3qmne77v32r8l4phyuksl2x
-              im_addresses:
-              - type: jabber
-                im_address: myjabberaddress
-              - type: msn
-                im_address: mymsnaddress
-              job_title: Software Engineer
-              manager_name: Bill
-              middle_name: Jacob
-              nickname: JD
-              notes: Loves ramen
-              object: contact
-              office_location: 123 Main Street
-              phone_numbers:
-              - type: work
-                number: +1-555-555-5555
-              - type: home
-                number: +1-555-555-5556
-              physical_addresses:
-              - type: work
-                street_address: 123 Main Street
-                postal_code: '94107'
-                state: CA
-                country: US
-                city: San Francisco
-              - type: home
-                street_address: 321 Pleasant Drive
-                postal_code: '94107'
-                state: CA
-                country: US
-                city: San Francisco
-              picture_url: https://example.com/picture.jpg
-              source: address_book
-              suffix: Jr.
-              surname: Doe
-              web_pages:
-              - type: work
-                url: https://www.linkedin.com/in/johndoe
-              - type: home
-                url: https://www.johndoe.com
     '401':
       description: Unauthorized
       content:
@@ -735,8 +1237,8 @@ components:
                   provider_error:
                     code: 401
                     message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    contacts:
-      description: Contacts
+    contact_groups:
+      description: Contact Groups
       content:
         application/json:
           schema:
@@ -746,180 +1248,24 @@ components:
                 data:
                   type: array
                   items:
-                    $ref: '#/components/schemas/contact'
+                    $ref: '#/components/schemas/contact_group'
           example:
             request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
             data:
-            - birthday: '1960-12-31'
-              company_name: Nylas
-              emails:
-              - type: work
-                email: john-work@example.com
-              - type: home
-                email: john-home@example.com
-              given_name: John
-              grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
-              groups:
-              - id: starred
-              - id: friends
-              id: 5d3qmne77v32r8l4phyuksl2x
-              im_addresses:
-              - type: jabber
-                im_address: myjabberaddress
-              - type: msn
-                im_address: mymsnaddress
-              job_title: Software Engineer
-              manager_name: Bill
-              middle_name: Jacob
-              nickname: JD
-              notes: Loves ramen
-              object: contact
-              office_location: 123 Main Street
-              phone_numbers:
-              - type: work
-                number: +1-555-555-5555
-              - type: home
-                number: +1-555-555-5556
-              physical_addresses:
-              - type: work
-                street_address: 123 Main Street
-                postal_code: '94107'
-                state: CA
-                country: US
-                city: San Francisco
-              - type: home
-                street_address: 123 Main Street
-                postal_code: '94107'
-                state: CA
-                country: US
-                city: San Francisco
-              picture_url: https://example.com/picture.jpg
-              source: address_book
-              suffix: Jr.
-              surname: Doe
-              web_pages:
-              - type: work
-                url: https://www.linkedin.com/in/johndoe
-              - type: home
-                url: https://www.johndoe.com
+            - grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              group_type: system
+              id: starred
+              name: starred
+              object: contact_group
+              path: parentId/starred
+            - grant_id: 41009df5-bf11-4c97-aa18-b285b5f2e386
+              group_type: user
+              id: friends
+              name: friends
+              object: contact_group
+              path: parentId/friends
             next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    '404':
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The raw error from the provider, if available
-                    properties:
-                      code:
-                        type: string
-                      message:
-                        type: string
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: not_found_error
-                  message: requested object not found
-                  provider_error:
-                    code: MailboxNotEnabledForRESTAPI
-                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    200-delete:
-      description: Delete Succeeded
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-    '400':
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Bad Request:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: invalid_request_error
-                  message: error parsing request body
-                  provider_error:
-                    code: TargetIdShouldNotBeMeOrWhitespace
-                    message: Id is malformed.
-            Invalid Idempotency-Key:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.invalid_idempotency_key
-                  message: Idempotency-Key must be 256 characters or fewer.
   parameters:
-    field_selection:
-      name: select
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
-
-        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
-
-        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
-
-        to only the information that you need.'
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
     limit:
       name: limit
       in: query
@@ -942,376 +1288,30 @@ components:
       description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
 
         for more information.'
-  schemas:
-    contact_im_address:
-      title: Contact IM address
-      type: object
-      required:
-      - im_address
-      description: 'An array of the contact''s instant messaging (IM) addresses. Different providers may have different
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
 
-        limits on the number of IM addresses.
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
 
-        - IMAP/iCloud/Yahoo: at most one IM address per contact.
+        information.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
 
-        - Microsoft/EWS: at most three IM addresses per contact.'
-      properties:
-        im_address:
-          type: string
-          description: The contact's IM address.
-          maxLength: 255
-          example: myJabberAddress
-        type:
-          type: string
-          description: The protocol for the IM address.
-          example: jabber
-    contact_with_picture:
-      title: Contact With Picture
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/contact'
-      - properties:
-          picture:
-            $ref: '#/components/schemas/contact_picture'
-    grant_id:
-      title: Grant ID
-      type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
-    contact:
-      title: Contact
-      type: object
-      properties:
-        birthday:
-          $ref: '#/components/schemas/contact_birthday'
-        company_name:
-          $ref: '#/components/schemas/contact_company_name'
-        emails:
-          type:
-          - array
-          - 'null'
-          description: The contact's email addresses. May be `null` if the contact has no email addresses. Treat `null` the same as an empty array.
-          items:
-            $ref: '#/components/schemas/contact_email'
-        given_name:
-          $ref: '#/components/schemas/contact_given_name'
-        grant_id:
-          $ref: '#/components/schemas/grant_id'
-        groups:
-          type:
-          - array
-          - 'null'
-          description: The contact's group memberships. May be `null` if the contact has no group memberships. Treat `null` the same as an empty array.
-          items:
-            $ref: '#/components/schemas/contact_group_id'
-        id:
-          $ref: '#/components/schemas/id'
-        im_addresses:
-          type:
-          - array
-          - 'null'
-          description: The contact's IM addresses. May be `null` if the contact has no IM addresses. Treat `null` the same as an empty array.
-          items:
-            $ref: '#/components/schemas/contact_im_address'
-        job_title:
-          $ref: '#/components/schemas/contact_job_title'
-        manager_name:
-          $ref: '#/components/schemas/contact_manager_name'
-        middle_name:
-          $ref: '#/components/schemas/contact_middle_name'
-        nickname:
-          $ref: '#/components/schemas/contact_nickname'
-        notes:
-          $ref: '#/components/schemas/contact_notes'
-        object:
-          type: string
-          description: The response object type.
-          example: contact
-        office_location:
-          $ref: '#/components/schemas/contact_office_location'
-        phone_numbers:
-          type:
-          - array
-          - 'null'
-          description: The contact's phone numbers. May be `null` if the contact has no phone numbers. Treat `null` the same as an empty array.
-          items:
-            $ref: '#/components/schemas/contact_phone_number'
-        physical_addresses:
-          type:
-          - array
-          - 'null'
-          description: The contact's physical addresses. May be `null` if the contact has no physical addresses. Treat `null` the same as an empty array.
-          items:
-            $ref: '#/components/schemas/contact_physical_address'
-        picture_url:
-          $ref: '#/components/schemas/contact_picture_url'
-        source:
-          $ref: '#/components/schemas/contact_source'
-        suffix:
-          $ref: '#/components/schemas/contact_suffix'
-        surname:
-          $ref: '#/components/schemas/contact_surname'
-        web_pages:
-          type:
-          - array
-          - 'null'
-          description: The contact's web pages. May be `null` if the contact has no web pages. Treat `null` the same as an empty array.
-          items:
-            $ref: '#/components/schemas/contact_web_page'
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-    contact_picture_url:
-      title: Contact Picture URL
-      type: string
-      description: A URL that links to the contact's picture.
-      example: https://example.com/picture.jpg
-    contact_office_location:
-      title: Contact Office Location
-      type: string
-      description: The location of the office where the contact works.
-      example: 123 Main Street
-    contact_phone_number:
-      title: Contact phone number
-      type: object
-      required:
-      - number
-      description: "An array of phone numbers associated with the contact. Different providers may have different limits\non the number of phone numbers.\n- IMAP/iCloud/Yahoo: at most one phone number per contact.\n- Microsoft: at most two home phone numbers, two work phone numbers, and one mobile phone number.\n- EWS: at most two home phone numbers, two work phone numbers, one mobile phone number, and one\n  other phone number."
-      properties:
-        number:
-          type: string
-          description: 'The contact''s phone number, including its
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
 
-            [country code](https://www.itu.int/oth/T0202.aspx?parent=T0202).'
-          example: +1-555-555-5555
-        type:
-          type: string
-          description: 'The phone number type. `mobile` is supported for Google and Microsoft Graph only. `other` is
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
 
-            supported for Google and EWS only.'
-          enum:
-          - work
-          - home
-          - mobile
-          - other
-          example: work
-    contact_group:
-      title: Contact Group
-      type: object
-      properties:
-        grant_id:
-          $ref: '#/components/schemas/grant_id'
-        group_type:
-          type: string
-          description: The Contact Group type.
-          enum:
-          - system
-          - user
-          - other
-          example: system
-        id:
-          $ref: '#/components/schemas/id'
-        name:
-          type: string
-          description: The Contact Group display name.
-          example: starred
-        object:
-          type: string
-          description: The response object type.
-          example: contact_group
-        path:
-          type: string
-          description: The Contact Group's path.
-          example: parentId/starred
-    contact_given_name:
-      title: Contact Given Name
-      type: string
-      description: The contact's given name.
-      example: John
-    contact_picture:
-      title: Contact Picture
-      type: string
-      description: The contact's picture, represented as a Base64-encoded string.
-      example: /9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHR...
-    contact_physical_address:
-      title: Contact physical address
-      type: object
-      required:
-      - type
-      description: 'An array of physical addresses associated with the contact. Different providers may have different
-
-        limits on the number of physical addresses.
-
-        - IMAP/iCloud/Yahoo: at most one physical address per contact.
-
-        - Microsoft/EWS: at most one physical address per contact per type.'
-      properties:
-        city:
-          type: string
-          description: The town or city in which the contact is located.
-          example: San Francisco
-        country:
-          type: string
-          description: The country in which the contact is located.
-          example: USA
-        postal_code:
-          type: string
-          description: The postal code of a location associated with the contact.
-          example: '94107'
-        state:
-          type: string
-          description: The state or province in which the contact is located.
-          example: CA
-        street_address:
-          type: string
-          description: The street address of a location associated with the contact (for example, their work).
-          example: 123 Main Street
-        type:
-          type: string
-          description: The physical address type.
-          enum:
-          - work
-          - home
-          - other
-          example: work
-    contact_email:
-      title: Contact email
-      type: object
-      required:
-      - email
-      description: 'An array of the contact''s email addresses. Different providers may have different limits on the
-
-        number of email addresses.
-
-        - IMAP/iCloud/Yahoo: at most one email address per contact.
-
-        - Microsoft/EWS: at most three email addresses per contact.'
-      properties:
-        email:
-          type: string
-          description: The contact's email address.
-          maxLength: 255
-          example: leyah@example.com
-        type:
-          type: string
-          description: (Google, IMAP, and iCloud only) The email address type.
-          enum:
-          - work
-          - home
-          - other
-          example: work
-    contact_web_page:
-      title: Contact web page
-      type: object
-      required:
-      - url
-      properties:
-        url:
-          type: string
-          description: A URL that links to the contact's website.
-          example: https://www.example.com/leyah-miller
-        type:
-          type: string
-          description: The website type.
-          enum:
-          - work
-          - home
-          - other
-          example: work
-    contact_surname:
-      title: Contact Surname
-      type: string
-      description: The contact's surname.
-      example: Doe
-    contact_group_id:
-      title: Contact Group ID
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          $ref: '#/components/schemas/id'
-      example:
-        id: 5d3qmne77v32r8l4phyuksl2x
-    contact_birthday:
-      title: Contact Birthday
-      type: string
-      description: The contact's birthday in [ISO-8601 format](https://en.wikipedia.org/wiki/ISO_8601#Calendar_dates).
-      example: '1980-12-31'
-    contact_middle_name:
-      title: Contact Middle Name
-      type: string
-      description: The contact's middle name.
-      example: Jacob
-    contact_job_title:
-      title: Contact Job Title
-      type: string
-      description: The contact's occupation or job title.
-      example: Software Engineer
-    common_response_with_cursor:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-        next_cursor:
-          type:
-          - string
-          - 'null'
-          description: A cursor pointing to the next page of results for the request.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    contact_company_name:
-      title: Contact Company Name
-      type: string
-      description: The name of the company that the contact is affiliated with (for example, their workplace).
-      example: Nylas
-    contact_source:
-      title: Contact source
-      type: string
-      description: "The source of the contact. For iCloud and IMAP grants, the source is `inbox` if the contact is \nparsed from a message. If the contact is created or updated using the Nylas API, its source is \n`address_book`."
-      enum:
-      - address_book
-      - domain
-      - inbox
-      example: address_book
-    id:
-      title: ID
-      type: string
-      minLength: 1
-      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
-      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
-    contact_suffix:
-      title: Contact Suffix
-      type: string
-      description: (Not supported for EWS) The suffix of a contact's name, if applicable.
-      example: Jr.
-    contact_notes:
-      title: Contact Notes
-      type: string
-      description: Notes about with the contact (for example, their favorite food).
-      example: Loves Ramen
-    contact_nickname:
-      title: Contact Nickname
-      type: string
-      description: A custom nickname for the contact.
-      example: JD
-    contact_manager_name:
-      title: Contact Manager Name
-      type: string
-      description: The name of the contact's manager.
-      example: Bill
+        to only the information that you need.'
   requestBodies:
     contact_create:
       content:
