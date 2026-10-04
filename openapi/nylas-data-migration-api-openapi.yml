@@ -139,6 +139,61 @@ paths:
         source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/translate' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"resource_type\": \"messages\",\n    \"v2_account_id\": \"<NYLAS_ACCOUNT_ID>\",\n    \"nylas_ids\": [\n      \"<NYLAS_ACCOUNT_ID>\",\n      \"<NYLAS_ACCOUNT_ID>\"\n    ]\n  }'"
 components:
   schemas:
+    translate_v2v3_id:
+      type: object
+      additionalProperties: false
+      required:
+      - v2_application_id
+      - v2_account_id
+      - resource_type
+      - ids
+      properties:
+        v2_application_id:
+          type: string
+          description: The ID of the v2 Nylas application the connected account belongs to.
+          example: defg12342l0mr39hmla2eabcd
+        v2_account_id:
+          type: string
+          description: The ID of v2 connected account you are requesting translations for.
+          example: 1kb392012l0mr39hmla2exnxu
+        resource_type:
+          type: string
+          description: 'The names of the v2 resources you''re requesting translations for.
+
+
+            To request Gmail''s "labels", include `folders`. (Nylas v3 consolidates folders and labels into
+
+            one resource.)'
+          example: message
+          enum:
+          - messages
+          - drafts
+          - threads
+          - contacts
+          - contactgroups
+          - events
+          - calendars
+          - folders
+        translations:
+          type: array
+          description: 'A list of v2 Nylas IDs and their v3 Provider ID counterparts, according to the requested resource
+
+            type and v2 connected account.'
+          items:
+            type: object
+            properties:
+              v2_resource_id:
+                type: string
+                description: The v2 Nylas ID.
+                example: 1kb392012l0mr39hmla2exnxu
+              v3_resource_id:
+                type: string
+                description: The v3 Provider ID.
+                example: 175ade7f22b0a2f4
+        next_page_number:
+          type: integer
+          description: A page number for next set of results, if more results are available. This field does not appear if there are no more results.
+          example: 2
     '400':
       type: object
       required:
@@ -199,61 +254,6 @@ components:
               example:
                 error: invalid_grant
                 provider_error: Bad Request
-    translate_v2v3_id:
-      type: object
-      additionalProperties: false
-      required:
-      - v2_application_id
-      - v2_account_id
-      - resource_type
-      - ids
-      properties:
-        v2_application_id:
-          type: string
-          description: The ID of the v2 Nylas application the connected account belongs to.
-          example: defg12342l0mr39hmla2eabcd
-        v2_account_id:
-          type: string
-          description: The ID of v2 connected account you are requesting translations for.
-          example: 1kb392012l0mr39hmla2exnxu
-        resource_type:
-          type: string
-          description: 'The names of the v2 resources you''re requesting translations for.
-
-
-            To request Gmail''s "labels", include `folders`. (Nylas v3 consolidates folders and labels into
-
-            one resource.)'
-          example: message
-          enum:
-          - messages
-          - drafts
-          - threads
-          - contacts
-          - contactgroups
-          - events
-          - calendars
-          - folders
-        translations:
-          type: array
-          description: 'A list of v2 Nylas IDs and their v3 Provider ID counterparts, according to the requested resource
-
-            type and v2 connected account.'
-          items:
-            type: object
-            properties:
-              v2_resource_id:
-                type: string
-                description: The v2 Nylas ID.
-                example: 1kb392012l0mr39hmla2exnxu
-              v3_resource_id:
-                type: string
-                description: The v3 Provider ID.
-                example: 175ade7f22b0a2f4
-        next_page_number:
-          type: integer
-          description: A page number for next set of results, if more results are available. This field does not appear if there are no more results.
-          example: 2
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

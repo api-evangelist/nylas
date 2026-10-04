@@ -572,87 +572,42 @@ paths:
         source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/jobs?status=pending%2Crunning%2Cfailed%2Ccompleted&type=snapshot%2Cmigration&sort_by_completion=true' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
 components:
   schemas:
-    MigrationJob:
-      type: object
-      additionalProperties: false
-      required:
-      - job_id
-      - type
-      - public_application_id
-      - status
-      - count_all
-      - count_success
-      - count_failed
-      - count_warning
-      - created_at
-      - updated_at
+    AndroidCallbackwSettings:
+      title: Android
       properties:
-        job_id:
+        platform:
           type: string
-          description: An identifier for the migration job.
-          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
-        type:
-          type: string
-          description: The type of job.
+          description: Platform identifier
           enum:
-          - snapshot
-          - migration
-          example: snapshot
-        public_application_id:
+          - android
+        id:
           type: string
-          description: The ID of v3 application this job is running for.
-          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
-        status:
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
           type: string
-          description: 'The state of the job.
+          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+
+            `<package/bundle-name>://<deeplink>`).
 
 
-            - **Pending**: The job has been created, but not started. Batch clone runs only after the linked
-
-            snapshot job is completed.
-
-            - **Running**: The job is currently running.
-
-            - **Completed**: The job has successfully finished all migrations.
-
-            - **Failed**: _All_ migrations failed.
-
-            - **Partial**: The job successfully migrated _some_ accounts, but some could not be migrated or were created as "placeholder" grants.'
-          enum:
-          - pending
-          - running
-          - completed
-          - failed
-          - partial
-          example: pending
-        count_all:
-          type: integer
-          description: A total number of accounts to be migrated. The total is a sum of the successful and failed migrations.
-          example: 20
-        count_success:
-          type: integer
-          description: The number of accounts that were successfully migrated.
-          example: 10
-        count_failed:
-          type: integer
-          description: The number of accounts that were unable to migrate.
-          example: 5
-        count_warning:
-          type: integer
-          description: The number of accounts that were migrated as invalid grants ("placeholder" grant ready for re-authentication).
-          example: 5
-        created_at:
-          type: integer
-          description: The time when the job was created, in seconds using the Unix timestamp format.
-          example: 1617817109
-        updated_at:
-          type: integer
-          description: The time the job was updated, in seconds using the Unix timestamp format.
-          example: 1617817109
-        linked_job_id:
-          type: string
-          description: The bulk migration tool creates two separate jobs that run one after the other. This ID links them together.
-          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the Android callback URI.
+          type: object
+          required:
+          - package_name
+          - sha1_certificate_fingerprint
+          properties:
+            package_name:
+              type: string
+              description: Find your app's Package Name in the Android Manifest. It's a unique identifier that distinguishes your app on the Google Play Store and on the device. It follows a reverse domain name notation, such as `com.example.myapp`.
+              example: com.example.myapp
+            sha1_certificate_fingerprint:
+              type: string
+              description: A SHA-1 hash of the app's signing certificate. This ensures that only the _signed_ version of your app can use the redirect URI.
+              example: AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12
     GrantObject:
       type: object
       required:
@@ -780,6 +735,87 @@ components:
           type: string
           description: The ID of the Credential the grant is associated with. Grant will use this Credential for provider communication.
           example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+    MigrationJob:
+      type: object
+      additionalProperties: false
+      required:
+      - job_id
+      - type
+      - public_application_id
+      - status
+      - count_all
+      - count_success
+      - count_failed
+      - count_warning
+      - created_at
+      - updated_at
+      properties:
+        job_id:
+          type: string
+          description: An identifier for the migration job.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+        type:
+          type: string
+          description: The type of job.
+          enum:
+          - snapshot
+          - migration
+          example: snapshot
+        public_application_id:
+          type: string
+          description: The ID of v3 application this job is running for.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+        status:
+          type: string
+          description: 'The state of the job.
+
+
+            - **Pending**: The job has been created, but not started. Batch clone runs only after the linked
+
+            snapshot job is completed.
+
+            - **Running**: The job is currently running.
+
+            - **Completed**: The job has successfully finished all migrations.
+
+            - **Failed**: _All_ migrations failed.
+
+            - **Partial**: The job successfully migrated _some_ accounts, but some could not be migrated or were created as "placeholder" grants.'
+          enum:
+          - pending
+          - running
+          - completed
+          - failed
+          - partial
+          example: pending
+        count_all:
+          type: integer
+          description: A total number of accounts to be migrated. The total is a sum of the successful and failed migrations.
+          example: 20
+        count_success:
+          type: integer
+          description: The number of accounts that were successfully migrated.
+          example: 10
+        count_failed:
+          type: integer
+          description: The number of accounts that were unable to migrate.
+          example: 5
+        count_warning:
+          type: integer
+          description: The number of accounts that were migrated as invalid grants ("placeholder" grant ready for re-authentication).
+          example: 5
+        created_at:
+          type: integer
+          description: The time when the job was created, in seconds using the Unix timestamp format.
+          example: 1617817109
+        updated_at:
+          type: integer
+          description: The time the job was updated, in seconds using the Unix timestamp format.
+          example: 1617817109
+        linked_job_id:
+          type: string
+          description: The bulk migration tool creates two separate jobs that run one after the other. This ID links them together.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
     '400':
       type: object
       required:
@@ -810,6 +846,25 @@ components:
               example:
                 error: invalid_grant
                 provider_error: Bad Request
+    webDesktopCallbackNoSettings:
+      title: Web or Desktop
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - web
+          - desktop
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development
+
+            _only_. Otherwise, you need to use HTTPS.'
+          example: https://yourapp.com/callback
     '401':
       type: object
       required:
@@ -840,25 +895,6 @@ components:
               example:
                 error: invalid_grant
                 provider_error: Bad Request
-    webDesktopCallbackNoSettings:
-      title: Web or Desktop
-      properties:
-        platform:
-          type: string
-          description: Platform identifier
-          enum:
-          - web
-          - desktop
-        id:
-          type: string
-          description: The callback URI ID. This must be a universally unique ID (UUID).
-          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
-        url:
-          type: string
-          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development
-
-            _only_. Otherwise, you need to use HTTPS.'
-          example: https://yourapp.com/callback
     ApplicationObject:
       type: object
       properties:
@@ -963,34 +999,6 @@ components:
                 js: '#/components/schemas/JsCallbackwSettings'
                 ios: '#/components/schemas/iosCallbackwSettings'
                 android: '#/components/schemas/AndroidCallbackwSettings'
-    JsCallbackwSettings:
-      title: JS
-      properties:
-        platform:
-          type: string
-          description: Platform identifier
-          enum:
-          - js
-        id:
-          type: string
-          description: The callback URI ID. This must be a universally unique ID (UUID).
-          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
-        url:
-          type: string
-          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development _only_.
-
-            Otherwise, you must use HTTPS.'
-          example: https://yourapp.com/callback
-        settings:
-          description: Additional platform settings and configurations for the Javascript callback URI.
-          type: object
-          required:
-          - origin
-          properties:
-            origin:
-              type: string
-              description: The `origin` is the base URL from which your project or app is served. It is required because it's a critical part of defining your app's trust boundaries to prevent cross-origin issues. Set this when you set up OAuth redirect URIs and other security settings.
-              example: yourapp.com
     iosCallbackwSettings:
       title: iOS
       properties:
@@ -1030,42 +1038,34 @@ components:
               type: string
               example: ABCDE12345
               description: Unique identifier for your Apple Developer Account or team.
-    AndroidCallbackwSettings:
-      title: Android
+    JsCallbackwSettings:
+      title: JS
       properties:
         platform:
           type: string
           description: Platform identifier
           enum:
-          - android
+          - js
         id:
           type: string
           description: The callback URI ID. This must be a universally unique ID (UUID).
           example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
         url:
           type: string
-          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development _only_.
 
-            `<package/bundle-name>://<deeplink>`).
-
-
-            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+            Otherwise, you must use HTTPS.'
           example: https://yourapp.com/callback
         settings:
-          description: Additional platform settings and configurations for the Android callback URI.
+          description: Additional platform settings and configurations for the Javascript callback URI.
           type: object
           required:
-          - package_name
-          - sha1_certificate_fingerprint
+          - origin
           properties:
-            package_name:
+            origin:
               type: string
-              description: Find your app's Package Name in the Android Manifest. It's a unique identifier that distinguishes your app on the Google Play Store and on the device. It follows a reverse domain name notation, such as `com.example.myapp`.
-              example: com.example.myapp
-            sha1_certificate_fingerprint:
-              type: string
-              description: A SHA-1 hash of the app's signing certificate. This ensures that only the _signed_ version of your app can use the redirect URI.
-              example: AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12
+              description: The `origin` is the base URL from which your project or app is served. It is required because it's a critical part of defining your app's trust boundaries to prevent cross-origin issues. Set this when you set up OAuth redirect URIs and other security settings.
+              example: yourapp.com
   parameters:
     account_id:
       name: account_id

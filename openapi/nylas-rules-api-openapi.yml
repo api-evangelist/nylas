@@ -620,6 +620,40 @@ components:
                   provider_error:
                     code: MailboxNotEnabledForRESTAPI
                     message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
     '400':
       description: Bad Request
       content:
@@ -688,52 +722,6 @@ components:
                 error:
                   type: rate_limit_error
                   message: Too many requests, please try again shortly.
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-  parameters:
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
   schemas:
     GrantRuleEvaluationObject:
       title: GrantRuleEvaluation
@@ -1061,6 +1049,18 @@ components:
           type: integer
           description: When the rule was last updated, in seconds using the Unix timestamp format.
           example: 1742932766
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

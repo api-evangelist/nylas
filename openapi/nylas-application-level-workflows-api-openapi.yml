@@ -184,57 +184,6 @@ paths:
           $ref: '#/components/responses/400'
 components:
   responses:
-    workflows_list:
-      description: Success. Returns list of workflows.
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - data
-            - next_cursor
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 9ca1d434-5ac7-4331-b8fb-3749c9a758d3
-              data:
-                type: array
-                items:
-                  $ref: '#/components/schemas/workflow'
-                example:
-                - id: b79c82b2-a51b-4c54-8469-28006a43551a
-                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
-                  app_id: null
-                  is_enabled: true
-                  name: Booking Confirmation Workflow
-                  trigger_event: booking.created
-                  delay: 1
-                  template_id: 14c00cc8-648c-4381-ad10-52641d9bac8e
-                  date_created: 1756477389
-                - id: c89d93c3-b62c-5d65-9570-39117b54662b
-                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
-                  app_id: null
-                  is_enabled: true
-                  name: Booking Reminder Workflow
-                  trigger_event: booking.reminder
-                  delay: 60
-                  template_id: 25d11dd9-759d-5492-be21-63752e6cbd9f
-                  date_created: 1756477500
-                - id: d90e04d4-c73d-6e76-a681-40228c65773c
-                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
-                  app_id: null
-                  is_enabled: false
-                  name: Booking Cancellation Workflow
-                  trigger_event: booking.cancelled
-                  delay: 0
-                  template_id: 36e22ee0-86ae-6603-cf32-74863f7dce0g
-                  date_created: 1756477600
-              next_cursor:
-                type: string
-                description: A cursor pointing to the next page of results for the request.
-                example: eyJjdXJzb3IiOiJub3RpZmljYXRpb25fd29ya2Zsb3dfYjc5YzgyYjIifQ==
     delete_200_simple:
       description: 'Success: Object deleted'
       content:
@@ -248,6 +197,34 @@ components:
                 type: string
                 description: The ID of the request.
                 example: 3906564297-48e7fb5b-f220-427b-a4de-255736adba08
+    workflow_404:
+      description: 'Error: Not found'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.not_found_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: template not found
     workflow_400:
       description: 'Error: Bad request'
       content:
@@ -306,34 +283,6 @@ components:
               from:
                 email: support@example.com
                 name: Support
-    workflow_404:
-      description: 'Error: Not found'
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - error
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 02674fc0-b8cf-43cd-8bd2-506fa401b81f
-              error:
-                type: object
-                required:
-                - message
-                - type
-                properties:
-                  type:
-                    type: string
-                    description: The type of error that occurred.
-                    example: api.not_found_error
-                  message:
-                    type: string
-                    description: A human-readable message describing the error.
-                    example: template not found
     '400':
       description: Bad Request
       content:
@@ -374,108 +323,57 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-  schemas:
-    workflow:
-      type: object
-      description: A custom workflow that sends messages from a template when certain events are triggered.
-      required:
-      - date_created
-      - delay
-      - id
-      - is_enabled
-      - name
-      - template_id
-      - trigger_event
-      properties:
-        app_id:
-          type:
-          - string
-          - 'null'
-          description: 'The ID of the Nylas application associated with the workflow. Returned only if the
-
-            workflow is configured at the application level.'
-          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
-        date_created:
-          type: integer
-          description: When the workflow was created, in seconds using the Unix timestamp format.
-          example: 1756477389
-        delay:
-          type: integer
-          description: 'The number of minutes between a `trigger_event` being met and the workflow sending
-
-            a message.'
-          example: 5
-        grant_id:
-          type:
-          - string
-          - 'null'
-          description: 'The ID of the grant associated with the workflow. Returned only if the workflow is
-
-            configured at the grant level.'
-          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
-        id:
-          type: string
-          description: The ID of the workflow.
-          example: b79c82b2-a51b-4c54-8469-28006a43551a
-        is_enabled:
-          type: boolean
-          description: When `true`, indicates that the workflow is enabled.
-          example: true
-        name:
-          type: string
-          description: The name of the workflow.
-          example: New booking confirmation workflow
-        template_id:
-          type: string
-          description: The ID of the email template the workflow uses.
-          example: 14c00cc8-648c-4381-ad10-52641d9bac8e
-        trigger_event:
-          type: string
-          enum:
-          - booking.cancelled
-          - booking.created
-          - booking.pending
-          - booking.reminder
-          - booking.rescheduled
-          description: The event which triggers the workflow.
-          example: booking.created
-        from:
-          type:
-          - object
-          - 'null'
-          description: Details of the sender if the workflow uses transactional send.
-          properties:
-            email:
-              type: string
-              description: The email address of the sender.
-              example: support@example.com
-            name:
-              type: string
-              description: The name of the sender.
-              example: Support
-  parameters:
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
+    workflows_list:
+      description: Success. Returns list of workflows.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - next_cursor
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 9ca1d434-5ac7-4331-b8fb-3749c9a758d3
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/workflow'
+                example:
+                - id: b79c82b2-a51b-4c54-8469-28006a43551a
+                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+                  app_id: null
+                  is_enabled: true
+                  name: Booking Confirmation Workflow
+                  trigger_event: booking.created
+                  delay: 1
+                  template_id: 14c00cc8-648c-4381-ad10-52641d9bac8e
+                  date_created: 1756477389
+                - id: c89d93c3-b62c-5d65-9570-39117b54662b
+                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+                  app_id: null
+                  is_enabled: true
+                  name: Booking Reminder Workflow
+                  trigger_event: booking.reminder
+                  delay: 60
+                  template_id: 25d11dd9-759d-5492-be21-63752e6cbd9f
+                  date_created: 1756477500
+                - id: d90e04d4-c73d-6e76-a681-40228c65773c
+                  grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+                  app_id: null
+                  is_enabled: false
+                  name: Booking Cancellation Workflow
+                  trigger_event: booking.cancelled
+                  delay: 0
+                  template_id: 36e22ee0-86ae-6603-cf32-74863f7dce0g
+                  date_created: 1756477600
+              next_cursor:
+                type: string
+                description: A cursor pointing to the next page of results for the request.
+                example: eyJjdXJzb3IiOiJub3RpZmljYXRpb25fd29ya2Zsb3dfYjc5YzgyYjIifQ==
   requestBodies:
     workflow_create:
       description: Create workflow request
@@ -587,6 +485,108 @@ components:
                     type: string
                     description: The name of the sender.
                     example: Support
+  parameters:
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+  schemas:
+    workflow:
+      type: object
+      description: A custom workflow that sends messages from a template when certain events are triggered.
+      required:
+      - date_created
+      - delay
+      - id
+      - is_enabled
+      - name
+      - template_id
+      - trigger_event
+      properties:
+        app_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the Nylas application associated with the workflow. Returned only if the
+
+            workflow is configured at the application level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        date_created:
+          type: integer
+          description: When the workflow was created, in seconds using the Unix timestamp format.
+          example: 1756477389
+        delay:
+          type: integer
+          description: 'The number of minutes between a `trigger_event` being met and the workflow sending
+
+            a message.'
+          example: 5
+        grant_id:
+          type:
+          - string
+          - 'null'
+          description: 'The ID of the grant associated with the workflow. Returned only if the workflow is
+
+            configured at the grant level.'
+          example: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+        id:
+          type: string
+          description: The ID of the workflow.
+          example: b79c82b2-a51b-4c54-8469-28006a43551a
+        is_enabled:
+          type: boolean
+          description: When `true`, indicates that the workflow is enabled.
+          example: true
+        name:
+          type: string
+          description: The name of the workflow.
+          example: New booking confirmation workflow
+        template_id:
+          type: string
+          description: The ID of the email template the workflow uses.
+          example: 14c00cc8-648c-4381-ad10-52641d9bac8e
+        trigger_event:
+          type: string
+          enum:
+          - booking.cancelled
+          - booking.created
+          - booking.pending
+          - booking.reminder
+          - booking.rescheduled
+          description: The event which triggers the workflow.
+          example: booking.created
+        from:
+          type:
+          - object
+          - 'null'
+          description: Details of the sender if the workflow uses transactional send.
+          properties:
+            email:
+              type: string
+              description: The email address of the sender.
+              example: support@example.com
+            name:
+              type: string
+              description: The name of the sender.
+              example: Support
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

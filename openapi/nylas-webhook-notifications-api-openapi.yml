@@ -381,48 +381,6 @@ paths:
               $ref: '#/components/schemas/send_test_event_input'
 components:
   responses:
-    get_400:
-      description: Destination not returned
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: An alphanumeric code that represents the error type.
-                    example: '70001'
-                  message:
-                    type: string
-                    description: A human readable message with details about the error.
-                    example: application_id.required
-              request_id:
-                type: string
-                description: The ID for each request.
-    update_400:
-      description: Unable to update Pub/Sub channel
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: An alphanumeric code that represents the error type.
-                    example: '70000'
-                  message:
-                    type: string
-                    description: A human readable message with details about the error.
-                    example: 'destination.id.not.found : record not found'
-              request_id:
-                type: string
-                description: The unique ID of the request that generated this response.
     get_by_id_200:
       description: Destinations Returned
       content:
@@ -591,96 +549,6 @@ components:
               request_id:
                 type: string
                 description: The ID for each request.
-    create_200:
-      description: Webhook Destination Created
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    description: A unique identifier for the webhook destination.
-                    example: UMWjAjMeWQ4D8gYF2moonK4486
-                  description:
-                    type: string
-                    description: A human-readable description of the webhook destination.
-                    example: Production webhook destination
-                  trigger_types:
-                    $ref: '#/components/schemas/trigger_types'
-                  webhook_url:
-                    type: string
-                    description: The URL to send webhooks to.
-                    example: https://example.com/webhooks
-                  webhook_secret:
-                    type: string
-                    description: A secret value used to encode the `x-nylas-signature` header on webhook requests.
-                    example: 41dD3-nXTUfebYuk81Gr
-                  status:
-                    type: string
-                    description: The status of the new destination. This will always be "active" if Nylas successfully created the destination. If you need to pause the destination, use the [Update webhook destination](#put-/v3/webhooks/-id-) method to change the status to `pause`.
-                    enum:
-                    - active
-                  notification_email_addresses:
-                    type: array
-                    items:
-                      type: string
-                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
-
-                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
-
-                      details.'
-                    example:
-                    - jane@example.com
-                    - joe@example.com
-                  compressed_delivery:
-                    type: boolean
-                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
-                    example: false
-              request_id:
-                type: string
-                description: The request ID for each request.
-    delete_200:
-      description: Destination Deleted
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum:
-                    - success
-              request_id:
-                type: string
-                description: The ID for each request.
-    delete_400:
-      description: Notification channel not deleted
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: An alphanumeric code that represents the error type.
-                    example: '70000'
-                  message:
-                    type: string
-                    description: A human readable message with details about the error.
-                    example: 'destination.id.not.found : record not found'
-              request_id:
-                type: string
-                description: The unique ID of the request that generated this response.
     rotate_secret_200:
       description: Webhook Secret Updated
       content:
@@ -732,6 +600,65 @@ components:
               request_id:
                 type: string
                 description: The request ID for each request.
+    delete_400:
+      description: Notification channel not deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'destination.id.not.found : record not found'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    update_400:
+      description: Unable to update Pub/Sub channel
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'destination.id.not.found : record not found'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    delete_200:
+      description: Destination Deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - success
+              request_id:
+                type: string
+                description: The ID for each request.
     create_400:
       description: Destination not created
       content:
@@ -753,6 +680,27 @@ components:
               request_id:
                 type: string
                 description: The ID of the request.
+    get_400:
+      description: Destination not returned
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70001'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: application_id.required
+              request_id:
+                type: string
+                description: The ID for each request.
     '400':
       description: Bad Request
       content:
@@ -856,6 +804,58 @@ components:
               request_id:
                 type: string
                 description: The ID for each request.
+    create_200:
+      description: Webhook Destination Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the webhook destination.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the webhook destination.
+                    example: Production webhook destination
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  webhook_url:
+                    type: string
+                    description: The URL to send webhooks to.
+                    example: https://example.com/webhooks
+                  webhook_secret:
+                    type: string
+                    description: A secret value used to encode the `x-nylas-signature` header on webhook requests.
+                    example: 41dD3-nXTUfebYuk81Gr
+                  status:
+                    type: string
+                    description: The status of the new destination. This will always be "active" if Nylas successfully created the destination. If you need to pause the destination, use the [Update webhook destination](#put-/v3/webhooks/-id-) method to change the status to `pause`.
+                    enum:
+                    - active
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+                      [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for
+
+                      details.'
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                    example: false
+              request_id:
+                type: string
+                description: The request ID for each request.
     send_test_event_200:
       description: Test event sent
       content:
@@ -871,8 +871,12 @@ components:
                 type: string
                 description: The ID for each request.
   schemas:
-    destination_update_payload:
-      title: Destination Update Payload
+    destination_input_payload:
+      title: Destination Payload
+      required:
+      - trigger_types
+      - webhook_url
+      type: object
       properties:
         description:
           type: string
@@ -884,23 +888,20 @@ components:
           type: string
           description: The URL to send webhooks to.
           example: https://example.com/webhooks
-        status:
-          type: string
-          description: The new status of the destination.
-          enum:
-          - active
-          - pause
         notification_email_addresses:
           type: array
           items:
             type: string
-          description: The email addresses that Nylas notifies when a webhook is down for a while. See the [rate limit documentation](/docs/dev-guide/best-practices/rate-limits/) for details.
+          description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
+
+            [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for details.'
           example:
-          - abc@example.com
-          - def@example.com
+          - jane@example.com
+          - joe@example.com
         compressed_delivery:
           type: boolean
-          description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds the `Content-Encoding: gzip` header to the request.'
+          description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds the `Content-Encoding: gzip` header to the request. Default is `false`.'
+          default: false
           example: true
     trigger_types:
       type: array
@@ -966,61 +967,6 @@ components:
         [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
 
         for information on how to trigger each event type.'
-    get_mock_payload_input:
-      title: Input Payload
-      type: object
-      required:
-      - trigger_type
-      - webhook_url
-      properties:
-        trigger_type:
-          type: string
-          enum:
-          - calendar.created
-          - calendar.updated
-          - calendar.deleted
-          - event.created
-          - event.updated
-          - event.deleted
-          - grant.created
-          - grant.updated
-          - grant.deleted
-          - grant.expired
-          - message.send_success
-          - message.send_failed
-          - message.bounce_detected
-          - message.created
-          - message.created.truncated
-          - message.created.cleaned
-          - message.updated
-          - message.updated.truncated
-          - contact.updated
-          - contact.deleted
-          - folder.created
-          - folder.updated
-          - folder.deleted
-          - message.opened
-          - message.link_clicked
-          - thread.replied
-          description: 'The event that will trigger the mock notification. See the
-
-            [notification schemas](/docs/reference/notifications/) for details about each
-
-            trigger type.
-
-
-            See the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),
-
-            [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
-
-            for information on how to trigger each event type.
-
-
-            You can test `message.created.truncated` and `message.updated.truncated` notifications using this
-
-            endpoint. For more information, see
-
-            [Truncated webhooks](/docs/v3/notifications/#truncated-webhooks).'
     send_test_event_input:
       title: Input Payload
       type: object
@@ -1080,12 +1026,63 @@ components:
           type: string
           description: The URL to send webhooks to.
           example: https://example.com/webhooks
-    destination_input_payload:
-      title: Destination Payload
-      required:
-      - trigger_types
-      - webhook_url
+    get_mock_payload_input:
+      title: Input Payload
       type: object
+      required:
+      - trigger_type
+      - webhook_url
+      properties:
+        trigger_type:
+          type: string
+          enum:
+          - calendar.created
+          - calendar.updated
+          - calendar.deleted
+          - event.created
+          - event.updated
+          - event.deleted
+          - grant.created
+          - grant.updated
+          - grant.deleted
+          - grant.expired
+          - message.send_success
+          - message.send_failed
+          - message.bounce_detected
+          - message.created
+          - message.created.truncated
+          - message.created.cleaned
+          - message.updated
+          - message.updated.truncated
+          - contact.updated
+          - contact.deleted
+          - folder.created
+          - folder.updated
+          - folder.deleted
+          - message.opened
+          - message.link_clicked
+          - thread.replied
+          description: 'The event that will trigger the mock notification. See the
+
+            [notification schemas](/docs/reference/notifications/) for details about each
+
+            trigger type.
+
+
+            See the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),
+
+            [Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references
+
+            for information on how to trigger each event type.
+
+
+            You can test `message.created.truncated` and `message.updated.truncated` notifications using this
+
+            endpoint. For more information, see
+
+            [Truncated webhooks](/docs/v3/notifications/#truncated-webhooks).'
+    destination_update_payload:
+      title: Destination Update Payload
       properties:
         description:
           type: string
@@ -1097,20 +1094,23 @@ components:
           type: string
           description: The URL to send webhooks to.
           example: https://example.com/webhooks
+        status:
+          type: string
+          description: The new status of the destination.
+          enum:
+          - active
+          - pause
         notification_email_addresses:
           type: array
           items:
             type: string
-          description: 'The email addresses that Nylas notifies when a webhook is down for a while. See
-
-            [Failing and failed webhooks](/docs/v3/notifications/#failing-and-failed-webhooks) for details.'
+          description: The email addresses that Nylas notifies when a webhook is down for a while. See the [rate limit documentation](/docs/dev-guide/best-practices/rate-limits/) for details.
           example:
-          - jane@example.com
-          - joe@example.com
+          - abc@example.com
+          - def@example.com
         compressed_delivery:
           type: boolean
-          description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds the `Content-Encoding: gzip` header to the request. Default is `false`.'
-          default: false
+          description: 'If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds the `Content-Encoding: gzip` header to the request.'
           example: true
   securitySchemes:
     ACCESS_TOKEN:

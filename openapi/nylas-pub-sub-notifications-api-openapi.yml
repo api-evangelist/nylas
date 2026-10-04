@@ -377,57 +377,8 @@ components:
 
             [Truncated webhooks](/docs/v3/notifications/#truncated-webhooks).'
   responses:
-    get_pubsub_200:
-      description: Get Pub/Sub channel information
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      description: A unique identifier for the Pub/Sub notification channel.
-                      example: UMWjAjMeWQ4D8gYF2moonK4486
-                    description:
-                      type: string
-                      description: A human-readable description of the Pub/Sub notification channel.
-                      example: Production Pub/Sub channel for Email notifications
-                    trigger_types:
-                      $ref: '#/components/schemas/trigger_types'
-                    topic:
-                      type: string
-                      description: The Google Pub/Sub topic that Nylas sends notifications to.
-                      example: projects/your-project-id/topics/your-topic-id
-                    status:
-                      type: string
-                      description: The status of the new destination.
-                      enum:
-                      - active
-                      - paused
-                      - failing
-                      - failed
-                    notification_email_addresses:
-                      type: array
-                      items:
-                        type: string
-                      description: The email addresses that Nylas notifies if delivery to the Pub/Sub channel fails.
-                      example:
-                      - jane@example.com
-                      - joe@example.com
-                    compressed_delivery:
-                      type: boolean
-                      description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
-                      example: false
-              request_id:
-                type: string
-                description: The unique ID of the request that generated this response.
-    delete_200:
-      description: Destination Deleted
+    create_pubsub_200:
+      description: Pub/Sub channel created
       content:
         application/json:
           schema:
@@ -436,13 +387,40 @@ components:
               data:
                 type: object
                 properties:
+                  id:
+                    type: string
+                    description: A unique identifier for the Pub/Sub notification channel.
+                    example: UMWjAjMeWQ4D8gYF2moonK4486
+                  description:
+                    type: string
+                    description: A human-readable description of the Pub/Sub notification channel.
+                    example: Production Pub/Sub channel for Grant notifications
+                  trigger_types:
+                    $ref: '#/components/schemas/trigger_types'
+                  topic:
+                    type: string
+                    description: The Google Pub/Sub topic that Nylas sends notifications to.
+                    example: projects/your-project-id/topics/your-topic-id
                   status:
                     type: string
+                    description: The status of the Pub/Sub channel. When you first create a new channel, Nylas sets it to "active".
                     enum:
-                    - success
+                    - active
+                  notification_email_addresses:
+                    type: array
+                    items:
+                      type: string
+                    description: The email addresses that Nylas notifies if delivery to the Pub/Sub channel fails.
+                    example:
+                    - jane@example.com
+                    - joe@example.com
+                  compressed_delivery:
+                    type: boolean
+                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                    example: false
               request_id:
                 type: string
-                description: The ID for each request.
+                description: The unique ID of the request that generated this response.
     get_mock_payload_200:
       description: Webhook Payload Returned
       content:
@@ -459,8 +437,8 @@ components:
               request_id:
                 type: string
                 description: The ID for each request.
-    create_pubsub_400:
-      description: Unable to create Pub/Sub channel
+    delete_400:
+      description: Notification channel not deleted
       content:
         application/json:
           schema:
@@ -472,11 +450,11 @@ components:
                   type:
                     type: string
                     description: An alphanumeric code that represents the error type.
-                    example: '70005'
+                    example: '70000'
                   message:
                     type: string
-                    description: A human-readable message with details about the error.
-                    example: 'invalid.input.format : topic is required'
+                    description: A human readable message with details about the error.
+                    example: 'destination.id.not.found : record not found'
               request_id:
                 type: string
                 description: The unique ID of the request that generated this response.
@@ -539,27 +517,23 @@ components:
               request_id:
                 type: string
                 description: The unique ID of the request that generated this response.
-    delete_400:
-      description: Notification channel not deleted
+    delete_200:
+      description: Destination Deleted
       content:
         application/json:
           schema:
             type: object
             properties:
-              error:
+              data:
                 type: object
                 properties:
-                  type:
+                  status:
                     type: string
-                    description: An alphanumeric code that represents the error type.
-                    example: '70000'
-                  message:
-                    type: string
-                    description: A human readable message with details about the error.
-                    example: 'destination.id.not.found : record not found'
+                    enum:
+                    - success
               request_id:
                 type: string
-                description: The unique ID of the request that generated this response.
+                description: The ID for each request.
     update_pubsub_200:
       description: Pub/Sub channel updated
       content:
@@ -619,47 +593,115 @@ components:
               request_id:
                 type: string
                 description: The unique ID of the request that generated this response.
-    create_pubsub_200:
-      description: Pub/Sub channel created
+    get_pubsub_400:
+      description: Unable to get Pub/Sub channel information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70001'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    update_pubsub_400:
+      description: Pub/Sub channel not updated
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70000'
+                  message:
+                    type: string
+                    description: A human readable message with details about the error.
+                    example: 'invalid.input.format : topic is required"'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    create_pubsub_400:
+      description: Unable to create Pub/Sub channel
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: An alphanumeric code that represents the error type.
+                    example: '70005'
+                  message:
+                    type: string
+                    description: A human-readable message with details about the error.
+                    example: 'invalid.input.format : topic is required'
+              request_id:
+                type: string
+                description: The unique ID of the request that generated this response.
+    get_pubsub_200:
+      description: Get Pub/Sub channel information
       content:
         application/json:
           schema:
             type: object
             properties:
               data:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    description: A unique identifier for the Pub/Sub notification channel.
-                    example: UMWjAjMeWQ4D8gYF2moonK4486
-                  description:
-                    type: string
-                    description: A human-readable description of the Pub/Sub notification channel.
-                    example: Production Pub/Sub channel for Grant notifications
-                  trigger_types:
-                    $ref: '#/components/schemas/trigger_types'
-                  topic:
-                    type: string
-                    description: The Google Pub/Sub topic that Nylas sends notifications to.
-                    example: projects/your-project-id/topics/your-topic-id
-                  status:
-                    type: string
-                    description: The status of the Pub/Sub channel. When you first create a new channel, Nylas sets it to "active".
-                    enum:
-                    - active
-                  notification_email_addresses:
-                    type: array
-                    items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
                       type: string
-                    description: The email addresses that Nylas notifies if delivery to the Pub/Sub channel fails.
-                    example:
-                    - jane@example.com
-                    - joe@example.com
-                  compressed_delivery:
-                    type: boolean
-                    description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
-                    example: false
+                      description: A unique identifier for the Pub/Sub notification channel.
+                      example: UMWjAjMeWQ4D8gYF2moonK4486
+                    description:
+                      type: string
+                      description: A human-readable description of the Pub/Sub notification channel.
+                      example: Production Pub/Sub channel for Email notifications
+                    trigger_types:
+                      $ref: '#/components/schemas/trigger_types'
+                    topic:
+                      type: string
+                      description: The Google Pub/Sub topic that Nylas sends notifications to.
+                      example: projects/your-project-id/topics/your-topic-id
+                    status:
+                      type: string
+                      description: The status of the new destination.
+                      enum:
+                      - active
+                      - paused
+                      - failing
+                      - failed
+                    notification_email_addresses:
+                      type: array
+                      items:
+                        type: string
+                      description: The email addresses that Nylas notifies if delivery to the Pub/Sub channel fails.
+                      example:
+                      - jane@example.com
+                      - joe@example.com
+                    compressed_delivery:
+                      type: boolean
+                      description: If `true`, Nylas compresses notification payloads using gzip before delivering them.
+                      example: false
               request_id:
                 type: string
                 description: The unique ID of the request that generated this response.
@@ -703,48 +745,6 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-    update_pubsub_400:
-      description: Pub/Sub channel not updated
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: An alphanumeric code that represents the error type.
-                    example: '70000'
-                  message:
-                    type: string
-                    description: A human readable message with details about the error.
-                    example: 'invalid.input.format : topic is required"'
-              request_id:
-                type: string
-                description: The unique ID of the request that generated this response.
-    get_pubsub_400:
-      description: Unable to get Pub/Sub channel information
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    description: An alphanumeric code that represents the error type.
-                    example: '70001'
-                  message:
-                    type: string
-                    description: A human readable message with details about the error.
-                    example: 'invalid.input.format : topic is required'
-              request_id:
-                type: string
-                description: The unique ID of the request that generated this response.
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

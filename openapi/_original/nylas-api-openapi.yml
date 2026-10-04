@@ -5428,11 +5428,7 @@ paths:
                       type: service_account
                       project_id: marketplace-sa-test
                       private_key_id: abcd1234defg5678
-                      private_key: '-----BEGIN PRIVATE KEY-----
-
-                        ...
-
-                        -----END PRIVATE KEY-----
+                      private_key: 'REDACTED_PRIVATE_KEY_EXAMPLE
 
                         '
                       client_email: some-name@marketplace-sa-test.iam.gserviceaccount.com
@@ -5718,11 +5714,7 @@ paths:
                     type: service_account
                     project_id: marketplace-sa-test
                     private_key_id: abcd1234defg5678
-                    private_key: '-----BEGIN PRIVATE KEY-----
-
-                      ...
-
-                      -----END PRIVATE KEY-----
+                    private_key: 'REDACTED_PRIVATE_KEY_EXAMPLE
 
                       '
                     client_email: some-name@marketplace-sa-test.iam.gserviceaccount.com
