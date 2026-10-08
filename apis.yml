@@ -3072,6 +3072,10 @@ apis:
   - type: APIReference
     url: https://developer.nylas.com/docs/reference/api/application-level-templates/
 common:
+  - type: Plans
+    url: plans/nylas-plans-pricing.yml
+  - type: FinOps
+    url: finops/nylas-finops.yml
   - type: AsyncAPI
     url: asyncapi/nylas-notifications-asyncapi.yml
     name: Nylas Notifications (AsyncAPI, authored by Nylas)
