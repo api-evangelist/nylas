@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-transactional-send-message-schema.json",
+  "title": "transactional_send_message",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-transactional-send-api-openapi.yml#/components/schemas/transactional_send_message",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The message ID."
+    },
+    "attachments": {
+      "type": "array",
+      "description": "An array of Attachment objects. For google, linked Google Drive files are not included. For Microsoft, linked One Drive files are not included.",
+      "items": {
+        "$ref": "#/$defs/attachment_transactional_send"
+      },
+      "uniqueItems": true,
+      "minItems": 0
+    },
+    "bcc": {
+      "type": "array",
+      "description": "An array of name/email address pairs that the message was BCC'd to. For received messages, this\nis nearly always empty.",
+      "items": {
+        "$ref": "#/$defs/message-participant"
+      }
+    },
+    "body": {
+      "type": "string",
+      "description": "The body of the message. This field is the same as the `body` field in your request."
+    },
+    "cc": {
+      "type": "array",
+      "description": "An array of name/email address pairs that the message was CC'd to.",
+      "items": {
+        "$ref": "#/$defs/message-participant"
+      }
+    },
+    "from": {
+      "type": "array",
+      "description": "A list of name/email address pairs that the message was sent from. For transactional send, this will always be one pair.",
+      "items": {
+        "$ref": "#/$defs/message-participant-response"
+      },
+      "uniqueItems": true
+    },
+    "object": {
+      "type": "string",
+      "description": "The object type of the response (in this case, `message`)."
+    },
+    "reply_to": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/message-participant"
+      },
+      "uniqueItems": true,
+      "description": "An array of name/email address pairs that should receive replies to the message."
+    },
+    "snippet": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A short snippet (the first 100 characters, with HTML tags removed) of the message body. This is\nuseful for displaying a preview of the message."
+    },
+    "subject": {
+      "type": "string",
+      "description": "The subject of the message."
+    },
+    "tracking_options": {
+      "type": "object",
+      "description": "Tracking options for the message.",
+      "properties": {
+        "opens": {
+          "type": "boolean",
+          "description": "When `true`, shows that message open tracking is enabled."
+        },
+        "links": {
+          "type": "boolean",
+          "description": "When `true`, shows that link clicked tracking is enabled."
+        },
+        "label": {
+          "type": "string",
+          "description": "A label describing the message tracking purpose.",
+          "maxLength": 2048
+        }
+      }
+    },
+    "to": {
+      "type": "array",
+      "description": "An array of name/email address pairs that the message was sent to.",
+      "items": {
+        "$ref": "#/$defs/message-participant"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "attachment_transactional_send": {
+      "description": "A file attachment for a transactional email message.",
+      "type": "object",
+      "properties": {
+        "content_type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types) of the attachment, used by the email client to determine how to display the attachment. If you don't provide a type, Nylas infers it from the file name.\nThe value of this field is exactly the same as the email attachment's `Content-Type` header.\nThe provider might set additional parameters, such as `name` and `charset`.\n\nNylas returns an empty `content_type` field if an attachment file name contains non-ASCII characters (for example, accented characters like `ü`). This is because Google can't detect its content type."
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The file name of the attachment."
+        },
+        "content_id": {
+          "type": "string",
+          "description": "(Inline attachments only) The alphanumeric `cid` from the `<img>` tag in the message's HTML. For\nexample, you might see something like `<img src=\\\"cid:ce9b9547-9eeb-43b2-ac4e-58768bdf04e4\\\">` in\nthe message body.\n\nSometimes, the `content_id` value is contained in angle brackets (for example,\n`<ce9b9547-9eeb-43b2-ac4e-58768bdf04e4>`)."
+        },
+        "content_disposition": {
+          "type": "string",
+          "description": "(Not supported for Microsoft and EWS) The content disposition of the attachment. Usually, this is `inline` or `attachment` followed by the file name (for example, `inline; filename=\"some-image.jpeg\"`)."
+        },
+        "is_inline": {
+          "type": "boolean",
+          "description": "If `true`, indicates that the attachment is an inline file."
+        },
+        "size": {
+          "type": "integer",
+          "description": "The size of the attachment, in bytes."
+        }
+      }
+    },
+    "message-participant": {
+      "title": "Message participant",
+      "type": "object",
+      "description": "A name/email address pair.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      },
+      "required": [
+        "email"
+      ]
+    },
+    "message-participant-response": {
+      "title": "Message participant response",
+      "type": "object",
+      "description": "A name/email address pair.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      }
+    }
+  }
+}

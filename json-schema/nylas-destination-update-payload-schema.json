@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-destination-update-payload-schema.json",
+  "title": "Destination Update Payload",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-webhook-notifications-api-openapi.yml#/components/schemas/destination_update_payload",
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "A human-readable description of the webhook destination."
+    },
+    "trigger_types": {
+      "$ref": "#/$defs/trigger_types"
+    },
+    "webhook_url": {
+      "type": "string",
+      "description": "The URL to send webhooks to."
+    },
+    "status": {
+      "type": "string",
+      "description": "The new status of the destination.",
+      "enum": [
+        "active",
+        "pause"
+      ]
+    },
+    "notification_email_addresses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "The email addresses that Nylas notifies when a webhook is down for a while. See the [rate limit documentation](/docs/dev-guide/best-practices/rate-limits/) for details."
+    },
+    "compressed_delivery": {
+      "type": "boolean",
+      "description": "If `true`, Nylas compresses notification payloads using gzip before delivering them. Nylas adds the `Content-Encoding: gzip` header to the request."
+    }
+  },
+  "$defs": {
+    "trigger_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "calendar.created",
+          "calendar.updated",
+          "calendar.deleted",
+          "event.created",
+          "event.updated",
+          "event.deleted",
+          "grant.created",
+          "grant.updated",
+          "grant.deleted",
+          "grant.expired",
+          "grant.imap_sync_completed",
+          "message.send_success",
+          "message.send_failed",
+          "message.bounce_detected",
+          "message.created",
+          "message.created.cleaned",
+          "message.opened",
+          "message.opened.legacy",
+          "message.updated",
+          "message.link_clicked",
+          "message.link_clicked.legacy",
+          "thread.replied",
+          "thread.replied.legacy",
+          "contact.updated",
+          "contact.deleted",
+          "folder.created",
+          "folder.updated",
+          "folder.deleted",
+          "booking.created",
+          "booking.pending",
+          "booking.rescheduled",
+          "booking.cancelled",
+          "booking.reminder",
+          "message.deleted",
+          "message.transactional.bounced",
+          "message.transactional.complaint",
+          "message.transactional.delivered",
+          "message.transactional.rejected",
+          "message.bounced",
+          "message.complaint",
+          "message.delivered",
+          "message.rejected",
+          "notetaker.created",
+          "notetaker.updated",
+          "notetaker.deleted",
+          "notetaker.meeting_state",
+          "notetaker.media"
+        ]
+      },
+      "description": "The event that triggers the notification. See the\n[notification schemas](/docs/reference/notifications/) for details about each trigger\ntype.\n\nSee the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),\n[Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references\nfor information on how to trigger each event type."
+    }
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-policy-object-schema.json",
+  "title": "Policy",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-policies-api-openapi.yml#/components/schemas/PolicyObject",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Globally unique identifier for the policy (UUID)."
+    },
+    "name": {
+      "type": "string",
+      "description": "A human-readable name for the policy. Required on create."
+    },
+    "application_id": {
+      "type": "string",
+      "description": "The ID of the application that owns the policy. Read-only; derived from the authenticated API key."
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "The ID of the Nylas organization that owns the policy. Read-only; derived from the authenticated API key."
+    },
+    "limits": {
+      "type": "object",
+      "description": "Operational limits enforced for inboxes that use this policy. All fields are optional. If omitted, each limit defaults\nto the plan's maximum allowed value. If a requested value exceeds the plan limit, the API returns an error.",
+      "properties": {
+        "limit_attachment_size_limit": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Maximum size (in bytes) for a single attachment."
+        },
+        "limit_attachment_count_limit": {
+          "type": "integer",
+          "description": "Maximum number of attachments allowed on a single message."
+        },
+        "limit_attachment_allowed_types": {
+          "type": "array",
+          "description": "Allowed attachment MIME types. If empty or omitted, all types permitted by the plan are allowed.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limit_size_total_mime": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Maximum total MIME size (in bytes) for a single message, including all attachments."
+        },
+        "limit_storage_total": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Maximum total storage (in bytes) for each inbox that uses this policy."
+        },
+        "limit_count_daily_message_received": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Maximum number of messages each grant can receive per day."
+        },
+        "limit_count_daily_email_sent": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Maximum number of messages each grant can send per day."
+        },
+        "limit_inbox_retention_period": {
+          "type": "integer",
+          "description": "How long (in days) to retain messages in the inbox before they are deleted. Must be greater than\n`limit_spam_retention_period` when both are set."
+        },
+        "limit_spam_retention_period": {
+          "type": "integer",
+          "description": "How long (in days) to retain messages in the spam folder before they are deleted. Must be shorter than\n`limit_inbox_retention_period` when both are set."
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "description": "(Legacy) Rule IDs linked to this policy. Rule evaluation uses the `rule_ids` array on the\n[workspace](/docs/reference/api/workspaces/), not the policy. Set rules on the workspace instead.\nWhether rules are allowed depends on your plan.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "spam_detection": {
+      "type": "object",
+      "description": "Spam detection configuration for inboxes that use this policy.",
+      "properties": {
+        "use_list_dnsbl": {
+          "type": "boolean",
+          "description": "If `true`, enables DNS-based block list (DNSBL) checking on inbound messages."
+        },
+        "use_header_anomaly_detection": {
+          "type": "boolean",
+          "description": "If `true`, enables header anomaly detection on inbound messages."
+        },
+        "spam_sensitivity": {
+          "type": "number",
+          "format": "float",
+          "minimum": 0.1,
+          "maximum": 5,
+          "default": 1,
+          "description": "Spam detection sensitivity. Must be between `0.1` and `5.0`. Higher values mark more messages as spam."
+        }
+      }
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "When the policy was created, in seconds using the Unix timestamp format."
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "When the policy was last updated, in seconds using the Unix timestamp format."
+    }
+  }
+}

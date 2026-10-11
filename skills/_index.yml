@@ -1,0 +1,21 @@
+generated: '2026-10-02'
+method: generated
+generator: extract-docs-artifacts.py skills (local)
+source: openapi/nylas-bookings-api-openapi.yml
+skills:
+- file: skills/nylas-bookings-create-and-confirm.md
+  name: nylas-bookings-create-and-confirm
+  api: openapi/nylas-bookings-api-openapi.yml
+  operations:
+  - post-bookings
+  - get-bookings-id
+  - put-bookings-id
+- file: skills/nylas-events-management.md
+  name: nylas-events-management
+  api: openapi/nylas-events-api-openapi.yml
+  operations:
+  - create-event
+  - get-all-events
+  - get-events-id
+  - put-events-id
+  - delete-events-id

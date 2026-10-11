@@ -1,0 +1,35 @@
+generated: '2026-10-02'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://developer.nylas.com/docs/v3/getting-started/cli/
+sources:
+- https://developer.nylas.com/docs/v3/getting-started/cli/
+- https://developer.nylas.com/docs/v3/getting-started/cli-for-agents/
+- https://developer.nylas.com/docs/cookbook/agents/email-api-function-calling/
+- https://developer.nylas.com/docs/cookbook/cli/extract-otp-codes/
+install:
+- method: Homebrew (macOS/Linux)
+  command: brew install nylas/nylas-cli/nylas
+- method: Shell script (macOS/Linux/WSR)
+  command: curl -fsSL https://cli.nylas.com/install.sh | bash
+- method: PowerShell (Windows)
+  command: irm https://cli.nylas.com/install.ps1 | iex
+commands:
+- group: setup
+  commands:
+  - nylas init
+  - nylas init --google
+  - nylas init --microsoft
+  - nylas init --api-key <NYLAS_API_KEY>
+  - nylas init --api-key <NYLAS_API_KEY> --region eu
+- group: email
+  commands:
+  - nylas email list --limit 5
+- group: otp
+  commands:
+  - nylas otp get
+  - nylas otp get --raw
+  - nylas otp watch
+  - nylas otp watch --interval 5
+binary: nylas
+docs: https://developer.nylas.com/docs/v3/getting-started/cli/

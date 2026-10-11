@@ -1,5 +1,5 @@
 generated: '2026-08-20'
-method: provider-published
+method: derived
 authored_by: Nylas
 source: https://developer.nylas.com/_spec-files/nylas-api.yaml
 docs: https://developer.nylas.com/docs/v3/auth/

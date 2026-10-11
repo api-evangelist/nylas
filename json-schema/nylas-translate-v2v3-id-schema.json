@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-translate-v2v3-id-schema.json",
+  "title": "translate_v2v3_id",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-data-migration-api-openapi.yml#/components/schemas/translate_v2v3_id",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v2_application_id",
+    "v2_account_id",
+    "resource_type",
+    "ids"
+  ],
+  "properties": {
+    "v2_application_id": {
+      "type": "string",
+      "description": "The ID of the v2 Nylas application the connected account belongs to."
+    },
+    "v2_account_id": {
+      "type": "string",
+      "description": "The ID of v2 connected account you are requesting translations for."
+    },
+    "resource_type": {
+      "type": "string",
+      "description": "The names of the v2 resources you're requesting translations for.\n\nTo request Gmail's \"labels\", include `folders`. (Nylas v3 consolidates folders and labels into\none resource.)",
+      "enum": [
+        "messages",
+        "drafts",
+        "threads",
+        "contacts",
+        "contactgroups",
+        "events",
+        "calendars",
+        "folders"
+      ]
+    },
+    "translations": {
+      "type": "array",
+      "description": "A list of v2 Nylas IDs and their v3 Provider ID counterparts, according to the requested resource\ntype and v2 connected account.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "v2_resource_id": {
+            "type": "string",
+            "description": "The v2 Nylas ID."
+          },
+          "v3_resource_id": {
+            "type": "string",
+            "description": "The v3 Provider ID."
+          }
+        }
+      }
+    },
+    "next_page_number": {
+      "type": "integer",
+      "description": "A page number for next set of results, if more results are available. This field does not appear if there are no more results."
+    }
+  }
+}

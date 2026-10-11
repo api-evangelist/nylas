@@ -1,0 +1,25 @@
+generated: '2026-10-02'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://developer.nylas.com/docs/cookbook/use-cases/build/realtime-webhooks/
+sources:
+- https://developer.nylas.com/docs/cookbook/use-cases/build/realtime-webhooks/
+- https://developer.nylas.com/docs/cookbook/use-cases/build/new-email-webhook/
+- https://developer.nylas.com/docs/cookbook/use-cases/build/verify-webhook-signatures/
+- https://developer.nylas.com/docs/cookbook/use-cases/build/retry-failed-webhooks/
+description: Nylas webhooks deliver JSON POST notifications for the trigger types you subscribe to. Each notification includes the affected object
+  and a top‑level id for deduplication.
+events:
+- event: message.created
+  description: Fires whenever a new message lands in any connected mailbox across all providers.
+- event: event.created
+  description: Sent when a new calendar event is created on a connected account.
+- event: grant.expired
+  description: Notifies you when an account’s OAuth grant has expired and needs re‑authentication.
+delivery:
+  auth: Each webhook request includes an `x-nylas-signature` (or `X-Nylas-Signature`) header containing a hex‑encoded HMAC‑SHA256 of the raw request
+    body, signed with a secret unique to the webhook destination.
+  signature: The signature is a 64‑character hex string that must be recomputed over the exact raw bytes and compared in constant time.
+  retries: If the endpoint does not return 200 OK, Nylas retries up to two more times (three attempts total) with exponential back‑off; the final
+    attempt occurs 10–20 minutes after the first. Retries are performed only for status codes 408, 429, 502, 503, 504, and 507.
+docs: https://developer.nylas.com/docs/cookbook/use-cases/build/realtime-webhooks/

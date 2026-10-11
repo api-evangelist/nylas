@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-autodetect-object-schema.json",
+  "title": "AutodetectObject",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-connectors-integrations-api-openapi.yml#/components/schemas/AutodetectObject",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "email_address",
+    "detected"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "description": "Provider detected."
+    },
+    "type": {
+      "type": "string",
+      "description": "Provider type. Returned only when IMAP detected displays the IMAP provider."
+    },
+    "email_address": {
+      "type": "string",
+      "description": "Email provided for autodetection."
+    },
+    "detected": {
+      "type": "boolean",
+      "description": "Whether Nylas detected a provider for the given email address."
+    }
+  }
+}

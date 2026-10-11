@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-grant-rule-evaluation-object-schema.json",
+  "title": "GrantRuleEvaluation",
+  "description": "An audit record of a single rule-engine evaluation against an inbound message, SMTP envelope, or\noutbound send for a grant. Rule evaluations are created automatically during inbound processing and\noutbound send handling and can be listed to trace which rules matched, what input was considered,\nand which actions were applied.",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-rules-api-openapi.yml#/components/schemas/GrantRuleEvaluationObject",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Globally unique identifier for this evaluation record (UUID)."
+    },
+    "grant_id": {
+      "type": "string",
+      "description": "The grant this evaluation belongs to (UUID)."
+    },
+    "message_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The inbound message or stored sent copy associated with this evaluation (UUID). `null` when the\nevaluation happened before a message record existed, such as `smtp_rcpt`, or when an outbound\nevaluation did not persist a sent copy."
+    },
+    "evaluated_at": {
+      "type": "integer",
+      "description": "When the evaluation occurred, in seconds using the Unix timestamp format."
+    },
+    "evaluation_stage": {
+      "type": "string",
+      "enum": [
+        "smtp_rcpt",
+        "inbox_processing",
+        "outbound_send"
+      ],
+      "description": "Where in the processing pipeline the evaluation happened. `smtp_rcpt` means the evaluation ran\nduring SMTP RCPT TO processing (before the message was accepted) — `message_id` is `null` in\nthis case. `inbox_processing` means the evaluation ran after the message was accepted and\nduring inbox processing — `message_id` is populated. `outbound_send` means the evaluation ran\nfor an outbound send; `message_id` is populated when a sent copy was stored, and `null` when\nthe send was blocked before storage or no sent copy was persisted."
+    },
+    "evaluation_input": {
+      "type": "object",
+      "description": "The normalized sender, recipient, and send-type data that rules were matched against.",
+      "properties": {
+        "from_address": {
+          "type": "string",
+          "description": "The normalized sender email address."
+        },
+        "from_domain": {
+          "type": "string",
+          "description": "The normalized domain portion of the sender address."
+        },
+        "from_tld": {
+          "type": "string",
+          "description": "The normalized top-level domain of the sender address."
+        },
+        "recipient_addresses": {
+          "type": "array",
+          "description": "Outbound recipient email addresses considered during rule evaluation.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recipient_domains": {
+          "type": "array",
+          "description": "Outbound recipient domains considered during rule evaluation.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recipient_tlds": {
+          "type": "array",
+          "description": "Outbound recipient top-level domains considered during rule evaluation.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outbound_type": {
+          "type": "string",
+          "enum": [
+            "compose",
+            "reply"
+          ],
+          "description": "Outbound send classification used during rule evaluation."
+        }
+      }
+    },
+    "applied_actions": {
+      "type": "object",
+      "description": "The actions that were applied as a result of matching rules. Only populated fields are returned —\nfields are **omitted** (not set to `false`) when the corresponding action was not applied.",
+      "properties": {
+        "blocked": {
+          "type": "boolean",
+          "description": "The inbound message or outbound send was blocked and not delivered. Terminal action."
+        },
+        "marked_as_spam": {
+          "type": "boolean",
+          "description": "The message or stored sent copy was moved to the junk/spam folder."
+        },
+        "marked_as_read": {
+          "type": "boolean",
+          "description": "The message or stored sent copy was automatically marked as read."
+        },
+        "marked_starred": {
+          "type": "boolean",
+          "description": "The message or stored sent copy was automatically starred."
+        },
+        "archived": {
+          "type": "boolean",
+          "description": "The message or stored sent copy was archived."
+        },
+        "trashed": {
+          "type": "boolean",
+          "description": "The message or stored sent copy was moved to trash."
+        },
+        "folder_ids": {
+          "type": "array",
+          "description": "IDs of the custom folders the message or stored sent copy was assigned to.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "matched_rule_ids": {
+      "type": "array",
+      "description": "IDs of the rules that matched during this evaluation. Empty when no rules matched (for example,\nwhen rule execution ran but nothing applied).",
+      "items": {
+        "type": "string"
+      }
+    },
+    "application_id": {
+      "type": "string",
+      "description": "The application this evaluation belongs to (UUID). Read-only; derived from the authenticated API key."
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "The Nylas organization this evaluation belongs to (UUID). Read-only; derived from the authenticated API key."
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "When the evaluation record was created, in seconds using the Unix timestamp format."
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "When the evaluation record was last updated, in seconds using the Unix timestamp format."
+    }
+  }
+}

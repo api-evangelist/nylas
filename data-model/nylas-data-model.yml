@@ -1,0 +1,670 @@
+generated: '2026-10-02'
+method: derived
+generator: derive-data-model.py
+source:
+- openapi/nylas-amazon-sns-notifications-api-openapi.yml
+- openapi/nylas-app-migration-api-openapi.yml
+- openapi/nylas-application-level-templates-api-openapi.yml
+- openapi/nylas-application-level-workflows-api-openapi.yml
+- openapi/nylas-applications-api-openapi.yml
+- openapi/nylas-attachments-api-openapi.yml
+- openapi/nylas-authentication-apis-api-openapi.yml
+- openapi/nylas-availability-api-openapi.yml
+- openapi/nylas-bookings-api-openapi.yml
+- openapi/nylas-calendar-api-openapi.yml
+- openapi/nylas-configurations-api-openapi.yml
+- openapi/nylas-connector-credentials-api-openapi.yml
+notation: has_one = property $ref; has_many = array of $ref; belongs_to = <entity>_id field
+summary:
+  entities: 116
+  entities_in_spec: 116
+  relationships: 91
+entities:
+- name: '400'
+  fields: 2
+- name: '401'
+  fields: 2
+- name: '404'
+  fields: 2
+- name: AndroidCallbackwSettings
+  fields: 4
+- name: ApplicationObject
+  fields: 9
+- name: AutodetectObject
+  fields: 4
+- name: ConnectorObject
+  fields: 5
+- name: CredentialObject
+  fields: 4
+- name: DomainObject
+  fields: 15
+- name: DomainVerificationResponse
+  fields: 6
+- name: GrantObject
+  fields: 18
+- name: GrantRuleEvaluationObject
+  fields: 12
+  description: An audit record of a single rule-engine evaluation against an inbound message, SMTP envelope, or
+- name: JsCallbackwSettings
+  fields: 4
+- name: ListItemObject
+  fields: 4
+- name: ListObject
+  fields: 9
+- name: MigrationJob
+  fields: 11
+- name: PolicyObject
+  fields: 9
+- name: RuleObject
+  fields: 12
+- name: Schedules
+  fields: 3
+- name: WorkspaceObject
+  fields: 10
+- name: amazon_sns_input_payload
+  fields: 6
+- name: attachment
+  fields: 8
+  description: A file attached to an email message.
+- name: attachment_metadata
+  fields: 8
+  description: Metadata for a file attached to an email message.
+- name: attachment_transactional_send
+  fields: 6
+  description: A file attachment for a transactional email message.
+- name: availability_buffer
+  fields: 2
+- name: availability_open_hours
+  fields: 5
+  description: A time block when a participant is available for meetings.
+- name: availability_response
+  fields: 2
+  description: The response to a successful request to get availability for a participant.
+- name: availability_rules
+  fields: 5
+- name: availability_specific_time_availability
+  fields: 4
+  description: A specific date and time range when the participant is available.
+- name: availability_time_slot
+  fields: 6
+- name: booking
+  fields: 6
+- name: booking_confirm
+  fields: 3
+- name: booking_create
+  fields: 8
+- name: booking_update
+  fields: 2
+- name: booking_update_group
+  fields: 5
+- name: calendar
+  fields: 0
+- name: calendar_common
+  fields: 14
+  description: A Calendar object.
+- name: calendar_sync
+  fields: 3
+- name: common_response
+  fields: 2
+- name: common_response_with_cursor
+  fields: 3
+- name: configuration
+  fields: 8
+- name: configuration_appearance
+  fields: 1
+  description: Appearance settings definitions for the Scheduling Page.
+- name: configuration_availability
+  fields: 4
+  description: The rules that determine the available time slots for the event.
+- name: configuration_availability_open_hours
+  fields: 5
+  description: Open hours settings for a participant.
+- name: configuration_availability_rules
+  fields: 5
+  description: Availability rules for the scheduling configuration. These rules define how Nylas calculates availability
+    for all participants.
+- name: configuration_event_booking
+  fields: 10
+- name: configuration_participants
+  fields: 9
+  description: List of participants for the scheduling Configuration.
+- name: configuration_participants_availability
+  fields: 2
+  description: The availability data for the participant. If omitted, the participant is considered to be available
+    at all times. At least one participant must have availability data.
+- name: configuration_participants_booking
+  fields: 1
+  description: The booking data for the participant. If omitted, the participant is not included in the booked event.
+    At least one participant must have booking data.
+- name: configuration_scheduler
+  fields: 14
+- name: configuration_scheduler_additional_fields
+  fields: 7
+  description: The definitions for additional fields to be displayed in the Scheduler UI. Guest will see the additional
+    fields on the Scheduling Page when they book an event.
+- name: configuration_scheduler_email_template
+  fields: 3
+  description: Configurable settings for booking emails.
+- name: configuration_scheduler_email_template_booking_confirmed
+  fields: 2
+  description: Configurable settings specifically for booking confirmed emails.
+- name: contact
+  fields: 22
+- name: contact_email
+  fields: 2
+  description: An array of the contact's email addresses. Different providers may have different limits on the
+- name: contact_group
+  fields: 6
+- name: contact_group_id
+  fields: 1
+- name: contact_im_address
+  fields: 2
+  description: An array of the contact's instant messaging (IM) addresses. Different providers may have different
+- name: contact_phone_number
+  fields: 2
+  description: An array of phone numbers associated with the contact. Different providers may have different limits
+- name: contact_physical_address
+  fields: 6
+  description: An array of physical addresses associated with the contact. Different providers may have different
+- name: contact_web_page
+  fields: 2
+- name: contact_with_picture
+  fields: 0
+- name: create_folder
+  fields: 4
+- name: destination_input_payload
+  fields: 5
+- name: destination_update_payload
+  fields: 6
+- name: draft
+  fields: 16
+  description: A draft of a message. You can edit a draft until you send it as a message.
+- name: event
+  fields: 0
+- name: event_common
+  fields: 28
+- name: event_conferencing_request
+  fields: 0
+  description: An object that lets you automatically create a conference, or enter conferencing details manually.
+- name: event_conferencing_response
+  fields: 1
+  description: An object that contains event conferencing details. Nylas appends the conference information to the
+- name: event_create
+  fields: 15
+- name: event_date
+  fields: 1
+  description: The date on which the event occurs, without a clock-based start
+- name: event_datespan
+  fields: 2
+  description: A span of days, without specific clock-based start and end times
+- name: event_participants_create_update
+  fields: 4
+- name: event_reminders
+  fields: 2
+  description: A list of reminders to generate for the event. If not defined, Nylas uses the provider's default
+- name: event_reminders_create
+  fields: 2
+  description: A list of reminders to send for the event. If left empty or omitted, the event uses the provider
+    defaults.
+- name: event_resources
+  fields: 2
+  description: Resources are physical locations or equipment that can be reserved for events, and which are tracked
+    using an email address with an associated calendar.
+- name: event_send_rsvp
+  fields: 1
+- name: event_sync
+  fields: 3
+- name: event_time
+  fields: 2
+  description: A specific point in time (for example, the start time of an event).
+- name: event_timespan
+  fields: 4
+  description: A period of time with a specified beginning and end (for example, an hour-long lunch meeting).
+- name: event_when
+  fields: 0
+  description: An object that represents the time and duration of an event.
+- name: folder
+  fields: 13
+  description: An email folder or label.
+- name: freebusy_request
+  fields: 4
+- name: get_mock_payload_input
+  fields: 1
+- name: group-configuration
+  fields: 7
+- name: group_event
+  fields: 9
+- name: group_event_participants
+  fields: 3
+  description: An array of participants to include in the event booking. If you don't specify at least
+- name: import-group-event-response
+  fields: 2
+- name: iosCallbackwSettings
+  fields: 4
+- name: meeting_settings
+  fields: 0
+- name: meeting_settings_common
+  fields: 8
+  description: A collection of settings for the Notetaker bot.
+- name: message
+  fields: 22
+- name: message-header
+  fields: 2
+  description: A message header key-value pair.
+- name: message-participant
+  fields: 2
+  description: A name/email address pair.
+- name: message-participant-response
+  fields: 2
+  description: A name/email address pair.
+- name: message_send_response
+  fields: 22
+- name: metadata
+  fields: 0
+  description: The metadata associated with the object. For more information, see
+- name: notetaker
+  fields: 10
+- name: notetaker_history_event
+  fields: 3
+  description: A history event that records a change to a Notetaker bot.
+- name: notetakers
+  fields: 4
+- name: organizer
+  fields: 2
+  description: An object that contains information about an event's organizer.
+- name: pubsub_input_payload
+  fields: 5
+- name: resource
+  fields: 8
+- name: send_test_event_input
+  fields: 2
+- name: signature
+  fields: 7
+- name: smart_compose_suggestion
+  fields: 1
+- name: standalone_notetaker
+  fields: 9
+- name: standalone_notetaker_history_event
+  fields: 3
+  description: A history event that records a change to a Notetaker bot.
+- name: template
+  fields: 10
+  description: A custom message template.
+- name: thread
+  fields: 17
+- name: transactional_send_message
+  fields: 12
+- name: translate_v2v3_id
+  fields: 5
+- name: update_folder
+  fields: 4
+- name: webDesktopCallbackNoSettings
+  fields: 3
+- name: workflow
+  fields: 10
+  description: A custom workflow that sends messages from a template when certain events are triggered.
+relationships:
+- from: ApplicationObject
+  to: webDesktopCallbackNoSettings
+  type: has_many
+  via: callback_uris
+- from: ApplicationObject
+  to: JsCallbackwSettings
+  type: has_many
+  via: callback_uris
+- from: ApplicationObject
+  to: iosCallbackwSettings
+  type: has_many
+  via: callback_uris
+- from: ApplicationObject
+  to: AndroidCallbackwSettings
+  type: has_many
+  via: callback_uris
+- from: workflow
+  to: template
+  type: belongs_to
+  via: template_id
+- from: availability_time_slot
+  to: event
+  type: belongs_to
+  via: event_id
+- from: availability_time_slot
+  to: calendar
+  type: belongs_to
+  via: calendar_id
+- from: booking
+  to: event
+  type: belongs_to
+  via: event_id
+- from: booking_update_group
+  to: calendar
+  type: belongs_to
+  via: calendar_id
+- from: booking_update_group
+  to: event
+  type: belongs_to
+  via: event_id
+- from: availability_rules
+  to: availability_buffer
+  type: has_one
+  via: buffer
+- from: availability_rules
+  to: availability_open_hours
+  type: has_many
+  via: default_open_hours
+- from: calendar_sync
+  to: meeting_settings
+  type: has_one
+  via: meeting_settings
+- from: calendar_common
+  to: metadata
+  type: has_one
+  via: metadata
+- from: calendar
+  to: calendar_sync
+  type: has_one
+  via: notetaker
+- from: group-configuration
+  to: configuration_appearance
+  type: has_one
+  via: appearance
+- from: group-configuration
+  to: configuration_scheduler
+  type: has_one
+  via: scheduler
+- from: configuration_participants_booking
+  to: calendar
+  type: belongs_to
+  via: calendar_id
+- from: configuration_availability_rules
+  to: availability_buffer
+  type: has_one
+  via: buffer
+- from: configuration_availability_rules
+  to: configuration_availability_open_hours
+  type: has_many
+  via: default_open_hours
+- from: configuration_scheduler
+  to: configuration_scheduler_email_template
+  type: has_one
+  via: email_template
+- from: configuration_availability
+  to: configuration_availability_rules
+  type: has_one
+  via: availability_rules
+- from: configuration_participants
+  to: configuration_participants_availability
+  type: has_one
+  via: availability
+- from: configuration_participants
+  to: configuration_participants_booking
+  type: has_one
+  via: booking
+- from: configuration_event_booking
+  to: event_conferencing_request
+  type: has_one
+  via: conferencing
+- from: configuration_participants_availability
+  to: calendar
+  type: belongs_to
+  via: calendar_ids
+- from: configuration_participants_availability
+  to: configuration_availability_open_hours
+  type: has_many
+  via: open_hours
+- from: configuration_scheduler_email_template
+  to: configuration_scheduler_email_template_booking_confirmed
+  type: has_one
+  via: booking_confirmed
+- from: configuration
+  to: configuration_appearance
+  type: has_one
+  via: appearance
+- from: configuration
+  to: configuration_availability
+  type: has_one
+  via: availability
+- from: configuration
+  to: configuration_event_booking
+  type: has_one
+  via: event_booking
+- from: configuration
+  to: configuration_participants
+  type: has_many
+  via: participants
+- from: configuration
+  to: configuration_scheduler
+  type: has_one
+  via: scheduler
+- from: draft
+  to: message-participant
+  type: has_many
+  via: bcc
+- from: draft
+  to: message-participant
+  type: has_many
+  via: cc
+- from: draft
+  to: attachment
+  type: has_many
+  via: attachments
+- from: draft
+  to: message-participant-response
+  type: has_many
+  via: from
+- from: draft
+  to: metadata
+  type: has_one
+  via: metadata
+- from: draft
+  to: message-participant
+  type: has_many
+  via: reply_to
+- from: draft
+  to: thread
+  type: belongs_to
+  via: thread_id
+- from: draft
+  to: message-participant
+  type: has_many
+  via: to
+- from: event_sync
+  to: meeting_settings
+  type: has_one
+  via: meeting_settings
+- from: event_common
+  to: calendar
+  type: belongs_to
+  via: calendar_id
+- from: event_common
+  to: event_conferencing_response
+  type: has_one
+  via: conferencing
+- from: event_common
+  to: metadata
+  type: has_one
+  via: metadata
+- from: event_common
+  to: organizer
+  type: has_one
+  via: organizer
+- from: event_common
+  to: event_resources
+  type: has_many
+  via: resources
+- from: event_common
+  to: event_reminders
+  type: has_one
+  via: reminders
+- from: event_common
+  to: event_sync
+  type: has_one
+  via: notetaker
+- from: event_create
+  to: event_conferencing_request
+  type: has_one
+  via: conferencing
+- from: event_create
+  to: metadata
+  type: has_one
+  via: metadata
+- from: event_create
+  to: event_sync
+  type: has_one
+  via: notetaker
+- from: event_create
+  to: event_participants_create_update
+  type: has_many
+  via: participants
+- from: event_create
+  to: event_resources
+  type: has_many
+  via: resources
+- from: event_create
+  to: event_reminders_create
+  type: has_one
+  via: reminders
+- from: event_create
+  to: event_when
+  type: has_one
+  via: when
+- from: group_event
+  to: event_conferencing_request
+  type: has_one
+  via: conferencing
+- from: group_event
+  to: group_event_participants
+  type: has_many
+  via: participants
+- from: group_event
+  to: event_timespan
+  type: has_one
+  via: when
+- from: message
+  to: attachment
+  type: has_many
+  via: attachments
+- from: message
+  to: message-participant
+  type: has_many
+  via: bcc
+- from: message
+  to: message-participant
+  type: has_many
+  via: cc
+- from: message
+  to: message-participant-response
+  type: has_many
+  via: from
+- from: message
+  to: message-header
+  type: has_many
+  via: headers
+- from: message
+  to: metadata
+  type: has_one
+  via: metadata
+- from: message
+  to: message-participant
+  type: has_many
+  via: reply_to
+- from: message
+  to: thread
+  type: belongs_to
+  via: thread_id
+- from: message
+  to: message-participant
+  type: has_many
+  via: to
+- from: message_send_response
+  to: attachment
+  type: has_many
+  via: attachments
+- from: message_send_response
+  to: message-participant
+  type: has_many
+  via: bcc
+- from: message_send_response
+  to: message-participant
+  type: has_many
+  via: cc
+- from: message_send_response
+  to: message-participant-response
+  type: has_many
+  via: from
+- from: message_send_response
+  to: message-header
+  type: has_many
+  via: headers
+- from: message_send_response
+  to: message-participant
+  type: has_many
+  via: reply_to
+- from: message_send_response
+  to: thread
+  type: belongs_to
+  via: thread_id
+- from: message_send_response
+  to: message-participant
+  type: has_many
+  via: to
+- from: notetaker_history_event
+  to: notetaker
+  type: has_one
+  via: data
+- from: notetaker
+  to: meeting_settings
+  type: has_one
+  via: meeting_settings
+- from: notetakers
+  to: meeting_settings
+  type: has_one
+  via: meeting_settings
+- from: GrantRuleEvaluationObject
+  to: message
+  type: belongs_to
+  via: message_id
+- from: standalone_notetaker_history_event
+  to: standalone_notetaker
+  type: has_one
+  via: data
+- from: standalone_notetaker
+  to: meeting_settings
+  type: has_one
+  via: meeting_settings
+- from: thread
+  to: message
+  type: has_one
+  via: latest_draft_or_message
+- from: thread
+  to: message
+  type: belongs_to
+  via: message_ids
+- from: thread
+  to: draft
+  type: belongs_to
+  via: draft_ids
+- from: transactional_send_message
+  to: attachment_transactional_send
+  type: has_many
+  via: attachments
+- from: transactional_send_message
+  to: message-participant
+  type: has_many
+  via: bcc
+- from: transactional_send_message
+  to: message-participant
+  type: has_many
+  via: cc
+- from: transactional_send_message
+  to: message-participant-response
+  type: has_many
+  via: from
+- from: transactional_send_message
+  to: message-participant
+  type: has_many
+  via: reply_to
+- from: transactional_send_message
+  to: message-participant
+  type: has_many
+  via: to

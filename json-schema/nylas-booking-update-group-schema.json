@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-booking-update-group-schema.json",
+  "title": "booking_update_group",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-bookings-api-openapi.yml#/components/schemas/booking_update_group",
+  "type": "object",
+  "required": [
+    "calendar_id",
+    "end_time",
+    "event_id",
+    "start_time"
+  ],
+  "properties": {
+    "calendar_id": {
+      "type": "string",
+      "description": "The ID of the calendar to access."
+    },
+    "end_time": {
+      "type": "integer",
+      "description": "The event's end time, in seconds using the Unix timestamp format.\\"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "The ID of the event to update."
+    },
+    "master_event_id": {
+      "type": "string",
+      "description": "(Recurring events only) The ID of the master event."
+    },
+    "start_time": {
+      "type": "integer",
+      "description": "The event's start time, in seconds using the Unix timestamp format."
+    }
+  }
+}

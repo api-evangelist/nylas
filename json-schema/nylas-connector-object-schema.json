@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-connector-object-schema.json",
+  "title": "ConnectorObject",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-connectors-integrations-api-openapi.yml#/components/schemas/ConnectorObject",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "provider",
+    "name"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the connector."
+    },
+    "provider": {
+      "type": "string",
+      "description": "Provider type",
+      "enum": [
+        "google",
+        "microsoft",
+        "imap",
+        "icloud",
+        "yahoo",
+        "virtual-calendar",
+        "ews",
+        "zoom",
+        "nylas"
+      ]
+    },
+    "settings": {
+      "description": "Optional settings from provider",
+      "type": "object"
+    },
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "(Not used for Zoom connectors.) Optional default scopes for the connector. For Zoom, configure scopes directly on your Zoom OAuth app. See [Zoom granular scopes](https://developers.zoom.us/docs/integrations/oauth-scopes-granular/)."
+    },
+    "active_credential_id": {
+      "type": "string",
+      "description": "The ID of the \"default\" credential record of this Connector. This credential will be used as a default for communication with the provider."
+    }
+  }
+}

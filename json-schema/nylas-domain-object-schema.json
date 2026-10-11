@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-domain-object-schema.json",
+  "title": "Domain",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-manage-domains-api-openapi.yml#/components/schemas/DomainObject",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Globally unique identifier for the domain."
+    },
+    "name": {
+      "type": "string",
+      "description": "A human-readable label for the domain."
+    },
+    "branded": {
+      "type": "boolean",
+      "description": "If `true`, this is a Nylas-branded `nylas.email` subdomain managed by Nylas. You can only have one free Nylas branded domain per organization and region. If `false`, this is a custom domain."
+    },
+    "domain_address": {
+      "type": "string",
+      "description": "The domain address (for example, `mail.example.com`)."
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "The ID of the Nylas organization that owns the domain."
+    },
+    "region": {
+      "type": "string",
+      "description": "The Nylas data center region where the domain is registered.",
+      "enum": [
+        "us",
+        "eu"
+      ]
+    },
+    "verified_ownership": {
+      "type": "boolean",
+      "description": "If `true`, the domain's ownership TXT record has been verified."
+    },
+    "verified_dkim": {
+      "type": "boolean",
+      "description": "If `true`, the domain's DKIM TXT record has been verified."
+    },
+    "verified_spf": {
+      "type": "boolean",
+      "description": "If `true`, the domain's SPF record has been verified."
+    },
+    "verified_mx": {
+      "type": "boolean",
+      "description": "If `true`, the domain's MX record has been verified."
+    },
+    "verified_feedback": {
+      "type": "boolean",
+      "description": "If `true`, the domain's feedback MX record for bounce detection has been verified."
+    },
+    "verified_dmarc": {
+      "type": "boolean",
+      "description": "Currently not verified by Nylas. However, it is highly recommended to set DMARC to your desired value to prevent emails going to spam."
+    },
+    "verified_arc": {
+      "type": "boolean",
+      "description": "Currently not verified by Nylas."
+    },
+    "created_at": {
+      "type": "number",
+      "description": "When the domain was created, in seconds using the Unix timestamp format."
+    },
+    "updated_at": {
+      "type": "number",
+      "description": "When the domain was last updated, in seconds using the Unix timestamp format."
+    }
+  }
+}

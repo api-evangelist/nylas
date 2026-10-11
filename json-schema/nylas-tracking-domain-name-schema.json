@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-tracking-domain-name-schema.json",
+  "title": "tracking_domain_name",
+  "description": "The custom hostname to use for link click and message open tracking. The hostname must be\nregistered to the authenticated organization in the\n[Nylas Dashboard](https://dashboard-v3.nylas.com/organization/domains?tab=hosted-auth) and have an\nactive certificate.\n\nCustom tracking hostnames are available on select plans. Contact your Nylas account representative\nor the [Nylas Sales team](https://www.nylas.com/contact-sales/) to enable this feature for your\norganization.\n\nNylas trims surrounding whitespace, removes one trailing dot, and converts ASCII letters to\nlowercase before looking up the hostname. Provide an ASCII fully qualified hostname without a URL\nscheme, path, port, or wildcard.\n\nYou must enable `links`, `opens`, or both when you provide this field. A custom tracking hostname\ndoes not support `thread_replies` by itself. If you omit this field, Nylas uses its regional\ntracking hostname. Invalid, inactive, blocked, deleted, and unowned hostnames return the same\ngeneric `400` response. If Nylas cannot complete the explicit ownership and certificate lookup, it\nreturns a `5xx` response without falling back to a Nylas hostname.",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-transactional-send-api-openapi.yml#/components/schemas/tracking_domain_name",
+  "type": "string",
+  "minLength": 1,
+  "maxLength": 253
+}

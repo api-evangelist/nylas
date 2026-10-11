@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-grant-object-schema.json",
+  "title": "GrantObject",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-app-migration-api-openapi.yml#/components/schemas/GrantObject",
+  "type": "object",
+  "required": [
+    "created_at",
+    "id",
+    "provider",
+    "scope"
+  ],
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "description": "The v2 Nylas account ID. This field appears only if the grant was created by migrating a v2\nconnected account."
+    },
+    "blocked": {
+      "type": "boolean",
+      "description": "When `true`, indicates that the grant is blocked from accessing the Nylas APIs."
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "When the grant was created, in seconds using the Unix timestamp format."
+    },
+    "email": {
+      "type": "string",
+      "description": "The email address associated with the grant. If the provider supports `id_token` and exposes the\nuser's email address, Nylas automatically extracts this value."
+    },
+    "grant_status": {
+      "type": "string",
+      "description": "Specifies whether the grant is valid or the user needs to re-authenticate.",
+      "enum": [
+        "invalid",
+        "valid"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "description": "A unique identifier for the grant."
+    },
+    "ip": {
+      "type": "string",
+      "description": "The user's client IP address. Mostly useful for\n[Hosted OAuth](/docs/v3/auth/hosted-oauth-apikey/)."
+    },
+    "name": {
+      "type": "string",
+      "description": "The user's display name."
+    },
+    "provider": {
+      "type": "string",
+      "description": "The provider that the user authenticated with.",
+      "enum": [
+        "ews",
+        "google",
+        "icloud",
+        "imap",
+        "microsoft",
+        "virtual-calendar",
+        "yahoo",
+        "zoom",
+        "nylas"
+      ],
+      "x-enum-descriptions": {
+        "virtual-calendar": "Nylas' [virtual calendars](/docs/v3/calendar/virtual-calendars/).",
+        "nylas": "Nylas [Agent Accounts](/docs/v3/agent-accounts/)."
+      }
+    },
+    "provider_user_id": {
+      "type": "string",
+      "description": "The user's provider ID. This field might be changed at any time by the provider."
+    },
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "An array of [granular scopes](/docs/dev-guide/scopes/) associated with the grant. If none are\nspecified, Nylas uses the default scopes from the\n[connector](/docs/reference/api/connectors-integrations/)."
+    },
+    "settings": {
+      "type": "object",
+      "description": "A list of settings associated with the grant. The contents of this object might differ between\ngrants or depending on the provider."
+    },
+    "email_aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "An array of found email aliases for this grant. Only returned if special query parameter `expose_aliases` for \n[Get Grant](/docs/reference/api/manage-grants/get_grant_by_id/) is used and set to `true`.\nApplicable only for Google and Microsoft grants.\nFor Microsoft, aliases require a Microsoft 365 / Exchange Online mailbox. Free Outlook.com\n(consumer) accounts have no aliases to expose, so this field is omitted from the response\neven when `expose_aliases=true`."
+    },
+    "state": {
+      "type": "string",
+      "description": "The initial state that was set as part of the authentication process. Nylas passes this value\nback to your project without modifying it. You can use this field for verification, or to track\ninformation about the user."
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "When the user last authenticated their grant, in seconds using the Unix timestamp format.\nInitially, this value is the same as `created_at`."
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "The user's [client or browser information](https://www.useragents.me/). Mostly useful for\n[Hosted OAuth](/docs/v3/auth/hosted-oauth-apikey/)."
+    },
+    "workspace_id": {
+      "type": "string",
+      "description": "The ID of the Workspace the grant belongs to, if any. For grants from providers other than\nAgent Accounts, Nylas may omit this field when the grant is in the application's default\nworkspace."
+    },
+    "credential_id": {
+      "type": "string",
+      "description": "The ID of the Credential the grant is associated with. Grant will use this Credential for provider communication."
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-list-object-schema.json",
+  "title": "List",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-lists-api-openapi.yml#/components/schemas/ListObject",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Globally unique identifier for the list (UUID)."
+    },
+    "name": {
+      "type": "string",
+      "description": "A human-readable name for the list. 1–256 characters. Required on create."
+    },
+    "description": {
+      "type": "string",
+      "description": "An optional description of the list's purpose."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "domain",
+        "tld",
+        "address"
+      ],
+      "description": "The kind of values the list holds and which rule condition fields it can be used with. Required on create and\nimmutable after creation. `domain` holds domain names (matched against `from.domain` or `recipient.domain`),\n`tld` holds top-level domains (matched against `from.tld` or `recipient.tld`), and `address` holds full email\naddresses (matched against `from.address` or `recipient.address`)."
+    },
+    "items_count": {
+      "type": "integer",
+      "description": "The number of items currently in the list. Read-only; maintained by the system."
+    },
+    "application_id": {
+      "type": "string",
+      "description": "The ID of the application that owns the list. Read-only; derived from the authenticated API key."
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "The ID of the Nylas organization that owns the list. Read-only; derived from the authenticated API key."
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "When the list was created, in seconds using the Unix timestamp format."
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "When the list was last updated, in seconds using the Unix timestamp format."
+    }
+  }
+}

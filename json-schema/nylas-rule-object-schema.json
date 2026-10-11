@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-rule-object-schema.json",
+  "title": "Rule",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-rules-api-openapi.yml#/components/schemas/RuleObject",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Globally unique identifier for the rule (UUID)."
+    },
+    "name": {
+      "type": "string",
+      "description": "A human-readable name for the rule. Required on create."
+    },
+    "description": {
+      "type": "string",
+      "description": "An optional description of what the rule does."
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000,
+      "default": 10,
+      "description": "Execution order for the rule. Lower numbers run first. Must be between `0` and `1000`. Defaults to `10`."
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the rule is active. Defaults to `true`."
+    },
+    "trigger": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound"
+      ],
+      "default": "inbound",
+      "description": "When the rule is evaluated. `inbound` rules run on incoming messages. `outbound` rules run on sends\nbefore the message is submitted to the email provider — an `outbound` rule with a `block` action\nrejects the send with HTTP 403 and no message is delivered. Non-blocking actions (`mark_as_spam`,\n`archive`, `mark_as_read`, `mark_as_starred`, `assign_to_folder`, `trash`) on outbound rules apply\nto the stored sent copy. Inbound and outbound rules are isolated: inbound rules never run during sends, and\noutbound rules never run on receipt."
+    },
+    "match": {
+      "type": "object",
+      "description": "Defines the conditions that must be met for the rule to apply.",
+      "properties": {
+        "operator": {
+          "type": "string",
+          "enum": [
+            "any",
+            "all"
+          ],
+          "description": "How conditions are combined. Use `any` to match when any condition is true (OR), or `all` to\nrequire every condition to be true (AND). When omitted, the rule defaults to `all`."
+        },
+        "conditions": {
+          "type": "array",
+          "description": "The list of conditions to evaluate. At least one condition is required.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": {
+                "type": "string",
+                "enum": [
+                  "from.address",
+                  "from.domain",
+                  "from.tld",
+                  "recipient.address",
+                  "recipient.domain",
+                  "recipient.tld",
+                  "outbound.type"
+                ],
+                "description": "The field to match against. `from.*` fields match the normalized sender and are valid on\nboth triggers: `from.address` is the full sender email, `from.domain` is the domain\nportion, and `from.tld` is the top-level domain. `recipient.*` fields are valid only on\n`outbound` rules and match against **any** recipient — including To, CC, BCC, and SMTP\nenvelope recipients. For `is_not`, the condition is true only when **no** recipient\nmatches. `outbound.type` is valid only on `outbound` rules and classifies the send as\n`compose` (a fresh message) or `reply` (a reply to an existing thread). The type is\nderived as `reply` when the send includes `reply_to_message_id` or the raw MIME\ncontains `In-Reply-To` or `References` headers; otherwise it's `compose`."
+              },
+              "operator": {
+                "type": "string",
+                "enum": [
+                  "is",
+                  "is_not",
+                  "contains",
+                  "in_list"
+                ],
+                "description": "How to compare the field value. Use `is` for an exact match, `is_not` for the inverse,\n`contains` for substring matching, or `in_list` to check against one or more List\nresources. String matching is case-insensitive. The `outbound.type` field accepts only\n`is` and `is_not` — `contains` and `in_list` are rejected."
+              },
+              "value": {
+                "description": "The value to compare the field against. For `is`, `is_not`, and `contains`, this is a\nstring. For `in_list`, this is an array of List IDs. For `outbound.type`, this is\n`compose` or `reply` — values are normalized to lowercase on write.",
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "description": "The actions to perform when the rule matches. At least one action is required. The `block` action cannot be\ncombined with other actions — it is terminal.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "block",
+              "mark_as_spam",
+              "assign_to_folder",
+              "mark_as_read",
+              "mark_as_starred",
+              "archive",
+              "trash"
+            ],
+            "description": "The action to take on the matching message or send. `block` rejects inbound mail at the SMTP\nlevel or rejects an outbound send before provider submission. `mark_as_spam` routes the\nmessage or stored sent copy to the spam folder, `assign_to_folder` files it in the folder\nnamed in `value`, and the remaining actions modify the message state."
+          },
+          "value": {
+            "type": "string",
+            "description": "Required when `type` is `assign_to_folder` — the target folder by name. Use a custom folder's\nname (or its full path for a nested folder, e.g. `Clients/Acme`), or a system folder name\n(`Inbox`, `Sent`, `Drafts`, `Trash`, `Junk`, `Archive`). The name is resolved when the rule\nruns, so a reference to a folder that doesn't exist is skipped. Optional for other action types."
+          }
+        }
+      }
+    },
+    "application_id": {
+      "type": "string",
+      "description": "The ID of the application that owns the rule. Read-only; derived from the authenticated API key."
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "The ID of the Nylas organization that owns the rule. Read-only; derived from the authenticated API key."
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "When the rule was created, in seconds using the Unix timestamp format."
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "When the rule was last updated, in seconds using the Unix timestamp format."
+    }
+  }
+}

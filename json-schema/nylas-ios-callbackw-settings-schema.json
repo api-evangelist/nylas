@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-ios-callbackw-settings-schema.json",
+  "title": "iOS",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-applications-api-openapi.yml#/components/schemas/iosCallbackwSettings",
+  "properties": {
+    "platform": {
+      "type": "string",
+      "description": "Platform identifier",
+      "enum": [
+        "ios"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "description": "The callback URI ID. This must be a universally unique ID (UUID)."
+    },
+    "url": {
+      "type": "string",
+      "description": "Your project's callback URI. This can be HTTPS or a deeplink (for example,\n`<package/bundle-name>://<deeplink>`).\n\nNylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS."
+    },
+    "settings": {
+      "description": "Additional platform settings and configurations for the iOS callback URI.",
+      "type": "object",
+      "required": [
+        "bundle_id"
+      ],
+      "properties": {
+        "bundle_id": {
+          "type": "string",
+          "description": "The `bundle_id` (Bundle Identifier) is a unique identifier for an iOS app. It's set in the Xcode project and follows a reverse domain name style."
+        },
+        "app_store_id": {
+          "type": "string",
+          "description": "Unique identifier for your app on the Apple App Store. This ID is assigned to your app when you submit it to the App Store and it is approved."
+        },
+        "team_id": {
+          "type": "string",
+          "description": "Unique identifier for your Apple Developer Account or team."
+        }
+      }
+    }
+  }
+}

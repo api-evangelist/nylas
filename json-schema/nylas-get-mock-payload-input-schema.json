@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-get-mock-payload-input-schema.json",
+  "title": "Input Payload",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-pub-sub-notifications-api-openapi.yml#/components/schemas/get_mock_payload_input",
+  "type": "object",
+  "required": [
+    "trigger_type",
+    "webhook_url"
+  ],
+  "properties": {
+    "trigger_type": {
+      "type": "string",
+      "enum": [
+        "calendar.created",
+        "calendar.updated",
+        "calendar.deleted",
+        "event.created",
+        "event.updated",
+        "event.deleted",
+        "grant.created",
+        "grant.updated",
+        "grant.deleted",
+        "grant.expired",
+        "message.send_success",
+        "message.send_failed",
+        "message.bounce_detected",
+        "message.created",
+        "message.created.truncated",
+        "message.created.cleaned",
+        "message.updated",
+        "message.updated.truncated",
+        "contact.updated",
+        "contact.deleted",
+        "folder.created",
+        "folder.updated",
+        "folder.deleted",
+        "message.opened",
+        "message.link_clicked",
+        "thread.replied"
+      ],
+      "description": "The event that will trigger the mock notification. See the\n[notification schemas](/docs/reference/notifications/) for details about each\ntrigger type.\n\nSee the [Grants](/docs/reference/api/manage-grants/), [Calendar](/docs/reference/api/calendar/),\n[Events](/docs/reference/api/events/), and [Messages](/docs/reference/api/messages/) references\nfor information on how to trigger each event type.\n\nYou can test `message.created.truncated` and `message.updated.truncated` notifications using this\nendpoint. For more information, see\n[Truncated webhooks](/docs/v3/notifications/#truncated-webhooks)."
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-availability-rules-schema.json",
+  "title": "availability_rules",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-calendar-api-openapi.yml#/components/schemas/availability_rules",
+  "type": "object",
+  "properties": {
+    "availability_method": {
+      "type": "string",
+      "default": "max-availability",
+      "enum": [
+        "collective",
+        "max-fairness",
+        "max-availability"
+      ]
+    },
+    "buffer": {
+      "type": "object",
+      "description": "The amount of buffer time Nylas adds around existing meetings, in minutes. For example, if an\naccount has a meeting scheduled from 10:00–11:00a.m., and you set a buffer of 30 minutes, Nylas\ntreats 9:30–11:30a.m. as busy.",
+      "$ref": "#/$defs/availability_buffer"
+    },
+    "default_open_hours": {
+      "type": "array",
+      "description": "A default set of open hours to apply to all participants. You can overwrite these open hours for\nindividual participants by specifying `open_hours` on the Participant object.",
+      "items": {
+        "$ref": "#/$defs/availability_open_hours"
+      }
+    },
+    "round_robin_group_id": {
+      "type": "string",
+      "description": "The ID on events that Nylas considers when calculating the order of round-robin participants.\nThis is used for both max-fairness and max-availability calculations.\n\nTo calculate participant order correctly, set the metadata key `key5` to the same value on any\nevents you want to consider for the current set of round-robin participants. You can set this\nkey to any value that helps you identify events used to calculate availability in this group\n(for example, `new_subscriber_onboarding`)."
+    },
+    "tentative_as_busy": {
+      "type": "boolean",
+      "default": true,
+      "description": "(Microsoft and EWS only) When `true`, Nylas treats tentative events as busy."
+    }
+  },
+  "$defs": {
+    "availability_buffer": {
+      "title": "buffer",
+      "type": "object",
+      "properties": {
+        "before": {
+          "type": "integer",
+          "description": "The amount of buffer time to add before meetings, in increments of five minutes. For example,\nif an account has a meeting scheduled from 10:00–11:00a.m., and you set a `before` buffer of\n30 minutes, Nylas treats 9:30–11:00a.m. as busy.\n\nThis value must be between 0 and 120, and must be divisible by 5.",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 120
+        },
+        "after": {
+          "type": "integer",
+          "description": "The amount of buffer time to add after meetings, in increments of five minutes. For example, if\nan account has a meeting scheduled from 10:00–11:00a.m., and you set an `after` buffer of 15\nminutes, Nylas treats 10:00–11:15a.m. as busy.\n\nThis value must be between 0 and 120, and must be divisible by 5.",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 120
+        }
+      }
+    },
+    "availability_open_hours": {
+      "description": "A time block when a participant is available for meetings.",
+      "type": "object",
+      "title": "Open Hours",
+      "properties": {
+        "days": {
+          "type": "array",
+          "description": "The days of the week that the open hours settings are applied to. Sunday corresponds to `0`, and\nSaturday corresponds to `6`.",
+          "items": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The calendar's time zone as an [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string."
+        },
+        "start": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The start time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.\n\nThe minimum start time is `0:00`, and the maximum is `23:49`."
+        },
+        "end": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The end time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes."
+        },
+        "exdates": {
+          "type": "array",
+          "description": "A list of dates that Nylas excludes from the account's open hours, in `YYYY-MM-DD` format.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

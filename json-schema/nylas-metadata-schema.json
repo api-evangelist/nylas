@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-metadata-schema.json",
+  "title": "Metadata",
+  "description": "The metadata associated with the object. For more information, see\n[Metadata](/docs/reference/api/#metadata).",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-transactional-send-api-openapi.yml#/components/schemas/metadata",
+  "type": "object",
+  "additionalProperties": {
+    "type": "string",
+    "description": "A key-value pair.",
+    "maxLength": 500
+  },
+  "maxProperties": 50
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-web-desktop-callback-no-settings-schema.json",
+  "title": "Web or Desktop",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-applications-api-openapi.yml#/components/schemas/webDesktopCallbackNoSettings",
+  "properties": {
+    "platform": {
+      "type": "string",
+      "description": "Platform identifier",
+      "enum": [
+        "web",
+        "desktop"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "description": "The callback URI ID. This must be a universally unique ID (UUID)."
+    },
+    "url": {
+      "type": "string",
+      "description": "Your project's callback URI, including the protocol. Nylas accepts HTTP for localhost development\n_only_. Otherwise, you need to use HTTPS."
+    }
+  }
+}

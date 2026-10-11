@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-android-callbackw-settings-schema.json",
+  "title": "Android",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-applications-api-openapi.yml#/components/schemas/AndroidCallbackwSettings",
+  "properties": {
+    "platform": {
+      "type": "string",
+      "description": "Platform identifier",
+      "enum": [
+        "android"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "description": "The callback URI ID. This must be a universally unique ID (UUID)."
+    },
+    "url": {
+      "type": "string",
+      "description": "Your project's callback URI. This can be HTTPS or a deeplink (for example,\n`<package/bundle-name>://<deeplink>`).\n\nNylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS."
+    },
+    "settings": {
+      "description": "Additional platform settings and configurations for the Android callback URI.",
+      "type": "object",
+      "required": [
+        "package_name",
+        "sha1_certificate_fingerprint"
+      ],
+      "properties": {
+        "package_name": {
+          "type": "string",
+          "description": "Find your app's Package Name in the Android Manifest. It's a unique identifier that distinguishes your app on the Google Play Store and on the device. It follows a reverse domain name notation, such as `com.example.myapp`."
+        },
+        "sha1_certificate_fingerprint": {
+          "type": "string",
+          "description": "A SHA-1 hash of the app's signing certificate. This ensures that only the _signed_ version of your app can use the redirect URI."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-migration-job-schema.json",
+  "title": "MigrationJob",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-app-migration-api-openapi.yml#/components/schemas/MigrationJob",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job_id",
+    "type",
+    "public_application_id",
+    "status",
+    "count_all",
+    "count_success",
+    "count_failed",
+    "count_warning",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "An identifier for the migration job."
+    },
+    "type": {
+      "type": "string",
+      "description": "The type of job.",
+      "enum": [
+        "snapshot",
+        "migration"
+      ]
+    },
+    "public_application_id": {
+      "type": "string",
+      "description": "The ID of v3 application this job is running for."
+    },
+    "status": {
+      "type": "string",
+      "description": "The state of the job.\n\n- **Pending**: The job has been created, but not started. Batch clone runs only after the linked\nsnapshot job is completed.\n- **Running**: The job is currently running.\n- **Completed**: The job has successfully finished all migrations.\n- **Failed**: _All_ migrations failed.\n- **Partial**: The job successfully migrated _some_ accounts, but some could not be migrated or were created as \"placeholder\" grants.",
+      "enum": [
+        "pending",
+        "running",
+        "completed",
+        "failed",
+        "partial"
+      ]
+    },
+    "count_all": {
+      "type": "integer",
+      "description": "A total number of accounts to be migrated. The total is a sum of the successful and failed migrations."
+    },
+    "count_success": {
+      "type": "integer",
+      "description": "The number of accounts that were successfully migrated."
+    },
+    "count_failed": {
+      "type": "integer",
+      "description": "The number of accounts that were unable to migrate."
+    },
+    "count_warning": {
+      "type": "integer",
+      "description": "The number of accounts that were migrated as invalid grants (\"placeholder\" grant ready for re-authentication)."
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "The time when the job was created, in seconds using the Unix timestamp format."
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "The time the job was updated, in seconds using the Unix timestamp format."
+    },
+    "linked_job_id": {
+      "type": "string",
+      "description": "The bulk migration tool creates two separate jobs that run one after the other. This ID links them together."
+    }
+  }
+}

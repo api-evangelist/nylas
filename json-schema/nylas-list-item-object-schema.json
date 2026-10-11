@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-list-item-object-schema.json",
+  "title": "ListItem",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-lists-api-openapi.yml#/components/schemas/ListItemObject",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Globally unique identifier for the list item (UUID)."
+    },
+    "list_id": {
+      "type": "string",
+      "description": "The ID of the list that contains the item."
+    },
+    "value": {
+      "type": "string",
+      "description": "The item's value, normalized (lowercased and trimmed) on write. The format depends on the parent list's `type`:\na domain, a top-level domain, or an email address."
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "When the item was added to the list, in seconds using the Unix timestamp format."
+    }
+  }
+}

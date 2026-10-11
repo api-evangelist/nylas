@@ -1,0 +1,375 @@
+generated: '2026-10-02'
+method: derived
+source:
+  - description: derived from Nylas MCP server-card tools and OpenAPI operationIds
+crosswalk:
+  - tool: list_messages
+    category: email
+    rest: [get-messages]
+    binding: inferred
+    confidence: medium
+  - tool: get_message
+    category: email
+    rest: [get-messages-id]
+    binding: inferred
+    confidence: high
+  - tool: send_message
+    category: email
+    rest: [send-message]
+    binding: inferred
+    confidence: high
+  - tool: list_calendars
+    category: calendar
+    rest: [list-calendars]
+    binding: inferred
+    confidence: medium
+  - tool: create_event
+    category: calendar
+    rest: [create-event]
+    binding: inferred
+    confidence: high
+  - tool: send_notetaker
+    category: notetaker
+    rest: [send-notetaker]
+    binding: inferred
+    confidence: medium
+  - tool: schedule_notetaker
+    category: notetaker
+    rest: [schedule-notetaker]
+    binding: inferred
+    confidence: medium
+  - tool: list_notetakers
+    category: notetaker
+    rest: [list-notetakers]
+    binding: inferred
+    confidence: medium
+  - tool: get_notetaker
+    category: notetaker
+    rest: [get-notetaker]
+    binding: inferred
+    confidence: high
+  - tool: delete_event
+    category: calendar
+    rest: [delete-event]
+    binding: inferred
+    confidence: high
+  - tool: delete_draft
+    category: email
+    rest: [delete-draft]
+    binding: inferred
+    confidence: high
+  - tool: confirm_send_message
+    category: email
+    rest: [confirm-send-message]
+    binding: inferred
+    confidence: high
+  - tool: confirm_send_draft
+    category: email
+    rest: [confirm-send-draft]
+    binding: inferred
+    confidence: high
+  - tool: availability
+    category: scheduling
+    rest: [availability]
+    binding: inferred
+    confidence: high
+  - tool: get_contact
+    category: contacts
+    rest: [get-contact]
+    binding: inferred
+    confidence: high
+  - tool: list_contacts
+    category: contacts
+    rest: [list-contacts]
+    binding: inferred
+    confidence: high
+  - tool: get_grant
+    category: auth
+    rest: [get-grant]
+    binding: inferred
+    confidence: high
+  - tool: current_time
+    category: utility
+    rest: [current-time]
+    binding: inferred
+    confidence: high
+  - tool: epoch_to_datetime
+    category: utility
+    rest: [epoch-to-datetime]
+    binding: inferred
+    confidence: high
+  - tool: datetime_to_epoch
+    category: utility
+    rest: [datetime-to-epoch]
+    binding: inferred
+    confidence: high
+  - tool: get_search_syntax
+    category: search
+    rest: [get-search-syntax]
+    binding: inferred
+    confidence: medium
+  - tool: download_attachment
+    category: email
+    rest: [download-attachment]
+    binding: inferred
+    confidence: high
+  - tool: list_folders
+    category: email
+    rest: [list-folders]
+    binding: inferred
+    confidence: medium
+  - tool: get_folder_by_id
+    category: email
+    rest: [get-folder]
+    binding: inferred
+    confidence: high
+  - tool: list_threads
+    category: email
+    rest: [list-threads]
+    binding: inferred
+    confidence: medium
+  - tool: create_draft
+    category: email
+    rest: [create-draft]
+    binding: inferred
+    confidence: high
+  - tool: update_draft
+    category: email
+    rest: [update-draft]
+    binding: inferred
+    confidence: high
+  - tool: send_draft
+    category: email
+    rest: [send-draft]
+    binding: inferred
+    confidence: high
+  - tool: schedule_standalone_notetaker
+    category: notetaker
+    rest: [schedule-standalone-notetaker]
+    binding: inferred
+    confidence: medium
+  - tool: list_standalone_notetakers
+    category: notetaker
+    rest: [list-standalone-notetakers]
+    binding: inferred
+    confidence: medium
+  - tool: get_standalone_notetaker
+    category: notetaker
+    rest: [get-standalone-notetaker]
+    binding: inferred
+    confidence: high
+  - tool: get_standalone_notetaker_media
+    category: notetaker
+    rest: [get-standalone-notetaker-media]
+    binding: inferred
+    confidence: high
+  - tool: send_standalone_notetaker
+    category: notetaker
+    rest: [send-standalone-notetaker]
+    binding: inferred
+    confidence: medium
+  - tool: get_notetaker_media
+    category: notetaker
+    rest: [get-notetaker-media]
+    binding: inferred
+    confidence: high
+  - tool: get_notetaker_transcript
+    category: notetaker
+    rest: [get-notetaker-transcript]
+    binding: inferred
+    confidence: high
+  - tool: list_standalone_notetakers
+    category: notetaker
+    rest: [list-standalone-notetakers]
+    binding: inferred
+    confidence: medium
+  - tool: get_standalone_notetaker_media
+    category: notetaker
+    rest: [get-standalone-notetaker-media]
+    binding: inferred
+    confidence: high
+  - tool: get_notetaker_transcript
+    category: notetaker
+    rest: [get-notetaker-transcript]
+    binding: inferred
+    confidence: high
+  - tool: schedule_notetaker
+    category: notetaker
+    rest: [schedule-notetaker]
+    binding: inferred
+    confidence: high
+  - tool: send_notetaker
+    category: notetaker
+    rest: [send-notetaker]
+    binding: inferred
+    confidence: high
+  - tool: list_notetakers
+    category: notetaker
+    rest: [list-notetakers]
+    binding: inferred
+    confidence: high
+  - tool: get_notetaker
+    category: notetaker
+    rest: [get-notetaker]
+    binding: inferred
+    confidence: high
+  - tool: get_notetaker_media
+    category: notetaker
+    rest: [get-notetaker-media]
+    binding: inferred
+    confidence: high
+  - tool: get_notetaker_transcript
+    category: notetaker
+    rest: [get-notetaker-transcript]
+    binding: inferred
+    confidence: high
+  - tool: send_standalone_notetaker
+    category: notetaker
+    rest: [send-standalone-notetaker]
+    binding: inferred
+    confidence: high
+  - tool: schedule_standalone_notetaker
+    category: notetaker
+    rest: [schedule-standalone-notetaker]
+    binding: inferred
+    confidence: high
+  - tool: list_standalone_notetakers
+    category: notetaker
+    rest: [list-standalone-notetakers]
+    binding: inferred
+    confidence: high
+  - tool: get_standalone_notetaker
+    category: notetaker
+    rest: [get-standalone-notetaker]
+    binding: inferred
+    confidence: high
+  - tool: get_standalone_notetaker_media
+    category: notetaker
+    rest: [get-standalone-notetaker-media]
+    binding: inferred
+    confidence: high
+  - tool: get_standalone_notetaker_transcript
+    category: notetaker
+    rest: [get-standalone-notetaker-transcript]
+    binding: inferred
+    confidence: medium
+  - tool: list_folders
+    category: email
+    rest: [list-folders]
+    binding: inferred
+    confidence: medium
+  - tool: get_folder_by_id
+    category: email
+    rest: [get-folder]
+    binding: inferred
+    confidence: high
+  - tool: list_threads
+    category: email
+    rest: [list-threads]
+    binding: inferred
+    confidence: medium
+  - tool: get_message
+    category: email
+    rest: [get-messages-id]
+    binding: inferred
+    confidence: high
+  - tool: download_attachment
+    category: email
+    rest: [download-attachment]
+    binding: inferred
+    confidence: high
+  - tool: delete_draft
+    category: email
+    rest: [delete-draft]
+    binding: inferred
+    confidence: high
+  - tool: delete_event
+    category: calendar
+    rest: [delete-event]
+    binding: inferred
+    confidence: high
+  - tool: confirm_send_message
+    category: email
+    rest: [confirm-send-message]
+    binding: inferred
+    confidence: high
+  - tool: confirm_send_draft
+    category: email
+    rest: [confirm-send-draft]
+    binding: inferred
+    confidence: high
+  - tool: availability
+    category: scheduling
+    rest: [availability]
+    binding: inferred
+    confidence: high
+  - tool: get_contact
+    category: contacts
+    rest: [get-contact]
+    binding: inferred
+    confidence: high
+  - tool: list_contacts
+    category: contacts
+    rest: [list-contacts]
+    binding: inferred
+    confidence: high
+  - tool: get_grant
+    category: auth
+    rest: [get-grant]
+    binding: inferred
+    confidence: high
+  - tool: current_time
+    category: utility
+    rest: [current-time]
+    binding: inferred
+    confidence: high
+  - tool: epoch_to_datetime
+    category: utility
+    rest: [epoch-to-datetime]
+    binding: inferred
+    confidence: high
+  - tool: datetime_to_epoch
+    category: utility
+    rest: [datetime-to-epoch]
+    binding: inferred
+    confidence: high
+  - tool: get_search_syntax
+    category: search
+    rest: [get-search-syntax]
+    binding: inferred
+    confidence: medium
+  - tool: download_attachment
+    category: email
+    rest: [download-attachment]
+    binding: inferred
+    confidence: high
+  - tool: list_folders
+    category: email
+    rest: [list-folders]
+    binding: inferred
+    confidence: medium
+  - tool: get_folder_by_id
+    category: email
+    rest: [get-folder]
+    binding: inferred
+    confidence: high
+  - tool: list_threads
+    category: email
+    rest: [list-threads]
+    binding: inferred
+    confidence: medium
+  - tool: create_draft
+    category: email
+    rest: [create-draft]
+    binding: inferred
+    confidence: high
+  - tool: update_draft
+    category: email
+    rest: [update-draft]
+    binding: inferred
+    confidence: high
+  - tool: send_draft
+    category: email
+    rest: [send-draft]
+    binding: inferred
+    confidence: high

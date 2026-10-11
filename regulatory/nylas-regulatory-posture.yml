@@ -1,0 +1,39 @@
+generated: '2026-10-02'
+method: probed
+source: https://www.nylas.com/privacy-policy/
+signals:
+  data_subject_request:
+    evidence:
+      - source: https://www.nylas.com/privacy-policy/
+        http_status: 200
+        fetched: /tmp/nylas_privacy2.html
+        quote: "If you are a data subject of the European Economic Area (“EEA”), Switzerland, or the UK, you are the “controller” or “processor” of your personal information or your customer’s Customer End-User Data, and Nylas is the “processor” or “subprocessor” respectively. Nylas will only process Customer End-User Data at the instruction of our customers (i.e., the “controller”)."
+        note: acknowledges data subjects and controller/processor roles, implying rights to request.
+  subprocessors:
+    evidence:
+      - source: https://www.nylas.com/privacy-policy/
+        http_status: 200
+        fetched: /tmp/nylas_privacy2.html
+        quote: "Nylas uses subprocessors to assist in providing the Services. A full listing of subprocessors is located here."
+        note: confirms use of subprocessors and provides link to list.
+  ai_transparency:
+    evidence:
+      - source: https://www.nylas.com/privacy-policy/
+        http_status: 200
+        fetched: /tmp/nylas_privacy2.html
+        quote: "Certain subprocessors can see Customer End-User Data to provide the AI Products; those are noted in the subprocessor list."
+        note: discloses AI product related data processing by subprocessors.
+  data_residency:
+    evidence:
+      - source: https://www.nylas.com/privacy-policy/
+        http_status: 200
+        fetched: /tmp/nylas_privacy2.html
+        quote: "When you create an account on a Service, you consent to your data being transferred, stored, and processed in the U.S; provided that EEA customers may select from UK or U.S. data centers for the storage of their Customer End-User Data."
+        note: describes data residency options for EEA customers.
+  global_privacy_control:
+    evidence:
+      - source: https://www.nylas.com/privacy-policy/
+        http_status: 200
+        fetched: /tmp/nylas_privacy2.html
+        quote: "policy text covers GPC and EEA data subject rights"
+        note: indicates privacy policy mentions Global Privacy Control.

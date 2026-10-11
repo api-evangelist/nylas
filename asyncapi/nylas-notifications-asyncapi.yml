@@ -1,5 +1,5 @@
 # Nylas Notifications — AsyncAPI 3.1. Authored by Nylas; see info.x-provenance.
-asyncapi: 3.1.0
+asyncapi: 3.0.0
 id: urn:com:nylas:v3:notifications
 info:
   title: Nylas Notifications

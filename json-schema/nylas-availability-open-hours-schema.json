@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-availability-open-hours-schema.json",
+  "title": "Open Hours",
+  "description": "A time block when a participant is available for meetings.",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-calendar-api-openapi.yml#/components/schemas/availability_open_hours",
+  "type": "object",
+  "properties": {
+    "days": {
+      "type": "array",
+      "description": "The days of the week that the open hours settings are applied to. Sunday corresponds to `0`, and\nSaturday corresponds to `6`.",
+      "items": {
+        "type": "integer",
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The calendar's time zone as an [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string."
+    },
+    "start": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The start time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.\n\nThe minimum start time is `0:00`, and the maximum is `23:49`."
+    },
+    "end": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The end time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes."
+    },
+    "exdates": {
+      "type": "array",
+      "description": "A list of dates that Nylas excludes from the account's open hours, in `YYYY-MM-DD` format.",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

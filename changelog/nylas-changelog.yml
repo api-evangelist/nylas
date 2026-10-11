@@ -1,0 +1,77 @@
+generated: '2026-10-02'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://developer.nylas.com/docs/changelogs/
+sources:
+- https://developer.nylas.com/docs/changelogs/
+- https://developer.nylas.com/docs/changelogs/
+entries:
+- breaking: false
+  highlights:
+  - Agent Accounts Calendar calendar_id now accepts an Agent Account's email address as an alias for its primary calendar, and Agent Account calendar
+    email now shows the account's display name.
+  - Python SDK v6.18.0 SDK Adds tracking_options.domain_name for custom link and open tracking hostnames, Contact metadata with metadata_pair
+    filtering, and messages.send_raw_mime() to send a raw RFC 822 MIME message.
+  - Workflow logs & send fixes Email Workflow runs now appear in the Dashboard's System logs, and workflows with a from email must use an application-level
+    template.
+  date: '2026-10-01'
+- breaking: false
+  highlights:
+  - Fixed Idempotency-Key and SMTP send stalls, IMAP thread_id and has_attachment filtering, and Scheduler availability ignoring min_booking_notice.
+  date: '2026-09-28'
+- breaking: false
+  highlights:
+  - The domain field on workspaces is now optional.
+  - Automatic grouping is now off by default.
+  date: '2026-09-24'
+- breaking: false
+  highlights:
+  - '@nylas/identity v3.2.0 & @nylas/login-component v4.1.0 Agent Account organizers can now sign in to the Scheduler Editor through hosted login
+    with their email address and app password, so they can create and manage their own Scheduler Configurations.'
+  date: '2026-09-23'
+- breaking: false
+  highlights:
+  - '@nylas/react v3.2.17 & @nylas/web-elements v2.6.0 SDK bookingInfo.primaryParticipant now accepts nameHidden and emailHidden to leave prefilled
+    name/email fields out of the Scheduler booking form entirely while still submitting the prefilled value.'
+  - Also fixes prefilled values not being sanitized and being ignored at load time.
+  date: '2026-09-22'
+- breaking: false
+  highlights:
+  - Notetaker Save Notetaker defaults once per application, workspace, calendar, or event.
+  - Configurations also unlock deduplication, custom announcements, custom avatars, pause dispatch, and per‑customer retention.
+  date: '2026-09-21'
+- breaking: false
+  highlights:
+  - Notetaker joins that fail because of an invalid or expired Zoom meeting‑link token now report a specific invalid_token reason in notetaker.meeting_state
+    webhooks and status responses, instead of a generic error.
+  date: '2026-09-18'
+- breaking: false
+  highlights:
+  - Scheduler booking cancellations that didn’t send emails when the booking had a Notetaker.
+  - Time slots that couldn’t be rebooked after the event was deleted on the calendar.
+  - Gmail address filters that were case‑sensitive.
+  date: '2026-09-18'
+- breaking: false
+  highlights:
+  - Fixed a media timestamp unit mismatch that could misalign speaker label start and end times in Notetaker transcripts.
+  date: '2026-09-15'
+- breaking: false
+  highlights:
+  - Fixed an issue where creating a new booking didn’t check that booking’s own configured buffer time against already‑scheduled meetings, which
+    could allow a booking to land closer to an existing meeting than its buffer setting allowed.
+  date: '2026-09-15'
+- breaking: false
+  highlights:
+  - Agent Account mailboxes no longer show duplicate messages from provider SMTP retries.
+  - Notetaker settings on Agent Account calendars and events now persist and sync correctly.
+  date: '2026-09-10'
+- breaking: false
+  highlights:
+  - IMAP thread pagination keeps its search filters.
+  - Thread update responses include folders.
+  - Draft replacement survives a concurrent index deletion.
+  - Inline attachments keep their disposition when sending.
+  date: '2026-09-09'
+current_version: '2026-10-01'
+note: Versioning scheme is date‑based releases (entries are listed by release date).
+docs: https://developer.nylas.com/docs/changelogs/

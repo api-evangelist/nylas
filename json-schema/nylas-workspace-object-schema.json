@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-workspace-object-schema.json",
+  "title": "WorkspaceObject",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-workspaces-api-openapi.yml#/components/schemas/WorkspaceObject",
+  "type": "object",
+  "properties": {
+    "application_id": {
+      "type": "string",
+      "description": "The ID of the application the workspace is associated with."
+    },
+    "auto_group": {
+      "type": "boolean",
+      "description": "When `true`, specifies that newly created grants in the application are automatically assigned\nto the workspace if their email address' domain matches the `domain`."
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "When the workspace was created, in seconds using the Unix timestamp format."
+    },
+    "default": {
+      "type": "boolean",
+      "description": "When `true`, the workspace is the application's default workspace, which Nylas creates and\nmanages. Nylas includes this field when you retrieve workspaces. For more information, see\nthe [Workspaces overview](/docs/reference/api/workspaces/)."
+    },
+    "domain": {
+      "type": "string",
+      "description": "The top-level domain associated with the workspace."
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the workspace."
+    },
+    "policy_id": {
+      "type": "string",
+      "description": "The ID of the [policy](/docs/v3/agent-accounts/policies-rules-lists/) attached to the workspace.\nThe policy applies to Agent Accounts in the workspace."
+    },
+    "rule_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "The IDs of any [rules](/docs/v3/agent-accounts/policies-rules-lists/#rules) attached to the\nworkspace. The rules apply to Agent Accounts in the workspace."
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "When the workspace was last updated, in seconds using the Unix timestamp format. Initially, this\nvalue is the same as `created_at`."
+    },
+    "workspace_id": {
+      "type": "string",
+      "description": "The workspace ID."
+    }
+  }
+}

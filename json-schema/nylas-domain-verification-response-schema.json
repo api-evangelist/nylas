@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/nylas/main/json-schema/nylas-domain-verification-response-schema.json",
+  "title": "DomainVerificationResponse",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/nylas-manage-domains-api-openapi.yml#/components/schemas/DomainVerificationResponse",
+  "type": "object",
+  "properties": {
+    "domain_id": {
+      "type": "string",
+      "description": "The ID of the domain."
+    },
+    "attempt": {
+      "type": "object",
+      "description": "Details about the verification attempt.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The type of DNS verification.",
+          "enum": [
+            "ownership",
+            "mx",
+            "spf",
+            "dkim",
+            "feedback"
+          ]
+        },
+        "options": {
+          "type": "object",
+          "description": "The DNS record values to configure at your DNS provider.",
+          "properties": {
+            "host": {
+              "type": "string",
+              "description": "The DNS host value."
+            },
+            "type": {
+              "type": "string",
+              "description": "The DNS record type."
+            },
+            "value": {
+              "type": "string",
+              "description": "The DNS record value to set."
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "description": "The status of the verification attempt.",
+      "enum": [
+        "done",
+        "failed",
+        "pending"
+      ]
+    },
+    "created_at": {
+      "type": "number",
+      "description": "When the verification attempt was created, in seconds using the Unix timestamp format."
+    },
+    "expires_at": {
+      "type": "number",
+      "description": "When the verification attempt expires, in seconds using the Unix timestamp format."
+    },
+    "message": {
+      "type": "string",
+      "description": "A human-readable message about the verification status."
+    }
+  }
+}
