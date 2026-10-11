@@ -79,6 +79,27 @@ paths:
           $ref: '#/components/responses/504'
 components:
   schemas:
+    resource_floor_name:
+      title: Resource Floor Name
+      type: string
+      description: The name of the floor where the room is located.
+      example: 1st Floor
+    grant_id:
+      title: Grant ID
+      type: string
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
+    resource_floor_section:
+      title: Resource Floor Section
+      type: string
+      description: The section of the floor where the room is located.
+      example: A
+    resource_capacity:
+      title: Resource Capacity
+      type: integer
+      description: The number of people the room can seat.
+      example: 5
     resource:
       title: Room Resource
       type: object
@@ -101,37 +122,6 @@ components:
           type: string
           description: The object type (in this case, `room_resource`).
           example: room_resource
-    grant_id:
-      title: Grant ID
-      type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
-    resource_email:
-      title: Resource Email
-      type: string
-      description: The email address associated with the room resource.
-      example: conference-room@resources.google.com
-    resource_building:
-      title: Resource Building
-      type: string
-      description: The name of the building where the room is located.
-      example: Building 1
-    resource_floor_number:
-      title: Resource Floor Number
-      type: integer
-      description: The floor number where the room is located.
-      example: 1
-    resource_capacity:
-      title: Resource Capacity
-      type: integer
-      description: The number of people the room can seat.
-      example: 5
-    resource_floor_name:
-      title: Resource Floor Name
-      type: string
-      description: The name of the floor where the room is located.
-      example: 1st Floor
     common_response_with_cursor:
       properties:
         request_id:
@@ -148,34 +138,21 @@ components:
       example:
         request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
         next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    resource_floor_section:
-      title: Resource Floor Section
+    resource_email:
+      title: Resource Email
       type: string
-      description: The section of the floor where the room is located.
-      example: A
-  parameters:
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
+      description: The email address associated with the room resource.
+      example: conference-room@resources.google.com
+    resource_building:
+      title: Resource Building
+      type: string
+      description: The name of the building where the room is located.
+      example: Building 1
+    resource_floor_number:
+      title: Resource Floor Number
+      type: integer
+      description: The floor number where the room is located.
+      example: 1
   responses:
     '504':
       description: Provider Failure
@@ -205,6 +182,34 @@ components:
                 error:
                   type: provider_error
                   message: Provider request timed out.
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
     resources:
       description: Room resource bookings
       content:
@@ -303,34 +308,29 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
+  parameters:
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

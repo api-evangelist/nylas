@@ -135,6 +135,34 @@ paths:
       - SCHEDULER_SESSION_TOKEN: []
 components:
   responses:
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
     '404':
       description: Not Found
       content:
@@ -174,8 +202,8 @@ components:
                   provider_error:
                     code: MailboxNotEnabledForRESTAPI
                     message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    '504':
-      description: Provider Failure
+    '429':
+      description: Rate Limit
       content:
         application/json:
           schema:
@@ -196,12 +224,46 @@ components:
                     type: string
                     description: The error message.
           examples:
-            Provider Failure:
+            Not Found:
               value:
                 request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
                 error:
-                  type: provider_error
-                  message: Provider request timed out.
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
+          examples:
+            Unauthorized:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
     availability:
       description: Return availability
       content:
@@ -252,40 +314,6 @@ components:
                     event_id": AAkALgAAAAAAHYQDEapmEc2byACqAC-EtegrfdsczUlhMECYNfAbiKd_mQABCjy6hAAA_20250409T193000Z
                     calendar_id: primary
                     master_id: AAkALgAAAAAAHYQDEapmEc2byACqAC-EfsrgdfeasECYNfAbiKd_mQABCjy6hAAA
-    '401':
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Unauthorized:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: unauthorized
-                  message: Unauthorized
-                  provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
     '400':
       description: Bad Request
       content:
@@ -326,45 +354,7 @@ components:
                 error:
                   type: api.invalid_idempotency_key
                   message: Idempotency-Key must be 256 characters or fewer.
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
   schemas:
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
     availability_time_slot:
       title: TimeSlot
       type: object
@@ -409,6 +399,16 @@ components:
           description: 'An array of the available time slots when you can create a meeting using the requested settings.
 
             This field may be `null` if no time slots are available. Treat `null` the same as an empty array.'
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

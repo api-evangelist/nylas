@@ -246,7 +246,188 @@ paths:
               schema:
                 $ref: '#/components/schemas/400-2'
 components:
+  parameters:
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+  requestBodies:
+    template_render:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - variables
+            properties:
+              strict:
+                type: boolean
+                description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
+
+                  defined in the `variables` object.'
+                default: true
+                example: true
+              variables:
+                type: object
+                description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                  template.'
+                additionalProperties:
+                  type: string
+                example:
+                  user:
+                    name: Leyah
+                    surname: Miller
+    template_create:
+      description: Create template request
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - body
+            - name
+            - subject
+            properties:
+              body:
+                type: string
+                description: The body content of the template, in HTML format.
+                example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+              engine:
+                type: string
+                description: The templating engine to use.
+                enum:
+                - handlebars
+                - mustache
+                - nunjucks
+                - twig
+                default: mustache
+                example: mustache
+              name:
+                type: string
+                description: The name of the template.
+                example: Booking confirmed message
+              subject:
+                type: string
+                description: The subject line of the template.
+                example: '{{user.name}}, your booking is confirmed!'
+    template_render_html:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - body
+            - engine
+            - variables
+            properties:
+              body:
+                type: string
+                description: The body content of the template, in HTML format.
+                example: <p>Hello {{user.name}}, this shows test was {{ foo }}.</p>
+              engine:
+                type: string
+                description: The templating engine to use.
+                enum:
+                - handlebars
+                - mustache
+                - nunjucks
+                - twig
+                example: mustache
+              strict:
+                type: boolean
+                description: 'When `true`, Nylas returns an error if the template contains variables that aren''t defined
+
+                  in the `variables` object.'
+                default: true
+                example: true
+              variables:
+                type: object
+                description: 'A set of key/value pairs representing variables to substitute for values in the
+
+                  template.'
+                additionalProperties:
+                  type: string
+                example:
+                  user:
+                    name: Leyah
+                    surname: Miller
+                  foo: testing successful
+    template_update:
+      description: Update template request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              body:
+                type: string
+                description: The body content of the template, in HTML format.
+                example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+              engine:
+                type: string
+                description: The templating engine to use.
+                enum:
+                - handlebars
+                - mustache
+                - nunjucks
+                - twig
+                example: mustache
+              name:
+                type: string
+                description: The name of the template.
+                example: Updated booking confirmed message
+              subject:
+                type: string
+                description: The subject line of the template.
+                example: '{{user.name}}, your booking is confirmed!'
   responses:
+    template_render:
+      description: Success. Returns rendered template.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3822450015-47d9207c-4d06-4e15-b3e7-752c5dd5585d
+              data:
+                type: object
+                required:
+                - body
+                - subject
+                properties:
+                  body:
+                    type: string
+                    description: The rendered HTML body content with variables substituted.
+                    example: <p>Hello Leyah, your booking has been confirmed.</p>
+                  subject:
+                    type: string
+                    description: The rendered subject content with variables substituted.
+                    example: Leyah, your booking is confirmed!
     delete_200_simple:
       description: 'Success: Object deleted'
       content:
@@ -260,6 +441,85 @@ components:
                 type: string
                 description: The ID of the request.
                 example: 3906564297-48e7fb5b-f220-427b-a4de-255736adba08
+    template:
+      description: Success. Returns template.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+              data:
+                $ref: '#/components/schemas/template'
+          example:
+            request_id: 3822087561-67d4f28f-a46b-4c90-8fd3-765a04105043
+            data:
+              id: 14c00cc8-648c-4381-ad10-52641d9bac8e
+              grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
+              app_id: null
+              engine: mustache
+              name: Booking confirmed message
+              subject: '{{user.name}}, your booking is confirmed!'
+              body: <p>Hello {{user.name}}, your booking has been confirmed.</p>
+              created_at: 1640995200
+              updated_at: 1640995200
+              object: template
+    template_render_html:
+      description: Success. Returns rendered HTML.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3907012912-13b5a9a4-f136-4761-a31b-68c6a8af825d
+              data:
+                type: object
+                required:
+                - body
+                properties:
+                  body:
+                    type: string
+                    description: The rendered HTML with variables substituted.
+                    example: <p>Hello Leyah, your booking has been confirmed.</p>
+    template_400:
+      description: 'Error: Bad request'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - error
+            - request_id
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 3704952820-faf9214c-8bdd-4419-9d9c-f8f5ee464d57
+              error:
+                type: object
+                required:
+                - message
+                - type
+                properties:
+                  type:
+                    type: string
+                    description: The type of error that occurred.
+                    example: api.invalid_request_error
+                  message:
+                    type: string
+                    description: A human-readable message describing the error.
+                    example: Validation of request body failed
     templates_list:
       description: Success. Returns list of templates.
       content:
@@ -314,113 +574,6 @@ components:
                 type: string
                 description: A cursor pointing to the next page of results for the request.
                 example: eyJjdXJzb3IiOiJ0ZW1wbGF0ZV8xMjMifQ==
-    template_400:
-      description: 'Error: Bad request'
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - error
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 3704952820-faf9214c-8bdd-4419-9d9c-f8f5ee464d57
-              error:
-                type: object
-                required:
-                - message
-                - type
-                properties:
-                  type:
-                    type: string
-                    description: The type of error that occurred.
-                    example: api.invalid_request_error
-                  message:
-                    type: string
-                    description: A human-readable message describing the error.
-                    example: Validation of request body failed
-    template_render:
-      description: Success. Returns rendered template.
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - data
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 3822450015-47d9207c-4d06-4e15-b3e7-752c5dd5585d
-              data:
-                type: object
-                required:
-                - body
-                - subject
-                properties:
-                  body:
-                    type: string
-                    description: The rendered HTML body content with variables substituted.
-                    example: <p>Hello Leyah, your booking has been confirmed.</p>
-                  subject:
-                    type: string
-                    description: The rendered subject content with variables substituted.
-                    example: Leyah, your booking is confirmed!
-    template_render_html:
-      description: Success. Returns rendered HTML.
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - data
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 3907012912-13b5a9a4-f136-4761-a31b-68c6a8af825d
-              data:
-                type: object
-                required:
-                - body
-                properties:
-                  body:
-                    type: string
-                    description: The rendered HTML with variables substituted.
-                    example: <p>Hello Leyah, your booking has been confirmed.</p>
-    template:
-      description: Success. Returns template.
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - data
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-              data:
-                $ref: '#/components/schemas/template'
-          example:
-            request_id: 3822087561-67d4f28f-a46b-4c90-8fd3-765a04105043
-            data:
-              id: 14c00cc8-648c-4381-ad10-52641d9bac8e
-              grant_id: 6c45fe5e-0bb6-41b9-9acc-ccb15bfc51eb
-              app_id: null
-              engine: mustache
-              name: Booking confirmed message
-              subject: '{{user.name}}, your booking is confirmed!'
-              body: <p>Hello {{user.name}}, your booking has been confirmed.</p>
-              created_at: 1640995200
-              updated_at: 1640995200
-              object: template
     '400':
       description: Bad Request
       content:
@@ -569,159 +722,6 @@ components:
           type: integer
           description: When the template was last updated, in seconds using the Unix timestamp format.
           example: 1640995200
-  requestBodies:
-    template_create:
-      description: Create template request
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - body
-            - name
-            - subject
-            properties:
-              body:
-                type: string
-                description: The body content of the template, in HTML format.
-                example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
-              engine:
-                type: string
-                description: The templating engine to use.
-                enum:
-                - handlebars
-                - mustache
-                - nunjucks
-                - twig
-                default: mustache
-                example: mustache
-              name:
-                type: string
-                description: The name of the template.
-                example: Booking confirmed message
-              subject:
-                type: string
-                description: The subject line of the template.
-                example: '{{user.name}}, your booking is confirmed!'
-    template_render_html:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - body
-            - engine
-            - variables
-            properties:
-              body:
-                type: string
-                description: The body content of the template, in HTML format.
-                example: <p>Hello {{user.name}}, this shows test was {{ foo }}.</p>
-              engine:
-                type: string
-                description: The templating engine to use.
-                enum:
-                - handlebars
-                - mustache
-                - nunjucks
-                - twig
-                example: mustache
-              strict:
-                type: boolean
-                description: 'When `true`, Nylas returns an error if the template contains variables that aren''t defined
-
-                  in the `variables` object.'
-                default: true
-                example: true
-              variables:
-                type: object
-                description: 'A set of key/value pairs representing variables to substitute for values in the
-
-                  template.'
-                additionalProperties:
-                  type: string
-                example:
-                  user:
-                    name: Leyah
-                    surname: Miller
-                  foo: testing successful
-    template_render:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - variables
-            properties:
-              strict:
-                type: boolean
-                description: 'When `true`, Nylas returns an error if the template contains variables that aren''t
-
-                  defined in the `variables` object.'
-                default: true
-                example: true
-              variables:
-                type: object
-                description: 'A set of key/value pairs representing variables to substitute for values in the
-
-                  template.'
-                additionalProperties:
-                  type: string
-                example:
-                  user:
-                    name: Leyah
-                    surname: Miller
-    template_update:
-      description: Update template request
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              body:
-                type: string
-                description: The body content of the template, in HTML format.
-                example: <p>Hello {{user.name}}, your booking has been confirmed.</p>
-              engine:
-                type: string
-                description: The templating engine to use.
-                enum:
-                - handlebars
-                - mustache
-                - nunjucks
-                - twig
-                example: mustache
-              name:
-                type: string
-                description: The name of the template.
-                example: Updated booking confirmed message
-              subject:
-                type: string
-                description: The subject line of the template.
-                example: '{{user.name}}, your booking is confirmed!'
-  parameters:
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
-
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
-
-        information.'
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
-
-        for more information.'
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

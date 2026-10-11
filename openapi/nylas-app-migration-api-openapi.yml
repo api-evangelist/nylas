@@ -572,329 +572,6 @@ paths:
         source: "curl --request GET \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/jobs?status=pending%2Crunning%2Cfailed%2Ccompleted&type=snapshot%2Cmigration&sort_by_completion=true' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --header 'Content-Type: application/json'"
 components:
   schemas:
-    AndroidCallbackwSettings:
-      title: Android
-      properties:
-        platform:
-          type: string
-          description: Platform identifier
-          enum:
-          - android
-        id:
-          type: string
-          description: The callback URI ID. This must be a universally unique ID (UUID).
-          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
-        url:
-          type: string
-          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
-
-            `<package/bundle-name>://<deeplink>`).
-
-
-            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
-          example: https://yourapp.com/callback
-        settings:
-          description: Additional platform settings and configurations for the Android callback URI.
-          type: object
-          required:
-          - package_name
-          - sha1_certificate_fingerprint
-          properties:
-            package_name:
-              type: string
-              description: Find your app's Package Name in the Android Manifest. It's a unique identifier that distinguishes your app on the Google Play Store and on the device. It follows a reverse domain name notation, such as `com.example.myapp`.
-              example: com.example.myapp
-            sha1_certificate_fingerprint:
-              type: string
-              description: A SHA-1 hash of the app's signing certificate. This ensures that only the _signed_ version of your app can use the redirect URI.
-              example: AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12
-    GrantObject:
-      type: object
-      required:
-      - created_at
-      - id
-      - provider
-      - scope
-      properties:
-        account_id:
-          type: string
-          description: 'The v2 Nylas account ID. This field appears only if the grant was created by migrating a v2
-
-            connected account.'
-          example: df0yq6c9okc6t9j4ejd5nyrt7
-        blocked:
-          type: boolean
-          description: When `true`, indicates that the grant is blocked from accessing the Nylas APIs.
-          example: false
-        created_at:
-          type: integer
-          description: When the grant was created, in seconds using the Unix timestamp format.
-          example: 1617817109
-        email:
-          type: string
-          description: 'The email address associated with the grant. If the provider supports `id_token` and exposes the
-
-            user''s email address, Nylas automatically extracts this value.'
-          example: nyla@example.com
-        grant_status:
-          type: string
-          description: Specifies whether the grant is valid or the user needs to re-authenticate.
-          enum:
-          - invalid
-          - valid
-          example: valid
-        id:
-          type: string
-          description: A unique identifier for the grant.
-          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
-        ip:
-          type: string
-          description: 'The user''s client IP address. Mostly useful for
-
-            [Hosted OAuth](/docs/v3/auth/hosted-oauth-apikey/).'
-          example: 1.1.1.1
-        name:
-          type: string
-          description: The user's display name.
-          example: Nyla
-        provider:
-          type: string
-          description: The provider that the user authenticated with.
-          enum:
-          - ews
-          - google
-          - icloud
-          - imap
-          - microsoft
-          - virtual-calendar
-          - yahoo
-          - zoom
-          - nylas
-          x-enum-descriptions:
-            virtual-calendar: Nylas' [virtual calendars](/docs/v3/calendar/virtual-calendars/).
-            nylas: Nylas [Agent Accounts](/docs/v3/agent-accounts/).
-          example: microsoft
-        provider_user_id:
-          type: string
-          description: The user's provider ID. This field might be changed at any time by the provider.
-          example: b16f171c-6640-4edd-a598-e507b546d841
-        scope:
-          type: array
-          items:
-            type: string
-          description: 'An array of [granular scopes](/docs/dev-guide/scopes/) associated with the grant. If none are
-
-            specified, Nylas uses the default scopes from the
-
-            [connector](/docs/reference/api/connectors-integrations/).'
-          example:
-          - Mail.Read
-          - User.Read
-          - offline_access
-        settings:
-          type: object
-          description: 'A list of settings associated with the grant. The contents of this object might differ between
-
-            grants or depending on the provider.'
-        email_aliases:
-          type: array
-          items:
-            type: string
-          description: "An array of found email aliases for this grant. Only returned if special query parameter `expose_aliases` for \n[Get Grant](/docs/reference/api/manage-grants/get_grant_by_id/) is used and set to `true`.\nApplicable only for Google and Microsoft grants.\nFor Microsoft, aliases require a Microsoft 365 / Exchange Online mailbox. Free Outlook.com\n(consumer) accounts have no aliases to expose, so this field is omitted from the response\neven when `expose_aliases=true`."
-          example:
-          - email_alias1@example.com
-          - email_alias2@example.com
-        state:
-          type: string
-          description: 'The initial state that was set as part of the authentication process. Nylas passes this value
-
-            back to your project without modifying it. You can use this field for verification, or to track
-
-            information about the user.'
-          example: my-state
-        updated_at:
-          type: integer
-          description: 'When the user last authenticated their grant, in seconds using the Unix timestamp format.
-
-            Initially, this value is the same as `created_at`.'
-          example: 1617817109
-        user_agent:
-          type: string
-          description: 'The user''s [client or browser information](https://www.useragents.me/). Mostly useful for
-
-            [Hosted OAuth](/docs/v3/auth/hosted-oauth-apikey/).'
-        workspace_id:
-          type: string
-          description: 'The ID of the Workspace the grant belongs to, if any. For grants from providers other than
-
-            Agent Accounts, Nylas may omit this field when the grant is in the application''s default
-
-            workspace.'
-          example: abf6ff99-05ad-4c0a-aaf8-400aacf2470a
-        credential_id:
-          type: string
-          description: The ID of the Credential the grant is associated with. Grant will use this Credential for provider communication.
-          example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
-    MigrationJob:
-      type: object
-      additionalProperties: false
-      required:
-      - job_id
-      - type
-      - public_application_id
-      - status
-      - count_all
-      - count_success
-      - count_failed
-      - count_warning
-      - created_at
-      - updated_at
-      properties:
-        job_id:
-          type: string
-          description: An identifier for the migration job.
-          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
-        type:
-          type: string
-          description: The type of job.
-          enum:
-          - snapshot
-          - migration
-          example: snapshot
-        public_application_id:
-          type: string
-          description: The ID of v3 application this job is running for.
-          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
-        status:
-          type: string
-          description: 'The state of the job.
-
-
-            - **Pending**: The job has been created, but not started. Batch clone runs only after the linked
-
-            snapshot job is completed.
-
-            - **Running**: The job is currently running.
-
-            - **Completed**: The job has successfully finished all migrations.
-
-            - **Failed**: _All_ migrations failed.
-
-            - **Partial**: The job successfully migrated _some_ accounts, but some could not be migrated or were created as "placeholder" grants.'
-          enum:
-          - pending
-          - running
-          - completed
-          - failed
-          - partial
-          example: pending
-        count_all:
-          type: integer
-          description: A total number of accounts to be migrated. The total is a sum of the successful and failed migrations.
-          example: 20
-        count_success:
-          type: integer
-          description: The number of accounts that were successfully migrated.
-          example: 10
-        count_failed:
-          type: integer
-          description: The number of accounts that were unable to migrate.
-          example: 5
-        count_warning:
-          type: integer
-          description: The number of accounts that were migrated as invalid grants ("placeholder" grant ready for re-authentication).
-          example: 5
-        created_at:
-          type: integer
-          description: The time when the job was created, in seconds using the Unix timestamp format.
-          example: 1617817109
-        updated_at:
-          type: integer
-          description: The time the job was updated, in seconds using the Unix timestamp format.
-          example: 1617817109
-        linked_job_id:
-          type: string
-          description: The bulk migration tool creates two separate jobs that run one after the other. This ID links them together.
-          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
-    '400':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: bad_request
-            message:
-              description: Informative error message
-              default: Bad request
-              type: string
-              example: Bad request
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
-    webDesktopCallbackNoSettings:
-      title: Web or Desktop
-      properties:
-        platform:
-          type: string
-          description: Platform identifier
-          enum:
-          - web
-          - desktop
-        id:
-          type: string
-          description: The callback URI ID. This must be a universally unique ID (UUID).
-          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
-        url:
-          type: string
-          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development
-
-            _only_. Otherwise, you need to use HTTPS.'
-          example: https://yourapp.com/callback
-    '401':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: invalid_request_error
-            message:
-              description: Informative error message
-              default: Authentication error
-              type: string
-              example: Authentication error
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
     ApplicationObject:
       type: object
       properties:
@@ -1038,6 +715,329 @@ components:
               type: string
               example: ABCDE12345
               description: Unique identifier for your Apple Developer Account or team.
+    '400':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: bad_request
+            message:
+              description: Informative error message
+              default: Bad request
+              type: string
+              example: Bad request
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
+    MigrationJob:
+      type: object
+      additionalProperties: false
+      required:
+      - job_id
+      - type
+      - public_application_id
+      - status
+      - count_all
+      - count_success
+      - count_failed
+      - count_warning
+      - created_at
+      - updated_at
+      properties:
+        job_id:
+          type: string
+          description: An identifier for the migration job.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+        type:
+          type: string
+          description: The type of job.
+          enum:
+          - snapshot
+          - migration
+          example: snapshot
+        public_application_id:
+          type: string
+          description: The ID of v3 application this job is running for.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+        status:
+          type: string
+          description: 'The state of the job.
+
+
+            - **Pending**: The job has been created, but not started. Batch clone runs only after the linked
+
+            snapshot job is completed.
+
+            - **Running**: The job is currently running.
+
+            - **Completed**: The job has successfully finished all migrations.
+
+            - **Failed**: _All_ migrations failed.
+
+            - **Partial**: The job successfully migrated _some_ accounts, but some could not be migrated or were created as "placeholder" grants.'
+          enum:
+          - pending
+          - running
+          - completed
+          - failed
+          - partial
+          example: pending
+        count_all:
+          type: integer
+          description: A total number of accounts to be migrated. The total is a sum of the successful and failed migrations.
+          example: 20
+        count_success:
+          type: integer
+          description: The number of accounts that were successfully migrated.
+          example: 10
+        count_failed:
+          type: integer
+          description: The number of accounts that were unable to migrate.
+          example: 5
+        count_warning:
+          type: integer
+          description: The number of accounts that were migrated as invalid grants ("placeholder" grant ready for re-authentication).
+          example: 5
+        created_at:
+          type: integer
+          description: The time when the job was created, in seconds using the Unix timestamp format.
+          example: 1617817109
+        updated_at:
+          type: integer
+          description: The time the job was updated, in seconds using the Unix timestamp format.
+          example: 1617817109
+        linked_job_id:
+          type: string
+          description: The bulk migration tool creates two separate jobs that run one after the other. This ID links them together.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+    GrantObject:
+      type: object
+      required:
+      - created_at
+      - id
+      - provider
+      - scope
+      properties:
+        account_id:
+          type: string
+          description: 'The v2 Nylas account ID. This field appears only if the grant was created by migrating a v2
+
+            connected account.'
+          example: df0yq6c9okc6t9j4ejd5nyrt7
+        blocked:
+          type: boolean
+          description: When `true`, indicates that the grant is blocked from accessing the Nylas APIs.
+          example: false
+        created_at:
+          type: integer
+          description: When the grant was created, in seconds using the Unix timestamp format.
+          example: 1617817109
+        email:
+          type: string
+          description: 'The email address associated with the grant. If the provider supports `id_token` and exposes the
+
+            user''s email address, Nylas automatically extracts this value.'
+          example: nyla@example.com
+        grant_status:
+          type: string
+          description: Specifies whether the grant is valid or the user needs to re-authenticate.
+          enum:
+          - invalid
+          - valid
+          example: valid
+        id:
+          type: string
+          description: A unique identifier for the grant.
+          example: e19f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+        ip:
+          type: string
+          description: 'The user''s client IP address. Mostly useful for
+
+            [Hosted OAuth](/docs/v3/auth/hosted-oauth-apikey/).'
+          example: 1.1.1.1
+        name:
+          type: string
+          description: The user's display name.
+          example: Nyla
+        provider:
+          type: string
+          description: The provider that the user authenticated with.
+          enum:
+          - ews
+          - google
+          - icloud
+          - imap
+          - microsoft
+          - virtual-calendar
+          - yahoo
+          - zoom
+          - nylas
+          x-enum-descriptions:
+            virtual-calendar: Nylas' [virtual calendars](/docs/v3/calendar/virtual-calendars/).
+            nylas: Nylas [Agent Accounts](/docs/v3/agent-accounts/).
+          example: microsoft
+        provider_user_id:
+          type: string
+          description: The user's provider ID. This field might be changed at any time by the provider.
+          example: b16f171c-6640-4edd-a598-e507b546d841
+        scope:
+          type: array
+          items:
+            type: string
+          description: 'An array of [granular scopes](/docs/dev-guide/scopes/) associated with the grant. If none are
+
+            specified, Nylas uses the default scopes from the
+
+            [connector](/docs/reference/api/connectors-integrations/).'
+          example:
+          - Mail.Read
+          - User.Read
+          - offline_access
+        settings:
+          type: object
+          description: 'A list of settings associated with the grant. The contents of this object might differ between
+
+            grants or depending on the provider.'
+        email_aliases:
+          type: array
+          items:
+            type: string
+          description: "An array of found email aliases for this grant. Only returned if special query parameter `expose_aliases` for \n[Get Grant](/docs/reference/api/manage-grants/get_grant_by_id/) is used and set to `true`.\nApplicable only for Google and Microsoft grants.\nFor Microsoft, aliases require a Microsoft 365 / Exchange Online mailbox. Free Outlook.com\n(consumer) accounts have no aliases to expose, so this field is omitted from the response\neven when `expose_aliases=true`."
+          example:
+          - email_alias1@example.com
+          - email_alias2@example.com
+        state:
+          type: string
+          description: 'The initial state that was set as part of the authentication process. Nylas passes this value
+
+            back to your project without modifying it. You can use this field for verification, or to track
+
+            information about the user.'
+          example: my-state
+        updated_at:
+          type: integer
+          description: 'When the user last authenticated their grant, in seconds using the Unix timestamp format.
+
+            Initially, this value is the same as `created_at`.'
+          example: 1617817109
+        user_agent:
+          type: string
+          description: 'The user''s [client or browser information](https://www.useragents.me/). Mostly useful for
+
+            [Hosted OAuth](/docs/v3/auth/hosted-oauth-apikey/).'
+        workspace_id:
+          type: string
+          description: 'The ID of the Workspace the grant belongs to, if any. For grants from providers other than
+
+            Agent Accounts, Nylas may omit this field when the grant is in the application''s default
+
+            workspace.'
+          example: abf6ff99-05ad-4c0a-aaf8-400aacf2470a
+        credential_id:
+          type: string
+          description: The ID of the Credential the grant is associated with. Grant will use this Credential for provider communication.
+          example: c123f8e1a-eb1c-41c0-b6a6-d2e59daf7f47
+    webDesktopCallbackNoSettings:
+      title: Web or Desktop
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - web
+          - desktop
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI, including the protocol. Nylas accepts HTTP for localhost development
+
+            _only_. Otherwise, you need to use HTTPS.'
+          example: https://yourapp.com/callback
+    AndroidCallbackwSettings:
+      title: Android
+      properties:
+        platform:
+          type: string
+          description: Platform identifier
+          enum:
+          - android
+        id:
+          type: string
+          description: The callback URI ID. This must be a universally unique ID (UUID).
+          example: 0556d035-6cb6-4262-a035-6b77e11cf8fc
+        url:
+          type: string
+          description: 'Your project''s callback URI. This can be HTTPS or a deeplink (for example,
+
+            `<package/bundle-name>://<deeplink>`).
+
+
+            Nylas accepts HTTP for localhost development _only_. Otherwise, you must use HTTPS.'
+          example: https://yourapp.com/callback
+        settings:
+          description: Additional platform settings and configurations for the Android callback URI.
+          type: object
+          required:
+          - package_name
+          - sha1_certificate_fingerprint
+          properties:
+            package_name:
+              type: string
+              description: Find your app's Package Name in the Android Manifest. It's a unique identifier that distinguishes your app on the Google Play Store and on the device. It follows a reverse domain name notation, such as `com.example.myapp`.
+              example: com.example.myapp
+            sha1_certificate_fingerprint:
+              type: string
+              description: A SHA-1 hash of the app's signing certificate. This ensures that only the _signed_ version of your app can use the redirect URI.
+              example: AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12
+    '401':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: invalid_request_error
+            message:
+              description: Informative error message
+              default: Authentication error
+              type: string
+              example: Authentication error
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
     JsCallbackwSettings:
       title: JS
       properties:

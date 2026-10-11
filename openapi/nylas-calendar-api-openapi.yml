@@ -568,55 +568,58 @@ paths:
           $ref: '#/components/responses/504'
 components:
   schemas:
-    availability_buffer:
-      title: buffer
-      type: object
-      properties:
-        before:
-          type: integer
-          description: 'The amount of buffer time to add before meetings, in increments of five minutes. For example,
-
-            if an account has a meeting scheduled from 10:00–11:00a.m., and you set a `before` buffer of
-
-            30 minutes, Nylas treats 9:30–11:00a.m. as busy.
-
-
-            This value must be between 0 and 120, and must be divisible by 5.'
-          default: 0
-          minimum: 0
-          maximum: 120
-        after:
-          type: integer
-          description: 'The amount of buffer time to add after meetings, in increments of five minutes. For example, if
-
-            an account has a meeting scheduled from 10:00–11:00a.m., and you set an `after` buffer of 15
-
-            minutes, Nylas treats 10:00–11:15a.m. as busy.
-
-
-            This value must be between 0 and 120, and must be divisible by 5.'
-          default: 0
-          minimum: 0
-          maximum: 120
-    metadata:
-      title: Metadata
-      type: object
-      description: 'The metadata associated with the object. For more information, see
-
-        [Metadata](/docs/reference/api/#metadata).'
-      additionalProperties:
-        type: string
-        description: A key-value pair.
-        maxLength: 500
-      maxProperties: 50
-    is_owned_by_user:
-      title: Is Owned By User
-      type: boolean
-      description: If `true`, indicates that the user owns the calendar. This field can't be modified once set.
-    calendar_location:
+    calendar:
+      allOf:
+      - $ref: '#/components/schemas/calendar_common'
+      - properties:
+          notetaker:
+            $ref: '#/components/schemas/calendar_sync'
+    calendar_hex_color:
+      title: Background color hex code
       type: string
-      description: (Not supported for iCloud or EWS) The geographic location of the calendar, as free-form text.
-      example: London, England
+      description: '(Not supported for iCloud or EWS) The background color of the calendar, in hexadecimal format (for
+
+        example, `#0099EE`). When empty, Nylas uses the default background color.
+
+
+        You can set or modify this value using a `PUT` request only.'
+      example: '#039BE5'
+    calendar_common:
+      title: Calendar
+      type: object
+      description: A Calendar object.
+      properties:
+        description:
+          $ref: '#/components/schemas/calendar_description'
+        grant_id:
+          $ref: '#/components/schemas/grant_id'
+        hex_color:
+          $ref: '#/components/schemas/calendar_hex_color'
+        hex_foreground_color:
+          $ref: '#/components/schemas/calendar_hex_foreground_color'
+        id:
+          $ref: '#/components/schemas/id'
+        is_owned_by_user:
+          $ref: '#/components/schemas/is_owned_by_user'
+        is_primary:
+          type:
+          - boolean
+          description: If `true`, indicates that the calendar is the primary for the grant.
+        location:
+          $ref: '#/components/schemas/calendar_location'
+        metadata:
+          $ref: '#/components/schemas/metadata'
+        name:
+          $ref: '#/components/schemas/calendar_name'
+        object:
+          $ref: '#/components/schemas/object'
+          example: calendar
+        owner_email:
+          $ref: '#/components/schemas/calendar_owner_email'
+        read_only:
+          $ref: '#/components/schemas/calendar_read_only'
+        timezone:
+          $ref: '#/components/schemas/calendar_timezone'
     availability_response:
       description: The response to a successful request to get availability for a participant.
       type: object
@@ -635,79 +638,79 @@ components:
           description: 'An array of the available time slots when you can create a meeting using the requested settings.
 
             This field may be `null` if no time slots are available. Treat `null` the same as an empty array.'
-    freebusy_request:
-      title: free-busy
+    calendar_read_only:
+      title: Read-only setting
+      type: boolean
+      description: 'Set by the provider. If `true`, indicates that the calendar is read-only.
+
+
+        If the calendar is read-only, all of its events have `read_only` set to `true`. This field _cannot_
+
+        be modified.'
+    availability_open_hours:
+      description: A time block when a participant is available for meetings.
       type: object
-      required:
-      - start_time
-      - end_time
-      - emails
+      title: Open Hours
+      examples: []
       properties:
-        start_time:
-          type: integer
-          description: 'The start of a time block, in seconds using the Unix timestamp format. Nylas uses `start_time` and `end_time` to assess
-
-            the specified account''s free/busy schedule.'
-          example: 1690862400
-        end_time:
-          type: integer
-          description: 'The end of a time block, in seconds using the Unix timestamp format. Nylas uses `start_time` and `end_time` to
-
-            assess the specified account''s free/busy schedule.
-
-
-            For Google and EWS accounts, Nylas can query a timespan of up to 3 months from the `start_time`.
-
-
-            For Microsoft Graph accounts, Nylas can query a timespan of up to 62 days from the `start_time`.'
-          example: 1691208000
-        emails:
+        days:
           type: array
-          description: A list of email addresses to check the free/busy schedules for.
+          description: 'The days of the week that the open hours settings are applied to. Sunday corresponds to `0`, and
+
+            Saturday corresponds to `6`.'
+          items:
+            type: integer
+            enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          example:
+          - 0
+          - 1
+          - 2
+        timezone:
+          type: string
+          minLength: 1
+          description: The calendar's time zone as an [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string.
+          example: America/Chicago
+        start:
+          type: string
+          minLength: 1
+          description: 'The start time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.
+
+
+            The minimum start time is `0:00`, and the maximum is `23:49`.'
+          example: '10:00'
+        end:
+          type: string
+          minLength: 1
+          description: The end time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.
+          example: '14:00'
+        exdates:
+          type: array
+          description: A list of dates that Nylas excludes from the account's open hours, in `YYYY-MM-DD` format.
           items:
             type: string
-        tentative_as_busy:
-          type: boolean
-          default: true
-          description: When `true`, Nylas treats tentative events as busy.
-    calendar_owner_email:
-      title: Owner email
+          example:
+          - '2006-01-18'
+    object:
       type: string
-      description: '(Microsoft only) The email address of the account that owns the calendar. Use it to tell the grant''s own
+      description: The type of object.
+    metadata:
+      title: Metadata
+      type: object
+      description: 'The metadata associated with the object. For more information, see
 
-        calendars apart from calendars shared with the grant.
-
-
-        This field is read-only.'
-      example: nyla@example.com
-    grant_id:
-      title: Grant ID
-      type: string
-      description: The ID of grant for the connected user.
-      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
-      readOnly: true
-    id:
-      title: ID
-      type: string
-      minLength: 1
-      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
-      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
-    calendar:
-      allOf:
-      - $ref: '#/components/schemas/calendar_common'
-      - properties:
-          notetaker:
-            $ref: '#/components/schemas/calendar_sync'
-    common_response:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        [Metadata](/docs/reference/api/#metadata).'
+      additionalProperties:
+        type: string
+        description: A key-value pair.
+        maxLength: 500
+      maxProperties: 50
     meeting_settings_common:
       type: object
       description: A collection of settings for the Notetaker bot.
@@ -772,100 +775,52 @@ components:
           description: When `true`, Notetaker records the meeting's video.
           default: true
           example: true
-    availability_open_hours:
-      description: A time block when a participant is available for meetings.
+    calendar_location:
+      type: string
+      description: (Not supported for iCloud or EWS) The geographic location of the calendar, as free-form text.
+      example: London, England
+    availability_time_slot:
+      title: TimeSlot
       type: object
-      title: Open Hours
-      examples: []
       properties:
-        days:
-          type: array
-          description: 'The days of the week that the open hours settings are applied to. Sunday corresponds to `0`, and
-
-            Saturday corresponds to `6`.'
-          items:
-            type: integer
-            enum:
-            - 0
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-          example:
-          - 0
-          - 1
-          - 2
-        timezone:
-          type: string
-          minLength: 1
-          description: The calendar's time zone as an [IANA-formatted](https://en.wikipedia.org/wiki/Tz_database) string.
-          example: America/Chicago
-        start:
-          type: string
-          minLength: 1
-          description: 'The start time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.
-
-
-            The minimum start time is `0:00`, and the maximum is `23:49`.'
-          example: '10:00'
-        end:
-          type: string
-          minLength: 1
-          description: The end time for the open hours settings, in 24-hour time format. Nylas omits leading zeroes.
-          example: '14:00'
-        exdates:
-          type: array
-          description: A list of dates that Nylas excludes from the account's open hours, in `YYYY-MM-DD` format.
+        emails:
+          type:
+          - array
+          - 'null'
+          description: A list of participant email addresses for this time slot. This field may be `null`. Treat `null` the same as an empty array.
           items:
             type: string
-          example:
-          - '2006-01-18'
-    availability_rules:
-      title: ''
-      type: object
+        start_time:
+          type: integer
+          description: The start of a time slot, in seconds using the Unix timestamp format.
+        end_time:
+          type: integer
+          description: The end of a time slot, in seconds using the Unix timestamp format.
+        event_id:
+          type: string
+          description: (Group Events Only). The event ID of the group event
+        master_id:
+          type: string
+          description: (Group Events Only). The master ID of the recurring group event
+        calendar_id:
+          type: string
+          description: (Group Events Only). The calendar ID of the group event
+    common_response_with_cursor:
       properties:
-        availability_method:
+        request_id:
           type: string
-          default: max-availability
-          enum:
-          - collective
-          - max-fairness
-          - max-availability
-        buffer:
+          description: The request ID.
+        data:
           type: object
-          description: 'The amount of buffer time Nylas adds around existing meetings, in minutes. For example, if an
-
-            account has a meeting scheduled from 10:00–11:00a.m., and you set a buffer of 30 minutes, Nylas
-
-            treats 9:30–11:30a.m. as busy.'
-          $ref: '#/components/schemas/availability_buffer'
-        default_open_hours:
-          type: array
-          description: 'A default set of open hours to apply to all participants. You can overwrite these open hours for
-
-            individual participants by specifying `open_hours` on the Participant object.'
-          items:
-            $ref: '#/components/schemas/availability_open_hours'
-        round_robin_group_id:
-          type: string
-          description: 'The ID on events that Nylas considers when calculating the order of round-robin participants.
-
-            This is used for both max-fairness and max-availability calculations.
-
-
-            To calculate participant order correctly, set the metadata key `key5` to the same value on any
-
-            events you want to consider for the current set of round-robin participants. You can set this
-
-            key to any value that helps you identify events used to calculate availability in this group
-
-            (for example, `new_subscriber_onboarding`).'
-        tentative_as_busy:
-          type: boolean
-          default: true
-          description: (Microsoft and EWS only) When `true`, Nylas treats tentative events as busy.
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
     meeting_settings:
       allOf:
       - $ref: '#/components/schemas/meeting_settings_common'
@@ -923,13 +878,42 @@ components:
 
                   transcribed accurately. Optional. Cannot be `null`.'
                 example: true
-    calendar_timezone:
-      title: Calendar timezone
+    calendar_owner_email:
+      title: Owner email
       type: string
-      description: '(Google and virtual calendars only) An [IANA timezone database](https://en.wikipedia.org/wiki/Tz_database)
+      description: '(Microsoft only) The email address of the account that owns the calendar. Use it to tell the grant''s own
 
-        formatted string (for example, `America/New_York`).'
-      example: America/Los_Angeles
+        calendars apart from calendars shared with the grant.
+
+
+        This field is read-only.'
+      example: nyla@example.com
+    calendar_hex_foreground_color:
+      title: Foreground color hex code
+      type: string
+      description: '(Google only) The foreground color of the calendar, in hexadecimal format (for example, `#0099EE`).
+
+        When empty, Nylas uses the default foreground color.
+
+
+        You can modify this value using a `PUT` request only.'
+      example: '#039BE5'
+    common_response:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    id:
+      title: ID
+      type: string
+      minLength: 1
+      description: A globally unique object identifier for Microsoft accounts. An email address for Google accounts.
+      example: 5d3qmne77v32r8l4phyuksl2x, nyla@example.com
     calendar_sync:
       type: object
       properties:
@@ -993,125 +977,42 @@ components:
 
                     value.'
                   example: 5
-    object:
-      type: string
-      description: The type of object.
-    availability_time_slot:
-      title: TimeSlot
+    availability_buffer:
+      title: buffer
       type: object
       properties:
-        emails:
-          type:
-          - array
-          - 'null'
-          description: A list of participant email addresses for this time slot. This field may be `null`. Treat `null` the same as an empty array.
-          items:
-            type: string
-        start_time:
+        before:
           type: integer
-          description: The start of a time slot, in seconds using the Unix timestamp format.
-        end_time:
+          description: 'The amount of buffer time to add before meetings, in increments of five minutes. For example,
+
+            if an account has a meeting scheduled from 10:00–11:00a.m., and you set a `before` buffer of
+
+            30 minutes, Nylas treats 9:30–11:00a.m. as busy.
+
+
+            This value must be between 0 and 120, and must be divisible by 5.'
+          default: 0
+          minimum: 0
+          maximum: 120
+        after:
           type: integer
-          description: The end of a time slot, in seconds using the Unix timestamp format.
-        event_id:
-          type: string
-          description: (Group Events Only). The event ID of the group event
-        master_id:
-          type: string
-          description: (Group Events Only). The master ID of the recurring group event
-        calendar_id:
-          type: string
-          description: (Group Events Only). The calendar ID of the group event
-    calendar_name:
+          description: 'The amount of buffer time to add after meetings, in increments of five minutes. For example, if
+
+            an account has a meeting scheduled from 10:00–11:00a.m., and you set an `after` buffer of 15
+
+            minutes, Nylas treats 10:00–11:15a.m. as busy.
+
+
+            This value must be between 0 and 120, and must be divisible by 5.'
+          default: 0
+          minimum: 0
+          maximum: 120
+    grant_id:
+      title: Grant ID
       type: string
-      description: The name of the calendar.
-      example: My New Calendar
-    calendar_read_only:
-      title: Read-only setting
-      type: boolean
-      description: 'Set by the provider. If `true`, indicates that the calendar is read-only.
-
-
-        If the calendar is read-only, all of its events have `read_only` set to `true`. This field _cannot_
-
-        be modified.'
-    common_response_with_cursor:
-      properties:
-        request_id:
-          type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-        next_cursor:
-          type:
-          - string
-          - 'null'
-          description: A cursor pointing to the next page of results for the request.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    calendar_common:
-      title: Calendar
-      type: object
-      description: A Calendar object.
-      properties:
-        description:
-          $ref: '#/components/schemas/calendar_description'
-        grant_id:
-          $ref: '#/components/schemas/grant_id'
-        hex_color:
-          $ref: '#/components/schemas/calendar_hex_color'
-        hex_foreground_color:
-          $ref: '#/components/schemas/calendar_hex_foreground_color'
-        id:
-          $ref: '#/components/schemas/id'
-        is_owned_by_user:
-          $ref: '#/components/schemas/is_owned_by_user'
-        is_primary:
-          type:
-          - boolean
-          description: If `true`, indicates that the calendar is the primary for the grant.
-        location:
-          $ref: '#/components/schemas/calendar_location'
-        metadata:
-          $ref: '#/components/schemas/metadata'
-        name:
-          $ref: '#/components/schemas/calendar_name'
-        object:
-          $ref: '#/components/schemas/object'
-          example: calendar
-        owner_email:
-          $ref: '#/components/schemas/calendar_owner_email'
-        read_only:
-          $ref: '#/components/schemas/calendar_read_only'
-        timezone:
-          $ref: '#/components/schemas/calendar_timezone'
-    calendar_hex_foreground_color:
-      title: Foreground color hex code
-      type: string
-      description: '(Google only) The foreground color of the calendar, in hexadecimal format (for example, `#0099EE`).
-
-        When empty, Nylas uses the default foreground color.
-
-
-        You can modify this value using a `PUT` request only.'
-      example: '#039BE5'
-    calendar_hex_color:
-      title: Background color hex code
-      type: string
-      description: '(Not supported for iCloud or EWS) The background color of the calendar, in hexadecimal format (for
-
-        example, `#0099EE`). When empty, Nylas uses the default background color.
-
-
-        You can set or modify this value using a `PUT` request only.'
-      example: '#039BE5'
-    calendar_description:
-      title: Calendar description
-      type: string
-      description: (Not supported for iCloud or EWS) A brief description of the calendar.
-      example: Junior sports league carpool drivers
+      description: The ID of grant for the connected user.
+      example: 41009df5-bf11-4c97-aa18-b285b5f2e386
+      readOnly: true
     availability_specific_time_availability:
       description: A specific date and time range when the participant is available.
       type: object
@@ -1137,90 +1038,106 @@ components:
           type: string
           description: The participant's IANA timezone for this availability window.
           example: America/Toronto
-  parameters:
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
+    calendar_timezone:
+      title: Calendar timezone
+      type: string
+      description: '(Google and virtual calendars only) An [IANA timezone database](https://en.wikipedia.org/wiki/Tz_database)
 
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+        formatted string (for example, `America/New_York`).'
+      example: America/Los_Angeles
+    calendar_description:
+      title: Calendar description
+      type: string
+      description: (Not supported for iCloud or EWS) A brief description of the calendar.
+      example: Junior sports league carpool drivers
+    freebusy_request:
+      title: free-busy
+      type: object
+      required:
+      - start_time
+      - end_time
+      - emails
+      properties:
+        start_time:
+          type: integer
+          description: 'The start of a time block, in seconds using the Unix timestamp format. Nylas uses `start_time` and `end_time` to assess
 
-        information.'
-    metadata_pair:
-      name: metadata_pair
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Pass a metadata key/value pair (for example, `?metadata_pair=key1:value`) to search for metadata
+            the specified account''s free/busy schedule.'
+          example: 1690862400
+        end_time:
+          type: integer
+          description: 'The end of a time block, in seconds using the Unix timestamp format. Nylas uses `start_time` and `end_time` to
 
-        associated with objects. See [Metadata](/docs/reference/api/#metadata) for more information.'
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+            assess the specified account''s free/busy schedule.
 
-        for more information.'
-    field_selection:
-      name: select
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
 
-        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+            For Google and EWS accounts, Nylas can query a timespan of up to 3 months from the `start_time`.
 
-        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
 
-        to only the information that you need.'
-    grant_id:
-      name: grant_id
-      schema:
-        type: string
-      in: path
-      required: true
-      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use `/me/`
+            For Microsoft Graph accounts, Nylas can query a timespan of up to 62 days from the `start_time`.'
+          example: 1691208000
+        emails:
+          type: array
+          description: A list of email addresses to check the free/busy schedules for.
+          items:
+            type: string
+        tentative_as_busy:
+          type: boolean
+          default: true
+          description: When `true`, Nylas treats tentative events as busy.
+    calendar_name:
+      type: string
+      description: The name of the calendar.
+      example: My New Calendar
+    availability_rules:
+      title: ''
+      type: object
+      properties:
+        availability_method:
+          type: string
+          default: max-availability
+          enum:
+          - collective
+          - max-fairness
+          - max-availability
+        buffer:
+          type: object
+          description: 'The amount of buffer time Nylas adds around existing meetings, in minutes. For example, if an
 
-        to refer to the grant associated with an access token.'
-      example: nyla@example.com
+            account has a meeting scheduled from 10:00–11:00a.m., and you set a buffer of 30 minutes, Nylas
+
+            treats 9:30–11:30a.m. as busy.'
+          $ref: '#/components/schemas/availability_buffer'
+        default_open_hours:
+          type: array
+          description: 'A default set of open hours to apply to all participants. You can overwrite these open hours for
+
+            individual participants by specifying `open_hours` on the Participant object.'
+          items:
+            $ref: '#/components/schemas/availability_open_hours'
+        round_robin_group_id:
+          type: string
+          description: 'The ID on events that Nylas considers when calculating the order of round-robin participants.
+
+            This is used for both max-fairness and max-availability calculations.
+
+
+            To calculate participant order correctly, set the metadata key `key5` to the same value on any
+
+            events you want to consider for the current set of round-robin participants. You can set this
+
+            key to any value that helps you identify events used to calculate availability in this group
+
+            (for example, `new_subscriber_onboarding`).'
+        tentative_as_busy:
+          type: boolean
+          default: true
+          description: (Microsoft and EWS only) When `true`, Nylas treats tentative events as busy.
+    is_owned_by_user:
+      title: Is Owned By User
+      type: boolean
+      description: If `true`, indicates that the user owns the calendar. This field can't be modified once set.
   responses:
-    '504':
-      description: Provider Failure
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Provider Failure:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: provider_error
-                  message: Provider request timed out.
     calendars:
       description: Calendars Response
       content:
@@ -1252,8 +1169,64 @@ components:
                 read_only: false
                 timezone: America/Los_Angeles
               next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-    '401':
-      description: Unauthorized
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
+    '504':
+      description: Provider Failure
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Provider Failure:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: provider_error
+                  message: Provider request timed out.
+    '404':
+      description: Not Found
       content:
         application/json:
           schema:
@@ -1275,57 +1248,35 @@ components:
                     description: The error message.
                   provider_error:
                     type: object
-                    description: The error from the provider.
+                    description: The raw error from the provider, if available
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
           examples:
-            Unauthorized:
+            Not Found:
               value:
                 request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
                 error:
-                  type: unauthorized
-                  message: Unauthorized
+                  type: not_found_error
+                  message: requested object not found
                   provider_error:
-                    code: 401
-                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    '400':
-      description: Bad Request
+                    code: MailboxNotEnabledForRESTAPI
+                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
+    200-delete:
+      description: Delete Succeeded
       content:
         application/json:
           schema:
-            title: error
             type: object
+            required:
+            - request_id
             properties:
               request_id:
                 type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-                  provider_error:
-                    type: object
-                    description: The error from the provider.
-          examples:
-            Bad Request:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: invalid_request_error
-                  message: error parsing request body
-                  provider_error:
-                    code: TargetIdShouldNotBeMeOrWhitespace
-                    message: Id is malformed.
-            Invalid Idempotency-Key:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: api.invalid_idempotency_key
-                  message: Idempotency-Key must be 256 characters or fewer.
+                description: ID of the request.
+                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
     availability:
       description: Return availability
       content:
@@ -1422,8 +1373,8 @@ components:
                     participant_filter:
                       participants_gte: 5
                       participants_lte: 10
-    '404':
-      description: Not Found
+    '400':
+      description: Bad Request
       content:
         application/json:
           schema:
@@ -1445,35 +1396,23 @@ components:
                     description: The error message.
                   provider_error:
                     type: object
-                    description: The raw error from the provider, if available
-                    properties:
-                      code:
-                        type: string
-                      message:
-                        type: string
+                    description: The error from the provider.
           examples:
-            Not Found:
+            Bad Request:
               value:
                 request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
                 error:
-                  type: not_found_error
-                  message: requested object not found
+                  type: invalid_request_error
+                  message: error parsing request body
                   provider_error:
-                    code: MailboxNotEnabledForRESTAPI
-                    message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    200-delete:
-      description: Delete Succeeded
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - request_id
-            properties:
-              request_id:
-                type: string
-                description: ID of the request.
-                example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+                    code: TargetIdShouldNotBeMeOrWhitespace
+                    message: Id is malformed.
+            Invalid Idempotency-Key:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: api.invalid_idempotency_key
+                  message: Idempotency-Key must be 256 characters or fewer.
     freebusy:
       description: Free/Busy Response
       content:
@@ -1549,8 +1488,8 @@ components:
                 - email: user2@example.com
                   error: Unable to resolve e-mail address user2@example.com to an Active Directory object.
                   object: error
-    '429':
-      description: Rate Limit
+    '401':
+      description: Unauthorized
       content:
         application/json:
           schema:
@@ -1570,14 +1509,123 @@ components:
                   message:
                     type: string
                     description: The error message.
+                  provider_error:
+                    type: object
+                    description: The error from the provider.
           examples:
-            Not Found:
+            Unauthorized:
               value:
                 request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
                 error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
+                  type: unauthorized
+                  message: Unauthorized
+                  provider_error:
+                    code: 401
+                    message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
+
+        for more information.'
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    field_selection:
+      name: select
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Specify fields that you want Nylas to return, as a comma-separated list (for example,
+
+        `select=id,updated_at`). This allows you to receive only the portion of object data that you''re
+
+        interested in. You can use `select` to optimize response size and reduce latency by limiting queries
+
+        to only the information that you need.'
+    metadata_pair:
+      name: metadata_pair
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'Pass a metadata key/value pair (for example, `?metadata_pair=key1:value`) to search for metadata
+
+        associated with objects. See [Metadata](/docs/reference/api/#metadata) for more information.'
+    grant_id:
+      name: grant_id
+      schema:
+        type: string
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use `/me/`
+
+        to refer to the grant associated with an access token.'
+      example: nyla@example.com
   requestBodies:
+    calendar_create:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - name
+            properties:
+              description:
+                $ref: '#/components/schemas/calendar_description'
+              location:
+                $ref: '#/components/schemas/calendar_location'
+              metadata:
+                $ref: '#/components/schemas/metadata'
+              name:
+                $ref: '#/components/schemas/calendar_name'
+              notetaker:
+                $ref: '#/components/schemas/calendar_sync'
+              timezone:
+                $ref: '#/components/schemas/calendar_timezone'
+          example:
+            description: Calendar for work events.
+            location: Los Angeles
+            name: Work Calendar
+            notetaker:
+              name: Nyla's Notetaker
+              meeting_settings:
+                action_items: true
+                action_item_settings:
+                  custom_instructions: Only return the 5 most important action items.
+                audio_recording: true
+                summary: true
+                summary_settings:
+                  custom_instructions: Return this summary in the MEDPIC sales methodology.
+                transcription: true
+                transcription_settings:
+                  expected_languages:
+                  - en
+                  - es
+                  fallback_language: en
+                video_recording: true
+              rules:
+                event_selection:
+                - internal
+                participant_filter:
+                  participants_gte: 5
+                  participants_lte: 10
+            timezone: America/Los_Angeles
     freebusy:
       content:
         application/json:
@@ -1636,54 +1684,6 @@ components:
               rules:
                 event_selection:
                 - internal
-    calendar_create:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - name
-            properties:
-              description:
-                $ref: '#/components/schemas/calendar_description'
-              location:
-                $ref: '#/components/schemas/calendar_location'
-              metadata:
-                $ref: '#/components/schemas/metadata'
-              name:
-                $ref: '#/components/schemas/calendar_name'
-              notetaker:
-                $ref: '#/components/schemas/calendar_sync'
-              timezone:
-                $ref: '#/components/schemas/calendar_timezone'
-          example:
-            description: Calendar for work events.
-            location: Los Angeles
-            name: Work Calendar
-            notetaker:
-              name: Nyla's Notetaker
-              meeting_settings:
-                action_items: true
-                action_item_settings:
-                  custom_instructions: Only return the 5 most important action items.
-                audio_recording: true
-                summary: true
-                summary_settings:
-                  custom_instructions: Return this summary in the MEDPIC sales methodology.
-                transcription: true
-                transcription_settings:
-                  expected_languages:
-                  - en
-                  - es
-                  fallback_language: en
-                video_recording: true
-              rules:
-                event_selection:
-                - internal
-                participant_filter:
-                  participants_gte: 5
-                  participants_lte: 10
-            timezone: America/Los_Angeles
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

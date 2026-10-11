@@ -426,89 +426,6 @@ paths:
           $ref: '#/components/responses/429'
 components:
   schemas:
-    notetakers:
-      type: object
-      required:
-      - meeting_link
-      properties:
-        join_time:
-          type: integer
-          description: 'When the Notetaker bot should join the meeting, in seconds using the Unix timestamp format. If
-
-            you don''t specify a time, Notetaker joins the meeting immediately.
-
-
-            If you provide a time that''s in the past, Nylas returns an error.'
-          example: 1732657774
-        meeting_link:
-          type: string
-          description: A meeting invitation link that Notetaker uses to join the meeting.
-          example: https://meet.google.com/xyz-abcd-ijk
-        meeting_settings:
-          $ref: '#/components/schemas/meeting_settings'
-        name:
-          type: string
-          description: The display name for the Notetaker bot.
-          default: Nylas Notetaker
-          example: Nylas Notetaker
-    notetaker:
-      type: object
-      properties:
-        grant_id:
-          type: string
-          description: The ID of the grant associated with this Notetaker bot.
-          example: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
-        id:
-          type: string
-          description: The Notetaker ID.
-          example: 71c807752c744ad0902f64d43e6cc399
-        join_time:
-          type: integer
-          description: When Notetaker joined the meeting, in seconds using the Unix timestamp format.
-          example: 1732657774
-        meeting_link:
-          type: string
-          description: The meeting link.
-          example: https://meet.google.com/xyz-abcd-ijk
-        meeting_provider:
-          type: string
-          description: The meeting provider.
-          enum:
-          - Google Meet
-          - Zoom Meeting
-          - Microsoft Teams
-          example: Google Meet
-        meeting_settings:
-          $ref: '#/components/schemas/meeting_settings'
-        name:
-          type: string
-          description: The display name for the Notetaker bot.
-          default: Nylas Notetaker
-          example: Nylas Notetaker
-        object:
-          type: string
-          description: The type of object.
-          example: notetaker
-        state:
-          type: string
-          description: The current state of the Notetaker bot.
-          enum:
-          - scheduled
-          - connecting
-          - waiting_for_entry
-          - attending
-          - disconnected
-          - worker_finished
-          - processing
-          - available
-          - media_error
-          - media_deleted
-          - failed_entry
-          example: scheduled
-        status:
-          type: string
-          description: The current status of the Notetaker bot.
-          example: scheduled
     notetaker_history_event:
       type: object
       description: A history event that records a change to a Notetaker bot.
@@ -596,16 +513,64 @@ components:
                     type: string
                     description: The master event ID for recurring events, if applicable.
                     example: 7d93zl2palhxqdy6e5qinsakt
-    common_response:
+    notetaker:
+      type: object
       properties:
-        request_id:
+        grant_id:
           type: string
-          description: The request ID.
-        data:
-          type: object
-          description: The response object.
-      example:
-        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+          description: The ID of the grant associated with this Notetaker bot.
+          example: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
+        id:
+          type: string
+          description: The Notetaker ID.
+          example: 71c807752c744ad0902f64d43e6cc399
+        join_time:
+          type: integer
+          description: When Notetaker joined the meeting, in seconds using the Unix timestamp format.
+          example: 1732657774
+        meeting_link:
+          type: string
+          description: The meeting link.
+          example: https://meet.google.com/xyz-abcd-ijk
+        meeting_provider:
+          type: string
+          description: The meeting provider.
+          enum:
+          - Google Meet
+          - Zoom Meeting
+          - Microsoft Teams
+          example: Google Meet
+        meeting_settings:
+          $ref: '#/components/schemas/meeting_settings'
+        name:
+          type: string
+          description: The display name for the Notetaker bot.
+          default: Nylas Notetaker
+          example: Nylas Notetaker
+        object:
+          type: string
+          description: The type of object.
+          example: notetaker
+        state:
+          type: string
+          description: The current state of the Notetaker bot.
+          enum:
+          - scheduled
+          - connecting
+          - waiting_for_entry
+          - attending
+          - disconnected
+          - worker_finished
+          - processing
+          - available
+          - media_error
+          - media_deleted
+          - failed_entry
+          example: scheduled
+        status:
+          type: string
+          description: The current status of the Notetaker bot.
+          example: scheduled
     meeting_settings_common:
       type: object
       description: A collection of settings for the Notetaker bot.
@@ -670,6 +635,22 @@ components:
           description: When `true`, Notetaker records the meeting's video.
           default: true
           example: true
+    common_response_with_cursor:
+      properties:
+        request_id:
+          type: string
+          description: The request ID.
+        data:
+          type: object
+          description: The response object.
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          description: A cursor pointing to the next page of results for the request.
+      example:
+        request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
     meeting_settings:
       allOf:
       - $ref: '#/components/schemas/meeting_settings_common'
@@ -727,7 +708,7 @@ components:
 
                   transcribed accurately. Optional. Cannot be `null`.'
                 example: true
-    common_response_with_cursor:
+    common_response:
       properties:
         request_id:
           type: string
@@ -735,117 +716,90 @@ components:
         data:
           type: object
           description: The response object.
-        next_cursor:
-          type:
-          - string
-          - 'null'
-          description: A cursor pointing to the next page of results for the request.
       example:
         request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-        next_cursor: CigKGjRlaDdyNGQydTFqbWJ0bGo5a2QxdWJtdDZnGAEggIDAu7fw7bEYGg8IABIAGPjh2PGEi_0CIAEiBwgCEOqs6i4=
-  parameters:
-    page_token:
-      name: page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
+    notetakers:
+      type: object
+      required:
+      - meeting_link
+      properties:
+        join_time:
+          type: integer
+          description: 'When the Notetaker bot should join the meeting, in seconds using the Unix timestamp format. If
 
-        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+            you don''t specify a time, Notetaker joins the meeting immediately.
 
-        information.'
-    prev_page_token:
-      name: prev_page_token
-      in: query
-      required: false
-      schema:
-        type: string
-      description: 'An identifier that specifies which page of data to return. You can get this value from the
 
-        `prev_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+            If you provide a time that''s in the past, Nylas returns an error.'
+          example: 1732657774
+        meeting_link:
+          type: string
+          description: A meeting invitation link that Notetaker uses to join the meeting.
+          example: https://meet.google.com/xyz-abcd-ijk
+        meeting_settings:
+          $ref: '#/components/schemas/meeting_settings'
+        name:
+          type: string
+          description: The display name for the Notetaker bot.
+          default: Nylas Notetaker
+          example: Nylas Notetaker
+  requestBodies:
+    patch-notetaker:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              join_time:
+                type: integer
+                description: 'When Notetaker should join the meeting, in seconds using the Unix timestamp format. If empty, Notetaker joins the
 
-        information.'
-    join_time_start:
-      name: join_time_start
-      in: query
-      required: false
-      schema:
-        type: number
-      description: 'Filter for Notetaker bots that have join times that start at or after a specific time, in Unix
+                  meeting immediately.
 
-        timestamp format.'
-    notetaker_order_by:
-      name: order_by
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-        - name
-        - join_time
-        - created_at
-        default: created_at
-      description: The field to order the Notetaker bots by.
-    limit:
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 50
-        maximum: 200
-      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
 
-        for more information.'
-    notetaker_state:
-      name: state
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-        - scheduled
-        - connecting
-        - waiting_for_entry
-        - failed_entry
-        - attending
-        - media_processing
-        - media_available
-        - media_error
-        - media_deleted
-      description: Filter for Notetaker bots with the specified meeting state.
-    join_time_end:
-      name: join_time_end
-      in: query
-      required: false
-      schema:
-        type: number
-      description: 'Filter for Notetaker bots that have join times that end at or are before a specific time, in Unix
-
-        timestamp format.'
-    grant_id:
-      name: grant_id
-      schema:
-        type: string
-      in: path
-      required: true
-      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use `/me/`
-
-        to refer to the grant associated with an access token.'
-      example: nyla@example.com
-    notetaker_order_direction:
-      name: order_direction
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-        default: asc
-      description: The direction to order the Notetaker bots by.
+                  If you provide a time that''s in the past, Nylas returns an error.'
+                example: 1732657774
+              meeting_settings:
+                $ref: '#/components/schemas/meeting_settings'
+              name:
+                type: string
+                description: The display name for the Notetaker bot.
+                default: Nylas Notetaker
+                example: Nylas Notetaker
+    notetakers:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/notetakers'
   responses:
+    '429':
+      description: Rate Limit
+      content:
+        application/json:
+          schema:
+            title: error
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The request ID.
+              error:
+                type: object
+                description: The response error object.
+                properties:
+                  type:
+                    type: string
+                    description: The error type.
+                  message:
+                    type: string
+                    description: The error message.
+          examples:
+            Not Found:
+              value:
+                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
+                error:
+                  type: rate_limit_error
+                  message: Too many requests, please try again shortly.
     '401':
       description: Unauthorized
       content:
@@ -880,88 +834,6 @@ components:
                   provider_error:
                     code: 401
                     message: Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential.
-    invite-to-meeting-201:
-      description: Success. Returns information about Notetaker bot.
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/notetaker'
-    get-notetaker-history-200:
-      description: Success. Returns Notetaker bot history events.
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  type: object
-                  properties:
-                    events:
-                      type: array
-                      description: A list of Notetaker history events, ordered by most recent first.
-                      items:
-                        $ref: '#/components/schemas/notetaker_history_event'
-          example:
-            request_id: abc-123-def
-            data:
-              events:
-              - created_at: 1700000300
-                event_type: notetaker.media
-                data:
-                  grant_id: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
-                  id: 71c807752c744ad0902f64d43e6cc399
-                  meeting_link: https://meet.google.com/abc-def-ghi
-                  meeting_provider: Google Meet
-                  join_time: 1700000050
-                  object: notetaker
-                  state: available
-                  status: available
-                  meeting_settings:
-                    audio_recording: true
-                    video_recording: true
-                    transcription: true
-                    transcription_settings:
-                      expected_languages:
-                      - en
-                      - es
-                      fallback_language: en
-                    summary: true
-                    action_items: true
-                  media:
-                    recording: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/recording.mp4
-                    recording_duration: '3600'
-                    transcript: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/transcript.json
-                    thumbnail: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/thumbnail.jpg
-                    summary: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/summary.txt
-                    action_items: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/action_items.json
-              - created_at: 1700000200
-                event_type: notetaker.meeting_state
-                data:
-                  grant_id: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
-                  id: 71c807752c744ad0902f64d43e6cc399
-                  meeting_link: https://meet.google.com/abc-def-ghi
-                  meeting_provider: Google Meet
-                  join_time: 1700000050
-                  object: notetaker
-                  state: disconnected
-                  status: disconnected
-                  meeting_state: meeting_ended
-              - created_at: 1700000000
-                event_type: notetaker.created
-                data:
-                  grant_id: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
-                  id: 71c807752c744ad0902f64d43e6cc399
-                  meeting_link: https://meet.google.com/abc-def-ghi
-                  meeting_provider: Google Meet
-                  join_time: 1700000050
-                  object: notetaker
-                  state: scheduled
-                  status: scheduled
     leave-meeting-202:
       description: Accepted
       content:
@@ -1023,17 +895,6 @@ components:
                   provider_error:
                     code: MailboxNotEnabledForRESTAPI
                     message: The mailbox is either inactive, soft-deleted, or is hosted on-premise.
-    cancel-notetaker-200:
-      description: OK
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The ID of the request.
-                example: 5fa64c92-e840-4357-86b9-2aa364d35b88
     '409':
       description: Conflict
       content:
@@ -1079,6 +940,16 @@ components:
             data:
               id: AAAA-BBBB-1111-2222
               message: Notetaker is leaving meeting.
+    invite-to-meeting-201:
+      description: Success. Returns information about Notetaker bot.
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/notetaker'
     get-notetaker-media-200:
       description: Success. Returns Notetaker media.
       content:
@@ -1274,17 +1145,7 @@ components:
                           type: string
                           description: A link to the meeting transcript.
                           example: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/...
-    get-notetaker-200:
-      description: Success. Returns Notetaker bot.
-      content:
-        application/json:
-          schema:
-            allOf:
-            - $ref: '#/components/schemas/common_response'
-            - properties:
-                data:
-                  $ref: '#/components/schemas/notetaker'
-    delete-notetaker-200:
+    cancel-notetaker-200:
       description: OK
       content:
         application/json:
@@ -1295,6 +1156,88 @@ components:
                 type: string
                 description: The ID of the request.
                 example: 5fa64c92-e840-4357-86b9-2aa364d35b88
+    get-notetaker-200:
+      description: Success. Returns Notetaker bot.
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  $ref: '#/components/schemas/notetaker'
+    get-notetaker-history-200:
+      description: Success. Returns Notetaker bot history events.
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: '#/components/schemas/common_response'
+            - properties:
+                data:
+                  type: object
+                  properties:
+                    events:
+                      type: array
+                      description: A list of Notetaker history events, ordered by most recent first.
+                      items:
+                        $ref: '#/components/schemas/notetaker_history_event'
+          example:
+            request_id: abc-123-def
+            data:
+              events:
+              - created_at: 1700000300
+                event_type: notetaker.media
+                data:
+                  grant_id: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
+                  id: 71c807752c744ad0902f64d43e6cc399
+                  meeting_link: https://meet.google.com/abc-def-ghi
+                  meeting_provider: Google Meet
+                  join_time: 1700000050
+                  object: notetaker
+                  state: available
+                  status: available
+                  meeting_settings:
+                    audio_recording: true
+                    video_recording: true
+                    transcription: true
+                    transcription_settings:
+                      expected_languages:
+                      - en
+                      - es
+                      fallback_language: en
+                    summary: true
+                    action_items: true
+                  media:
+                    recording: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/recording.mp4
+                    recording_duration: '3600'
+                    transcript: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/transcript.json
+                    thumbnail: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/thumbnail.jpg
+                    summary: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/summary.txt
+                    action_items: https://storage.googleapis.com/nylas-notetaker-uc1-prod-notetaker/action_items.json
+              - created_at: 1700000200
+                event_type: notetaker.meeting_state
+                data:
+                  grant_id: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
+                  id: 71c807752c744ad0902f64d43e6cc399
+                  meeting_link: https://meet.google.com/abc-def-ghi
+                  meeting_provider: Google Meet
+                  join_time: 1700000050
+                  object: notetaker
+                  state: disconnected
+                  status: disconnected
+                  meeting_state: meeting_ended
+              - created_at: 1700000000
+                event_type: notetaker.created
+                data:
+                  grant_id: d4e78fca-2a90-4b6e-91c3-a7f2bcb0d498
+                  id: 71c807752c744ad0902f64d43e6cc399
+                  meeting_link: https://meet.google.com/abc-def-ghi
+                  meeting_provider: Google Meet
+                  join_time: 1700000050
+                  object: notetaker
+                  state: scheduled
+                  status: scheduled
     get-notetakers-200:
       description: Success. Returns list of Notetaker bots.
       content:
@@ -1313,6 +1256,17 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/notetaker'
+    delete-notetaker-200:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              request_id:
+                type: string
+                description: The ID of the request.
+                example: 5fa64c92-e840-4357-86b9-2aa364d35b88
     400-2:
       description: Bad Request
       content:
@@ -1347,62 +1301,108 @@ components:
                   provider_error:
                     code: TargetIdShouldNotBeMeOrWhitespace
                     message: Id is malformed.
-    '429':
-      description: Rate Limit
-      content:
-        application/json:
-          schema:
-            title: error
-            type: object
-            properties:
-              request_id:
-                type: string
-                description: The request ID.
-              error:
-                type: object
-                description: The response error object.
-                properties:
-                  type:
-                    type: string
-                    description: The error type.
-                  message:
-                    type: string
-                    description: The error message.
-          examples:
-            Not Found:
-              value:
-                request_id: 5fa64c92-e840-4357-86b9-2aa364d35b88
-                error:
-                  type: rate_limit_error
-                  message: Too many requests, please try again shortly.
-  requestBodies:
-    patch-notetaker:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              join_time:
-                type: integer
-                description: 'When Notetaker should join the meeting, in seconds using the Unix timestamp format. If empty, Notetaker joins the
+  parameters:
+    join_time_start:
+      name: join_time_start
+      in: query
+      required: false
+      schema:
+        type: number
+      description: 'Filter for Notetaker bots that have join times that start at or after a specific time, in Unix
 
-                  meeting immediately.
+        timestamp format.'
+    limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 50
+        maximum: 200
+      description: 'The maximum number of objects to return. See [Pagination](/docs/reference/api/#pagination)
 
+        for more information.'
+    join_time_end:
+      name: join_time_end
+      in: query
+      required: false
+      schema:
+        type: number
+      description: 'Filter for Notetaker bots that have join times that end at or are before a specific time, in Unix
 
-                  If you provide a time that''s in the past, Nylas returns an error.'
-                example: 1732657774
-              meeting_settings:
-                $ref: '#/components/schemas/meeting_settings'
-              name:
-                type: string
-                description: The display name for the Notetaker bot.
-                default: Nylas Notetaker
-                example: Nylas Notetaker
-    notetakers:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/notetakers'
+        timestamp format.'
+    prev_page_token:
+      name: prev_page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `prev_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    notetaker_order_by:
+      name: order_by
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+        - name
+        - join_time
+        - created_at
+        default: created_at
+      description: The field to order the Notetaker bots by.
+    notetaker_state:
+      name: state
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+        - scheduled
+        - connecting
+        - waiting_for_entry
+        - failed_entry
+        - attending
+        - media_processing
+        - media_available
+        - media_error
+        - media_deleted
+      description: Filter for Notetaker bots with the specified meeting state.
+    page_token:
+      name: page_token
+      in: query
+      required: false
+      schema:
+        type: string
+      description: 'An identifier that specifies which page of data to return. You can get this value from the
+
+        `next_cursor` response field. See [Pagination](/docs/reference/api/#pagination) for more
+
+        information.'
+    notetaker_order_direction:
+      name: order_direction
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+        default: asc
+      description: The direction to order the Notetaker bots by.
+    grant_id:
+      name: grant_id
+      schema:
+        type: string
+      in: path
+      required: true
+      description: 'ID of the grant to access. You can also use the email address associated with the grant, or use `/me/`
+
+        to refer to the grant associated with an access token.'
+      example: nyla@example.com
   securitySchemes:
     ACCESS_TOKEN:
       scheme: bearer

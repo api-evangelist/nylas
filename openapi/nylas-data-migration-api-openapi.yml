@@ -139,6 +139,36 @@ paths:
         source: "curl --request POST \\\n  --url 'https://api.us.nylas.com/v3/migration-tools/translate' \\\n  --header 'Content-Type: application/json' \\\n  --header 'Authorization: Bearer <NYLAS_API_KEY>' \\\n  --data '{\n    \"resource_type\": \"messages\",\n    \"v2_account_id\": \"<NYLAS_ACCOUNT_ID>\",\n    \"nylas_ids\": [\n      \"<NYLAS_ACCOUNT_ID>\",\n      \"<NYLAS_ACCOUNT_ID>\"\n    ]\n  }'"
 components:
   schemas:
+    '401':
+      type: object
+      required:
+      - request_id
+      - error
+      additionalProperties: false
+      properties:
+        request_id:
+          description: ID of the request
+          type: string
+          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
+        error:
+          description: Error object
+          type: object
+          properties:
+            type:
+              type: string
+              description: Type of error
+              example: invalid_request_error
+            message:
+              description: Informative error message
+              default: Authentication error
+              type: string
+              example: Authentication error
+            provider_error:
+              description: (OPTIONAL) informative error message from provider's side
+              type: object
+              example:
+                error: invalid_grant
+                provider_error: Bad Request
     translate_v2v3_id:
       type: object
       additionalProperties: false
@@ -218,36 +248,6 @@ components:
               default: Bad request
               type: string
               example: Bad request
-            provider_error:
-              description: (OPTIONAL) informative error message from provider's side
-              type: object
-              example:
-                error: invalid_grant
-                provider_error: Bad Request
-    '401':
-      type: object
-      required:
-      - request_id
-      - error
-      additionalProperties: false
-      properties:
-        request_id:
-          description: ID of the request
-          type: string
-          example: 5967ca40-a2d8-4ee0-a0e0-6f18ace39a90
-        error:
-          description: Error object
-          type: object
-          properties:
-            type:
-              type: string
-              description: Type of error
-              example: invalid_request_error
-            message:
-              description: Informative error message
-              default: Authentication error
-              type: string
-              example: Authentication error
             provider_error:
               description: (OPTIONAL) informative error message from provider's side
               type: object

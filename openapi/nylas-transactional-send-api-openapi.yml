@@ -591,6 +591,43 @@ components:
         generic `400` response. If Nylas cannot complete the explicit ownership and certificate lookup, it
 
         returns a `5xx` response without falling back to a Nylas hostname.'
+    message-participant:
+      title: Message participant
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+      required:
+      - email
+    message-participant-response:
+      title: Message participant response
+      type: object
+      description: A name/email address pair.
+      properties:
+        name:
+          type: string
+          example: Jon Snow
+        email:
+          type: string
+          format: email
+          example: jon.snow@example.com
+    metadata:
+      title: Metadata
+      type: object
+      description: 'The metadata associated with the object. For more information, see
+
+        [Metadata](/docs/reference/api/#metadata).'
+      additionalProperties:
+        type: string
+        description: A key-value pair.
+        maxLength: 500
+      maxProperties: 50
     attachment_transactional_send:
       description: A file attachment for a transactional email message.
       type: object
@@ -637,17 +674,6 @@ components:
           type: integer
           description: The size of the attachment, in bytes.
           example: 13068
-    metadata:
-      title: Metadata
-      type: object
-      description: 'The metadata associated with the object. For more information, see
-
-        [Metadata](/docs/reference/api/#metadata).'
-      additionalProperties:
-        type: string
-        description: A key-value pair.
-        maxLength: 500
-      maxProperties: 50
     transactional_send_message:
       type: object
       properties:
@@ -741,32 +767,6 @@ components:
           items:
             $ref: '#/components/schemas/message-participant'
           uniqueItems: true
-    message-participant-response:
-      title: Message participant response
-      type: object
-      description: A name/email address pair.
-      properties:
-        name:
-          type: string
-          example: Jon Snow
-        email:
-          type: string
-          format: email
-          example: jon.snow@example.com
-    message-participant:
-      title: Message participant
-      type: object
-      description: A name/email address pair.
-      properties:
-        name:
-          type: string
-          example: Jon Snow
-        email:
-          type: string
-          format: email
-          example: jon.snow@example.com
-      required:
-      - email
   responses:
     409_idempotent:
       description: Conflict. Returned when an `Idempotency-Key` conflicts with an existing entry.
