@@ -53,7 +53,7 @@
     - alpha
     in_cloud: true
     builder: unknown (community connector; contributor not in the record)
-  status: pending-generation
+  status: not-a-workflow
   arazzo: null
 - slug: nylas-fivetran
   label: Fivetran
@@ -79,5 +79,5 @@
     - connectors/applications/nylas
     vendor_link: https://dashboard.nylas.com/
     builder: Fivetran
-  status: pending-generation
+  status: not-a-workflow
   arazzo: null
