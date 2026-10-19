@@ -81,3 +81,34 @@
     builder: Fivetran
   status: not-a-workflow
   arazzo: null
+- slug: nylas-rubygems
+  label: RubyGems
+  partner: rubygems
+  partner_name: RubyGems
+  category: official SDK (Ruby)
+  type: register
+  channel: package-registry
+  evidence: https://rubygems.org/gems/nylas
+  source: edge
+  relationship: distribution-channel
+  contract_reference:
+    register: RubyGems (public registry JSON)
+    spec_file: null
+    language: Ruby
+    packages:
+    - name: nylas
+      version: 6.8.1
+      released: '2026-07-21'
+      released_field: version_created_at
+      lapsed: false
+      page: https://rubygems.org/gems/nylas
+      repo_leg: domain:nylas.com
+      publisher_leg: org:nylas
+      matched_by: domain
+    current: true
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  status: not-a-workflow
+  arazzo: null
