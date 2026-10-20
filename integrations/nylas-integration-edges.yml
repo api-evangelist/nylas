@@ -1,37 +1,34 @@
 edges:
-- partner_name: A2A protocol (own Agent Card)
-  partner: null
+- partner_name: RubyGems
+  partner: rubygems
   partner_match: register
   type: register
   direction: provider-built
-  category: A2A agent
-  evidence: https://developer.nylas.com/.well-known/agent-card.json
-  channel: provider-built
-  relationship: compatible
-  shape: a2a
-  evidence_kind: own-wellknown
-  degree: flavored
-  report_only: true
-  a2a_card:
-    grade: flavored
-    verdict: flavored
-    protocol_version: null
-    deviations:
-    - no-protocolVersion
-    card_subject: unknown
+  category: official SDK (Ruby)
+  evidence: https://rubygems.org/gems/nylas
+  channel: package-registry
+  relationship: distribution-channel
   contract_reference:
-    register: provider's own /.well-known/agent-card.json
+    register: RubyGems (public registry JSON)
     spec_file: null
-    standard: A2A
-    role: a2a-agent-card
-    registered_name: Nylas
-    organization: Nylas, Inc.
-    matched_domain: nylas.com
-    matched_by: own-domain
-    detected_by: sweep-ai-agents.py
-    detected: '2026-10-15'
-  detected_by: sweep-ai-agents.py
-  first_seen: '2026-10-15'
+    language: Ruby
+    packages:
+    - name: nylas
+      version: 6.8.1
+      released: '2026-07-21'
+      released_field: version_created_at
+      lapsed: false
+      page: https://rubygems.org/gems/nylas
+      repo_leg: domain:nylas.com
+      publisher_leg: org:nylas
+      matched_by: domain
+    current: true
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
+  first_seen: '2026-10-18'
 - partner_name: Airbyte
   partner: airbyte
   partner_match: aggregator
@@ -88,36 +85,69 @@ edges:
     builder: Fivetran
   detected_by: sweep-data-integration.py
   first_seen: '2026-10-18'
-- partner_name: RubyGems
-  partner: rubygems
+- partner_name: Cloud Security Alliance STAR Registry
+  partner: null
+  partner_match: register
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://cloudsecurityalliance.org/star/registry/nylas-inc/services/nylas-inc
+  category: Cloud security assurance
+  contract_reference:
+    register: CSA STAR Registry (cloudsecurityalliance.org/star/registry)
+    spec_file: null
+    standard: CSA STAR
+    role: star-level-1
+    registered_name: Nylas, Inc.
+    registry_id: nylas-inc
+    service_url: https://www.nylas.com/
+    matched_domain: nylas.com
+    matched_by: domain
+    identity_source: the service URL the organisation filed on its STAR listing (no lookup)
+    levels:
+    - STAR Level 1
+    certified_products: []
+    signal_note: STAR Level 1 (CAIQ self-assessment) = participation; certified_products = one entry per STAR Level
+      2 / STAR for AI Level 2 assessment TYPE (third-party certification, attestation, C-STAR, ValidAIted); lapsed
+      = every instance marked (Deprecated) by the registry; service counts never recorded
+    detected_by: sweep-compliance-assurance.py
+    detected: '2026-10-20'
+  detected_by: sweep-compliance-assurance.py
+  first_seen: '2026-10-20'
+- partner_name: A2A protocol (own Agent Card)
+  partner: null
   partner_match: register
   type: register
   direction: provider-built
-  category: official SDK (Ruby)
-  evidence: https://rubygems.org/gems/nylas
-  channel: package-registry
-  relationship: distribution-channel
+  category: A2A agent
+  evidence: https://developer.nylas.com/.well-known/agent-card.json
+  channel: provider-built
+  relationship: compatible
+  shape: a2a
+  evidence_kind: own-wellknown
+  degree: flavored
+  report_only: true
+  a2a_card:
+    grade: flavored
+    verdict: flavored
+    protocol_version: null
+    deviations:
+    - no-protocolVersion
+    card_subject: unknown
   contract_reference:
-    register: RubyGems (public registry JSON)
+    register: provider's own /.well-known/agent-card.json
     spec_file: null
-    language: Ruby
-    packages:
-    - name: nylas
-      version: 6.8.1
-      released: '2026-07-21'
-      released_field: version_created_at
-      lapsed: false
-      page: https://rubygems.org/gems/nylas
-      repo_leg: domain:nylas.com
-      publisher_leg: org:nylas
-      matched_by: domain
-    current: true
-    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
-      24 months'
-    detected_by: sweep-official-sdks.py
-    detected: '2026-10-18'
-  detected_by: sweep-official-sdks.py
-  first_seen: '2026-10-18'
+    standard: A2A
+    role: a2a-agent-card
+    registered_name: Nylas
+    organization: Nylas, Inc.
+    matched_domain: nylas.com
+    matched_by: own-domain
+    detected_by: sweep-ai-agents.py
+    detected: '2026-10-15'
+  detected_by: sweep-ai-agents.py
+  first_seen: '2026-10-15'
 generated: '2026-10-15'
 method: searched
 source:
@@ -125,9 +155,11 @@ source:
 checked:
 - https://a2aregistry.org/api/agents
 - https://api.nuget.org/v3
+- https://cloudsecurityalliance.org/star/registry
 - https://connectors.airbyte.com/files/registries/v0/cloud_registry.json
 - https://connectors.airbyte.com/files/registries/v0/oss_registry.json
 - https://crates.io/api/v1
+- https://eucoc.cloud/en/public-register/list-of-adherent-services
 - https://fivetran.com/docs-sitemap.xml
 - https://fivetran.com/docs/connectors/partner-built-program
 - https://proxy.golang.org
