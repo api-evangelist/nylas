@@ -18,12 +18,24 @@ artifacts:
   ai-catalog/nylas-ai-catalog.yml:
     method: unknown
     evidence: no authorship recorded
-  authentication/nylas-authentication.yml:
+  asyncapi/nylas-notifications-asyncapi.yml:
     method: unknown
     evidence: no authorship recorded
+  asyncapi/nylas-webhooks.yml:
+    method: searched
+    evidence: declared in the artifact
+  authentication/nylas-authentication.yml:
+    method: derived
+    evidence: declared in the artifact
   capabilities/nylas-capability-edges.yml:
     method: unknown
     evidence: no authorship recorded
+  changelog/nylas-changelog.yml:
+    method: searched
+    evidence: declared in the artifact
+  cli/nylas-cli.yml:
+    method: searched
+    evidence: declared in the artifact
   collections/nylas-admin-api.opencollection.json:
     method: unknown
     evidence: no authorship recorded
@@ -91,135 +103,315 @@ artifacts:
     method: derived
     evidence: openapi/nylas
   conformance/nylas-conformance.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: searched
+    evidence: declared in the artifact
+  conventions/nylas-conventions.yml:
+    method: derived
+    evidence: declared in the artifact
+  data-model/nylas-data-model.yml:
+    method: derived
+    evidence: declared in the artifact
+  errors/nylas-problem-types.yml:
+    method: derived
+    evidence: declared in the artifact
   finops/nylas-finops.yml:
     method: unknown
     evidence: no authorship recorded
   front-door-ai/2026-09-17.yml:
     method: unknown
     evidence: no authorship recorded
-  kin/checks-2026-09-24T161608.yml:
+  hosts/nylas-hosts.yml:
+    method: derived
+    evidence: declared in the artifact
+  integrations/_index.yml:
     method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-25T125852.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-25T133943.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-25T143147.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-25T154045.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-26T215308.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T094438.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T103455.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T123021.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T132314.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-27T140727.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-28T221322.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-29T213958.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-29T230545.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-30T203505.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-30T220315.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-31T223420.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-01T063623.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-01T210448.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-01T222808.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-02T211804.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-02T224043.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-03T161828.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-03T174231.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-04T062714.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-04T212454.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-04T224856.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-05T055819.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-05T072335.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-05T144739.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-05T195450.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-05T211839.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-06T011047.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-06T211804.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-06T224210.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-07T200636.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-07T213054.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-08T214843.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-08T232836.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-10T204815.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-09-10T222408.yml:
+    evidence: carries an API Evangelist house phrase
+  integrations/nylas-integration-edges.yml:
+    method: unknown
+    evidence: no authorship recorded
+  json-ld/nylas-context.jsonld:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-200-delete-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-amazon-sns-input-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-android-callbackw-settings-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-application-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-autodetect-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-availability-open-hours-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-availability-rules-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-availability-specific-time-availability-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-booking-cancelled.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-booking-created.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-booking-pending.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-booking-reminder.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-booking-rescheduled.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-booking-update-group-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-booking-update-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-calendar-created.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-calendar-deleted.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-calendar-updated.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-configuration-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-connector-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-contact-deleted.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-contact-updated.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-credential-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-destination-input-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-destination-update-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-domain-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-domain-verification-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-event-create-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-event-created.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-event-deleted.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-event-updated.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-folder-created.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-folder-deleted.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-folder-updated.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-get-mock-payload-input-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-grant-created.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-grant-deleted.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-grant-expired.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-grant-imap-sync-completed.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-grant-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-grant-rule-evaluation-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-grant-updated.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-group-configuration-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-ios-callbackw-settings-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-js-callbackw-settings-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-list-item-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-list-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-bounce-detected.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-bounced.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-complaint.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-created-cleaned.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-created-metadata.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-created.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-deleted.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-delivered.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-intelligence-order.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-intelligence-return.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-intelligence-tracking.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-intelligence-travel.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-link-clicked-legacy.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-link-clicked.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-opened-legacy.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-opened.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-rejected.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-send-failed.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-send-success.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-transactional-bounced.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-transactional-complaint.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-transactional-delivered.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-transactional-rejected.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-updated-metadata.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-message-updated.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-metadata-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-migration-job-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-notetaker-created.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-notetaker-deleted.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-notetaker-media.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-notetaker-meeting-state.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-notetaker-updated.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-notification-envelope.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-policy-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-pubsub-input-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-redirect-uriobject-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-rule-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-send-test-event-input-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-thread-replied-legacy.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-thread-replied.schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-tracking-domain-name-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-transactional-send-message-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-translate-v2v3-id-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-trigger-types-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-web-desktop-callback-no-settings-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/nylas-workspace-object-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  kin/checks-2026-10-11T110117.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-09-12T062655.yml:
@@ -303,16 +495,37 @@ artifacts:
   kin/score-2026-09-24T161608.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-25T210408.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-25T232841.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-03T000835.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-03T024842.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-11T110117.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  llms/nylas-llms-provenance.yml:
+    method: searched
+    evidence: 'derive-llms-provenance.py: harvested'
   llms/nylas-llms.txt:
     method: searched
     evidence: 'derive-llms-provenance.py: harvested'
   mcp/nylas-mcp.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: declared in the artifact
+  mcp/nylas-tool-crosswalk.yml:
+    method: derived
+    evidence: declared in the artifact
   openapi/_original/nylas-api-openapi.yml:
     method: harvested
-    evidence: found in openapi/_original/; the fetch URL and bytes were not recorded, so byte-identity
-      to the provider's source is unverified
+    evidence: the same operations as https://developer.nylas.com/openapi.json (sha256 2522486cbd5d, fetched
+      2026-10-04)
   openapi/_original/nylas-templates-workflows-api-openapi.yml:
     method: harvested
     evidence: found in openapi/_original/; the fetch URL and bytes were not recorded, so byte-identity
@@ -437,19 +650,160 @@ artifacts:
   openapi/nylas-workspaces-api-openapi.yml:
     method: harvested
     evidence: declared in the artifact
+  overlays/nylas-amazon-sns-notifications-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-app-migration-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-application-level-templates-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-application-level-workflows-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-applications-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-attachments-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-authentication-apis-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-availability-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-bookings-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-calendar-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-configurations-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-connector-credentials-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-connectors-integrations-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-contacts-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-data-migration-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-drafts-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-events-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-folders-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-grant-level-templates-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-grant-level-workflows-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-group-events-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-lists-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-manage-api-keys-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-manage-domains-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-manage-grants-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-messages-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-notetaker-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-policies-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-pub-sub-notifications-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-room-resources-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-rules-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-sessions-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-signatures-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-smart-compose-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-standalone-notetaker-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-threads-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-transactional-send-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-v2-redirects-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-webhook-notifications-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  overlays/nylas-workspaces-api-phrasing-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  packages/nylas-packages.yml:
+    method: unknown
+    evidence: no authorship recorded
   plans/nylas-plans-pricing.yml:
     method: unknown
     evidence: no authorship recorded
   rate-limits/nylas-rate-limits.yml:
     method: unknown
     evidence: no authorship recorded
+  regulatory/nylas-regulatory-posture.yml:
+    method: unknown
+    evidence: no authorship recorded
+  rules/nylas-rules.yml:
+    method: unknown
+    evidence: no authorship recorded
   security/nylas-domain-security.yml:
     method: unknown
     evidence: no authorship recorded
   security/nylas-trust-center.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: searched
+    evidence: declared in the artifact
   security/nylas-vulnerability-disclosure.yml:
+    method: searched
+    evidence: declared in the artifact
+  skills/_index.yml:
+    method: generated
+    evidence: declared in the artifact
+  skills/nylas-bookings-create-and-confirm.md:
+    method: generated
+    evidence: declared in the artifact
+  skills/nylas-events-management.md:
+    method: generated
+    evidence: declared in the artifact
+  vendors/nylas-vendors.yml:
     method: unknown
     evidence: no authorship recorded
   vocabulary/nylas-vocabulary.yml:
